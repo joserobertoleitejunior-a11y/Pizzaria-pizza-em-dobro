@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza em Dobro | Oficial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Oswald:wght@300;500&family=Bangers&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #FF9F1C; --secondary: #E71D36; --bg: #050505; --card: rgba(20, 20, 20, 0.6); --text: #f0f0f0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        
+        body { 
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(255, 159, 28, 0.1) 0%, transparent 70%),
+                url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='1' fill='%23FF9F1C' fill-opacity='0.1'/%3E%3C/svg%3E");
+            background-attachment: fixed;
+            color: var(--text); 
+        }
+
+        #welcome-screen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 10000; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; transition: 1s ease; 
+        }
+        .logo-container { position: relative; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; }
+        .logo-arc {
+            position: absolute; width: 100%; height: 100%;
+            fill: var(--primary); font-family: 'Bangers'; font-size: 22px;
+            animation: rotateArc 10s linear infinite;
+        }
+        @keyframes rotateArc { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        .welcome-pizza { width: 80px; filter: drop-shadow(0 0 10px var(--primary)); }
+        .welcome-text { color: var(--primary); font-family: 'Oswald'; font-weight: 300; margin-top: 20px; letter-spacing: 5px; text-transform: uppercase; }
+
+        header { padding: 60px 20px 20px; text-align: center; }
+        .viva-title { 
+            font-family: 'Bangers', cursive; font-size: 3.5rem; color: var(--primary); 
+            letter-spacing: 2px; text-shadow: 2px 2px 0px var(--secondary);
+        }
+        
+        .status-badge { font-size: 0.7rem; font-weight: 600; letter-spacing: 3px; margin-top: 10px; display: block; opacity: 0.8; }
+        .open { color: #2ecc71; } .closed { color: #e74c3c; }
+
+        .promo-card {
+            background: linear-gradient(145deg, rgba(231, 29, 54, 0.1), rgba(0,0,0,0));
+            margin: 20px auto; padding: 25px; border-radius: 15px;
+            max-width: 450px; text-align: center; border: 1px solid rgba(255, 159, 28, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        .promo-card h2 { font-family: 'Oswald'; font-weight: 300; font-size: 1.8rem; color: var(--primary); margin-bottom: 10px; }
+        .promo-card p { font-size: 0.85rem; color: #ccc; line-height: 1.5; }
+        .promo-step { color: var(--primary); font-weight: 600; }
+
+        .container { padding: 0 20px 180px; max-width: 480px; margin: 0 auto; }
+        .category-title { 
+            font-family: 'Oswald'; font-size: 1.1rem; color: var(--primary); 
+            margin: 50px 0 25px; letter-spacing: 4px; text-transform: uppercase;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .category-title::after { content: ""; flex: 1; height: 1px; background: rgba(255,159,28,0.1); }
+        
+        .item-card { 
+            background: var(--card); border-radius: 12px; padding: 18px; 
+            margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.03);
+            transition: border 0.2s;
+            position: relative;
+        }
+
+        body.selection-mode .item-card.selectable {
+            border: 1px dashed var(--primary);
+            cursor: pointer;
+            animation: pulse-border 1.5s infinite;
+        }
+
+        .selection-trigger {
+            display: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 50;
+        }
+        body.selection-mode .item-card.selectable .selection-trigger { display: block; }
+
+        @keyframes pulse-border {
+            0% { border-color: rgba(255, 159, 28, 0.2); }
+            50% { border-color: rgba(255, 159, 28, 1); }
+            100% { border-color: rgba(255, 159, 28, 0.2); }
+        }
+
+        .selection-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 120px;
+            background: rgba(0,0,0,0.95); z-index: 1000;
+            flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        body.selection-mode .selection-overlay { display: flex; }
+        .cancel-btn { pointer-events: auto; margin-top: 10px; background: var(--secondary); border: none; padding: 10px 20px; color: white; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 0.8rem; }
+
+        .item-name { font-weight: 500; font-size: 1.1rem; color: #fff; font-family: 'Oswald'; }
+        .item-desc { color: #888; font-size: 0.8rem; margin: 4px 0 12px; font-weight: 300; }
+        
+        .price-row { display: flex; justify-content: space-between; align-items: center; }
+        .item-price { font-weight: 400; color: var(--primary); font-size: 1rem; }
+
+        .controls { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.3); padding: 5px 12px; border-radius: 50px; position: relative; z-index: 10; }
+        .btn-action { 
+            background: transparent; border: none; color: var(--primary); 
+            font-size: 1.2rem; cursor: pointer; width: 25px; height: 25px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .qty-val { font-size: 0.9rem; font-weight: 600; color: #fff; min-width: 15px; text-align: center; }
+
+        .borda-selector {
+            margin-top: 10px; width: 100%; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,159,28,0.2); color: #fff; padding: 8px;
+            border-radius: 8px; font-size: 0.8rem; outline: none; display: none; position: relative; z-index: 10;
+        }
+
+        .removal-container { margin-top: 12px; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 8px; position: relative; z-index: 10; }
+        .removal-option { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: #ccc; margin-bottom: 4px; cursor: pointer; }
+
+        /* CARRINHO ATUALIZADO E RESPONSIVO */
+        #cart-bar { 
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 440px; background: rgba(15, 15, 15, 0.98); 
+            backdrop-filter: blur(25px); border: 1px solid rgba(255, 159, 28, 0.3);
+            padding: 20px; z-index: 999; display: none; border-radius: 20px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            max-height: 85px; overflow-y: auto; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;
+        }
+        
+        #cart-bar.expanded { max-height: 80vh; }
+        @media screen and (max-height: 600px) { #cart-bar.expanded { max-height: 70vh; bottom: 10px; } }
+
+        .total-container { text-align: right; margin-bottom: 10px; }
+        .savings-badge { color: #2ecc71; font-size: 0.75rem; font-weight: 600; margin-top: 2px; display: none; }
+        .delivery-status { font-size: 0.75rem; margin-top: 4px; color: #aaa; }
+
+        .checkout-btn { 
+            background: var(--primary); color: #000; text-decoration: none; 
+            display: block; text-align: center; padding: 15px; border-radius: 12px; 
+            font-weight: 700; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px;
+        }
+
+        .payment-selector, .address-input {
+            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid #333;
+            padding: 12px; border-radius: 8px; color: #fff; font-size: 0.85rem;
+            margin-bottom: 10px; outline: none;
+        }
+
+        #cart-hint { font-size: 0.6rem; text-align: center; opacity: 0.6; letter-spacing: 1px; margin-bottom: 5px; text-transform: uppercase; }
+        
+        .summary-item { font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; color: #ddd; }
+    </style>
+</head>
+<body>
+
+<div id="welcome-screen">
+    <div class="logo-container">
+        <svg class="logo-arc" viewBox="0 0 200 200">
+            <path id="curve" d="M 30,100 A 70,70 0 1,1 170,100 A 70,70 0 1,1 30,100" fill="transparent"/>
+            <text><textPath xlink:href="#curve" startOffset="50%" text-anchor="middle">PIZZA EM DOBRO • PIZZA EM DOBRO •</textPath></text>
+        </svg>
+        <svg class="welcome-pizza" viewBox="0 0 100 100">
+            <path d="M50 10 L90 80 L10 80 Z" fill="#FF9F1C"/>
+            <circle cx="50" cy="45" r="5" fill="#E71D36"/><circle cx="40" cy="65" r="5" fill="#E71D36"/><circle cx="60" cy="65" r="5" fill="#E71D36"/>
+        </svg>
+    </div>
+    <div class="welcome-text">Seja bem-vindo 🍕</div>
+</div>
+
+<div class="selection-overlay" id="sel-overlay">
+    <h2 style="font-family:'Oswald'; color:var(--primary); letter-spacing:2px; font-size: 1.2rem;">MODO MEIA A MEIA</h2>
+    <p style="font-size:0.8rem; color:#fff; margin-top:2px;">Escolha o segundo sabor abaixo</p>
+    <button class="cancel-btn" onclick="cancelHalf()">CANCELAR</button>
+</div>
+
+<header>
+    <h1 class="viva-title">PIZZA EM DOBRO</h1>
+    <span id="status-loja" class="status-badge">...</span>
+</header>
+
+<div class="promo-card">
+    <h2>COMO FUNCIONA</h2>
+    <p>
+        • <span class="promo-step">1 Pizza:</span> Valor unitário.<br>
+        • <span class="promo-step">2 Pizzas:</span> Pague a de maior valor (Combo).<br>
+        • <span class="promo-step">3 Pizzas+:</span> Combo + <span style="color:#2ecc71">ENTREGA GRÁTIS!</span>
+    </p>
+</div>
+
+<div class="container">
+    <h2 class="category-title">Tradicionais</h2>
+    <div id="pizzas-list"></div>
+    <h2 class="category-title">Especiais</h2>
+    <div id="specials-list"></div>
+    <h2 class="category-title">Doces</h2>
+    <div id="sweets-list"></div>
+    <h2 class="category-title">Calzones Doces</h2>
+    <div id="calzones-list"></div>
+    <h2 class="category-title">Bebidas</h2>
+    <div id="drinks-list"></div>
+</div>
+
+<div id="cart-bar">
+    <div id="cart-hint">▲ Toque para ver detalhes</div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+            <span style="font-size: 0.7rem; letter-spacing: 1px; opacity: 0.7; display: block;">TOTAL DO PEDIDO</span>
+            <div id="delivery-msg" class="delivery-status">Calculando...</div>
+        </div>
+        <div class="total-container">
+            <span id="total-val" style="color:var(--primary); font-size:1.4rem; font-weight:600;">R$ 0,00</span>
+            <div id="savings-val" class="savings-badge">Economia de R$ 0,00</div>
+        </div>
+    </div>
+
+    <div id="order-summary" style="margin: 15px 0; border-top: 1px solid #333; padding-top: 10px;"></div>
+
+    <input type="text" id="user-name" class="address-input" placeholder="Seu nome...">
+    <input type="text" id="user-end" class="address-input" placeholder="Endereço de entrega completo...">
+    <input type="text" id="user-number" class="address-input" placeholder="Número da casa...">
+    <select id="user-payment" class="payment-selector">
+        <option value="" disabled selected>Forma de pagamento...</option>
+        <option value="Dinheiro">Dinheiro</option>
+        <option value="Pix">Pix</option>
+        <option value="Cartão">Cartão</option>
+    </select>
+    
+    <div style="text-align: center; margin-bottom: 15px; font-size: 0.85rem; line-height: 1.4; color: #ccc; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px;">
+        ⏱️ <b>Prazo de entrega:</b><br>
+        Seu pedido pode levar até 50 minutos para chegar.<br>
+        Estamos preparando tudo com carinho para entregar o mais rápido possível e bem quentinha 🍕🔥<br>
+        Obrigado pela preferência ❤️
+    </div>
+
+    <a href="#" class="checkout-btn" onclick="finalizar()">Enviar Pedido</a>
+</div>
+
+<script>
+    const menu = [
+        { id: 1, n: "Mussarela", d: "Molho, mussarela, tomate, orégano e azeitona", p: 33, c: 60, cat: 'p' },
+        { id: 2, n: "Calabresa", d: "Molho, calabresa, cebola, orégano e azeitona", p: 33, c: 60, cat: 'p' },
+        { id: 3, n: "Marguerita", d: "Molho, mussarela, parmesão, manjericão, orégano e azeitona", p: 37, c: 70, cat: 'p' },
+        { id: 4, n: "Frango Catupiry", d: "Molho, frango desfiado, catupiry, orégano e azeitona", p: 37, c: 70, cat: 'p' },
+        { id: 5, n: "Calabresa Piry", d: "Molho, calabresa, catupiry, orégano e azeitona", p: 37, c: 70, cat: 'p' },
+        { id: 6, n: "Alho Frito", d: "Molho, mussarela, alho frito, orégano e azeitona", p: 37, c: 70, cat: 'p' },
+        { id: 7, n: "Milho", d: "Molho, mussarela, milho, orégano e azeitona", p: 37, c: 70, cat: 'p' },
+        { id: 8, n: "Palmito", d: "Molho, mussarela, palmito, orégano e azeitona", p: 37, c: 70, cat: 'p' },
+        { id: 9, n: "Quatro Queijos", d: "Molho, mussarela, parmesão, requeijão cremoso, gorgonzola, orégano e azeitona", p: 40, c: 75, cat: 's' },
+        { id: 10, n: "Portuguesa", d: "Molho, mussarela, presunto, ovo, palmito, ervilha, orégano e azeitona", p: 40, c: 75, cat: 's' },
+        { id: 11, n: "Toscana", d: "Molho, calabresa, mussarela, cebola, orégano e azeitona", p: 40, c: 75, cat: 's' },
+        { id: 12, n: "Bauru", d: "Molho, presunto, mussarela, tomate, orégano e azeitona", p: 40, c: 75, cat: 's' },
+        { id: 13, n: "Franqueijo", d: "Molho, frango desfiado, mussarela, orégano e azeitona", p: 40, c: 75, cat: 's' },
+        { id: 14, n: "Bacon", d: "Molho, mussarela, bacon, alho frito, orégano e azeitona", p: 40, c: 75, cat: 's' },
+        { id: 15, n: "Toscana Piry", d: "Molho, calabresa, mussarela, catupiry, orégano e azeitona", p: 45, c: 80, cat: 's' },
+        { id: 16, n: "Franqueijo Piry", d: "Molho, frango desfiado, mussarela, catupiry, orégano e azeitona", p: 45, c: 80, cat: 's' },
+        { id: 17, n: "Frambacon", d: "Molho, frango desfiado, mussarela, bacon, alho frito, orégano e azeitona", p: 45, c: 80, cat: 's' },
+        { id: 18, n: "5 Queijos", d: "Molho, requeijão cremoso, mussarela, parmesão, gorgonzola, cheddar, orégano e azeitona", p: 45, c: 80, cat: 's' },
+        { id: 19, n: "Brocolis com Bacon", d: "Molho, mussarela, brócolis, bacon, alho frito, orégano e azeitona", p: 45, c: 80, cat: 's' },
+        { id: 20, n: "Atum", d: "Molho, atum, mussarela, cebola, orégano e azeitona", p: 45, c: 80, cat: 's' },
+        { id: 21, n: "Peperone", d: "Molho, mussarela, peperone, cebola, orégano e azeitona", p: 45, c: 80, cat: 's' },
+        { id: 22, n: "Peito de Peru", d: "Molho, mussarela, peito de peru, tomate, orégano e azeitona", p: 45, c: 80, cat: 's' },
+        { id: 23, n: "Lombo", d: "Molho, mussarela, lombo, cebola, orégano e azeitona", p: 45, c: 80, cat: 's' },
+        { id: 24, n: "Pizza Doce Prestígio", d: "Chocolate e coco ralado", p: 40, c: 40, cat: 'dw' },
+        { id: 25, n: "Pizza Doce Brigadeiro", d: "Chocolate e granulado", p: 40, c: 40, cat: 'dw' },
+        { id: 26, n: "Pizza Doce Dois Amores", d: "Chocolate preto e chocolate branco", p: 40, c: 40, cat: 'dw' },
+        { id: 27, n: "Pizza Doce Confeti", d: "Chocolate e confetes", p: 40, c: 40, cat: 'dw' },
+        { id: 28, n: "Pizza Doce Romeu e Julieta", d: "Mussarela e goiabada", p: 40, c: 40, cat: 'dw' },
+        { id: 29, n: "Calzone Doce Prestígio", d: "Chocolate e coco ralado", p: 35, c: 35, cat: 'cz' },
+        { id: 30, n: "Calzone Doce Brigadeiro", d: "Chocolate e granulado", p: 35, c: 35, cat: 'cz' },
+        { id: 31, n: "Calzone Doce Dois Amores", d: "Chocolate preto e chocolate branco", p: 35, c: 35, cat: 'cz' },
+        { id: 32, n: "Calzone Doce Confeti", d: "Chocolate e confetes", p: 35, c: 35, cat: 'cz' },
+        { id: 33, n: "Calzone Doce Romeu e Julieta", d: "Mussarela e goiabada", p: 35, c: 35, cat: 'cz' },
+        { id: 34, n: "Coca-Cola 1.5L", d: "Gelada", p: 13, c: 13, cat: 'd' },
+        { id: 35, n: "Fanta 1.5L", d: "Gelada", p: 13, c: 13, cat: 'd' },
+        { id: 36, n: "Tubaína 2L", d: "Regional", p: 10, c: 10, cat: 'd' },
+        { id: 37, n: "Kuat 2L", d: "Gelada", p: 10, c: 10, cat: 'd' },
+        { id: 38, n: "Cerveja lata 350ml", d: "Gelada", p: 5, c: 5, cat: 'd' }
+    ];
+
+    const bordasOptions = [{ name: "Sem Borda Recheada", price: 0 }, { name: "Catupiry", price: 10 }, { name: "Cheddar", price: 10 }, { name: "Mussarela", price: 15 }, { name: "Presunto", price: 15 }, { name: "Tampinha", price: 15 }, { name: "Pãozinho", price: 15 }, { name: "Vulcão", price: 15 }];
+    let cart = [];
+    let firstHalf = null;
+
+    function init() {
+        const h = new Date().getHours();
+        const isOpen = (h >= 18 || h < 2); // Simulação de horário noturno
+        const status = document.getElementById('status-loja');
+        status.innerText = isOpen ? "ABERTO PARA PEDIDOS" : "FECHADO AGORA";
+        status.className = "status-badge " + (isOpen ? "open" : "closed");
+
+        const sections = { p: 'pizzas-list', s: 'specials-list', dw: 'sweets-list', cz: 'calzones-list', d: 'drinks-list' };
+        menu.forEach(i => {
+            const isSavory = (i.cat === 'p' || i.cat === 's');
+            document.getElementById(sections[i.cat]).innerHTML += `
+                <div class="item-card ${isSavory ? 'selectable' : ''}" id="card-${i.id}">
+                    <div class="selection-trigger" onclick="selectSecondHalf(${i.id})"></div>
+                    <span class="item-name">#${i.id} - ${i.n}</span>
+                    <p class="item-desc">${i.d}</p>
+                    <div class="price-row">
+                        <span class="item-price">R$ ${i.p.toFixed(2)}</span>
+                        <div class="controls">
+                            <button class="btn-action" onclick="remove(${i.id})">−</button>
+                            <span class="qty-val" id="qty-${i.id}">0</span>
+                            <button class="btn-action" onclick="add(${i.id})">+</button>
+                            ${isSavory ? `<button class="btn-action" onclick="startHalfSelection(${i.id})">½</button>` : ''}
+                        </div>
+                    </div>
+                    <div id="borda-container-${i.id}"></div>
+                    <div id="removal-container-${i.id}"></div>
+                </div>`;
+        });
+        setTimeout(() => { document.getElementById('welcome-screen').style.opacity = '0'; }, 2000); 
+        setTimeout(() => { document.getElementById('welcome-screen').style.display = 'none'; }, 3000);
+    }
+
+    function startHalfSelection(id) {
+        firstHalf = menu.find(m => m.id === id);
+        document.body.classList.add('selection-mode');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelHalf() {
+        firstHalf = null;
+        document.body.classList.remove('selection-mode');
+    }
+
+    function selectSecondHalf(id) {
+        if (!document.body.classList.contains('selection-mode')) return;
+        const second = menu.find(m => m.id === id);
+        if (second && (second.cat === 'p' || second.cat === 's')) {
+            const item = {
+                id: Date.now() + Math.random(),
+                baseId: firstHalf.id,
+                type: 'half',
+                n: `1/2 ${firstHalf.n} e 1/2 ${second.n}`,
+                halves: [firstHalf, second],
+                p: Math.max(firstHalf.p, second.p),
+                c: Math.max(firstHalf.c, second.c),
+                cat: firstHalf.cat,
+                selectedBorda: bordasOptions[0],
+                removedIngredients: []
+            };
+            cart.push(item);
+            renderBordaSelectors(firstHalf.id);
+            renderRemovalOptions(firstHalf.id);
+            cancelHalf();
+            updateUI();
+        }
+    }
+
+    function add(id) {
+        const item = menu.find(m => m.id === id);
+        cart.push({ ...item, cartId: Date.now(), selectedBorda: bordasOptions[0], removedIngredients: [] });
+        renderBordaSelectors(id);
+        renderRemovalOptions(id);
+        updateUI();
+    }
+
+    function remove(id) {
+        const idx = cart.findLastIndex(m => m.id === id || (m.type === 'half' && m.baseId === id));
+        if (idx !== -1) {
+            cart.splice(idx, 1);
+            renderBordaSelectors(id);
+            renderRemovalOptions(id);
+            updateUI();
+        }
+    }
+
+    function renderBordaSelectors(id) {
+        const container = document.getElementById(`borda-container-${id}`);
+        if (!container) return;
+        const items = cart.filter(m => m.id === id || (m.type === 'half' && m.baseId === id));
+        container.innerHTML = "";
+        items.forEach((item, index) => {
+            const select = document.createElement("select");
+            select.className = "borda-selector";
+            select.style.display = "block";
+            select.onchange = (e) => { item.selectedBorda = bordasOptions[e.target.value]; updateUI(); };
+            bordasOptions.forEach((opt, optIdx) => {
+                const o = document.createElement("option");
+                o.value = optIdx; o.text = `${opt.name} ${opt.price > 0 ? '(+R$ ' + opt.price.toFixed(2) + ')' : ''}`;
+                if (item.selectedBorda.name === opt.name) o.selected = true;
+                select.appendChild(o);
+            });
+            container.innerHTML += `<div style="font-size: 0.7rem; margin-top: 8px; color: var(--primary);">Borda para Pizza ${index + 1}:</div>`;
+            container.appendChild(select);
+        });
+    }
+
+    function renderRemovalOptions(id) {
+        const container = document.getElementById(`removal-container-${id}`);
+        if (!container) return;
+        const items = cart.filter(m => m.id === id || (m.type === 'half' && m.baseId === id));
+        const baseItem = menu.find(m => m.id === id);
+        container.innerHTML = "";
+        if (baseItem.cat !== 'p' && baseItem.cat !== 's') return;
+
+        const ings = baseItem.d.split(',').map(s => s.trim().replace(' e ', ',').split(',')).flat()
+            .map(s => s.trim())
+            .filter(s => s.toLowerCase() !== 'molho' && s !== '');
+
+        items.forEach((item, index) => {
+            const wrap = document.createElement("div"); wrap.className = "removal-container";
+            wrap.innerHTML = `<div style="font-size:0.7rem; color:var(--secondary); margin-bottom:5px;">Remover de Pizza ${index + 1}:</div>`;
+            ings.forEach(ing => {
+                const opt = document.createElement("label"); opt.className = "removal-option";
+                opt.innerHTML = `<input type="checkbox" ${item.removedIngredients.includes(ing) ? 'checked' : ''}> Sem ${ing}`;
+                opt.querySelector('input').onchange = (e) => {
+                    if (e.target.checked) item.removedIngredients.push(ing);
+                    else item.removedIngredients = item.removedIngredients.filter(i => i !== ing);
+                };
+                wrap.appendChild(opt);
+            });
+            container.appendChild(wrap);
+        });
+    }
+
+    function updateUI() {
+        menu.forEach(i => {
+            const el = document.getElementById(`qty-${i.id}`);
+            if(el) el.innerText = cart.filter(m => m.id === i.id || (m.type === 'half' && m.baseId === i.id)).length;
+        });
+
+        const cartBar = document.getElementById('cart-bar');
+        cartBar.style.display = cart.length > 0 ? 'block' : 'none';
+
+        const summary = document.getElementById('order-summary');
+        summary.innerHTML = "";
+        
+        let totalOriginal = 0;
+        let savoryPizzas = cart.filter(i => (i.cat === 'p' || i.cat === 's')).sort((a,b) => b.c - a.c);
+        
+        cart.forEach(item => {
+            summary.innerHTML += `<div class="summary-item">${item.n}</div>`;
+            totalOriginal += item.p + (item.selectedBorda?.price || 0);
+        });
+
+        let combosSavory = [...savoryPizzas];
+        let totalPromo = 0;
+        while(combosSavory.length >= 2) {
+            const p1 = combosSavory.shift(); const p2 = combosSavory.shift();
+            totalPromo += Math.max(p1.c, p2.c) + p1.selectedBorda.price + p2.selectedBorda.price;
+        }
+        combosSavory.forEach(p => totalPromo += p.p + p.selectedBorda.price);
+        
+        cart.filter(i => (i.cat !== 'p' && i.cat !== 's')).forEach(item => totalPromo += item.p + (item.selectedBorda?.price || 0));
+
+        document.getElementById('total-val').innerText = `R$ ${totalPromo.toFixed(2)}`;
+        
+        const economia = totalOriginal - totalPromo;
+        const savingsBadge = document.getElementById('savings-val');
+        if (economia > 0) {
+            savingsBadge.innerText = `Economia de R$ ${economia.toFixed(2)}`;
+            savingsBadge.style.display = 'block';
+        } else {
+            savingsBadge.style.display = 'none';
+        }
+
+        const pizzaCount = cart.filter(i => (i.cat === 'p' || i.cat === 's' || i.cat === 'dw')).length;
+        const deliveryMsg = document.getElementById('delivery-msg');
+        if (pizzaCount >= 3) {
+            deliveryMsg.innerHTML = `<span style="color:#2ecc71">✨ ENTREGA GRÁTIS</span>`;
+        } else {
+            deliveryMsg.innerHTML = `⚠️ Taxa a consultar`;
+        }
+    }
+
+    function finalizar() {
+        const name = document.getElementById('user-name').value;
+        const end = document.getElementById('user-end').value; 
+        const houseNum = document.getElementById('user-number').value;
+        const pay = document.getElementById('user-payment').value;
+        
+        if(!name || !end || !houseNum || !pay) return alert("Por favor, preencha Nome, Endereço, Número da Casa e Forma de Pagamento!");
+        
+        const totalItens = cart.length;
+
+        let resumo = cart.map(i => {
+            let txt = `*• ${i.n}*`;
+            if (i.selectedBorda?.price > 0) txt += `%0A  ▸ _Borda: ${i.selectedBorda.name}_`;
+            if (i.removedIngredients?.length > 0) txt += `%0A  ▸ _Remover: ${i.removedIngredients.join(', ')}_`;
+            return txt;
+        }).join('%0A%0A');
+
+        const pizzaCount = cart.filter(i => (i.cat === 'p' || i.cat === 's' || i.cat === 'dw')).length;
+        const freteStatus = pizzaCount >= 3 ? "✅ *GRÁTIS* (Promoção 3+ Pizzas)" : "⚠️ *Taxa a consultar*";
+        
+        const totalFinal = document.getElementById('total-val').innerText;
+        
+        const msg = `🛎️ *NOVO PEDIDO RECEBIDO - SITE OFICIAL*%0A` +
+                    `________________________________%0A%0A` +
+                    `👤 *Cliente:* ${name}%0A` +
+                    `📦 *Total de itens:* ${totalItens}%0A%0A` +
+                    `🍕 *ITENS DO PEDIDO:*%0A%0A${resumo}%0A%0A` +
+                    `________________________________%0A%0A` +
+                    `📍 *ENDEREÇO DE ENTREGA:*%0A${end}%0A` +
+                    `Número: ${houseNum}%0A%0A` +
+                    `💳 *FORMA DE PAGAMENTO:*%0A${pay}%0A%0A` +
+                    `🚚 *ENTREGA:* %0A${freteStatus}%0A%0A` +
+                    `💰 *TOTAL DO PEDIDO: ${totalFinal}*%0A` +
+                    `________________________________%0A` +
+                    `_Pedido realizado diretamente pelo site oficial (sistema web)._`;
+
+        window.open(`https://wa.me/5515997058390?text=${msg}`);
+    }
+
+    document.getElementById('cart-bar').addEventListener('click', function(e) {
+        if (!e.target.closest('.checkout-btn') && !e.target.closest('input') && !e.target.closest('select')) { 
+            this.classList.toggle('expanded'); 
+            document.getElementById('cart-hint').innerText = this.classList.contains('expanded') ? '▼ Recolher' : '▲ Toque para ver detalhes'; 
+        }
+    });
+
+    init();
+</script>
+</body>
+</html>
