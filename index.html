@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Pizza em Dobro">
 <meta name="theme-color" content="#FF9F1C">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Pizza em Dobro | Oficial</title>
 <meta name="description" content="Pizzaria em Itapetininga-SP com delivery e retirada. Pizzas tradicionais, especiais e combos 2 por preço único. Peça pelo site ou WhatsApp (15) 99705-8390.">
 <meta name="keywords" content="pizza Itapetininga, pizzaria Itapetininga, delivery de pizza Itapetininga, pizza em dobro, pizza entrega Itapetininga, combo de pizza, pizza doce, calzone Itapetininga">
@@ -281,6 +281,7 @@ body.sel-mode .item-card.savory .sel-trigger{display:block;}
   z-index:700;display:none;
   box-shadow:0 -8px 40px rgba(0,0,0,.7);
   max-height:92vh;overflow-y:auto;
+  padding-bottom:env(safe-area-inset-bottom); /* home indicator do iPhone (X em diante) */
 }
 #cart-hint-row{padding:10px 16px 0;cursor:pointer;}
 #cart-hint{font-size:.58rem;text-align:center;opacity:.4;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
@@ -323,7 +324,7 @@ input:checked+.slider:before{transform:translateY(-26px);}
 .send-btn{width:100%;background:var(--pr);color:#000;border:none;padding:14px;border-radius:12px;font-weight:700;font-size:.88rem;cursor:pointer;text-transform:uppercase;letter-spacing:.8px;margin-top:4px;}
 
 /* MÚSICA */
-#music-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(5,5,5,.98);border-top:1px solid rgba(255,159,28,.15);padding:8px 16px;display:none;align-items:center;gap:10px;z-index:698;transition:bottom .3s;}
+#music-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(5,5,5,.98);border-top:1px solid rgba(255,159,28,.15);padding:8px 16px calc(8px + env(safe-area-inset-bottom));display:none;align-items:center;gap:10px;z-index:698;transition:bottom .3s;}
 #music-bar.show{display:flex;}
 .mp-info{flex:1;min-width:0;}
 .mp-title{font-size:.72rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -492,7 +493,7 @@ body.admin-edit-active .item-card{border:1px dashed rgba(255,159,28,.35)!importa
 .gfb-txt{font-size:.72rem;color:#888;line-height:1.4;white-space:pre-wrap;word-break:break-word;}
 .gfb-del-btn{background:rgba(231,29,54,.12);border:none;color:var(--se);border-radius:6px;padding:4px 8px;font-size:.7rem;cursor:pointer;flex-shrink:0;}
 /* BOTÃO FLUTUANTE CONVERSOR — só admin */
-#btn-conv-float{position:fixed;bottom:90px;right:16px;z-index:690;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--pr),var(--se));border:none;color:#000;font-size:1.3rem;cursor:pointer;display:none;box-shadow:0 4px 18px rgba(255,159,28,.55);align-items:center;justify-content:center;transition:transform .15s;}
+#btn-conv-float{position:fixed;bottom:calc(90px + env(safe-area-inset-bottom));right:16px;z-index:690;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--pr),var(--se));border:none;color:#000;font-size:1.3rem;cursor:pointer;display:none;box-shadow:0 4px 18px rgba(255,159,28,.55);align-items:center;justify-content:center;transition:transform .15s;}
 #btn-conv-float:active{transform:scale(.92);}
 /* Conversor de pedido: removido da Loja, agora vive só dentro do Caixa (botão "Colar Pedido") */
 /* CONVERSOR */
@@ -516,7 +517,7 @@ body.admin-edit-active .item-card{border:1px dashed rgba(255,159,28,.35)!importa
 .conv-nav{display:flex;gap:6px;margin-bottom:12px;}
 .conv-nav a{flex:1;text-align:center;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);color:#555;padding:8px 4px;border-radius:8px;font-size:.7rem;cursor:pointer;font-family:'Oswald',sans-serif;letter-spacing:1px;text-decoration:none;}
 /* PWA INSTALL BANNER */
-#pwa-banner{position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;border-top:1px solid rgba(255,159,28,.3);padding:14px 16px;display:flex;align-items:center;gap:12px;z-index:9999;transform:translateY(100%);transition:transform .35s ease;}
+#pwa-banner{position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;border-top:1px solid rgba(255,159,28,.3);padding:14px 16px calc(14px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;z-index:9999;transform:translateY(100%);transition:transform .35s ease;}
 #pwa-banner.show{transform:translateY(0);}
 #pwa-banner-icon{font-size:2rem;flex-shrink:0;}
 #pwa-banner-txt{flex:1;}
@@ -532,18 +533,51 @@ body.admin-edit-active .item-card{border:1px dashed rgba(255,159,28,.35)!importa
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-<!-- Vídeo de fogo real no rodapé, com fade suave pra virar "sombra" em vez de retângulo -->
-<video id="fogo-video" autoplay muted loop playsinline
-  style="position:fixed;left:0;right:0;bottom:0;width:100%;height:38vh;object-fit:cover;
-  z-index:-1;pointer-events:none;opacity:.55;mix-blend-mode:screen;
+<!-- Vídeo de fogo real no rodapé, com fade suave pra virar "sombra" em vez de retângulo.
+     mix-blend-mode/mask ficam no WRAPPER, nunca direto no <video> — combinar as duas coisas
+     no próprio elemento de vídeo trava a composição no Safari/iOS (fica com o primeiro frame
+     congelado, "fogo parado"). object-fit puro no vídeo é seguro em qualquer navegador. -->
+<div id="fogo-video-wrap" style="position:fixed;left:0;right:0;bottom:0;width:100%;height:38vh;
+  z-index:-1;pointer-events:none;opacity:.55;mix-blend-mode:screen;overflow:hidden;
   -webkit-mask-image:linear-gradient(to top, black 40%, transparent 100%);
   mask-image:linear-gradient(to top, black 40%, transparent 100%);">
-  <source src="assets/fogo-fundo.mp4" type="video/mp4">
-</video>
+  <video id="fogo-video" muted loop playsinline webkit-playsinline="true" preload="auto"
+    style="width:100%;height:100%;object-fit:cover;display:block;">
+    <source src="assets/fogo-fundo.mp4" type="video/mp4">
+  </video>
+</div>
 <!-- Brilho quente no topo, pra "conversar" visualmente com o fogo lá embaixo -->
 <div style="position:fixed;top:0;left:0;right:0;height:26vh;z-index:-1;pointer-events:none;
   background:radial-gradient(ellipse at 50% -10%, rgba(255,140,20,.22) 0%, rgba(231,29,54,.08) 45%, transparent 75%);"></div>
-<body>
+<script>
+// ── Fogo de fundo: robusto no iPhone ──
+// iOS bloqueia autoplay de vídeo em Modo de Baixo Consumo mesmo com muted+playsinline, e
+// pausa vídeo em segundo plano/troca de app. Em vez de confiar só no atributo "autoplay",
+// forçamos .muted por JS (Safari é mais confiável assim) e tentamos de novo em vários
+// gatilhos. Se realmente não conseguir tocar, escondemos o vídeo em vez de deixar um frame
+// congelado — o body já tem gradiente quente de fundo (CSS), então o visual continua no tema.
+(function(){
+  const tentarTocarFogo=()=>{
+    document.querySelectorAll('#fogo-video, #ws-video').forEach(v=>{
+      v.muted=true; v.playsInline=true;
+      const p=v.play();
+      if(p&&p.catch) p.catch(()=>{ /* tenta de novo nos gatilhos abaixo */ });
+    });
+  };
+  tentarTocarFogo();
+  ['touchstart','visibilitychange','pageshow'].forEach(ev=>{
+    document.addEventListener(ev, tentarTocarFogo, {passive:true});
+  });
+  // depois de um tempo razoável, se o vídeo principal nunca chegou a tocar de verdade
+  // (currentTime parado em 0), esconde e deixa só o gradiente — nunca mostra fogo congelado.
+  setTimeout(()=>{
+    const v=document.getElementById('fogo-video');
+    if(v && v.paused && v.currentTime===0){
+      document.getElementById('fogo-video-wrap').style.display='none';
+    }
+  }, 4000);
+})();
+</script>
 
 <!-- WELCOME -->
 <div id="ws">
