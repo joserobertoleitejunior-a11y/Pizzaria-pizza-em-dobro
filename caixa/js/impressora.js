@@ -270,3 +270,12 @@ setInterval(() => {
     confirmarPedidoNotificacao();
   }).catch(e=>console.warn('Não foi possível carregar o pedido vindo do Painel.',e));
 })();
+
+// ── BOOT (movido pra cá na modularização: precisa rodar só depois que TODOS os
+// arquivos do Caixa carregaram, porque iniciarEscutaNotificacoes() é definida em
+// notificacoes.js — no arquivo único original isso funcionava por hoisting dentro
+// do mesmo <script>; separado em arquivos, a ordem de carregamento importa) ──
+renderCats();
+renderProdutos();
+alternarCampoEntregador();
+if(iniciarFirebase()){ iniciarEscutaNotificacoes(); verificarSessaoCaixa(); carregarCardapioDoBanco(); }

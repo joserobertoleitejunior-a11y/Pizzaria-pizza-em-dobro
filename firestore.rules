@@ -7,36 +7,46 @@
 //     publicar por vocês — isso precisa ser feito manualmente
 //     (Firebase Console → Firestore → Regras, ou `firebase deploy
 //     --only firestore:rules` com a CLI autenticada na conta de
-//     vocês). Testem num projeto/ambiente de staging antes, ou ao
-//     menos testem cada tela (loja, Caixa, Relatórios, Clientes,
-//     bot-config) logo depois de publicar, seguindo o padrão da
-//     agência de nunca alterar regra em produção sem testar antes.
+//     vocês) DEPOIS de ter configurado a variável de ambiente
+//     STAFF_PASSWORD na Netlify (veja netlify/functions/staff-login.js
+//     e shared/staff-auth.js) — sem a senha configurada, ninguém
+//     consegue logar como equipe e as coleções abaixo marcadas
+//     "isEquipe()" ficam inacessíveis pelo navegador até vocês
+//     configurarem. Testem cada tela (loja, Caixa, Relatórios,
+//     Clientes, bot-config, painel) logo depois de publicar.
 //
 //  2. O que este arquivo GARANTE, sem dúvida: as 3 chaves de API
 //     (Anthropic, Evolution, Gemini) em config_secrets/bot ficam
 //     100% inacessíveis pelo navegador — nem leitura nem escrita.
 //     Só o Admin SDK (Netlify Functions, que ignora estas regras)
-//     consegue ler. Esse é o vazamento real que existia: qualquer
-//     um que abrisse o Caixa ou o painel bot-config baixava essas
-//     chaves junto com os campos públicos do mesmo documento.
+//     consegue ler.
 //
-//  3. O que este arquivo NÃO resolve sozinho: hoje não existe
-//     nenhum sistema de login/autenticação real pra equipe (Caixa,
-//     Relatórios, bot-config são páginas sem senha, protegidas só
-//     por ninguém saber a URL). Sem autenticação de verdade, não
-//     dá pra restringir "só a equipe pode escrever pedido/cardápio"
-//     nestas regras sem quebrar o funcionamento normal de hoje —
-//     por isso as coleções de negócio abaixo continuam com escrita
-//     aberta, do jeito que já funcionam agora. Recomendação forte
-//     pra próxima etapa: Firebase Authentication (e-mail/senha ou
-//     link mágico) pra Caixa/Relatórios/bot-config, e então trocar
-//     os "allow write: if true" abaixo por checagem de
-//     "request.auth != null" (ou papel/role específico).
+//  3. isEquipe() só é verdadeiro pra quem passou pela senha única da
+//     equipe (Caixa/Relatórios/Clientes/bot-config/painel — ver
+//     shared/staff-auth.js) — NUNCA pra um cliente logado com Google
+//     na loja (esse também tem request.auth != null, só que sem o
+//     claim "staff", por isso a checagem usa o claim, não só
+//     "auth != null").
+//
+//  4. Coleções que a LOJA (index.html) usa e que têm seu próprio modo
+//     admin interno (senha separada, mais antiga, gerenciada dentro
+//     do próprio index.html — checkAdminSession()) continuam com
+//     escrita aberta por enquanto: orders, menu_items, config,
+//     clients, feedbacks, feedback_comments, avaliacoes, conv_orders,
+//     visits, motoboys(leitura). Unificar esse modo admin da loja com
+//     a senha única da equipe é o próximo passo natural, mas exige
+//     mexer no index.html com mais tempo de teste — não incluído
+//     nesta passada pra não arriscar quebrar o admin da loja sem
+//     conseguir testar ao vivo.
 // ══════════════════════════════════════════════════════════
 
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function isEquipe() {
+      return request.auth != null && request.auth.token.staff == true;
+    }
 
     // ── Segredos: NUNCA acessível pelo navegador, em nenhuma hipótese ──
     match /config_secrets/{doc} {
@@ -44,25 +54,22 @@ service cloud.firestore {
     }
 
     // ── Config pública (endereço, horário, taxa, mensagens do bot) ──
-    // Leitura: usada pela loja, Caixa, bot-config. Escrita: hoje só o
-    // painel bot-config e o Caixa (taxa de entrega padrão) gravam aqui;
-    // sem login de equipe pra restringir além disso (ver nota 3 acima).
     match /config/{doc} {
       allow read: if true;
-      allow write: if true;
+      allow write: if true; // ver nota 4 — não isolado do modo admin da loja ainda
     }
 
     // ── Pedidos: site, Caixa, bot e conversor gravam aqui ──
     match /orders/{orderId} {
       allow read: if true;
       allow create: if true;
-      allow update, delete: if true; // Caixa cancela/edita pedido — ver nota 3
+      allow update, delete: if true; // ver nota 4
     }
 
     // ── Cardápio ──
     match /menu_items/{itemId} {
       allow read: if true;
-      allow write: if true; // painel/dashboard-chat editam — ver nota 3
+      allow write: if true; // ver nota 4
     }
 
     // ── Contador do número sequencial do pedido (reinicia por dia) ──
@@ -71,16 +78,24 @@ service cloud.firestore {
       allow write: if true;
     }
 
-    // ── Sessões de abertura/fechamento do Caixa ──
+    // ── Sessões de abertura/fechamento do Caixa — só o Caixa usa isso,
+    // nenhuma página de cliente toca aqui: trava total pra equipe. ──
     match /caixa_sessoes/{sessaoId} {
-      allow read, write: if true;
+      allow read, write: if isEquipe();
     }
 
-    // ── Conversas do bot do WhatsApp (lidas pelo Caixa/bot-config/conversas) ──
+    // ── Motoboys — só Caixa e painel.html usam: trava total pra equipe. ──
+    match /motoboys/{motoboyId} {
+      allow read, write: if isEquipe();
+    }
+
+    // ── Conversas do bot do WhatsApp — Caixa (mini-mensageiro) e
+    // bot-config/conversas leem/escrevem do navegador; o webhook do
+    // bot usa Admin SDK (ignora esta regra). Trava total pra equipe. ──
     match /bot_conversas/{telefone} {
-      allow read, write: if true;
+      allow read, write: if isEquipe();
       match /mensagens/{msgId} {
-        allow read, write: if true;
+        allow read, write: if isEquipe();
       }
     }
 
@@ -88,6 +103,38 @@ service cloud.firestore {
     match /analises_ia/{doc} {
       allow read: if true;
       allow write: if false;
+    }
+
+    // ── Perfil do cliente (login Google na loja) — auto-serviço do
+    // próprio cliente + editado pelo modo admin da loja (ver nota 4) ──
+    match /clients/{email} {
+      allow read, write: if true;
+    }
+
+    // ── Avaliações pós-pedido (cupom) e feedback geral da loja —
+    // criação é sempre pública (cliente avaliando); moderação (editar/
+    // apagar) hoje passa pelo modo admin da loja, não pela equipe (nota 4) ──
+    match /avaliacoes/{id} {
+      allow read, create: if true;
+      allow update, delete: if true; // ver nota 4
+    }
+    match /feedbacks/{id} {
+      allow read, create: if true;
+      allow update, delete: if true; // ver nota 4
+    }
+    match /feedback_comments/{id} {
+      allow read, create: if true;
+      allow update, delete: if true; // ver nota 4
+    }
+
+    // ── Conversor de pedido embutido na loja (modo admin da loja) ──
+    match /conv_orders/{id} {
+      allow read, write: if true; // ver nota 4
+    }
+
+    // ── Contador de visitas (estatística pública da loja) ──
+    match /visits/{diaId} {
+      allow read, write: if true;
     }
 
     // Qualquer outra coleção não listada acima fica bloqueada por padrão

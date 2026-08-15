@@ -125,13 +125,47 @@ gotcha #1 abaixo.
 | `config/bot` | Config PÚBLICA do negócio (endereço, taxa, horário) — NUNCA mais tem chave de API aqui | bot-config/index.html |
 | `config_secrets/bot` | As 3 chaves de API (Anthropic/Evolution/Gemini) — só Admin SDK lê, navegador nunca | Netlify Functions (via `lib/secrets.js`), bot-config/index.html só escreve (nunca lê de volta) |
 | `contadores/pedidos_AAAA-MM-DD` | Contador do número sequencial, reinicia por dia | shared/utils.js |
-| `caixa_sessoes` | Abertura/fechamento de turno do Caixa | caixa.js |
-| `bot_conversas` | Estado de cada conversa do bot WhatsApp | webhook.js, bot-followup.js |
+| `caixa_sessoes` | Abertura/fechamento de turno do Caixa — **só equipe logada** (ver login abaixo) | caixa.js |
+| `bot_conversas` | Estado de cada conversa do bot WhatsApp — **só equipe logada** | webhook.js, bot-followup.js |
+| `motoboys` | Cadastro de entregadores (nome/telefone/taxa) — **só equipe logada** | caixa.js, painel.html |
+| `clients` | Perfil do cliente (login Google na loja) — autosserviço do próprio cliente + editado pelo modo admin da loja | index.html |
+| `avaliacoes` | Avaliação pós-pedido (fluxo do cupom) | cupom.js |
+| `feedbacks` + `feedback_comments` | Depoimento geral da loja + comentários — moderação hoje passa pelo modo admin da loja, não pela equipe | index.html |
+| `conv_orders` | Conversor de pedido embutido na própria loja (modo admin da loja) | index.html |
+| `visits` | Contador de visitas (estatística pública) | index.html |
 
 ⚠️ `firestore.rules` (na raiz do repo) documenta o que cada coleção precisa
 de acesso, mas **nunca foi publicado no Firebase de verdade** — ninguém aqui
 tem a credencial do projeto pra publicar. Antes de publicar, testar cada
-tela (loja, Caixa, Relatórios, bot-config) — ver aviso no topo do arquivo.
+tela (loja, Caixa, Relatórios, Clientes, bot-config, painel) — ver aviso no
+topo do arquivo.
+
+## Login da equipe (senha única)
+
+Caixa, Relatórios, Clientes, bot-config, bot-config/conversas e painel.html
+não tinham NENHUMA proteção — qualquer um que soubesse a URL entrava. Agora
+todas essas páginas carregam `shared/staff-auth.js` e chamam
+`iniciarGateEquipe()` logo depois de carregar `firebase-auth-compat.js` +
+`shared/firebase-config.js` — isso cobre a tela com uma senha até o
+Firebase confirmar (via `netlify/functions/staff-login.js`, que compara com
+a variável de ambiente `STAFF_PASSWORD` na Netlify e devolve um *custom
+token* do Firebase Auth se bater). Depois de entrar uma vez, o navegador
+lembra (sessão do Firebase) — não pede senha nova a cada página nem a cada
+recarregamento no mesmo aparelho.
+
+`firestore.rules` usa `isEquipe()` (`request.auth.token.staff==true`) pra
+travar de verdade `caixa_sessoes`, `motoboys` e `bot_conversas` — essas 3
+coleções só a equipe (nem cliente logado com Google) consegue ler/escrever
+depois que a regra for publicada. As demais coleções que a LOJA também usa
+(orders, menu_items, config, clients, avaliacoes, feedbacks etc.) **não**
+foram travadas atrás dessa senha nesta passada — a loja tem seu próprio modo
+admin mais antigo (`checkAdminSession()`, separado, senha diferente) que
+ainda gerencia essas coleções, e unificar os dois exige mexer no index.html
+com mais tempo de teste. Ver nota 4 dentro do `firestore.rules`.
+
+**Sem a variável `STAFF_PASSWORD` configurada na Netlify, ninguém consegue
+entrar em nenhuma dessas páginas** (a function devolve erro 500 "senha
+ainda não configurada") — isso é intencional (fail-closed), não um bug.
 
 ### Schema de `menu_items` (importante manter consistente)
 ```js
@@ -246,6 +280,28 @@ de assumir que é bug de dado.
     "por sabor" no dashboard/relatórios precisa passar por essa função, nunca
     usar `it.name` cru quando o objetivo é sabor (usar cru é certo quando o
     objetivo é o item exato, tipo lista de lançamentos).
+15. **Hoisting de `function` NÃO atravessa fronteira de `<script src>`.** Ao
+    quebrar o `caixa.js` monolítico em `caixa/js/*.js` (múltiplos
+    `<script src>` sequenciais), uma chamada de boot (`iniciarEscutaNotificacoes()`)
+    ficou num arquivo carregado ANTES do arquivo que define essa função —
+    no arquivo único original isso funcionava por hoisting dentro do mesmo
+    `<script>` (função declarada mais abaixo no arquivo, mas disponível o
+    tempo todo); separado em arquivos, throw "X is not defined" na hora do
+    boot. Pego só porque o teste com Playwright simulava o Firestore
+    respondendo de verdade (com Firestore 100% fora do ar, esse caminho de
+    código nem rodava, e o bug ficava escondido). **Se cortar mais algum
+    arquivo grande em módulos**: toda chamada de função no boot (código que
+    roda assim que o arquivo carrega, fora de qualquer função) só pode
+    chamar função já definida num arquivo carregado ANTES ou no mesmo
+    arquivo — nunca confiar em hoisting entre arquivos separados. O boot
+    real do Caixa (`renderCats(); renderProdutos(); ...; if(iniciarFirebase())...`)
+    mora no fim de `caixa/js/impressora.js` (o último a carregar) por causa
+    disso.
+
+## Login da equipe
+
+Ver seção "Login da equipe (senha única)" mais acima — antes de mexer em
+Caixa/Relatórios/Clientes/bot-config/painel, leia aquilo primeiro.
 
 ## Convenções de código deste projeto
 

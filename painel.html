@@ -265,10 +265,13 @@ body{
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="shared/firebase-config.js"></script>
+<script src="shared/staff-auth.js"></script>
+<script>iniciarGateEquipe();</script>
 <script>
-// ── CONFIG FIREBASE ──────────────────────────────────────────────
-const _fbCfg={apiKey:"AIzaSyBMPjAS03DT3tuGPtJBld2EXuX7C6__1lg",authDomain:"pizza-em-dobro-b525b.firebaseapp.com",projectId:"pizza-em-dobro-b525b",storageBucket:"pizza-em-dobro-b525b.firebasestorage.app",messagingSenderId:"528538209807",appId:"1:528538209807:web:37bfb998dbdb0f932b9d7a"};
-firebase.initializeApp(_fbCfg);
+// ── CONFIG FIREBASE ── (config em shared/firebase-config.js — antes duplicada aqui) ──
+if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
 const FS=firebase.firestore();
 
 // ── ESTADO ───────────────────────────────────────────────────────

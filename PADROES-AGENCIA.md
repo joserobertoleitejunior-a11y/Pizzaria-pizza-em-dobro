@@ -136,9 +136,10 @@ Antes de escrever a primeira linha de funcionalidade:
 - [ ] `.env` configurado — este projeto usa Netlify env vars (`FIREBASE_SERVICE_ACCOUNT`) em vez de `.env` local; `.gitignore` já cobre `.env*` para o futuro
 - [x] Stack de observabilidade (Sentry) plugada em código, front e back — **falta colar o DSN de verdade** (`shared/sentry-config.js` e variável de ambiente `SENTRY_DSN` na Netlify) pra ativar de fato
 - [x] Lint configurado (`npm run lint`) — não é gate de deploy ainda (ver seção 7)
-- [ ] RLS ativa em toda tabela — `firestore.rules` foi escrito mas **precisa ser publicado manualmente** no console do Firebase (sem credencial deste projeto aqui para publicar)
-- [x] Estrutura de testes inicial criada e rodando (`tests/`, `npm test`, 14 testes passando)
+- [ ] RLS ativa em toda tabela — `firestore.rules` foi escrito (agora com checagem de papel `isEquipe()` pras coleções só-equipe) mas **precisa ser publicado manualmente** no console do Firebase (sem credencial deste projeto aqui para publicar) — e precisa da variável `STAFF_PASSWORD` configurada na Netlify antes, senão ninguém consegue logar
+- [x] Estrutura de testes inicial criada e rodando (`tests/`, `npm test`, 19 testes passando)
 - [x] Definido: projeto único de cliente (não SaaS da agência)
+- [x] Autenticação de rota administrativa separada da autenticação do cliente final — senha única da equipe (decisão do José) pra Caixa/Relatórios/Clientes/bot-config/painel.html, verificada no servidor (`netlify/functions/staff-login.js`) e checável de verdade nas regras via `request.auth.token.staff` — falta só publicar `firestore.rules` e configurar `STAFF_PASSWORD` (ver acima)
 - [ ] Definido: quem tem acesso a produção e onde ficam as chaves de verdade — pendente de decisão do José/Marco
 
 ---

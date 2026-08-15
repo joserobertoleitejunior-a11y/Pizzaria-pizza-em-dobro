@@ -226,11 +226,6 @@ function montarCaixaComPedidoInterpretado(parsed){
 }
 
 
-renderCats();
-renderProdutos();
-alternarCampoEntregador();
-if(iniciarFirebase()){ iniciarEscutaNotificacoes(); verificarSessaoCaixa(); carregarCardapioDoBanco(); }
-
 // carrega o cardápio de verdade do banco (mesma fonte que o site usa) — sem isso,
 // item adicionado/editado pelo site, painel ou assistente de IA nunca aparecia aqui,
 // porque essa lista ficava travada no que estava escrito direto no código.
