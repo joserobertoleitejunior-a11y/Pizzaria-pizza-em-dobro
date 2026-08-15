@@ -78,7 +78,7 @@ const COMBOS_DEFAULT=[
   {id:'combo85', preco:85.00, titulo:'2 Por R$ 85,00', sabores:['Brócolis com Bacon','Peperone','Franqueijo Piry','Toscana Piry','Bacon','Atum','Lombo','Peito de Peru']}
 ];
 
-// Resolve a faixa de combo certa a partir dos 2 sabores (usado pelo Colar Pedido — ver caixa.js).
+// Resolve a faixa de combo certa a partir dos 2 sabores (usado pelo Colar Pedido — ver caixa/js/colar-pedido.js).
 // Nunca adivinha: se uma faixa explícita foi informada e bate com os 2 sabores, usa ela; senão só
 // resolve sozinho quando os 2 sabores pertencem a UMA ÚNICA faixa (alguns sabores existem em mais
 // de uma faixa, ex: "Bacon" está em 2 por 80 E 2 por 85 — nesse caso, sem faixa explícita, retorna

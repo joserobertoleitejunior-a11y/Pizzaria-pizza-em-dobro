@@ -13,8 +13,8 @@ como banco de dados. Netlify Functions pra tudo que precisa rodar no servidor
 cada módulo, com scripts compartilhados carregados via `<script src="...">`.
 
 ```
-/                           → Loja (site do cliente)         index.html (~5100 linhas)
-/caixa/                     → PDV da equipe                  caixa.js (~1800 linhas)
+/                           → Loja (site do cliente)         index.html (797 linhas) + assets/site.css + js/ (11 módulos)
+/caixa/                     → PDV da equipe                  caixa/js/ (6 módulos, ver abaixo)
 /relatorios/                → Dashboard + Assistente de IA    relatorios.js (~690 linhas)
 /clientes/                  → Painel de clientes (leitura)    clientes.js (177 linhas)
 /bot-config/                → Configuração do bot WhatsApp
@@ -31,6 +31,37 @@ cada módulo, com scripts compartilhados carregados via `<script src="...">`.
 /tests/                      → Testes unitários (`npm test`, node --test nativo, sem dependência nova)
 /sw.js                      → Service worker (cache de assets, NÃO cacheia Firestore)
 ```
+
+### Módulos JS de index.html (`/js/`) e do Caixa (`/caixa/js/`)
+
+`index.html` e `caixa/index.html` eram um único `<script>` de milhares de linhas
+cada — quebrados em arquivos menores carregados via `<script src>` sequencial
+(sem bundler, sem ES modules — os `onclick="..."` inline continuam existindo e
+dependem de escopo global compartilhado, então **a ordem dos `<script src>` no
+HTML importa e não pode ser alterada** sem verificar as dependências entre
+arquivos). Cada arquivo é uma fatia contígua do código original, cortada nos
+comentários de seção (`// ══════`) — não houve reescrita de lógica.
+
+`/js/` (loja, nessa ordem):
+`core-data.js` (Firebase, LocalDB, sessão admin, config, promoções, DEFAULT_MENU)
+→ `ui-shell.js` (drawer, mapa, stats) → `cardapio.js` (render, combos, meio a meio)
+→ `carrinho.js` → `checkout.js` (finalizar) → `admin-avaliacoes.js` →
+`admin-cardapio.js` (editor de menu) → `sessao-musica.js` (login Google, playlist)
+→ `avaliacoes-feedback.js` → `boot-admin-extra.js` (BOOT/`init()` fica aqui) →
+`conversor-storefront.js`.
+
+`/caixa/js/` (nessa ordem):
+`dados-sessao.js` (DEFAULT_MENU/BORDAS_DEFAULT, abrir/fechar caixa) →
+`produtos-carrinho.js` (render, carrinho, item modal, pagamento) →
+`colar-pedido.js` (o Conversor — combo, meio a meio, IA) →
+`notificacoes.js` (pedido novo da Loja) → `mini-mensageiro.js` (chat manual
+com cliente) → `impressora.js` (Bluetooth + cupom).
+
+**Se adicionar função nova**: coloque no arquivo do assunto certo, não crie
+arquivo novo pra 1-2 funções — o objetivo era sair de "milhares de linhas
+num arquivo só", não fragmentar demais. Verificado com `node --check` em
+cada arquivo + teste real de navegador (Playwright) antes de entrar — qualquer
+mudança na ordem dos `<script src>` precisa do mesmo cuidado.
 
 ## Funções da Netlify (servidor)
 

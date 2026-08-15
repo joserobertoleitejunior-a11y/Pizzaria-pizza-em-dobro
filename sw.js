@@ -1,4 +1,4 @@
-const CACHE='ped-v4';
+const CACHE='ped-v5'; // versão bumped: caixa.js e o JS/CSS inline de index.html viraram vários arquivos novos — força os navegadores a soltarem o cache antigo em vez de tentar servir caixa.js (que não existe mais) do cache
 self.addEventListener('install',e=>{self.skipWaiting();});
 self.addEventListener('activate',e=>{
   e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
