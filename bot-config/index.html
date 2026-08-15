@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configuração do Bot — Pizza em Dobro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Oswald:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="../shared/firebase-config.js"></script>
+<style>
+:root{
+  --bg:#07060a; --bg2:#0d0a08;
+  --pr:#FF9F1C; --pr2:#FF6A1A; --se:#E71D36;
+  --card:rgba(24,19,16,.55); --card-bd:rgba(255,159,28,.16);
+  --tx:#f3ece2; --sub:#9c8f83; --ok:#3ddc84;
+  --font-display:'Bangers',cursive; --font-eyebrow:'Oswald',sans-serif; --font-body:'Inter',system-ui,sans-serif;
+}
+body{
+  background:var(--bg); color:var(--tx); font-family:var(--font-body); min-height:100vh; padding-bottom:60px; margin:0;
+  background-image:radial-gradient(circle at 15% -10%, rgba(255,159,28,.14) 0%, transparent 55%),
+                    radial-gradient(circle at 100% 10%, rgba(231,29,54,.08) 0%, transparent 45%);
+  background-attachment:fixed;
+}
+.nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;background:rgba(7,6,10,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--card-bd);
+  flex-wrap:wrap;gap:8px;}
+.nav-logo{font-family:var(--font-display);font-size:1.3rem;color:var(--pr);letter-spacing:.5px;}
+.nav-links{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
+.nav-links a{font-family:var(--font-eyebrow);font-size:.62rem;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--sub);text-decoration:none;padding:6px 10px;border-radius:8px;
+  border-top:2px solid transparent;transition:.2s;}
+.nav-links a:hover{color:#000;background:var(--pr);border-top-color:transparent;}
+main{max-width:520px;margin:0 auto;padding:20px 16px;}
+h1{font-family:var(--font-display);color:var(--pr);font-size:1.6rem;margin:8px 0 4px;}
+.sub{color:var(--sub);font-size:.85rem;margin-bottom:20px;}
+.card{background:var(--card);border:1px solid var(--card-bd);border-radius:14px;padding:16px;margin-bottom:14px;}
+.card h2{font-family:var(--font-eyebrow);font-size:.75rem;letter-spacing:.6px;text-transform:uppercase;color:var(--pr);margin:0 0 12px;}
+label{display:block;font-size:.75rem;color:var(--sub);margin:10px 0 4px;}
+input[type=text],input[type=number],input[type=password]{
+  width:100%;box-sizing:border-box;background:#171016;border:1px solid var(--card-bd);border-radius:8px;
+  color:var(--tx);padding:10px 12px;font-family:var(--font-body);font-size:.9rem;}
+.row2{display:flex;gap:10px;}
+.row2>div{flex:1;}
+.toggle-line{display:flex;align-items:center;justify-content:space-between;padding:4px 0;}
+.toggle-line span{font-size:.85rem;}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--pr);}
+button{width:100%;background:var(--pr);color:#1a1200;border:none;border-radius:10px;padding:14px;
+  font-family:var(--font-eyebrow);font-size:.9rem;letter-spacing:.5px;text-transform:uppercase;font-weight:600;
+  cursor:pointer;margin-top:6px;}
+button:disabled{opacity:.5;}
+#status{text-align:center;font-size:.8rem;margin-top:10px;min-height:18px;}
+.hint{font-size:.7rem;color:var(--sub);margin-top:4px;}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-logo">Config do Bot</div>
+  <div class="nav-links">
+    <a href="../index.html">Loja</a>
+    <a href="../relatorios/index.html">Dashboard</a>
+    <a href="../caixa/index.html">Caixa</a>
+    <a href="../clientes/index.html">Clientes</a>
+    <a href="../bot-config/index.html" class="on">Bot</a>
+  </div>
+</div>
+
+<main>
+  <h1>WhatsApp Bot</h1>
+  <p class="sub">Tudo aqui é salvo direto no banco (config/bot). A única chave que não fica aqui é a do Firebase — essa é interna do servidor.</p>
+
+  <a href="conversas/index.html" style="display:block;text-align:center;background:var(--card);border:1px solid var(--card-bd);border-radius:12px;padding:14px;margin-bottom:16px;color:var(--pr);text-decoration:none;font-family:var(--font-eyebrow);text-transform:uppercase;font-size:.8rem;letter-spacing:.5px;">
+    💬 Ver conversas dos clientes com o bot
+  </a>
+
+  <div class="card">
+    <h2>Status</h2>
+    <div class="toggle-line">
+      <span>Bot ativo</span>
+      <input type="checkbox" id="ativo">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Evolution API</h2>
+    <label>Número do WhatsApp do bot</label>
+    <input type="text" id="numeroWhatsapp" placeholder="ex: 5515999999999 (com DDI e DDD, só números)">
+    <div class="hint">Esse é só o registro/referência do número. Pra trocar o número de verdade, você precisa reconectar a instância no Railway escaneando o QR Code de novo com o novo chip.</div>
+    <label>URL da instância</label>
+    <input type="text" id="evolutionUrl" placeholder="https://evolution-api-production-xxxx.up.railway.app">
+    <label>Nome da instância</label>
+    <input type="text" id="instanceName" placeholder="ex: pizzaemdobro">
+    <label>API Key</label>
+    <input type="password" id="evolutionKey" placeholder="Chave da Evolution API">
+  </div>
+
+  <div class="card">
+    <h2>Claude (Anthropic)</h2>
+    <label>API Key</label>
+    <input type="password" id="anthropicKey" placeholder="sk-ant-...">
+    <div class="hint">Pode usar a mesma chave que já roda no Caixa (Colar Pedido).</div>
+  </div>
+
+  <div class="card">
+    <h2>Gemini (Google) — usado só no Conversor de Pedido</h2>
+    <label>API Key</label>
+    <input type="password" id="geminiKey" placeholder="AIza...">
+    <div class="hint">Gera em aistudio.google.com/apikey (grátis, sem cartão). Usado como reserva enquanto o crédito da Anthropic estiver baixo.</div>
+  </div>
+
+  <div class="card">
+    <h2>Fechar pedidos por hoje</h2>
+    <div class="toggle-line">
+      <span>🚫 Loja fechada pra pedidos novos</span>
+      <input type="checkbox" id="lojaFechada">
+    </div>
+    <div class="hint">Usa isso quando acabar a massa do dia ou for encerrar o expediente mais cedo. O bot avisa o cliente com educação e não fecha pedido novo até você desligar de novo.</div>
+    <label>Mensagem pro cliente (opcional)</label>
+    <input type="text" id="mensagemFechado" placeholder="ex: Hoje a massa já acabou, voltamos amanhã às 18h!">
+  </div>
+
+  <div class="card">
+    <h2>Itens em falta</h2>
+    <div class="hint" style="margin-bottom:10px;">Desliga o sabor que acabou — o bot para de oferecer na hora, sem precisar mexer em código.</div>
+    <div id="lista-itens-falta">Carregando cardápio...</div>
+  </div>
+
+  <div class="card">
+    <h2>Sobre a pizzaria (o bot usa isso pra responder)</h2>
+    <label>Endereço da loja</label>
+    <input type="text" id="enderecoLoja" placeholder="Rua tal, nº, bairro, Itapetininga - SP">
+    <label>Taxa de entrega</label>
+    <input type="text" id="taxaEntrega" placeholder="ex: R$ 8,00 (fixa) ou varia por bairro">
+    <label>Tempo médio de entrega</label>
+    <input type="text" id="tempoEntrega" placeholder="ex: 40 a 60 minutos">
+    <label>Formas de pagamento aceitas</label>
+    <input type="text" id="formasPagamento" placeholder="Pix, dinheiro, cartão na entrega">
+    <label>Outras informações (promoções, observações, o que mais o bot deve saber)</label>
+    <textarea id="observacoesLoja" rows="4" style="width:100%;box-sizing:border-box;background:#171016;border:1px solid var(--card-bd);border-radius:8px;color:var(--tx);padding:10px 12px;font-family:var(--font-body);font-size:.9rem;" placeholder="ex: às terças toda pizza grande tem 10% de desconto"></textarea>
+  </div>
+
+  <div class="card">
+    <h2>Cliente sumiu no meio da conversa</h2>
+    <label>Chamar de novo depois de quantos minutos calado</label>
+    <input type="number" id="minutosLembrete" value="5">
+    <label>Se ainda não responder, encerrar depois de quantos minutos</label>
+    <input type="number" id="minutosEncerrar" value="15">
+    <div class="hint">O bot manda uma mensagem lembrando o cliente, e se mesmo assim ele não voltar, encerra educadamente a conversa.</div>
+  </div>
+
+  <div class="card">
+    <h2>Horário de funcionamento</h2>
+    <div class="row2">
+      <div><label>Início (hora)</label><input type="number" id="horarioInicio" min="0" max="23" value="18"></div>
+      <div><label>Fim (hora)</label><input type="number" id="horarioFim" min="0" max="23" value="0"></div>
+    </div>
+    <div class="hint">Formato 24h. Ex: 18 até 0 = das 18h até meia-noite.</div>
+  </div>
+
+  <div class="card">
+    <h2>Delay de digitação</h2>
+    <div class="row2">
+      <div><label>Mínimo (ms)</label><input type="number" id="delayMinMs" value="800"></div>
+      <div><label>Máximo (ms)</label><input type="number" id="delayMaxMs" value="4000"></div>
+    </div>
+    <div class="hint">O bot espera esse tempo antes de responder, pra parecer digitação natural.</div>
+  </div>
+
+  <div class="card">
+    <h2>Limite de segurança</h2>
+    <label>Máx. de mensagens por hora (por número)</label>
+    <input type="number" id="limiteMsgsPorHora" value="30">
+  </div>
+
+  <button id="salvar">Salvar configuração</button>
+  <div id="status"></div>
+</main>
+
+<script>
+const _fbCfg=FB_CONFIG;
+if(!firebase.apps.length) firebase.initializeApp(_fbCfg);
+const FS = firebase.firestore();
+const ref = FS.collection('config').doc('bot');
+
+const campos = ['numeroWhatsapp','evolutionUrl','instanceName','evolutionKey','anthropicKey','geminiKey','mensagemFechado','enderecoLoja','taxaEntrega','tempoEntrega','formasPagamento','observacoesLoja','minutosLembrete','minutosEncerrar','horarioInicio','horarioFim','delayMinMs','delayMaxMs','limiteMsgsPorHora'];
+const camposCheckbox = ['lojaFechada'];
+
+async function carregar(){
+  const snap = await ref.get();
+  if(snap.exists){
+    const d = snap.data();
+    document.getElementById('ativo').checked = !!d.ativo;
+    camposCheckbox.forEach(c => { document.getElementById(c).checked = !!d[c]; });
+    campos.forEach(c => { if(d[c] !== undefined) document.getElementById(c).value = d[c]; });
+  }
+}
+
+document.getElementById('salvar').onclick = async () => {
+  const btn = document.getElementById('salvar');
+  const status = document.getElementById('status');
+  btn.disabled = true; status.textContent = 'Salvando...';
+  try{
+    const dados = { ativo: document.getElementById('ativo').checked };
+    camposCheckbox.forEach(c => { dados[c] = document.getElementById(c).checked; });
+    campos.forEach(c => {
+      const el = document.getElementById(c);
+      dados[c] = el.type === 'number' ? Number(el.value) : el.value.trim();
+    });
+    await ref.set(dados, { merge: true });
+    status.textContent = '✓ Salvo com sucesso';
+    status.style.color = 'var(--ok)';
+  }catch(e){
+    status.textContent = 'Erro ao salvar: ' + e.message;
+    status.style.color = 'var(--se)';
+  }
+  btn.disabled = false;
+  setTimeout(()=>{ status.textContent=''; }, 3000);
+};
+
+// ── Itens em falta — liga/desliga na hora, direto no cardápio real ──
+async function carregarItensFalta(){
+  const box = document.getElementById('lista-itens-falta');
+  try{
+    const snap = await FS.collection('menu_items').orderBy('name').get();
+    if(snap.empty){ box.innerHTML = '<div class="hint">Nenhum item encontrado no cardápio.</div>'; return; }
+    box.innerHTML = '';
+    snap.forEach(doc=>{
+      const item = doc.data();
+      const linha = document.createElement('div');
+      linha.className = 'toggle-line';
+      linha.innerHTML = `<span>${item.name||'—'} <small style="color:var(--sub);">(${item.category||''})</small></span>`;
+      const chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.checked = item.active !== false;
+      chk.onchange = async () => {
+        try{ await FS.collection('menu_items').doc(doc.id).update({active: chk.checked}); }
+        catch(e){ alert('Não foi possível atualizar este item.'); chk.checked = !chk.checked; }
+      };
+      linha.appendChild(chk);
+      box.appendChild(linha);
+    });
+  }catch(e){
+    box.innerHTML = '<div class="hint">Não foi possível carregar o cardápio.</div>';
+    console.warn(e);
+  }
+}
+
+carregar();
+carregarItensFalta();
+</script>
+</body>
+</html>

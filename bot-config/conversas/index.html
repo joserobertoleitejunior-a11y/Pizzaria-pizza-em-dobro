@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conversas do Bot — Pizza em Dobro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Oswald:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="../../shared/firebase-config.js"></script>
+<style>
+:root{
+  --bg:#07060a; --pr:#FF9F1C; --se:#E71D36;
+  --card:rgba(24,19,16,.55); --card-bd:rgba(255,159,28,.16);
+  --tx:#f3ece2; --sub:#9c8f83;
+  --font-display:'Bangers',cursive; --font-eyebrow:'Oswald',sans-serif; --font-body:'Inter',system-ui,sans-serif;
+}
+body{background:var(--bg); color:var(--tx); font-family:var(--font-body); min-height:100vh; margin:0; padding-bottom:40px;}
+.nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;background:rgba(7,6,10,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--card-bd);
+  flex-wrap:wrap;gap:8px;}
+.nav-logo{font-family:var(--font-display);font-size:1.3rem;color:var(--pr);letter-spacing:.5px;}
+.nav a{font-family:var(--font-eyebrow);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;color:var(--sub);text-decoration:none;}
+main{max-width:600px;margin:0 auto;padding:16px;}
+.lista .item{background:var(--card);border:1px solid var(--card-bd);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;}
+.lista .item .tel{font-family:var(--font-eyebrow);color:var(--pr);font-size:.85rem;}
+.lista .item .estado{font-size:.68rem;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+.chat{display:none;}
+.chat.show{display:block;}
+.chat-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.chat-header button{background:var(--card);border:1px solid var(--card-bd);color:var(--tx);border-radius:8px;padding:6px 10px;font-size:.8rem;}
+.msg{max-width:78%;padding:8px 12px;border-radius:12px;margin-bottom:8px;font-size:.85rem;line-height:1.35;}
+.msg.cliente{background:var(--card);border:1px solid var(--card-bd);margin-right:auto;}
+.msg.bot{background:linear-gradient(135deg,var(--pr),var(--se));color:#1a0e00;margin-left:auto;font-weight:500;}
+.msg.atendente{background:#1c3d2e;border:1px solid #2f6b4c;margin-left:auto;}
+.msg small{display:block;opacity:.65;font-size:.62rem;margin-top:4px;}
+.vazio{color:var(--sub);text-align:center;padding:30px 0;font-size:.85rem;}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-logo">Conversas do Bot</div>
+  <a href="../index.html">← Voltar</a>
+</div>
+
+<main>
+  <div class="lista" id="lista"><div class="vazio">Carregando...</div></div>
+  <div class="chat" id="chat">
+    <div class="chat-header">
+      <button onclick="fecharChat()">← voltar pra lista</button>
+      <strong id="chat-tel"></strong>
+    </div>
+    <div id="chat-msgs"></div>
+  </div>
+</main>
+
+<script>
+const _fbCfg=FB_CONFIG;
+if(!firebase.apps.length) firebase.initializeApp(_fbCfg);
+const FS = firebase.firestore();
+
+function estadoLabel(e){
+  return {novo:'Novo', montando_pedido:'Montando pedido', aguardando_confirmacao:'Aguardando confirmação',
+    aguardando_atendente:'Aguardando atendente', fechado:'Pedido fechado', assumido_humano:'Assumido por atendente'}[e] || e || '—';
+}
+
+FS.collection('bot_conversas').orderBy('ultimaMensagemEm','desc').limit(50).onSnapshot(snap=>{
+  const lista = document.getElementById('lista');
+  if(snap.empty){ lista.innerHTML = '<div class="vazio">Nenhuma conversa ainda.</div>'; return; }
+  lista.innerHTML = '';
+  snap.forEach(doc=>{
+    const c = doc.data();
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.onclick = () => abrirChat(doc.id);
+    div.innerHTML = `<div class="tel">${c.telefone||doc.id}</div><div class="estado">${estadoLabel(c.estado)}</div>`;
+    lista.appendChild(div);
+  });
+}, err => {
+  document.getElementById('lista').innerHTML = '<div class="vazio">Erro ao carregar conversas.</div>';
+  console.error(err);
+});
+
+let _unsub = null;
+function abrirChat(telefone){
+  document.getElementById('lista').style.display = 'none';
+  document.getElementById('chat').classList.add('show');
+  document.getElementById('chat-tel').textContent = telefone;
+  if(_unsub) _unsub();
+  _unsub = FS.collection('bot_conversas').doc(telefone).collection('mensagens')
+    .orderBy('timestamp','asc').limit(200).onSnapshot(snap=>{
+      const box = document.getElementById('chat-msgs');
+      box.innerHTML = '';
+      snap.forEach(d=>{
+        const m = d.data();
+        const div = document.createElement('div');
+        div.className = 'msg ' + (m.remetente||'cliente');
+        const hora = m.timestamp && m.timestamp.toDate ? m.timestamp.toDate().toLocaleString('pt-BR') : '';
+        div.innerHTML = (m.texto||'').replace(/</g,'&lt;') + (hora ? `<small>${hora}</small>` : '');
+        box.appendChild(div);
+      });
+      box.scrollTop = box.scrollHeight;
+    });
+}
+function fecharChat(){
+  document.getElementById('lista').style.display = '';
+  document.getElementById('chat').classList.remove('show');
+  if(_unsub){ _unsub(); _unsub=null; }
+}
+</script>
+</body>
+</html>

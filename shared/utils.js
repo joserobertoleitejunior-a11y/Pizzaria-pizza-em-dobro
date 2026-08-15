@@ -1,0 +1,79 @@
+// ══════════════════════════════════════════════════════════
+//  UTILS COMPARTILHADOS — Pizza em Dobro
+//  Funções usadas em mais de um módulo (Caixa, Relatórios,
+//  Clientes, Cupom). Mudar aqui muda em todo lugar de uma vez.
+// ══════════════════════════════════════════════════════════
+
+function fmt(v){ return 'R$ '+Number(v||0).toFixed(2).replace('.',','); }
+
+// Gera o próximo número sequencial do pedido (reinicia por dia).
+// Usa o mesmo contador do Firestore que o bot do WhatsApp (contadores/pedidos_AAAA-MM-DD),
+// então a numeração fica sempre única, venha o pedido de onde vier.
+// Recebe a instância do Firestore (FS) já inicializada de quem chama.
+async function obterProximoNumeroSequencial(FS){
+  if(!FS) return null;
+  const d=new Date();
+  const hoje=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const ref=FS.collection('contadores').doc('pedidos_'+hoje);
+  try{
+    return await FS.runTransaction(async (t)=>{
+      const doc=await t.get(ref);
+      const atual=(doc.exists?doc.data().atual:0)+1;
+      t.set(ref,{atual},{merge:true});
+      return atual;
+    });
+  }catch(e){ console.warn('Não foi possível gerar o número sequencial do pedido.',e); return null; }
+}
+
+// ── Leitura segura de created_at ──
+// Hoje toda gravação nova usa string ISO (new Date().toISOString()), sempre igual
+// em todos os módulos. Esses helpers só existem pra não quebrar se algum pedido
+// muito antigo (de antes dessa padronização) ainda tiver o valor como Timestamp
+// do Firebase em vez de string.
+function toMillis(v){
+  if(!v) return 0;
+  if(v.toMillis) return v.toMillis();
+  const t=new Date(v).getTime();
+  return isNaN(t)?0:t;
+}
+function dataStr(v){
+  if(!v) return '';
+  if(typeof v==='string') return v;
+  if(v.toDate) try{ return v.toDate().toISOString(); }catch(e){ return ''; }
+  return '';
+}
+
+// Agrupa a forma de pagamento numa categoria padrão (usado no fechamento de caixa e nos relatórios)
+function categoriaPagamento(raw){
+  const p=(raw||'').toLowerCase();
+  if(p.includes('crédito')||p.includes('credito')) return 'Cartão de Crédito';
+  if(p.includes('débito')||p.includes('debito')) return 'Cartão de Débito';
+  if(p.includes('pix')) return 'Pix';
+  if(p.includes('dinheiro')) return 'Dinheiro';
+  if(p.includes('cart')) return 'Cartão (não especificado)';
+  return raw ? raw : 'Não informado';
+}
+
+// ── Normaliza categoria do cardápio: aceita tanto o código interno (p,s,co,dw,cz,d)
+// quanto palavras comuns em português — nunca deixa um item "sumir" por categoria não reconhecida ──
+const CATEGORIAS_CARDAPIO={p:'Tradicional',s:'Especial',co:'Combo',dw:'Doce',cz:'Calzone Doce',d:'Bebida'};
+function _normalizarCategoriaCardapio(cat){
+  const c=(cat||'').trim().toLowerCase();
+  if(CATEGORIAS_CARDAPIO[c]) return c;
+  const mapa={
+    'tradicional':'p','tradicionais':'p','pizza tradicional':'p',
+    'especial':'s','especiais':'s','pizza especial':'s',
+    'doce':'dw','doces':'dw','pizza doce':'dw','sobremesa':'dw','sobremesas':'dw',
+    'calzone':'cz','calzones':'cz','calzone doce':'cz',
+    'bebida':'d','bebidas':'d','drink':'d','refrigerante':'d',
+    'combo':'co','combos':'co'
+  };
+  return mapa[c]||'p';
+}
+// ── Combos "2 por X" — fonte única (site, Caixa e bot do WhatsApp seguem esta lista) ──
+const COMBOS_DEFAULT=[
+  {id:'combo65', preco:65.00, titulo:'2 Por R$ 65,00', sabores:['Mussarela','Calabresa']},
+  {id:'combo75', preco:75.00, titulo:'2 Por R$ 75,00', sabores:['Marguerita','Palmito','Frango Catupiry','Milho','Alho Frito','Calabresa Piry']},
+  {id:'combo80', preco:80.00, titulo:'2 Por R$ 80,00', sabores:['Portuguesa','Toscana','4 Queijos','Franqueijo','Bauru','Bacon']},
+  {id:'combo85', preco:85.00, titulo:'2 Por R$ 85,00', sabores:['Brócolis com Bacon','Peperone','Franqueijo Piry','Toscana Piry','Bacon','Atum','Lombo','Peito de Peru']}
+];

@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /caixa/
+Disallow: /dashboard/
+Disallow: /relatorios/
+Disallow: /clientes/
+Disallow: /bot-config/
+Disallow: /cupom/
+
+Sitemap: https://pizzaria-pizza-em-dobro1.netlify.app/sitemap.xml
