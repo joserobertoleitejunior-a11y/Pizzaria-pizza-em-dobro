@@ -45,7 +45,7 @@ async function loadStatsPublico(){
   const today=_localToday();
   const [vr,or_,fr]=await Promise.all([
     sg('visits',{where:[['date','==',today]]}),
-    sg('orders',{where:[['created_at','>=',today+'T00:00:00-03:00']]}),
+    sg('orders',{where:[['created_at','>=',limiteDiaBrasilia(today)]]}),
     sg('feedbacks',{limit:500})
   ]);
   const vis=(vr&&vr[0])?vr[0].count:DB.get('visits_total')||0;
