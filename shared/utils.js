@@ -77,3 +77,22 @@ const COMBOS_DEFAULT=[
   {id:'combo80', preco:80.00, titulo:'2 Por R$ 80,00', sabores:['Portuguesa','Toscana','4 Queijos','Franqueijo','Bauru','Bacon']},
   {id:'combo85', preco:85.00, titulo:'2 Por R$ 85,00', sabores:['Brócolis com Bacon','Peperone','Franqueijo Piry','Toscana Piry','Bacon','Atum','Lombo','Peito de Peru']}
 ];
+
+// Resolve a faixa de combo certa a partir dos 2 sabores (usado pelo Colar Pedido — ver caixa.js).
+// Nunca adivinha: se uma faixa explícita foi informada e bate com os 2 sabores, usa ela; senão só
+// resolve sozinho quando os 2 sabores pertencem a UMA ÚNICA faixa (alguns sabores existem em mais
+// de uma faixa, ex: "Bacon" está em 2 por 80 E 2 por 85 — nesse caso, sem faixa explícita, retorna
+// null em vez de arriscar cobrar o preço errado).
+function resolverFaixaCombo(sabor1, sabor2, faixaPrecoExplicita){
+  if(!sabor1||!sabor2||sabor1===sabor2) return null;
+  if(faixaPrecoExplicita){
+    const porPreco=COMBOS_DEFAULT.find(c=>c.preco===Number(faixaPrecoExplicita));
+    if(porPreco && porPreco.sabores.includes(sabor1) && porPreco.sabores.includes(sabor2)) return porPreco;
+  }
+  const candidatos=COMBOS_DEFAULT.filter(c=>c.sabores.includes(sabor1)&&c.sabores.includes(sabor2));
+  return candidatos.length===1 ? candidatos[0] : null;
+}
+
+if(typeof module!=='undefined' && module.exports){
+  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, resolverFaixaCombo };
+}

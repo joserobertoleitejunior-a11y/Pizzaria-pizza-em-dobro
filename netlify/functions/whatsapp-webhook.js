@@ -6,6 +6,7 @@
 // ══════════════════════════════════════════════════════════
 
 const admin = require('firebase-admin');
+const { getSecrets } = require('./lib/secrets');
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -81,6 +82,7 @@ exports.handler = async (event) => {
     if (!cfg || !cfg.ativo) {
       return { statusCode: 200, body: 'bot inativo' };
     }
+    Object.assign(cfg, await getSecrets(db));
 
     // ── 2. Trava de horário (18h-00h por padrão, configurável) ──
     const agora = new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' });

@@ -8,6 +8,7 @@
 // ══════════════════════════════════════════════════════════
 
 const admin = require('firebase-admin');
+const { getSecrets } = require('./lib/secrets');
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -31,9 +32,8 @@ exports.handler = async (event) => {
   }
 
   try {
-    const cfgSnap = await db.collection('config').doc('bot').get();
-    const cfg = cfgSnap.exists ? cfgSnap.data() : null;
-    if (!cfg || !cfg.anthropicKey) {
+    const secrets = await getSecrets(db);
+    if (!secrets.anthropicKey) {
       return { statusCode: 500, body: JSON.stringify({ erro: 'Chave da IA não configurada.' }) };
     }
 
@@ -139,7 +139,7 @@ Regras: seja objetivo, sem enrolação, frases curtas. Nada de disclaimer ou int
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'x-api-key': cfg.anthropicKey,
+        'x-api-key': secrets.anthropicKey,
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({

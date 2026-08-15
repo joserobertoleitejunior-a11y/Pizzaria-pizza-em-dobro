@@ -93,21 +93,22 @@ button:disabled{opacity:.5;}
     <label>Nome da instância</label>
     <input type="text" id="instanceName" placeholder="ex: pizzaemdobro">
     <label>API Key</label>
-    <input type="password" id="evolutionKey" placeholder="Chave da Evolution API">
+    <input type="password" id="evolutionKey" placeholder="•••••••• (deixe em branco pra manter a chave atual)" autocomplete="off">
+    <div class="hint" id="hint-evolutionKey"></div>
   </div>
 
   <div class="card">
     <h2>Claude (Anthropic)</h2>
     <label>API Key</label>
-    <input type="password" id="anthropicKey" placeholder="sk-ant-...">
-    <div class="hint">Pode usar a mesma chave que já roda no Caixa (Colar Pedido).</div>
+    <input type="password" id="anthropicKey" placeholder="•••••••• (deixe em branco pra manter a chave atual)" autocomplete="off">
+    <div class="hint" id="hint-anthropicKey"></div>
   </div>
 
   <div class="card">
     <h2>Gemini (Google) — usado só no Conversor de Pedido</h2>
     <label>API Key</label>
-    <input type="password" id="geminiKey" placeholder="AIza...">
-    <div class="hint">Gera em aistudio.google.com/apikey (grátis, sem cartão). Usado como reserva enquanto o crédito da Anthropic estiver baixo.</div>
+    <input type="password" id="geminiKey" placeholder="•••••••• (deixe em branco pra manter a chave atual)" autocomplete="off">
+    <div class="hint" id="hint-geminiKey">Gera em aistudio.google.com/apikey (grátis, sem cartão). Usado como reserva enquanto o crédito da Anthropic estiver baixo.</div>
   </div>
 
   <div class="card">
@@ -183,8 +184,15 @@ const _fbCfg=FB_CONFIG;
 if(!firebase.apps.length) firebase.initializeApp(_fbCfg);
 const FS = firebase.firestore();
 const ref = FS.collection('config').doc('bot');
+// as 3 chaves de API NUNCA ficam no documento público config/bot — elas vivem em
+// config_secrets/bot, que o navegador não tem permissão de ler (só de escrever uma
+// chave nova). Isso fecha o vazamento que existia: antes, qualquer página que lesse
+// config/bot (Caixa, este painel) baixava as chaves secretas junto com os campos
+// normais. Ver netlify/functions/lib/secrets.js.
+const refSecretos = FS.collection('config_secrets').doc('bot');
 
-const campos = ['numeroWhatsapp','evolutionUrl','instanceName','evolutionKey','anthropicKey','geminiKey','mensagemFechado','enderecoLoja','taxaEntrega','tempoEntrega','formasPagamento','observacoesLoja','minutosLembrete','minutosEncerrar','horarioInicio','horarioFim','delayMinMs','delayMaxMs','limiteMsgsPorHora'];
+const camposPublicos = ['numeroWhatsapp','evolutionUrl','instanceName','mensagemFechado','enderecoLoja','taxaEntrega','tempoEntrega','formasPagamento','observacoesLoja','minutosLembrete','minutosEncerrar','horarioInicio','horarioFim','delayMinMs','delayMaxMs','limiteMsgsPorHora'];
+const camposSecretos = ['evolutionKey','anthropicKey','geminiKey'];
 const camposCheckbox = ['lojaFechada'];
 
 async function carregar(){
@@ -193,9 +201,19 @@ async function carregar(){
     const d = snap.data();
     document.getElementById('ativo').checked = !!d.ativo;
     camposCheckbox.forEach(c => { document.getElementById(c).checked = !!d[c]; });
-    campos.forEach(c => { if(d[c] !== undefined) document.getElementById(c).value = d[c]; });
+    camposPublicos.forEach(c => { if(d[c] !== undefined) document.getElementById(c).value = d[c]; });
   }
+  // as chaves nunca são carregadas pro navegador — só mostramos se JÁ existe uma configurada
+  try{
+    const r = await fetch('/.netlify/functions/secrets-status');
+    const st = await r.json();
+    camposSecretos.forEach(c => {
+      const hint = document.getElementById('hint-'+c);
+      if(hint) hint.textContent = (st[c] ? '✓ chave já configurada — deixe em branco pra manter.' : '⚠️ nenhuma chave configurada ainda.') + (hint.dataset.extra ? ' '+hint.dataset.extra : '');
+    });
+  }catch(e){ console.warn('Não foi possível checar o status das chaves.', e); }
 }
+document.getElementById('hint-geminiKey').dataset.extra='Gera em aistudio.google.com/apikey (grátis, sem cartão). Usado como reserva enquanto o crédito da Anthropic estiver baixo.';
 
 document.getElementById('salvar').onclick = async () => {
   const btn = document.getElementById('salvar');
@@ -204,13 +222,25 @@ document.getElementById('salvar').onclick = async () => {
   try{
     const dados = { ativo: document.getElementById('ativo').checked };
     camposCheckbox.forEach(c => { dados[c] = document.getElementById(c).checked; });
-    campos.forEach(c => {
+    camposPublicos.forEach(c => {
       const el = document.getElementById(c);
       dados[c] = el.type === 'number' ? Number(el.value) : el.value.trim();
     });
     await ref.set(dados, { merge: true });
+
+    // chaves secretas: só grava se o campo foi preenchido (vazio = "não mexe na chave atual"),
+    // e vão pro documento separado que o navegador nunca lê de volta.
+    const dadosSecretos = {};
+    camposSecretos.forEach(c => {
+      const v = document.getElementById(c).value.trim();
+      if(v) dadosSecretos[c] = v;
+    });
+    if(Object.keys(dadosSecretos).length) await refSecretos.set(dadosSecretos, { merge: true });
+    camposSecretos.forEach(c => { document.getElementById(c).value=''; });
+
     status.textContent = '✓ Salvo com sucesso';
     status.style.color = 'var(--ok)';
+    carregar();
   }catch(e){
     status.textContent = 'Erro ao salvar: ' + e.message;
     status.style.color = 'var(--se)';

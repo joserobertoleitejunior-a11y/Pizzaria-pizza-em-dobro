@@ -270,9 +270,23 @@ function adicionarComboAoCarrinhoCaixa(comboTierId){
   const s2=document.getElementById('cx-'+comboTierId+'-s2')?.value;
   if(!s1||!s2)return;
   if(s1===s2){ alert('Escolha 2 sabores diferentes — o combo é uma pizza de cada.'); return; }
-  const nome=`${combo.titulo} — ${s1} + ${s2}`;
-  cart.push({_chave:'combo-'+Date.now()+Math.random(), id:null, name:nome, unitPrice:combo.preco, qty:1, borda:null, removedIng:[], addedIng:[], isMeia:false});
+  adicionarComboAoCarrinho(combo, s1, s2, 1);
   atualizarBarraCarrinho();
+}
+// ── FUNÇÃO ÚNICA para montar item de combo — usada pelo botão manual E pelo Colar Pedido,
+// mesma lógica de deduplicação/soma de quantidade do meia a meia (chave determinística, nunca Math.random()).
+function criarItemCombo(combo, s1, s2, qtd){
+  return {
+    _chave:'combo|'+combo.id+'|'+[s1,s2].slice().sort().join('+'),
+    id:null, name:`${combo.titulo} — ${s1} + ${s2}`, unitPrice:combo.preco, qty:qtd||1,
+    borda:null, removedIng:[], addedIng:[], isMeia:false
+  };
+}
+function adicionarComboAoCarrinho(combo, s1, s2, qtd){
+  const novo=criarItemCombo(combo, s1, s2, qtd);
+  const existente=cart.find(c=>c._chave===novo._chave);
+  if(existente){ existente.qty+=novo.qty; }
+  else{ cart.push(novo); }
 }
 
 // ── FUNÇÃO ÚNICA para montar item meia a meia — usada pelo modo manual E pelo Colar Pedido,
@@ -792,6 +806,10 @@ async function reimprimir(id){
 // chave da IA agora fica só no servidor (netlify/functions/parse-order.js) — nunca mais exposta aqui
 
 function abrirColarPedido(){
+  if(cart.length>0){
+    const manter=confirm('Já tem item no carrinho (de um pedido anterior ou em andamento).\n\nOK = manter esses itens e ADICIONAR o pedido colado a eles.\nCancelar = ESVAZIAR o carrinho antes de colar o novo pedido (recomendado se o carrinho é de outro pedido).');
+    if(!manter){ cart=[]; atualizarBarraCarrinho(); }
+  }
   document.getElementById('colar-texto').value='';
   document.getElementById('colar-tel').value='';
   document.getElementById('colar-status').textContent='';
@@ -809,14 +827,20 @@ async function interpretarPedidoColado(){
 
   const nomesCardapio=DEFAULT_MENU.map(i=>i.n);
   const nomesBordas=BORDAS_DEFAULT.map(b=>b.name);
+  const faixasCombo=(typeof COMBOS_DEFAULT!=='undefined'?COMBOS_DEFAULT:[]).map(c=>
+    `- 2 Por R$ ${c.preco.toFixed(2).replace('.',',')}: escolha 2 sabores DIFERENTES entre ${c.sabores.join(', ')}`
+  ).join('\n');
   const systemPrompt=`Você interpreta pedidos de pizzaria colados de conversas de WhatsApp (o texto pode vir bagunçado, com quebras de linha, gírias, informação fora de ordem) e devolve APENAS um JSON válido, sem texto antes ou depois, sem markdown, no formato exato:
 
 {"cliente":{"nome":string|null,"telefone":string|null,"endereco":string|null},
 "pagamento":{"forma_principal":string|null,"misto":[{"metodo":string,"valor":number|null}]|null},
-"itens":[{"tipo":"normal"|"meia_a_meia","nome_cardapio":string|null,"nome_cardapio_2":string|null,"qtd":number,"borda":string|null,"remover":[string],"observacao":string|null}]}
+"itens":[{"tipo":"normal"|"meia_a_meia"|"combo","nome_cardapio":string|null,"nome_cardapio_2":string|null,"combo_faixa":number|null,"qtd":number,"borda":string|null,"remover":[string],"observacao":string|null}]}
 
 CARDÁPIO REAL — "nome_cardapio" e "nome_cardapio_2" DEVEM ser EXATAMENTE um destes nomes (copie a grafia exata), ou null se não tiver certeza absoluta: ${JSON.stringify(nomesCardapio)}
 BORDAS REAIS — "borda" DEVE ser EXATAMENTE um destes nomes, ou null: ${JSON.stringify(nomesBordas)}
+
+FAIXAS DE COMBO "2 POR X" (promoção fixa — use EXATAMENTE estas faixas e sabores, nunca invente combinação ou preço):
+${faixasCombo}
 
 REGRAS CRÍTICAS (siga à risca, erros aqui atrapalham o funcionamento real da pizzaria):
 
@@ -835,6 +859,8 @@ REGRAS CRÍTICAS (siga à risca, erros aqui atrapalham o funcionamento real da p
 7. "cliente.nome" é EXCLUSIVAMENTE o nome de uma PESSOA. NUNCA coloque ali nome de rua, avenida, bairro, condomínio ou qualquer trecho de endereço — isso vai em "cliente.endereco". Se o texto tiver algo como "Rua das Palmeiras, 205" ou "Av. Brasil 90", isso é endereço, nunca nome. Se não houver um nome de pessoa claro e separado do endereço, "cliente.nome" deve ser null — nunca "adivinhe" um nome usando parte do endereço.
 
 8. "borda" É INDIVIDUAL DE CADA ITEM e só pode ser preenchida se o cliente pediu uma borda recheada EXPLICITAMENTE para aquela pizza específica (ex: "borda de catupiry", "borda recheada de chocolate"). Muitos sabores do cardápio já contêm palavras como "Catupiry" no PRÓPRIO NOME/descrição (ex: "Frango Catupiry", "Calabresa Piry", "Franqueijo Piry") — isso é o RECHEIO da pizza, não é pedido de borda, e NUNCA deve fazer você preencher "borda" nesse item nem em nenhum outro. Preencher "borda" em um item nunca deve influenciar os outros itens do pedido — cada item é avaliado sozinho, olhando só o que foi dito sobre ELE. Na dúvida, "borda":null.
+
+9. COMBO "2 por X": se o cliente pedir um combo (duas pizzas de sabores diferentes por um preço fixo, ex: "quero o 2 por 65", "o combo de mussarela com calabresa"), use "tipo":"combo". Preencha "nome_cardapio" com o 1º sabor e "nome_cardapio_2" com o 2º sabor, EXATAMENTE como aparecem na lista de FAIXAS DE COMBO acima (nunca do cardápio normal). Preencha "combo_faixa" com o valor da faixa (65, 75, 80 ou 85) SE o cliente disse o preço/faixa explicitamente — senão deixe "combo_faixa":null, o sistema descobre sozinho pelos 2 sabores. O combo é sempre 2 sabores DIFERENTES — nunca repita o mesmo sabor nos dois campos. Se não tiver certeza se é combo ou 2 pizzas avulsas, ou não tiver certeza da faixa/sabores, prefira "tipo":"normal" com um item pra cada sabor (nunca invente uma faixa de combo que o cliente não pediu claramente).
 
 EXEMPLO (cardápio ilustrativo, não é o real — é só pra você entender o padrão esperado):
 Texto recebido: "oi, meu nome é Ana. quero uma meia Frango meia Calabresa, borda catupiry, sem cebola, bem carregado na azeitona por favor. Pagamento: 20 no pix e o resto na entrega em dinheiro. Rua das Flores 123"
@@ -876,8 +902,29 @@ JSON esperado:
 function montarCaixaComPedidoInterpretado(parsed){
   let naoIdentificados=0;
   let meiaAMeiaDetectada=false;
+  let comboDetectado=false;
   (parsed.itens||[]).forEach(it=>{
     const qtd=Math.max(1,parseInt(it.qtd)||1);
+
+    // ---- COMBO "2 POR X" ----
+    if(it.tipo==='combo'){
+      const s1=it.nome_cardapio, s2=it.nome_cardapio_2;
+      // resolverFaixaCombo() vem de shared/utils.js — fonte única com o site e o bot do WhatsApp
+      const combo=(typeof resolverFaixaCombo==='function')?resolverFaixaCombo(s1,s2,it.combo_faixa):null;
+      if(!combo||!s1||!s2||s1===s2){
+        naoIdentificados++;
+        cart.push({
+          _chave:'manual-'+Date.now()+'-'+Math.random(),
+          id:null, name:'⚠️ CONFERIR (combo): '+(it.observacao||[s1,s2].filter(Boolean).join(' + ')||'faixa/sabores não identificados'),
+          unitPrice:0, qty:qtd, borda:null, removedIng:[], addedIng:[], isMeia:false, precisaRevisao:true
+        });
+        return;
+      }
+      // usa a MESMA função do botão manual de combo — zero divergência entre os dois caminhos
+      adicionarComboAoCarrinho(combo, s1, s2, qtd);
+      comboDetectado=true;
+      return;
+    }
 
     // ---- MEIA A MEIA ----
     if(it.tipo==='meia_a_meia'){
@@ -914,11 +961,15 @@ function montarCaixaComPedidoInterpretado(parsed){
     const bordaNome=(itemAceitaOpcoes(menuItem.cat)&&borda&&borda.name!=='Sem Borda Recheada')?borda.name:null;
     const removidos=Array.isArray(it.remover)?it.remover:[];
     const obsTexto=it.observacao||null;
-    cart.push({
-      _chave:'colado-'+menuItem.id+'-'+Date.now()+'-'+Math.random(),
+    // chave determinística (nunca Date.now()/Math.random()) — pizza igual pedida 2x vira "2x" numa linha só, não 2 linhas de "1x"
+    const novoItem={
       id:menuItem.id, name:menuItem.n, unitPrice:menuItem.p+precoBorda, qty:qtd,
       borda:bordaNome, removedIng:removidos, addedIng:[], obs:obsTexto, isMeia:false
-    });
+    };
+    novoItem._chave='colado|'+menuItem.id+'|'+(bordaNome||'')+'|'+removidos.slice().sort().join(',')+'|'+(obsTexto||'');
+    const existenteItem=cart.find(c=>c._chave===novoItem._chave);
+    if(existenteItem){ existenteItem.qty+=novoItem.qty; }
+    else{ cart.push(novoItem); }
   });
 
   const cli=parsed.cliente||{};
@@ -966,6 +1017,7 @@ function montarCaixaComPedidoInterpretado(parsed){
   }
   const avisos=[];
   if(naoIdentificados>0) avisos.push('⚠️ '+naoIdentificados+' item(ns) não foram reconhecidos com certeza e aparecem marcados no carrinho como "CONFERIR" — remova e adicione o item correto pela busca antes de finalizar.');
+  if(comboDetectado) avisos.push('🍕🍕 Combo identificado e adicionado ao carrinho — confira os 2 sabores e a faixa de preço antes de finalizar.');
   if(avisoPagamento) avisos.push(avisoPagamento);
   if(avisos.length) setTimeout(()=>alert(avisos.join('\n\n')),400);
 }
@@ -1279,18 +1331,8 @@ function confirmarPedidoNotificacao(){
 // ══════════════════════════════════════════════════════════
 //  MINI MESSENGER — conversas do bot, direto aqui no caixa
 // ══════════════════════════════════════════════════════════
-let _cfgBotCache=null;
 let _mmListaUnsub=null, _mmThreadUnsub=null;
 let _mmTelefoneAtual=null;
-
-async function carregarCfgBot(){
-  if(_cfgBotCache||!FS) return _cfgBotCache;
-  try{
-    const doc=await FS.collection('config').doc('bot').get();
-    if(doc.exists) _cfgBotCache=doc.data();
-  }catch(e){ console.warn('Não foi possível carregar config do bot.',e); }
-  return _cfgBotCache;
-}
 
 function toggleMiniMessenger(){
   const painel=document.getElementById('mini-messenger');
@@ -1400,15 +1442,16 @@ async function enviarMensagemAtendente(){
   const input=document.getElementById('mm-input');
   const texto=input.value.trim();
   if(!texto||!_mmTelefoneAtual) return;
-  const cfg=await carregarCfgBot();
-  if(!cfg||!cfg.evolutionUrl||!cfg.instanceName){ alert('Configuração do bot incompleta (Evolution URL/instância).'); return; }
   input.value='';
   try{
-    await fetch(`${cfg.evolutionUrl}/message/sendText/${cfg.instanceName}`,{
+    // chave da Evolution API agora fica só no servidor (netlify/functions/send-whatsapp.js) — nunca mais exposta aqui
+    const r=await fetch('/.netlify/functions/send-whatsapp',{
       method:'POST',
-      headers:{'content-type':'application/json','apikey':cfg.evolutionKey},
-      body:JSON.stringify({number:_mmTelefoneAtual,text:texto})
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({telefone:_mmTelefoneAtual,texto})
     });
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||d.error) throw new Error(d.error||'Falha ao enviar');
     await FS.collection('bot_conversas').doc(_mmTelefoneAtual).collection('mensagens').add({
       remetente:'atendente',texto,timestamp:firebase.firestore.FieldValue.serverTimestamp()
     });

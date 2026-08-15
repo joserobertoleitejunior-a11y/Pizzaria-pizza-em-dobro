@@ -5,6 +5,7 @@
 // ══════════════════════════════════════════════════════════
 
 const admin = require('firebase-admin');
+const { getSecrets } = require('./lib/secrets');
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -18,6 +19,7 @@ exports.handler = async () => {
     const cfgSnap = await db.collection('config').doc('bot').get();
     const cfg = cfgSnap.exists ? cfgSnap.data() : null;
     if (!cfg || !cfg.ativo) return { statusCode: 200, body: 'bot inativo' };
+    Object.assign(cfg, await getSecrets(db));
 
     const minutosLembrete = Number(cfg.minutosLembrete) || 5;
     const minutosEncerrar = Number(cfg.minutosEncerrar) || 15;
