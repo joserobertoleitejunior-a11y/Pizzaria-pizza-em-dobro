@@ -505,6 +505,10 @@ body{
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="../shared/firebase-config.js"></script>
 <script src="../shared/utils.js"></script>
+<!-- Observabilidade (Sentry) — desligado até shared/sentry-config.js ter um DSN de verdade -->
+<script src="../shared/sentry-config.js"></script>
+<script src="https://browser.sentry-cdn.com/7.120.3/bundle.min.js" crossorigin="anonymous"></script>
+<script>if(typeof Sentry!=='undefined'&&SENTRY_DSN){Sentry.init({dsn:SENTRY_DSN,tracesSampleRate:0});}</script>
 <script src="caixa.js"></script>
 </body>
 </html>

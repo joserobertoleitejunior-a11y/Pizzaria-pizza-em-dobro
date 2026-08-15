@@ -7,6 +7,7 @@
 
 const admin = require('firebase-admin');
 const { getSecrets } = require('./lib/secrets');
+const { reportError } = require('./lib/sentry');
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -315,7 +316,7 @@ Se o cliente pedir pra falar com uma pessoa, reclamar de algo, ou o caso for com
 
     return { statusCode: 200, body: 'ok' };
   } catch (err) {
-    console.error('Erro no webhook do bot:', err);
+    reportError(err, 'whatsapp-webhook');
     // Antes disso o cliente ficava sem NENHUMA resposta quando dava erro no meio do caminho.
     // Agora, se der pra identificar o telefone e a config do bot, avisa que deu problema
     // em vez de simplesmente sumir.

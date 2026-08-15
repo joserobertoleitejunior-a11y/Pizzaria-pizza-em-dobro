@@ -6,6 +6,7 @@
 
 const admin = require('firebase-admin');
 const { getSecrets, CAMPOS_SECRETOS } = require('./lib/secrets');
+const { reportError } = require('./lib/sentry');
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -21,7 +22,7 @@ exports.handler = async () => {
     CAMPOS_SECRETOS.forEach(c => { status[c] = !!secrets[c]; });
     return { statusCode: 200, body: JSON.stringify(status) };
   } catch (err) {
-    console.error('Erro ao checar status das chaves:', err);
+    reportError(err, 'secrets-status');
     return { statusCode: 500, body: JSON.stringify({ error: 'Não foi possível checar as chaves agora.' }) };
   }
 };

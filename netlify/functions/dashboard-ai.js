@@ -9,6 +9,7 @@
 
 const admin = require('firebase-admin');
 const { getSecrets } = require('./lib/secrets');
+const { reportError } = require('./lib/sentry');
 const { decomporSaboresItem } = require('../../shared/utils.js');
 
 if (!admin.apps.length) {
@@ -166,7 +167,7 @@ Regras: seja objetivo, sem enrolação, frases curtas. Nada de disclaimer ou int
 
     return { statusCode: 200, body: JSON.stringify({ texto, geradoEm }) };
   } catch (err) {
-    console.error('Erro no assistente de IA do dashboard:', err);
+    reportError(err, 'dashboard-ai');
     return { statusCode: 500, body: JSON.stringify({ erro: 'Não foi possível gerar a análise agora.' }) };
   }
 };

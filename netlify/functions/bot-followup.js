@@ -6,6 +6,7 @@
 
 const admin = require('firebase-admin');
 const { getSecrets } = require('./lib/secrets');
+const { reportError } = require('./lib/sentry');
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -64,7 +65,7 @@ exports.handler = async () => {
 
     return { statusCode: 200, body: 'ok' };
   } catch (err) {
-    console.error('Erro no follow-up do bot:', err);
+    reportError(err, 'bot-followup');
     return { statusCode: 500, body: 'erro' };
   }
 };

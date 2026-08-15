@@ -8,6 +8,7 @@
 
 const admin = require('firebase-admin');
 const { getSecrets } = require('./lib/secrets');
+const { reportError } = require('./lib/sentry');
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -48,7 +49,7 @@ exports.handler = async (event) => {
     }
     return { statusCode: 200, body: JSON.stringify({ ok: true }) };
   } catch (err) {
-    console.error('Erro ao enviar mensagem manual do Caixa:', err);
+    reportError(err, 'send-whatsapp');
     return { statusCode: 500, body: JSON.stringify({ error: 'Não foi possível enviar a mensagem agora.' }) };
   }
 };

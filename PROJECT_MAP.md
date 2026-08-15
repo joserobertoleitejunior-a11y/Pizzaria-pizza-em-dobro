@@ -13,34 +13,58 @@ como banco de dados. Netlify Functions pra tudo que precisa rodar no servidor
 cada módulo, com scripts compartilhados carregados via `<script src="...">`.
 
 ```
-/                           → Loja (site do cliente)         index.html (5057 linhas)
-/caixa/                     → PDV da equipe                  caixa.js (1776 linhas)
-/relatorios/                → Dashboard + Assistente de IA    relatorios.js (684 linhas)
+/                           → Loja (site do cliente)         index.html (~5100 linhas)
+/caixa/                     → PDV da equipe                  caixa.js (~1800 linhas)
+/relatorios/                → Dashboard + Assistente de IA    relatorios.js (~690 linhas)
 /clientes/                  → Painel de clientes (leitura)    clientes.js (177 linhas)
 /bot-config/                → Configuração do bot WhatsApp
 /bot-config/conversas/      → Histórico de conversas do bot
 /cupom/                     → Avaliação pós-pedido            cupom.js
 /dashboard/                 → ÓRFÃO — só redireciona pra /relatorios/
-/shared/utils.js            → Funções e dados compartilhados (ver abaixo)
-/shared/firebase-config.js  → Chave do Firebase (1 lugar só)
+/shared/utils.js            → Funções e dados compartilhados (ver abaixo) — agora requireável em Node também
+/shared/firebase-config.js  → Chave do Firebase (1 lugar só — pública por design, não é segredo)
+/shared/sentry-config.js    → DSN do Sentry do navegador (vazio = observabilidade desligada)
 /netlify/functions/         → Código de servidor (Node)
+/netlify/functions/lib/     → Módulos compartilhados ENTRE functions (secrets.js, sentry.js)
+/firestore.rules            → Regras de segurança do Firestore — NUNCA publicado ainda, ver nota lá dentro
+/firebase.json               → Aponta firestore.rules pro `firebase deploy --only firestore:rules`
+/tests/                      → Testes unitários (`npm test`, node --test nativo, sem dependência nova)
 /sw.js                      → Service worker (cache de assets, NÃO cacheia Firestore)
 ```
 
 ## Funções da Netlify (servidor)
 
 - **whatsapp-webhook.js** — recebe mensagem da Evolution API, chama Claude
-  (Haiku), fecha pedido, cria doc em `orders`. Lê config em `config/bot`.
+  (Haiku), fecha pedido, cria doc em `orders`. Lê config em `config/bot` +
+  segredos em `config_secrets/bot` (via `lib/secrets.js`).
 - **bot-followup.js** — roda a cada 5 min (cron), lembra clientes que sumiram
   no meio do pedido, encerra conversas abandonadas.
 - **dashboard-chat.js** — chat da IA do Dashboard (Sonnet). Lê `orders` +
   `menu_items` + `config/bot` fresco a cada mensagem. Tem ferramentas
   (function calling) pra editar o cardápio de verdade: adicionar, editar,
   remover, ativar/desativar item. Ver seção de gotchas abaixo.
+- **dashboard-ai.js** — análise de vendas dos últimos 30 dias sob demanda.
+- **parse-order.js** — "Colar Pedido" do Caixa: recebe texto colado do
+  WhatsApp + o systemPrompt (montado em caixa.js) e devolve o JSON
+  interpretado. Não decide nada sozinho, só repassa pra Anthropic.
+- **send-whatsapp.js** *(novo)* — envia mensagem manual do mini-mensageiro
+  do Caixa. Existe pra chave da Evolution API nunca precisar rodar no
+  navegador (antes rodava — ver gotcha #12).
+- **secrets-status.js** *(novo)* — devolve só `{anthropicKey: true/false, ...}`
+  pro bot-config saber o que já está configurado, sem nunca devolver o valor.
+- **lib/secrets.js** *(novo)* — `getSecrets(db)`: lê/migra as chaves de
+  `config/bot` (legado) pra `config_secrets/bot` automaticamente, uma vez,
+  sem ação manual. Toda function que precisa de `anthropicKey`/`evolutionKey`/
+  `geminiKey` passa por aqui — nunca lê `config/bot` esperando achar a chave lá.
+- **lib/sentry.js** *(novo)* — `reportError(err, contexto)`: manda pro Sentry
+  se `SENTRY_DSN` existir nas env vars da Netlify, senão só faz `console.error`
+  (100% inofensivo sem DSN).
 
 ## shared/utils.js — o que tem lá dentro
 
-Carregado por: index.html, caixa/index.html, relatorios/index.html, clientes/index.html.
+Carregado por: index.html, caixa/index.html, relatorios/index.html, clientes/index.html
+(via `<script src>`) **e** por dashboard-ai.js/dashboard-chat.js (via `require()` —
+o arquivo ganhou `module.exports` no final, então funciona nos dois mundos sem duplicar).
 - `fmt(v)` — formata moeda em R$
 - `toMillis(v)` / `dataStr(v)` — leitura seguros de datas (protege contra
   Timestamp do Firebase vs string ISO)
@@ -50,6 +74,12 @@ Carregado por: index.html, caixa/index.html, relatorios/index.html, clientes/ind
 - `COMBOS_DEFAULT` — as 4 faixas de combo "2 por X" (fonte única, site/Caixa/bot)
 - `CATEGORIAS_CARDAPIO` + `_normalizarCategoriaCardapio(cat)` — mapeia
   categoria (código OU palavra em português) pro código interno (p/s/co/dw/cz/d)
+- `resolverFaixaCombo(sabor1, sabor2, faixaExplicita)` *(novo)* — acha a faixa
+  de combo certa a partir dos 2 sabores, sem nunca adivinhar (ver gotcha #10)
+- `decomporSaboresItem(nome)` *(novo)* — separa o nome composto de um item
+  de combo/meio a meio nos sabores reais (ver gotcha #11)
+- `pizzasFisicasPorItem(nome)` *(novo)* — quantas pizzas físicas uma linha
+  do carrinho representa (combo = 2, meio a meio e normal = 1)
 
 Cada arquivo que usa essas funções também tem uma cópia de segurança
 ("fallback") caso o `shared/utils.js` falhe ao carregar (cache/CDN) — ver
@@ -61,10 +91,16 @@ gotcha #1 abaixo.
 |---|---|---|
 | `orders` | Todo pedido (site, Caixa, bot, conversor) | index.html, caixa.js, webhook.js |
 | `menu_items` | Cardápio — 1 doc por item, doc ID = `String(slug_id)` | index.html (admin), dashboard-chat.js |
-| `config/bot` | Config do negócio (endereço, taxa, horário, chave da Anthropic) | bot-config/index.html |
+| `config/bot` | Config PÚBLICA do negócio (endereço, taxa, horário) — NUNCA mais tem chave de API aqui | bot-config/index.html |
+| `config_secrets/bot` | As 3 chaves de API (Anthropic/Evolution/Gemini) — só Admin SDK lê, navegador nunca | Netlify Functions (via `lib/secrets.js`), bot-config/index.html só escreve (nunca lê de volta) |
 | `contadores/pedidos_AAAA-MM-DD` | Contador do número sequencial, reinicia por dia | shared/utils.js |
 | `caixa_sessoes` | Abertura/fechamento de turno do Caixa | caixa.js |
 | `bot_conversas` | Estado de cada conversa do bot WhatsApp | webhook.js, bot-followup.js |
+
+⚠️ `firestore.rules` (na raiz do repo) documenta o que cada coleção precisa
+de acesso, mas **nunca foi publicado no Firebase de verdade** — ninguém aqui
+tem a credencial do projeto pra publicar. Antes de publicar, testar cada
+tela (loja, Caixa, Relatórios, bot-config) — ver aviso no topo do arquivo.
 
 ### Schema de `menu_items` (importante manter consistente)
 ```js
@@ -142,7 +178,43 @@ de assumir que é bug de dado.
    quantidade** — foi a causa de pizzas iguais aparecerem como várias linhas
    de "1x" em vez de uma linha "2x" (tanto no carrinho do Caixa quanto no
    cupom impresso). Chaves de agrupamento têm que ser determinísticas
-   (nome+borda+acréscimos), nunca aleatórias.
+   (nome+borda+acréscimos), nunca aleatórias. **Isso voltou a acontecer** no
+   item "colado" do Colar Pedido e no combo manual (ambos usavam
+   `Date.now()+Math.random()`) — corrigido, mas fica o alerta: qualquer
+   `cart.push({_chave:'...'+Math.random()...})` novo é suspeito por padrão.
+10. **O Colar Pedido (Caixa) não entendia combo "2 por X"** — o schema/prompt
+    só tinha `tipo:"normal"|"meia_a_meia"`, sem noção nenhuma de combo, então
+    um pedido de combo virava 2 itens avulsos (preço errado) ou item "não
+    identificado". O bot oficial do WhatsApp (`whatsapp-webhook.js`) sempre
+    soube tratar combo certinho — o Colar Pedido foi corrigido pra replicar o
+    mesmo padrão (`resolverFaixaCombo()`, nunca adivinha faixa ambígua tipo
+    "Bacon" que existe em 2 faixas de preço diferentes).
+11. **`abrirColarPedido()` não limpava o carrinho antes de montar o pedido
+    interpretado** — se o Caixa já tinha item de um pedido anterior não
+    finalizado, colar um pedido novo SOMAVA em cima, em silêncio (causa real
+    de "pedi 2 pizzas, apareceram 3 — uma de pedido passado"). Agora avisa e
+    pergunta antes de colar em cima de um carrinho não vazio.
+12. **As 3 chaves de API viviam no MESMO documento (`config/bot`) que Caixa e
+    bot-config liam inteiro, direto do navegador** — ou seja, qualquer um que
+    abrisse essas páginas baixava `anthropicKey`/`evolutionKey`/`geminiKey`
+    junto com os campos públicos. O mini-mensageiro do Caixa também chamava a
+    Evolution API DIRETO do navegador com a chave em mãos. Corrigido: chaves
+    agora em `config_secrets/bot` (só Admin SDK lê), e o envio de WhatsApp
+    manual passou a ser servidor (`send-whatsapp.js`). **Nunca adicionar campo
+    de chave/segredo em `config/bot` de novo** — vai em `config_secrets/bot`.
+13. **`mix-blend-mode` + `mask-image` no MESMO `<video>` trava a composição no
+    Safari/iOS** (fogo do fundo aparecia congelado/"lavado" só no iPhone,
+    Android normal). Corrigido movendo blend-mode/mask pro `<div>` que
+    envolve o vídeo, nunca no `<video>` em si. Se algum efeito visual novo
+    precisar de blend-mode/mask num vídeo, sempre no wrapper.
+14. **Ranking "sabores mais vendidos" do Dashboard contava pelo `it.name`
+    exato** — como combo salva `"2 Por R$ 65,00 — A + B"` e meio a meio salva
+    `"Meio a Meio: A / B"`, esses sabores nunca contavam pro sabor de
+    verdade (e apareciam como "nunca vendido" mesmo vendendo bastante via
+    combo). Corrigido com `decomporSaboresItem()` — qualquer contagem nova
+    "por sabor" no dashboard/relatórios precisa passar por essa função, nunca
+    usar `it.name` cru quando o objetivo é sabor (usar cru é certo quando o
+    objetivo é o item exato, tipo lista de lançamentos).
 
 ## Convenções de código deste projeto
 
@@ -151,6 +223,13 @@ de assumir que é bug de dado.
 - Todo `.set()`/escrita no Firestore que pode falhar (conexão) precisa de
   try/catch com feedback visível pro usuário — nunca falhar em silêncio
   (já aconteceu: item "salvo" que na verdade não gravou).
-- Deploy: zip completo pra `/mnt/user-data/outputs/pizza-em-dobro-DEPLOY.zip`,
-  ou via Termux (`netlify deploy --prod` de dentro de `~/pizza-em-dobro`,
-  NUNCA de `~/storage/downloads` — dá erro de permissão no `npm install`).
+- Deploy: agora versionado em `github.com/joserobertoleitejunior-a11y/Pizzaria-pizza-em-dobro`
+  (antes só existia como zip solto, nunca tinha ido pro Git — corrigido). O
+  método antigo de zip pra `/mnt/user-data/outputs/` ou Termux continua
+  funcionando se precisar, mas o caminho normal agora é `git push` pra branch
+  de trabalho, PR pra `main`, Netlify builda a partir do Git.
+- `netlify.toml` roda `npm install && npm test` no build — se um teste
+  quebrar, o deploy não sobe. Rodar `npm test` local antes de empurrar
+  qualquer mudança em `shared/utils.js` ou nas Netlify Functions.
+- `npm run lint` (Biome) existe mas não é gate de build ainda — código legado
+  tem dívida de estilo pendente de limpeza dedicada.

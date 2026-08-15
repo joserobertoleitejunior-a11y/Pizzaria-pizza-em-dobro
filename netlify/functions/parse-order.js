@@ -7,6 +7,7 @@
 
 const admin = require('firebase-admin');
 const { getSecrets } = require('./lib/secrets');
+const { reportError } = require('./lib/sentry');
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -55,7 +56,7 @@ exports.handler = async (event) => {
     const texto = (data?.content || []).map(b => b.text || '').join('');
     return { statusCode: 200, body: JSON.stringify({ texto }) };
   } catch (err) {
-    console.error('Erro no conversor (Anthropic):', err);
+    reportError(err, 'parse-order');
     return { statusCode: 500, body: JSON.stringify({ error: 'Não foi possível processar o pedido agora.' }) };
   }
 };

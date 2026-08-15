@@ -8,6 +8,7 @@
 
 const admin = require('firebase-admin');
 const { getSecrets } = require('./lib/secrets');
+const { reportError } = require('./lib/sentry');
 const { decomporSaboresItem } = require('../../shared/utils.js');
 
 if (!admin.apps.length) {
@@ -450,7 +451,7 @@ ${contextoVendas}`;
 
     return { statusCode: 200, body: JSON.stringify({ texto, itensAfetados }) };
   } catch (err) {
-    console.error('Erro no chat do assistente:', err);
+    reportError(err, 'dashboard-chat');
     return { statusCode: 500, body: JSON.stringify({ erro: 'Não foi possível responder agora. Tenta de novo.' }) };
   }
 };
