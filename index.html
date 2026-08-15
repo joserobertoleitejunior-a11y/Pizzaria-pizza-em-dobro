@@ -104,7 +104,7 @@
 
 <!-- TOPBAR -->
 <div id="topbar">
-  <div id="hamburger" onclick="toggleDrawer()">
+  <div id="hamburger" onclick="toggleDrawer()" role="button" tabindex="0" aria-label="Abrir menu" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleDrawer();}">
     <span></span><span></span><span></span>
   </div>
   <div class="tb-brand">🍕 PIZZA EM DOBRO</div>
