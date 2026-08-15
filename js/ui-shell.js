@@ -89,9 +89,11 @@ async function trackVisit(){
   let v=DB.get('visits')||{};v[today]=(v[today]||0)+1;DB.set('visits',v);DB.inc('visits_total');
   _initFB();
   if(FS){
-    const exS=await FS.collection('visits').where('date','==',today).get();
-    if(!exS.empty){const d=exS.docs[0];await d.ref.update({count:(d.data().count||0)+1,updated_at:now});}
-    else await FS.collection('visits').add({date:today,count:1,updated_at:now});
+    try{
+      const exS=await FS.collection('visits').where('date','==',today).get();
+      if(!exS.empty){const d=exS.docs[0];await d.ref.update({count:(d.data().count||0)+1,updated_at:now});}
+      else await FS.collection('visits').add({date:today,count:1,updated_at:now});
+    }catch(e){ console.warn('Não foi possível registrar a visita no Firestore (contador local continua funcionando).',e); }
   }
 }
 
