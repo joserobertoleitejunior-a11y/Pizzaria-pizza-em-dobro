@@ -236,7 +236,13 @@ function renderGraficoPagamento(){
 function renderGraficoSabores(){
   const contagem={};
   pedidosPeriodo.forEach(p=>{
-    (p.items_json||[]).forEach(it=>{ const n=it.name||'—'; contagem[n]=(contagem[n]||0)+(it.qty||1); });
+    (p.items_json||[]).forEach(it=>{
+      const qtd=it.qty||1;
+      // decomporSaboresItem() vem de shared/utils.js — sem isso, combo e meio a meio
+      // aparecem como "sabor" composto e nunca contam pro sabor real (ver comentário lá)
+      const sabores=(typeof decomporSaboresItem==='function')?decomporSaboresItem(it.name):[it.name||'—'];
+      sabores.forEach(s=>{ contagem[s]=(contagem[s]||0)+qtd; });
+    });
   });
   const ranking=Object.entries(contagem).sort((a,b)=>b[1]-a[1]).slice(0,6);
   destruirGrafico('sab');
@@ -268,7 +274,14 @@ function renderGraficoSabores(){
 function renderPizzaStats(){
   const qtdPedidos=pedidosPeriodo.length;
   let totalItens=0;
-  pedidosPeriodo.forEach(p=>{ (p.items_json||[]).forEach(it=>{ totalItens+=Number(it.qty)||1; }); });
+  pedidosPeriodo.forEach(p=>{
+    (p.items_json||[]).forEach(it=>{
+      const qtd=Number(it.qty)||1;
+      // combo "2 Por X" são 2 pizzas físicas por qtd (meio a meio continua sendo 1 — ver pizzasFisicasPorItem)
+      const pizzas=(typeof pizzasFisicasPorItem==='function')?pizzasFisicasPorItem(it.name):1;
+      totalItens+=qtd*pizzas;
+    });
+  });
   const media=qtdPedidos?(totalItens/qtdPedidos):0;
   document.getElementById('kpis-pizzas').innerHTML=`
     <div class="kpi-card"><div class="kpi-num">${totalItens}</div><div class="kpi-lbl">Pizzas vendidas no período</div></div>

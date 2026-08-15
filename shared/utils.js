@@ -93,6 +93,29 @@ function resolverFaixaCombo(sabor1, sabor2, faixaPrecoExplicita){
   return candidatos.length===1 ? candidatos[0] : null;
 }
 
+// Decompõe o nome de um item do carrinho nos sabores reais que ele representa — usado pelo
+// ranking "sabores mais vendidos" do Dashboard (relatorios.js). Sem isso, um combo salvo como
+// "2 Por R$ 65,00 — Mussarela + Calabresa" ou um meio a meio salvo como "Meio a Meio: Toscana /
+// Frango Catupiry" aparecem no ranking como um "sabor" composto raro, e NUNCA contam pro sabor
+// de verdade — o que faz o gráfico mentir bem pros sabores que mais vendem via combo/meio a meio.
+function decomporSaboresItem(nome){
+  const n=(nome||'').trim();
+  if(!n) return [];
+  let m=n.match(/^Meio a Meio:\s*(.+?)\s*\/\s*(.+)$/);
+  if(m) return [m[1].trim(), m[2].trim()];
+  m=n.match(/^2 Por R\$\s*[\d.,]+\s*—\s*(.+?)\s*\+\s*(.+)$/);
+  if(m) return [m[1].trim(), m[2].trim()];
+  return [n];
+}
+
+// Quantas pizzas FÍSICAS uma linha do carrinho representa (diferente de decomporSaboresItem:
+// um combo "2 Por X" são 2 pizzas inteiras separadas, mas um meio a meio é 1 pizza só, cortada
+// ao meio — ambos "decompõem" em 2 sabores, mas só o combo decompõe em 2 pizzas de verdade).
+// Usado no total "pizzas vendidas no período" do Dashboard.
+function pizzasFisicasPorItem(nome){
+  return /^2 Por R\$\s*[\d.,]+\s*—/.test((nome||'').trim()) ? 2 : 1;
+}
+
 if(typeof module!=='undefined' && module.exports){
-  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, resolverFaixaCombo };
+  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem };
 }

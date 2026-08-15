@@ -9,6 +9,7 @@
 
 const admin = require('firebase-admin');
 const { getSecrets } = require('./lib/secrets');
+const { decomporSaboresItem } = require('../../shared/utils.js');
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -52,12 +53,16 @@ exports.handler = async (event) => {
     const totalFaturamento = pedidos.reduce((s, p) => s + Number(p.total || 0), 0);
     const ticketMedio = totalFaturamento / pedidos.length;
 
-    // vendas por item
+    // vendas por sabor — decompõe combo ("2 Por R$ 65,00 — A + B") e meio a meio
+    // ("Meio a Meio: A / B") nos sabores reais, senão eles nunca contam pro sabor de
+    // verdade e aparecem como "nunca vendido" mesmo vendendo bastante via combo.
     const vendasPorItem = {};
     pedidos.forEach(p => {
       (p.items_json || []).forEach(it => {
-        const nome = it.name || 'Item';
-        vendasPorItem[nome] = (vendasPorItem[nome] || 0) + (Number(it.qty) || 1);
+        const qtd = Number(it.qty) || 1;
+        decomporSaboresItem(it.name).forEach(nome => {
+          vendasPorItem[nome] = (vendasPorItem[nome] || 0) + qtd;
+        });
       });
     });
     const rankingItens = Object.entries(vendasPorItem).sort((a, b) => b[1] - a[1]);

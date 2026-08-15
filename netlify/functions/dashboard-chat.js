@@ -8,6 +8,7 @@
 
 const admin = require('firebase-admin');
 const { getSecrets } = require('./lib/secrets');
+const { decomporSaboresItem } = require('../../shared/utils.js');
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -60,11 +61,15 @@ async function montarContextoVendas() {
   const totalFaturamento = pedidosValidos.reduce((s, p) => s + Number(p.total || 0), 0);
   const ticketMedio = pedidosValidos.length ? totalFaturamento / pedidosValidos.length : 0;
 
+  // decompõe combo/meio a meio nos sabores reais (ver comentário em shared/utils.js) —
+  // senão eles nunca contam pro sabor de verdade nem no ranking nem em "nunca vendido"
   const vendasPorItem = {};
   pedidosValidos.forEach(p => {
     (p.items_json || []).forEach(it => {
-      const nome = it.name || 'Item';
-      vendasPorItem[nome] = (vendasPorItem[nome] || 0) + (Number(it.qty) || 1);
+      const qtd = Number(it.qty) || 1;
+      decomporSaboresItem(it.name).forEach(nome => {
+        vendasPorItem[nome] = (vendasPorItem[nome] || 0) + qtd;
+      });
     });
   });
   const rankingItens = Object.entries(vendasPorItem).sort((a, b) => b[1] - a[1]);
