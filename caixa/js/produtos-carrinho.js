@@ -514,7 +514,7 @@ async function carregarVendasHoje(){
   try{
     const hoje=_hojeISO();
     const snap=await FS.collection('orders')
-      .where('created_at','>=',hoje+'T00:00:00-03:00')
+      .where('created_at','>=',limiteDiaBrasilia(hoje))
       .orderBy('created_at','desc')
       .limit(200)
       .get();

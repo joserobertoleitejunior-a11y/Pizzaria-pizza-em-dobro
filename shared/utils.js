@@ -116,6 +116,21 @@ function pizzasFisicasPorItem(nome){
   return /^2 Por R\$\s*[\d.,]+\s*—/.test((nome||'').trim()) ? 2 : 1;
 }
 
+// Converte um dia de Brasília (AAAA-MM-DD) num limite comparável com created_at.
+// NUNCA construir a string "AAAA-MM-DDT00:00:00-03:00" na mão e comparar direto com
+// created_at — o Firestore compara STRING (created_at é salvo como string ISO via
+// new Date().toISOString(), formato "...Z" em UTC), e comparação de string não entende
+// fuso horário: "T00:00:00-03:00" às vezes ordena DEPOIS de um "T00:xx:xx.xxxZ" de UTC
+// por causa do ponto do milissegundo vir depois do hífen no código ASCII — bug real:
+// pedido de véspera feito entre 21h e 23h59 (horário de Brasília) aparecia contado como
+// "hoje" no Dashboard/Caixa/stats públicos. Passar pelo Date().toISOString() aqui garante
+// que o limite fica no MESMO formato "...Z" salvo em created_at, então a comparação de
+// string bate com a comparação de data de verdade.
+function limiteDiaBrasilia(diaISO, fimDoDia){
+  const hora=fimDoDia?'23:59:59.999':'00:00:00.000';
+  return new Date(diaISO+'T'+hora+'-03:00').toISOString();
+}
+
 if(typeof module!=='undefined' && module.exports){
-  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem };
+  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia };
 }

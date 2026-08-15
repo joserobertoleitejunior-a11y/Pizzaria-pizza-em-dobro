@@ -11,6 +11,7 @@ const {
   resolverFaixaCombo,
   decomporSaboresItem,
   pizzasFisicasPorItem,
+  limiteDiaBrasilia,
 } = require('../shared/utils.js');
 
 test('fmt formata em real brasileiro', () => {
@@ -84,4 +85,24 @@ test('pizzasFisicasPorItem: combo conta 2 pizzas, meio a meio e normal contam 1'
   assert.equal(pizzasFisicasPorItem('2 Por R$ 65,00 — Mussarela + Calabresa'), 2);
   assert.equal(pizzasFisicasPorItem('Meio a Meio: Toscana / Frango Catupiry'), 1);
   assert.equal(pizzasFisicasPorItem('Toscana'), 1);
+});
+
+test('limiteDiaBrasilia: pedido da véspera às 21h-23h59 NUNCA entra em "hoje" (bug real corrigido)', () => {
+  // comparação de STRING (o que o Firestore faz de verdade) contra o valor real gravado
+  // por new Date().toISOString() — antes o limite era construído como "AAAA-MM-DDT00:00:00-03:00"
+  // e comparado direto, o que incluía pedidos da véspera feitos entre 21h e 23h59 (Brasília)
+  const pedidoVespera2130 = new Date('2026-08-14T21:30:00-03:00').toISOString();
+  const pedidoHoje1810 = new Date('2026-08-15T18:10:00-03:00').toISOString();
+  const limiteHoje = limiteDiaBrasilia('2026-08-15');
+
+  assert.equal(pedidoVespera2130 >= limiteHoje, false, 'pedido da véspera não pode contar como hoje');
+  assert.equal(pedidoHoje1810 >= limiteHoje, true, 'pedido de hoje precisa contar como hoje');
+});
+
+test('limiteDiaBrasilia: fim do dia inclui até 23:59:59.999 de Brasília', () => {
+  const fimDoDia = limiteDiaBrasilia('2026-08-15', true);
+  const pedido2359 = new Date('2026-08-15T23:59:58-03:00').toISOString();
+  const pedidoProximoDia = new Date('2026-08-16T00:00:01-03:00').toISOString();
+  assert.equal(pedido2359 <= fimDoDia, true);
+  assert.equal(pedidoProximoDia <= fimDoDia, false);
 });
