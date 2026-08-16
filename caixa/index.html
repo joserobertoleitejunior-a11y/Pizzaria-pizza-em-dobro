@@ -46,15 +46,44 @@ body{
 .nav-links a:hover{color:#000;background:var(--pr);border-top-color:transparent;}
 .nav-links a.on{color:var(--tx);border-top:2px solid #fff;}
 
-.staff-tag{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 12px;
-  font-family:var(--font-eyebrow);font-size:.66rem;letter-spacing:1px;text-transform:uppercase;
-  color:var(--sub);padding:7px 16px;flex:none;background:rgba(0,0,0,.22);}
-.staff-tag .printer-status{display:flex;align-items:center;gap:6px;letter-spacing:.3px;}
-.staff-tag .printer-status b{color:var(--tx);font-weight:700;}
+/* ---- CONSOLE DE STATUS — reestruturado: em vez de faixas empilhadas com estilos
+   diferentes (barra da equipe, banner verde do caixa, banner vermelho da impressora,
+   cada uma com sua própria cor/altura), agora é UM console com linhas do mesmo
+   tamanho/estilo — lê como "uma área de status", não como "vários avisos empilhados".
+   Os balões de chat/notificação que ficavam soltos flutuando por cima do cardápio
+   também moraram pra cá, como ícones — nada fica mais flutuando sobre o conteúdo. ---- */
+.status-rail{flex:none;background:rgba(0,0,0,.24);border-bottom:1px solid var(--card-bd);}
+.status-line{display:flex;align-items:center;gap:8px 12px;padding:7px 16px;flex-wrap:wrap;font-size:.72rem;}
+.status-line+.status-line{border-top:1px solid rgba(255,255,255,.05);}
+.status-line.linha-equipe{color:var(--sub);font-family:var(--font-eyebrow);letter-spacing:.8px;text-transform:uppercase;font-size:.66rem;}
+.status-line.linha-aberto{background:rgba(46,204,113,.1);color:#5ee89b;}
+.status-line.linha-alerta{background:rgba(231,29,54,.16);color:#ff9d90;animation:pulseAlert 1.6s ease-in-out infinite;}
+@keyframes pulseAlert{0%,100%{background-color:rgba(231,29,54,.16);}50%{background-color:rgba(231,29,54,.3);}}
+.status-line .txt{flex:1;min-width:0;}
+.status-line .txt b{color:var(--tx);}
+.status-line.linha-aberto .txt b{color:#fff;}
+.status-btn{border:none;border-radius:7px;padding:6px 11px;font-size:.68rem;font-weight:700;cursor:pointer;
+  letter-spacing:.3px;text-transform:none;font-family:var(--font-eyebrow);white-space:nowrap;flex-shrink:0;transition:transform .1s;}
+.status-btn:active{transform:scale(.95);}
+.status-btn.fechar{background:rgba(255,255,255,.18);color:#fff;}
+.status-btn.reconectar{background:#fff;color:#c0152a;}
 .printer-btn{border:none;border-radius:7px;padding:5px 8px;font-size:.66rem;font-weight:700;cursor:pointer;
   letter-spacing:.3px;text-transform:none;font-family:var(--font-eyebrow);}
 .printer-btn.bt{background:rgba(29,161,242,.16);color:#1da1f2;}
 .printer-btn.usb{background:rgba(46,204,113,.16);color:#2ecc71;}
+
+/* ícones de ação (chat/notificação) — antes eram balões fixos flutuando por cima do
+   cardápio e dos modais; agora vivem dentro do console de status, à direita */
+.icon-actions{display:flex;align-items:center;gap:6px;margin-left:auto;}
+.header-icon-btn{position:relative;width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:.85rem;
+  cursor:pointer;flex-shrink:0;transition:background .18s,border-color .18s;}
+.header-icon-btn:active{transform:scale(.93);}
+.header-icon-btn.chat{color:#1da1f2;border-color:rgba(29,161,242,.3);background:rgba(29,161,242,.1);}
+#notif-bubble-badge{position:absolute;top:-6px;right:-6px;background:#fff;color:var(--se);font-size:.62rem;
+  font-weight:700;min-width:16px;height:16px;border-radius:8px;display:none;align-items:center;justify-content:center;
+  padding:0 3px;font-family:var(--font-eyebrow);box-shadow:0 0 0 2px #07060a;}
+#notif-bubble.show #notif-bubble-badge{display:flex;}
 
 /* ---- TABS ---- */
 .tabs{display:flex;gap:8px;padding:10px 12px;flex:none;}
@@ -71,19 +100,21 @@ body{
 #topo-colapsavel.escondido{max-height:0;opacity:0;}
 
 /* ---- CONTROLES FIXOS DO PDV ---- */
+/* busca + ações rápidas numa linha só (antes eram 2 fileiras cheias, uma embaixo da outra) */
 .pdv-controls{flex:none;padding:0 12px 10px;}
-.search-box{position:relative;margin-bottom:8px;}
-.search-box input{width:100%;background:var(--card);border:2px solid var(--card-bd);border-radius:14px;
-  padding:13px 14px 13px 40px;color:var(--tx-dark);font-size:1rem;font-weight:600;}
+.toolbar-row{display:flex;gap:8px;align-items:stretch;}
+.search-box{position:relative;flex:1;min-width:0;}
+.search-box input{width:100%;height:100%;background:var(--card);border:2px solid var(--card-bd);border-radius:14px;
+  padding:0 14px 0 40px;color:var(--tx-dark);font-size:1rem;font-weight:600;}
 .search-box input::placeholder{color:var(--sub-dark);font-weight:400;}
 .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--sub-dark);font-size:1rem;}
 
-.mode-row{display:flex;gap:8px;}
-.mode-btn{flex:1;padding:11px 4px;text-align:center;border-radius:12px;background:rgba(255,255,255,.1);
-  border:1px solid rgba(255,255,255,.16);
-  font-family:var(--font-eyebrow);font-size:.8rem;text-transform:uppercase;letter-spacing:.3px;color:var(--tx);cursor:pointer;font-weight:600;
+.mode-btn{flex:none;width:60px;padding:6px 4px;text-align:center;border-radius:12px;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.16);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-family:var(--font-eyebrow);font-size:.6rem;text-transform:uppercase;letter-spacing:.2px;color:var(--tx);cursor:pointer;font-weight:600;
   transition:background .22s cubic-bezier(.4,0,.2,1),border-color .22s cubic-bezier(.4,0,.2,1),box-shadow .22s,transform .1s;}
-.mode-btn:active{transform:scale(.97);}
+.mode-btn .ic{font-size:1.05rem;line-height:1;}
+.mode-btn:active{transform:scale(.94);}
 .mode-btn.active{background:linear-gradient(135deg,var(--se),#ff4757);border-color:var(--se);color:#fff;box-shadow:0 3px 12px rgba(231,29,54,.35);}
 .mode-btn.acao{background:rgba(255,159,28,.1);border-color:rgba(255,159,28,.4);color:var(--pr);}
 
@@ -205,16 +236,13 @@ body{
 .toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:var(--ok);color:#fff;padding:12px 24px;
   border-radius:12px;font-weight:700;font-size:.88rem;z-index:900;display:none;}
 
-/* ---- BALÃO DE NOTIFICAÇÃO DE NOVO PEDIDO (puxável, estilo notificação de celular) ---- */
-#msg-bubble{position:fixed;left:16px;bottom:90px;z-index:9996;width:46px;height:46px;border-radius:50%;
-  background:rgba(29,161,242,.85);color:#fff;display:flex;align-items:center;justify-content:center;
-  font-size:1.2rem;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.35);transition:opacity .18s,transform .18s;}
-/* com um modal aberto (carrinho, item, colar pedido...) esses balões flutuantes ficavam por
-   cima dos botões do modal (z-index deles é maior que o do modal) — some suavemente enquanto
-   o modal estiver aberto, sem sumir de vez (volta sozinho ao fechar) */
-body:has(.modal-bg.open) #msg-bubble,body:has(.modal-bg.open) #notif-bubble{
-  opacity:0;transform:scale(.85);pointer-events:none;}
-#mini-messenger{position:fixed;left:16px;bottom:146px;z-index:9996;width:min(340px,88vw);height:min(460px,70vh);
+/* ---- BALÕES DE CHAT/NOTIFICAÇÃO — antes flutuavam soltos por cima do cardápio e dos
+   modais (precisou de uma regra à parte só pra sumir quando um modal abria); agora moram
+   dentro do console de status como ícones (.header-icon-btn, definido lá em cima), então
+   nunca mais ficam por cima de nada — não sobra nenhum caso especial pra tratar. ---- */
+#notif-bubble{opacity:.55;}
+#notif-bubble.show{opacity:1;}
+#mini-messenger{position:fixed;top:96px;right:12px;z-index:9996;width:min(340px,88vw);height:min(460px,60vh);
   background:#181114;border:1px solid var(--card-bd);border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.5);
   display:none;flex-direction:column;overflow:hidden;}
 #mini-messenger.show{display:flex;}
@@ -237,15 +265,6 @@ body:has(.modal-bg.open) #msg-bubble,body:has(.modal-bg.open) #notif-bubble{
   color:var(--tx);font-size:.82rem;}
 .mm-send button{background:var(--pr);color:#1a1200;border:none;border-radius:8px;padding:0 14px;cursor:pointer;font-weight:700;}
 #mm-voltar{cursor:pointer;color:var(--sub);font-size:.75rem;}
-#notif-bubble{position:fixed;right:16px;bottom:90px;z-index:9997;width:34px;height:34px;border-radius:50%;
-  transition:opacity .18s,transform .18s;
-  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;
-  font-size:.9rem;cursor:pointer;touch-action:none;user-select:none;opacity:.45;}
-#notif-bubble-badge{position:absolute;top:-4px;right:-4px;background:#fff;color:var(--se);font-size:.68rem;
-  font-weight:700;min-width:18px;height:18px;border-radius:9px;display:none;align-items:center;justify-content:center;
-  padding:0 4px;font-family:var(--font-eyebrow);}
-#notif-bubble.show #notif-bubble-badge{display:flex;}
-  padding:0 4px;font-family:var(--font-eyebrow);}
 @keyframes notifPulse{0%,100%{box-shadow:0 4px 16px rgba(0,0,0,.4),0 0 0 0 rgba(231,29,54,.5);}50%{box-shadow:0 4px 16px rgba(0,0,0,.4),0 0 0 10px rgba(231,29,54,0);}}
 #notif-caixa .btn-cancelar-notif{background:rgba(255,255,255,.18);color:#fff;border:none;border-radius:10px;padding:10px 14px;
   font-family:var(--font-eyebrow);font-size:.72rem;text-transform:uppercase;letter-spacing:.4px;}
@@ -302,8 +321,6 @@ body:has(.modal-bg.open) #msg-bubble,body:has(.modal-bg.open) #notif-bubble{
 </div>
 
 
-<div id="msg-bubble" onclick="toggleMiniMessenger()">💬</div>
-
 <div id="mini-messenger">
   <div class="mm-header">
     <span id="mm-titulo">Conversas do Bot</span>
@@ -322,11 +339,6 @@ body:has(.modal-bg.open) #msg-bubble,body:has(.modal-bg.open) #notif-bubble{
       <button onclick="enviarMensagemAtendente()">➤</button>
     </div>
   </div>
-</div>
-
-<div id="notif-bubble" onclick="abrirNotifCaixa()">
-  <span id="notif-bubble-badge">0</span>
-  🔔
 </div>
 
 <div id="notif-caixa">
@@ -357,22 +369,28 @@ body:has(.modal-bg.open) #msg-bubble,body:has(.modal-bg.open) #notif-bubble{
       <a href="../bot-config/index.html">Bot</a>
     </div>
   </div>
-  <div class="staff-tag">
-    <span>🔒 Uso interno da equipe · v41</span>
-    <span class="printer-status">🖨️ <b id="bt-name">Não conectada</b>
-      <button onclick="conectarBluetooth()" class="printer-btn bt">📶 BT</button>
-      <button onclick="conectarUSB()" class="printer-btn usb">🔌 USB</button>
-    </span>
+  <div class="status-rail">
+    <div class="status-line linha-equipe">
+      <span>🔒 Equipe · v41</span>
+      <span class="printer-status">🖨️ <b id="bt-name">Não conectada</b></span>
+      <div class="icon-actions">
+        <button onclick="conectarBluetooth()" class="printer-btn bt">📶 BT</button>
+        <button onclick="conectarUSB()" class="printer-btn usb">🔌 USB</button>
+        <div id="msg-bubble" class="header-icon-btn chat" onclick="toggleMiniMessenger()">💬</div>
+        <div id="notif-bubble" class="header-icon-btn" onclick="abrirNotifCaixa()">
+          <span id="notif-bubble-badge">0</span>🔔
+        </div>
+      </div>
+    </div>
+    <div id="caixa-status-banner" class="status-line linha-aberto" style="display:none;">
+      <span class="txt">🟢 Caixa aberto — abertura <b id="caixa-status-valor">R$ 0,00</b></span>
+      <button onclick="fecharCaixa()" class="status-btn fechar">Fechar Caixa</button>
+    </div>
+    <div id="printer-alert-banner" class="status-line linha-alerta" style="display:none;">
+      <span class="txt">🖨️⚠️ Impressora desconectada — pedidos do bot vão para a fila manual!</span>
+      <button onclick="tentarReconectarImpressora()" class="status-btn reconectar">🔌 Reconectar</button>
+    </div>
   </div>
-  <div id="caixa-status-banner" style="display:none;align-items:center;justify-content:space-between;gap:8px;padding:9px 16px;background:rgba(46,204,113,.12);border-bottom:1px solid rgba(46,204,113,.25);font-size:.8rem;">
-    <span style="flex:1;min-width:0;">🟢 Caixa aberto — abertura <b id="caixa-status-valor">R$ 0,00</b></span>
-    <button onclick="fecharCaixa()" style="background:rgba(231,29,54,.12);color:#E71D36;border:1px solid rgba(231,29,54,.3);padding:6px 12px;border-radius:8px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">Fechar Caixa</button>
-  </div>
-  <div id="printer-alert-banner" style="display:none;align-items:center;justify-content:space-between;gap:8px;padding:10px 16px;background:linear-gradient(135deg,#E71D36,#c0152a);color:#fff;font-weight:700;font-size:.85rem;animation:pulseAlert 1.4s infinite;">
-    <span>🖨️⚠️ Impressora desconectada — pedidos do bot vão para a fila manual!</span>
-    <button onclick="tentarReconectarImpressora()" style="background:#fff;color:#c0152a;border:none;padding:6px 12px;border-radius:8px;font-weight:700;font-size:.75rem;cursor:pointer;">🔌 Reconectar</button>
-  </div>
-  <style>@keyframes pulseAlert{0%,100%{opacity:1;}50%{opacity:.55;}}</style>
 
   <div id="topo-colapsavel">
     <div class="tabs">
@@ -380,13 +398,13 @@ body:has(.modal-bg.open) #msg-bubble,body:has(.modal-bg.open) #notif-bubble{
       <div class="tab" id="tab-hoje" onclick="setView('hoje')">Vendas de Hoje</div>
     </div>
     <div class="pdv-controls">
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input id="busca-produto" placeholder="Buscar pizza..." oninput="renderProdutos()">
-      </div>
-      <div class="mode-row">
-        <div class="mode-btn" id="btn-meia" onclick="alternarMeiaAMeia()">🍕/🍕 Meia a Meia</div>
-        <div class="mode-btn acao" id="btn-colar" onclick="abrirColarPedido()">📋 Colar Pedido</div>
+      <div class="toolbar-row">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input id="busca-produto" placeholder="Buscar pizza..." oninput="renderProdutos()">
+        </div>
+        <div class="mode-btn" id="btn-meia" onclick="alternarMeiaAMeia()"><span class="ic">🍕/🍕</span>Meia</div>
+        <div class="mode-btn acao" id="btn-colar" onclick="abrirColarPedido()"><span class="ic">📋</span>Colar</div>
       </div>
     </div>
     <div class="cats" id="cats"></div>
