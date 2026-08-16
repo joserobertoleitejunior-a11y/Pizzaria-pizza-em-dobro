@@ -45,7 +45,11 @@ exports.handler = async (event) => {
     const pedidos = ordersSnap.docs.map(d => d.data()).filter(p => p.status !== 'cancelado');
 
     const menuSnap = await db.collection('menu_items').where('active', '==', true).get();
-    const cardapioCompleto = menuSnap.docs.map(d => d.data().name);
+    const menuAtivo = menuSnap.docs.map(d => d.data());
+    const cardapioCompleto = menuAtivo.map(m => m.name);
+    const CATEGORIA_LABEL = { p: 'Pizza Tradicional', s: 'Pizza Especial', co: 'Combo', dw: 'Doce', cz: 'Calzone Doce', d: 'Bebida' };
+    const categoriaPorNome = {};
+    menuAtivo.forEach(m => { if (m.name) categoriaPorNome[m.name] = m.category; });
 
     if (pedidos.length === 0) {
       return { statusCode: 200, body: JSON.stringify({ texto: 'Ainda não tem pedidos suficientes nos últimos 30 dias pra gerar uma análise útil. Volta aqui depois de vender mais um pouco! 🍕' }) };
@@ -104,8 +108,9 @@ Faturamento total: R$ ${totalFaturamento.toFixed(2)}
 Total de pedidos: ${pedidos.length}
 Ticket médio: R$ ${ticketMedio.toFixed(2)}
 
-ITENS MAIS VENDIDOS (quantidade vendida):
-${maisVendidos.map(([n, q]) => `- ${n}: ${q}x`).join('\n')}
+ITENS MAIS VENDIDOS, COM CATEGORIA (quantidade vendida — use a categoria pra nunca misturar
+pizza com bebida/doce/combo quando comentar especificamente sobre "pizza" no relatório):
+${maisVendidos.map(([n, q]) => `- ${n} (${CATEGORIA_LABEL[categoriaPorNome[n]] || 'categoria desconhecida'}): ${q}x`).join('\n')}
 
 ITENS DO CARDÁPIO QUE NÃO VENDERAM NADA NESSE PERÍODO:
 ${nuncaVendidos.length ? nuncaVendidos.map(n => `- ${n}`).join('\n') : '(todos os itens ativos venderam pelo menos uma vez)'}

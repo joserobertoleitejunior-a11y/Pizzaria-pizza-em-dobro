@@ -27,6 +27,34 @@ async function obterProximoNumeroSequencial() {
   });
 }
 
+// Trava final antes de gravar em `orders` — verifica se o PRÓPRIO bot já fechou um pedido
+// pra esse telefone nos últimos 20 minutos. Existe pra cobrir o caso que buscarPedidoRecenteMesmoTelefone()
+// (abaixo) deliberadamente ignora: 2 mensagens seguidas na MESMA conversa do bot (reentrega de
+// webhook da Evolution API, cliente mandando a mesma confirmação 2x, ou o Claude reemitindo
+// PEDIDO_FECHADO numa resposta seguinte) não podem virar 2 pedidos reais no Caixa — mesmo que o
+// prompt já instrua o Claude a não fechar de novo, essa é a trava de verdade, que não depende da
+// IA "lembrar" a regra certa em toda resposta.
+async function pedidoBotJaFechadoRecente(telefone) {
+  try {
+    const digitos = (telefone || '').replace(/\D/g, '');
+    const sufixo = digitos.slice(-8);
+    if (!sufixo) return null;
+    const desde = new Date(Date.now() - 20 * 60 * 1000).toISOString();
+    const snap = await db.collection('orders').where('created_at', '>=', desde).get();
+    for (const doc of snap.docs) {
+      const o = doc.data();
+      if (o.origem !== 'whatsapp_bot') continue;
+      if (o.status === 'cancelado') continue;
+      const foneDigitos = (o.client_phone || '').replace(/\D/g, '');
+      if (foneDigitos && foneDigitos.slice(-8) === sufixo) return { id: doc.id, ...o };
+    }
+    return null;
+  } catch (e) {
+    console.warn('Não foi possível checar pedido recente do próprio bot:', e);
+    return null;
+  }
+}
+
 // Verifica se esse telefone já tem um pedido recente feito por outro canal (site/cardápio,
 // conversor) nos últimos 45 minutos, pra evitar que o bot feche um pedido duplicado.
 async function buscarPedidoRecenteMesmoTelefone(telefone) {
@@ -298,20 +326,26 @@ Se o cliente pedir pra falar com uma pessoa, reclamar de algo, ou o caso for com
     // ── 12. Se fechou pedido, grava em `orders` (mesma coleção do site) ──
     // TODO: validar itens/preços contra `menu_items` antes de gravar — não confiar cegamente no Claude.
     if (pedidoFechado) {
-      const numeroSequencial = await obterProximoNumeroSequencial();
-      const orderRef = await db.collection('orders').add({
-        client_name: pedidoFechado.nome || '',
-        client_phone: telefone,
-        address: pedidoFechado.endereco || '',
-        payment: pedidoFechado.pagamento || '',
-        items_json: pedidoFechado.itens || [],
-        status: 'novo',
-        origem: 'whatsapp_bot',
-        whatsapp_sent: true,
-        numero_sequencial: numeroSequencial,
-        created_at: new Date().toISOString()
-      });
-      await convRef.set({ pedidoId: orderRef.id, nomeCliente: pedidoFechado.nome || conv.nomeCliente || null }, { merge: true });
+      const duplicataDoBot = await pedidoBotJaFechadoRecente(telefone);
+      if (duplicataDoBot) {
+        console.warn(`Pedido do bot BLOQUEADO por duplicidade — telefone ${telefone} já tem o pedido ${duplicataDoBot.id} fechado nos últimos 20min.`);
+        await convRef.set({ pedidoId: duplicataDoBot.id, nomeCliente: pedidoFechado.nome || conv.nomeCliente || null }, { merge: true });
+      } else {
+        const numeroSequencial = await obterProximoNumeroSequencial();
+        const orderRef = await db.collection('orders').add({
+          client_name: pedidoFechado.nome || '',
+          client_phone: telefone,
+          address: pedidoFechado.endereco || '',
+          payment: pedidoFechado.pagamento || '',
+          items_json: pedidoFechado.itens || [],
+          status: 'novo',
+          origem: 'whatsapp_bot',
+          whatsapp_sent: true,
+          numero_sequencial: numeroSequencial,
+          created_at: new Date().toISOString()
+        });
+        await convRef.set({ pedidoId: orderRef.id, nomeCliente: pedidoFechado.nome || conv.nomeCliente || null }, { merge: true });
+      }
     }
 
     return { statusCode: 200, body: 'ok' };
