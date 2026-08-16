@@ -1,0 +1,154 @@
+/* PRÉVIA — tema claro da Loja (exploração visual, a pedido do José: "deixa as cores
+   do site clara para ver como fica"). Carregado DEPOIS de site.css só nesta página de
+   prévia (light-preview.html) — o site.css original e o index.html de produção não
+   são tocados por este arquivo. Mesma paleta de marca (laranja/vermelho), fundo e
+   textos invertidos para claro, com contraste ajustado (o laranja de marca sozinho
+   como texto em fundo branco não tem contraste suficiente — por isso --pr fica um
+   pouco mais escuro só aqui). */
+
+:root{
+  --pr:#D97A0A;      /* laranja da marca, escurecido pra ler bem como texto em fundo claro */
+  --se:#E71D36;       /* vermelho da marca — já tem contraste suficiente em fundo claro, mantido */
+  --bg:#FFF8EF;        /* creme quente, não branco puro (mantém o aconchego "pizzaria") */
+  --card:rgba(255,255,255,.92);
+  --text:#2A2016;      /* quase-preto quente, não preto puro */
+  --muted:#8A7A68;
+}
+
+body{background-image:radial-gradient(circle at 50% 0%,rgba(217,122,10,.07) 0%,transparent 65%),radial-gradient(circle at 100% 20%,rgba(231,29,54,.04) 0%,transparent 50%);}
+
+/* Google Places autocomplete */
+.pac-container{background:#fff!important;border:1px solid rgba(217,122,10,.3)!important;box-shadow:0 8px 24px rgba(60,40,20,.15)!important;}
+.pac-item{color:#4a3c2c!important;border-top:1px solid rgba(0,0,0,.06)!important;}
+.pac-item-query{color:#1f1710!important;}
+
+/* TOPBAR / DRAWER */
+#topbar{background:rgba(255,248,239,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+#drawer{background:#fffdfa;border-left:1px solid rgba(217,122,10,.2);border-bottom:1px solid rgba(217,122,10,.2);box-shadow:-8px 8px 30px rgba(60,40,20,.12);}
+.drawer-item{color:#4a3c2c;border-bottom:1px solid rgba(0,0,0,.05);}
+.drawer-item .di{color:#8a7a68;}
+
+/* NAV / PROMO / STATS */
+.nav-bar{background:rgba(255,248,239,.9);}
+.promo-card p{color:#5a4c3c;}
+.lo-card{color:#6b5c4a;}
+.sp-lbl{color:#8a7a68;}
+
+/* BUSCA */
+#search-box{background:rgba(255,255,255,.7);color:#1f1710;box-shadow:0 4px 20px rgba(60,40,20,.1);}
+#search-box::placeholder{color:#9c8f80;}
+#search-clear{color:#9c8f80;}
+#search-empty{color:#a89a89;}
+
+/* CARD DE ITEM */
+.item-card{border:1px solid rgba(0,0,0,.07);box-shadow:0 2px 10px rgba(60,40,20,.06);}
+.item-img-wrap{background:#f2ece2;}
+.img-skel{background:linear-gradient(90deg,#eee 25%,#f7f4ef 50%,#eee 75%);background-size:200% 100%;}
+.item-name{color:#1f1710;}
+.controls{background:rgba(0,0,0,.045);}
+.qty-val{color:#1f1710;}
+
+/* BORDAS / ACRÉSCIMOS / REMOVER — pílulas no estado normal (não selecionado) */
+.borda-pill,.acr-pill,.rm-pill{background:rgba(0,0,0,.035);}
+.opt-toggle-hdr{background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.06);}
+.opt-toggle-hdr:active{background:rgba(0,0,0,.06);}
+
+/* HALF BANNER (meia a meia) */
+#half-banner{background:rgba(255,248,239,.98);box-shadow:0 4px 16px rgba(60,40,20,.08);}
+.hb-sub{color:#8a7a68;}
+
+/* FEEDBACK */
+.fb-text{color:#4a3c2c;}
+.fb-date{color:#b8ada0;}
+
+/* CARRINHO */
+#cart-bar{background:rgba(255,251,245,.99);}
+.del-wrap{background:rgba(0,0,0,.035);border:1px solid rgba(0,0,0,.08);}
+.del-lbl{color:#8a7a68;}
+#delivery-msg{color:#6b5c4a;}
+.cart-tip{color:#a89a89;background:rgba(0,0,0,.025);}
+.sum-item{color:#3a2f22;}
+.sum-rm{color:#b8ada0;}
+.c-input,.c-select{background:rgba(0,0,0,.035);border:1px solid rgba(0,0,0,.09);color:#1f1710;}
+#del-time{color:#6b5c4a;background:rgba(0,0,0,.025);border:1px solid rgba(0,0,0,.06);}
+
+/* MÚSICA */
+#music-bar{background:rgba(255,248,239,.97);}
+.mp-title{color:#1f1710;}
+.mp-artist{color:#9c8f80;}
+.mp-close{color:#c9beb1;}
+
+/* MODAIS (o fundo escurecido por trás continua escuro nos dois temas — padrão comum) */
+.modal-box{background:#fffaf3;border:1px solid rgba(217,122,10,.25);box-shadow:0 -12px 40px rgba(60,40,20,.18);}
+.modal-handle{background:rgba(0,0,0,.13);}
+.m-input{background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.1);color:#1f1710;}
+.m-btn-sec{color:#8a7a68;border:1px solid rgba(0,0,0,.12);}
+.m-close{background:rgba(0,0,0,.06);color:#8a7a68;}
+
+/* DASH */
+.dash-lbl{color:#8a7a68;}
+.ds-title{color:#8a7a68;border-bottom:1px solid #ecdfcd;}
+.bar-meta{color:#9c8f80;}
+.bar-track{background:rgba(0,0,0,.06);}
+.dash-fb,.ord-row{background:rgba(0,0,0,.025);color:#6b5c4a;}
+
+/* ADMIN */
+.adm-tab{color:#8a7a68;}
+.adm-item-row{background:rgba(0,0,0,.035);border:1px solid rgba(0,0,0,.07);}
+.adm-img{background:#f2ece2;}
+.adm-name{color:#1f1710;}
+.img-upload-lbl{color:#8a7a68;background:rgba(0,0,0,.025);}
+.dash-info-tooltip{background:#fffaf3;color:#6b5c4a;}
+.dash-period-btn{color:#8a7a68;}
+.dash-legend-item{color:#6b5c4a;border-bottom:1px solid rgba(0,0,0,.05);}
+
+/* CLIENTES */
+.client-row{background:rgba(0,0,0,.025);}
+.client-name{color:#1f1710;}
+.client-email{color:#9c8f80;}
+.hh-wrap{background:#f2ece2;}
+.map-endereco{color:#6b5c4a;}
+
+/* CTA GOOGLE */
+.cta-title{color:#1f1710;}
+.cta-desc,.cta-benefit{color:#6b5c4a;}
+
+/* AVALIAÇÕES / COMENTÁRIOS */
+.fb-actions{border-top:1px solid rgba(0,0,0,.06);}
+.fb-like-btn,.fb-comment-btn{color:#9c8f80;}
+.fb-comment-btn:hover{background:rgba(0,0,0,.04);color:#6b5c4a;}
+.fb-comment-item{background:rgba(0,0,0,.03);}
+.fb-comment-txt{color:#4a3c2c;}
+.fb-comment-input{background:rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.09);color:#1f1710;}
+
+/* HISTÓRICO */
+.hist-item{background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.06);}
+.hist-data{color:#a89a89;}
+.hist-items{color:#4a3c2c;}
+
+/* EDIÇÃO ADMIN NA LOJA */
+.promo-row{background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.06);}
+.promo-row-name{color:#1f1710;}
+.promo-row-desc{color:#8a7a68;}
+.ptog-sl{background:#e4dbcd;}
+.ptog-sl:before{background:#a89a89;}
+
+/* GERENCIAR AVALIAÇÕES (estilo email) */
+.gfb-row{background:rgba(0,0,0,.02);border:1px solid rgba(0,0,0,.05);}
+.gfb-row:has(.gfb-check:checked){background:rgba(217,122,10,.06);}
+.gfb-meta{color:#4a3c2c;}
+.gfb-date{color:#b8ada0;}
+.gfb-txt{color:#8a7a68;}
+
+/* CONVERSOR (só aparece pro admin) */
+#conv-close{color:#9c8f80;}
+#conv-input{background:rgba(0,0,0,.035);border:1px solid rgba(0,0,0,.1);color:#1f1710;}
+#conv-input::placeholder{color:#b8ada0;}
+#conv-result{background:rgba(0,0,0,.045);color:#3a2f22;}
+.conv-nav a{background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.07);color:#8a7a68;}
+
+/* PWA BANNER */
+#pwa-banner{background:#fffaf3;border-top:1px solid rgba(217,122,10,.3);}
+#pwa-banner-txt b{color:#1f1710;}
+#pwa-banner-txt span{color:#9c8f80;}
+#pwa-banner-close{color:#9c8f80;}
