@@ -122,6 +122,24 @@ async function trackOrder(items,od){
   DB.set('local_orders',localOrders.slice(0,30));
   if(od){
     _initFB();
+    // trava contra pedido duplicado ANTES de gravar — cliente que clica "enviar" mais de uma vez
+    // (duplo toque que escapou do _enviandoPedido, reabriu a aba, app perdeu conexão e reenviou
+    // sozinho etc.) não pode virar 2 pedidos reais no Caixa. Considera duplicata: mesmo telefone,
+    // mesmo total, criado nos últimos 10 minutos — sinal forte de "é o mesmo pedido de novo".
+    if(od.phone){
+      const recentes = await sg('orders',{where:[['client_phone','==',od.phone]],limit:10});
+      if(recentes){
+        const dezMinAtras = Date.now()-10*60*1000;
+        const duplicata = recentes.find(p=>{
+          const criadoEm = toMillis(p.created_at);
+          return criadoEm>=dezMinAtras && Math.abs(Number(p.total||0)-Number(od.total||0))<0.01;
+        });
+        if(duplicata){
+          console.warn('Pedido duplicado bloqueado — mesmo telefone/total já registrado há pouco (id '+duplicata.id+').');
+          return;
+        }
+      }
+    }
     const numeroSequencial=await obterProximoNumeroSequencial(FS);
     await sp('orders',{
       client_name:od.name,client_email:fbUser?.email||od.email||null,client_uid:AUTH?.currentUser?.uid||null,

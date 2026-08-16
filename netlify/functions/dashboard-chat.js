@@ -73,6 +73,12 @@ async function montarContextoVendas() {
       });
     });
   });
+  // categoria de cada item vendido (pra IA nunca misturar pizza com bebida/doce quando a
+  // pergunta pede só "pizza" — sem isso, uma pergunta como "qual pizza mais vendeu" podia
+  // trazer refrigerante junto na lista, porque o ranking bruto não diferencia categoria)
+  const CATEGORIA_LABEL = { p: 'Pizza Tradicional', s: 'Pizza Especial', co: 'Combo', dw: 'Doce', cz: 'Calzone Doce', d: 'Bebida' };
+  const categoriaPorNome = {};
+  menuCompleto.forEach(m => { if (m.name) categoriaPorNome[m.name] = m.category; });
   const rankingItens = Object.entries(vendasPorItem).sort((a, b) => b[1] - a[1]);
   const nomesVendidos = new Set(Object.keys(vendasPorItem));
   const nuncaVendidos = cardapioCompleto.filter(n => !nomesVendidos.has(n));
@@ -167,8 +173,11 @@ Clientes recorrentes (2+ pedidos): ${clientesRecorrentes}
 ${rankingClientes.slice(0, 30).map((c, i) => `${i + 1}. ${c.nome} (${c.telefone}) — R$ ${c.totalGasto.toFixed(2)} em ${c.qtdPedidos} pedido(s), ${c.qtdItensTotal} item(ns) no total`).join('\n')}
 ${rankingClientes.length > 30 ? `... e mais ${rankingClientes.length - 30} cliente(s) na lista completa de pedidos abaixo.` : ''}
 
-TODOS OS ITENS VENDIDOS (quantidade, do mais ao menos vendido):
-${rankingItens.map(([n, q]) => `- ${n}: ${q}x`).join('\n')}
+TODOS OS ITENS VENDIDOS, COM CATEGORIA (quantidade, do mais ao menos vendido — a categoria entre
+parênteses é a categoria REAL do item no cardápio; use ela pra filtrar quando a pergunta pedir
+algo específico, ex: "pizza" = só Pizza Tradicional/Pizza Especial, NUNCA inclua Bebida/Doce/Calzone/Combo
+numa resposta sobre "pizza mais vendida"):
+${rankingItens.map(([n, q]) => `- ${n} (${CATEGORIA_LABEL[categoriaPorNome[n]] || 'categoria desconhecida'}): ${q}x`).join('\n')}
 
 ITENS DO CARDÁPIO ATIVOS QUE NÃO VENDERAM NADA NESSE PERÍODO:
 ${nuncaVendidos.length ? nuncaVendidos.map(n => `- ${n}`).join('\n') : '(todos os itens ativos venderam pelo menos uma vez)'}
@@ -381,6 +390,21 @@ Nunca diga que "não tem esse dado disponível" ou "não consigo calcular" se a 
 Regra de ouro: NUNCA invente ou estime número que não esteja literalmente nos dados abaixo. Se genuinamente não houver dado suficiente pra responder (ex: pergunta sobre algo de antes dos últimos 30 dias, ou um cliente que nunca pediu), diga isso claramente e não invente um número aproximado nem cite dados que pareçam plausíveis mas não estão na lista.
 
 Pedidos marcados [CANCELADO] na lista não devem entrar em somas de faturamento nem contagem de pedidos "vendidos", a menos que o Marco peça especificamente sobre cancelamentos.
+
+Regra de categoria: cada item na lista "TODOS OS ITENS VENDIDOS" vem com a categoria real entre
+parênteses. Quando o Marco perguntar especificamente sobre "pizza" (ex: "qual pizza vendeu mais",
+"pizza mais pedida"), SÓ considere itens de categoria Pizza Tradicional ou Pizza Especial — NUNCA
+inclua Bebida, Doce, Calzone Doce ou Combo nessa resposta, mesmo que tenham vendido mais unidades.
+Se ele perguntar de forma genérica sobre "produto"/"item"/"o que mais vendeu" (sem dizer "pizza"),
+aí sim pode considerar todas as categorias.
+
+Regra de pedido duplicado: antes de responder qualquer coisa sobre ranking, contagem ou
+faturamento, verifique na lista de pedidos individuais se há pedidos muito parecidos do MESMO
+telefone em um intervalo curto (poucos minutos) com os mesmos itens — isso é sinal de duplicidade
+de lançamento (clique duplo, reenvio), não de vendas de verdade. Quando encontrar isso, avise
+claramente no fim da resposta (ex: "obs: encontrei N pedidos aparentemente duplicados de FULANO
+às HH:MM, contei só 1 nos números acima") e ajuste os números da sua resposta principal
+considerando só 1 desses pedidos como venda real.
 
 Você TEM permissão de pesquisar na internet quando for útil — por exemplo, pra sugerir tendências de marketing pra delivery, melhores horários pra anúncio no Instagram/Facebook, ideias de promoção, preços de concorrência, etc. Quando pesquisar, traga informação prática e atual, sem citar fonte formal, só incorpore na resposta.
 
