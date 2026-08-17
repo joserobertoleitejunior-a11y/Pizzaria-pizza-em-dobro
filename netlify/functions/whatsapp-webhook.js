@@ -221,6 +221,7 @@ SEU OBJETIVO:
 3. Se ele preferir pedir pelo site, explique rapidinho como fazer (é só entrar no site da loja, escolher as pizzas, colocar endereço e pagamento).
 4. Tire qualquer dúvida sobre a pizzaria usando só as informações reais abaixo — nunca invente nada que não esteja aqui.
 5. Assim que souber o nome do cliente, use nas mensagens seguintes — fica mais simpático.
+6. Se for ENTREGA, o NÚMERO da casa/apartamento é obrigatório, do mesmo jeito que endereço e pagamento — é o dado que mais causa erro de entrega quando falta. Se o cliente disser só o nome da rua/bairro sem número, pergunte especificamente "qual o número da casa?" (ou apto/bloco se for prédio/condomínio) antes de seguir — nunca deixe passar batido nem invente um número. Se for retirada no balcão, não precisa de número.
 ${cfg.lojaFechada ? '\n⚠️ ATENÇÃO — LOJA FECHADA PRA PEDIDOS NOVOS HOJE: ' + (cfg.mensagemFechado || 'Hoje não estamos aceitando pedidos novos no momento.') + ' Você pode conversar e tirar dúvida numa boa, mas NÃO feche nenhum pedido (não escreva PEDIDO_FECHADO) enquanto isso estiver ativo.\n' : ''}
 ${pedidoRecenteOutroCanal ? '\n⚠️ ATENÇÃO — PEDIDO JÁ FEITO POR OUTRO CANAL: esse cliente já fez um pedido de R$ ' + Number(pedidoRecenteOutroCanal.total || 0).toFixed(2).replace('.', ',') + ' há pouco tempo pelo cardápio/site (não foi por aqui pelo WhatsApp). NÃO feche um pedido novo (não escreva PEDIDO_FECHADO) a não ser que o cliente deixe bem claro que quer ADICIONAR algo a mais ou fazer um pedido totalmente separado. Se ele só perguntar do pedido, confirme que já recebemos e está sendo preparado.\n' : ''}
 
@@ -244,9 +245,9 @@ COMBOS "2 POR X" (promoção fixa — use EXATAMENTE estas faixas e sabores, nun
 O combo é sempre 2 sabores diferentes, nunca 2 pizzas do mesmo sabor. Se o cliente pedir os 2 iguais, explique que o combo é uma pizza de cada e pergunte o segundo sabor. Se o cliente quiser um combo, pergunte os 2 sabores (dentro da faixa certa) antes de fechar. No PEDIDO_FECHADO, esse item vai como um único item com "name" no formato "2 Por R$ 65,00 — Sabor1 + Sabor2" e "price" igual ao valor total da faixa (não divida o preço). Só ofereça combo com os sabores certos daquela faixa — nunca misture sabor de uma faixa com preço de outra.
 
 QUANDO O PEDIDO FECHAR:
-Assim que o cliente confirmar tudo (itens, endereço, pagamento), agradeça, avise que a nossa atendente vai finalizar e confirmar o pedido, e SÓ DEPOIS disso escreva, numa linha separada, o bloco:
+Assim que o cliente confirmar tudo (itens, endereço COM NÚMERO se for entrega, pagamento), agradeça, avise que a nossa atendente vai finalizar e confirmar o pedido, e SÓ DEPOIS disso escreva, numa linha separada, o bloco:
 PEDIDO_FECHADO: {"itens":[{"name":"nome exato do item no cardápio","price":0.00,"qty":1,"borda":null,"removed":[],"added":[],"isMeia":false}], "endereco":"...", "pagamento":"...", "observacoes":"..."}
-IMPORTANTE sobre o formato: use SEMPRE exatamente essas chaves em inglês ("name","price","qty","borda","removed","added","isMeia") em cada item — nunca "nome"/"preco"/"quantidade" ou qualquer variação, senão o pedido não carrega certo no caixa. "price" é o preço unitário (número, sem "R$"). "borda" é o nome da borda escolhida ou null se não tiver. "removed" e "added" são listas de textos (ex: ingredientes removidos/adicionados) ou listas vazias. "isMeia" é true somente se for pizza meio a meio.
+IMPORTANTE sobre o formato: use SEMPRE exatamente essas chaves em inglês ("name","price","qty","borda","removed","added","isMeia") em cada item — nunca "nome"/"preco"/"quantidade" ou qualquer variação, senão o pedido não carrega certo no caixa. "price" é o preço unitário (número, sem "R$"). "borda" é o nome da borda escolhida ou null se não tiver. "removed" e "added" são listas de textos (ex: ingredientes removidos/adicionados) ou listas vazias. "isMeia" é true somente se for pizza meio a meio. Se for entrega, "endereco" tem que ter o número da casa/apartamento escrito nele, sempre marcado com "nº" logo depois do nome da rua (ex: "Rua das Flores, nº 123, Vila Nova") — NUNCA escreva PEDIDO_FECHADO com endereço de entrega sem número; se ainda não tiver o número, pergunte antes (ver regra 6 do SEU OBJETIVO).
 Depois desse bloco, a conversa se encerra — não continue perguntando mais nada.
 
 ${conv.nomeCliente ? `O nome do cliente já é conhecido: ${conv.nomeCliente}. Use o nome dele nas mensagens, com carinho.` : `Você AINDA NÃO SABE o nome do cliente. Logo na primeira ou segunda mensagem, pergunte com simpatia "Como você gostaria de ser chamado?" (ou algo parecido, do seu jeito). Assim que ele responder o nome, escreva numa linha separada o bloco: NOME_CLIENTE: {"nome":"..."} — e a partir daí use o nome dele nas próximas mensagens.`}
@@ -332,10 +333,19 @@ Se o cliente pedir pra falar com uma pessoa, reclamar de algo, ou o caso for com
         await convRef.set({ pedidoId: duplicataDoBot.id, nomeCliente: pedidoFechado.nome || conv.nomeCliente || null }, { merge: true });
       } else {
         const numeroSequencial = await obterProximoNumeroSequencial();
+        // rede de segurança determinística: o prompt já instrui a IA a nunca fechar entrega
+        // sem número, mas isso é uma instrução em texto — não garante nada sozinha (o mesmo
+        // tipo de brecha já causou pedido duplicado antes). Se o endereço não tem NENHUM
+        // dígito, marca visível no próprio endereço — aparece pro caixa e no cupom impresso,
+        // não depende de ninguém ler um campo separado pra notar que falta o número.
+        let enderecoFinal = pedidoFechado.endereco || '';
+        if (enderecoFinal && !/\d/.test(enderecoFinal)) {
+          enderecoFinal = '⚠️ SEM NÚMERO — CONFIRMAR COM CLIENTE — ' + enderecoFinal;
+        }
         const orderRef = await db.collection('orders').add({
           client_name: pedidoFechado.nome || '',
           client_phone: telefone,
-          address: pedidoFechado.endereco || '',
+          address: enderecoFinal,
           payment: pedidoFechado.pagamento || '',
           items_json: pedidoFechado.itens || [],
           status: 'novo',
