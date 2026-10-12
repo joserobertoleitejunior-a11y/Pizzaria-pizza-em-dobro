@@ -112,13 +112,17 @@ body.scroll-paused{animation-play-state:paused;}
 #drawer-bg{position:fixed;inset:0;z-index:598;display:none;background:rgba(46,58,46,.25);}
 #drawer-bg.open{display:block;}
 
-/* HEADER */
-header{padding:36px 20px 14px;text-align:center;position:relative;}
-.viva-logo{width:76px;height:76px;border-radius:50%;object-fit:cover;margin-bottom:14px;box-shadow:0 6px 20px rgba(46,58,46,.18),0 0 0 4px rgba(255,255,255,.6);}
-.viva-title{font-family:var(--font-display);font-size:2.3rem;color:var(--text);letter-spacing:-.5px;line-height:1.05;text-transform:uppercase;}
+/* HEADER / HERO — tipografia grande e confiante, sem gradiente, um bloco de cor só */
+header{padding:18px 20px 26px;text-align:left;position:relative;}
+.hero-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.hero-logo{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none;box-shadow:0 2px 8px rgba(46,58,46,.15);}
+.viva-title{font-family:var(--font-display);font-size:3rem;color:var(--text);letter-spacing:-1px;line-height:.98;text-transform:uppercase;margin:0;}
 .viva-title span{color:var(--pr);}
-.viva-sub{font-size:.68rem;letter-spacing:3px;color:var(--muted);margin-top:8px;display:block;text-transform:uppercase;font-weight:600;}
-.ig-link{display:inline-block;margin-top:14px;opacity:.75;}
+.viva-sub{font-size:.68rem;letter-spacing:3px;color:var(--muted);margin-top:12px;display:block;text-transform:uppercase;font-weight:700;}
+.hero-cta-row{display:flex;gap:10px;margin-top:20px;}
+.hero-cta-btn{flex:1;display:flex;align-items:center;justify-content:center;background:var(--text);color:var(--bg);border:none;border-radius:3px;padding:15px 0;font-family:var(--font-display);font-size:.82rem;letter-spacing:.3px;text-decoration:none;cursor:pointer;}
+.hero-cta-block{width:54px;border-radius:3px;background:var(--pr);flex:none;}
+.ig-link{display:inline-flex;opacity:.8;}
 .ig-link:hover{opacity:1;}
 
 /* DESTAQUES (entrega rápida / combos) */
