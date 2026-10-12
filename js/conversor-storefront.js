@@ -800,7 +800,7 @@ function _renderConvStats(list){
   el.innerHTML=
     '<div class="dash-grid">'
     +'<div class="dash-card"><div class="dash-num">'+totalHoje+'</div><div class="dash-lbl">Convertidos hoje</div></div>'
-    +'<div class="dash-card"><div class="dash-num">'+totalPeriodo+'</div><div class="dash-lbl">No período<br><span style="font-size:.58rem;color:#555;">'+periodLbl+'</span></div></div>'
+    +'<div class="dash-card"><div class="dash-num">'+totalPeriodo+'</div><div class="dash-lbl">No período<br><span style="font-size:.58rem;color:var(--tx-5);">'+periodLbl+'</span></div></div>'
     +'</div>'
     +'<div class="dash-card" style="margin-bottom:10px;text-align:center;"><div class="dash-num" style="font-size:1.4rem;">'+totalGeral+'</div><div class="dash-lbl">Total geral de convertidos</div></div>'
     +'<div class="dash-card" style="text-align:center;"><div class="dash-num" style="font-size:1rem;color:#4285F4;">'+pagLabel+'</div><div class="dash-lbl">Pagamento mais usado — '+periodLbl+'</div></div>';
@@ -814,7 +814,7 @@ function setConvStatsPeriod(p){
 }
 async function openPedidosConvertidos(){
   const el=document.getElementById('conv-orders-list');
-  el.innerHTML='<p style="text-align:center;color:#555;padding:24px 0;">Carregando...</p>';
+  el.innerHTML='<p style="text-align:center;color:var(--tx-5);padding:24px 0;">Carregando...</p>';
   convStatsPeriod=7;
   document.querySelectorAll('.conv-period-btn').forEach(function(b){b.classList.remove('active');});
   const defBtn=document.getElementById('conv-period-7');
@@ -846,19 +846,19 @@ async function openPedidosConvertidos(){
   if(!list.length) list=DB.get('conv_orders')||[];
   _renderConvStats(list);
   if(!list.length){
-    el.innerHTML='<p style="text-align:center;color:#555;padding:32px 0;">Nenhum pedido convertido ainda.<br><span style="font-size:.75rem;">Os pedidos aparecem aqui após você copiar ou imprimir pelo conversor.</span></p>';
+    el.innerHTML='<p style="text-align:center;color:var(--tx-5);padding:32px 0;">Nenhum pedido convertido ainda.<br><span style="font-size:.75rem;">Os pedidos aparecem aqui após você copiar ou imprimir pelo conversor.</span></p>';
     return;
   }
   el.innerHTML=list.map((r,i)=>{
     const dt=new Date(r.ts||dataStr(r.created_at)||Date.now());
     const data=dt.toLocaleDateString('pt-BR');
     const hora=dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    return `<div onclick="verPedidoConvertido(${i})" style="border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;background:rgba(255,255,255,.03);">
+    return `<div onclick="verPedidoConvertido(${i})" style="border:1px solid var(--card-bd);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;background:rgba(46,58,46,.03);">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <span style="font-size:.85rem;font-weight:700;color:#fff;">${r.nome}</span>
-        <span style="font-size:.65rem;color:#555;">${data} ${hora}</span>
+        <span style="font-size:.85rem;font-weight:700;color:var(--text);">${r.nome}</span>
+        <span style="font-size:.65rem;color:var(--tx-5);">${data} ${hora}</span>
       </div>
-      <div style="font-size:.72rem;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.end}</div>
+      <div style="font-size:.72rem;color:var(--tx-4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.end}</div>
       <div style="font-size:.7rem;color:var(--pr);margin-top:3px;">💳 ${r.pag}</div>
     </div>`;
   }).join('');
@@ -929,7 +929,7 @@ async function _buscarSugestoesEndereco(valor){
   if(texto.length<4){dd.style.display='none';dd.innerHTML='';return;}
   if(!window.google||!google.maps||!google.maps.places){
     dd.style.display='block';
-    dd.innerHTML='<div style="padding:10px 14px;color:#888;font-size:.78rem;">Carregando busca do Maps...</div>';
+    dd.innerHTML='<div style="padding:10px 14px;color:var(--muted);font-size:.78rem;">Carregando busca do Maps...</div>';
     _posicionarSugestoesEndereco();
     return;
   }
@@ -945,11 +945,11 @@ async function _buscarSugestoesEndereco(valor){
       const{suggestions}=await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(req);
       window._acSuggestions=suggestions||[];
       if(!window._acSuggestions.length){
-        dd.innerHTML='<div style="padding:10px 14px;color:#888;font-size:.78rem;">Nenhum endereço encontrado. Tente digitar de outro jeito.</div>';
+        dd.innerHTML='<div style="padding:10px 14px;color:var(--muted);font-size:.78rem;">Nenhum endereço encontrado. Tente digitar de outro jeito.</div>';
       }else{
         dd.innerHTML=window._acSuggestions.map((s,i)=>{
           const texto=(s.placePrediction&&s.placePrediction.text&&s.placePrediction.text.text)||'';
-          return`<div onclick="_selecionarSugestaoEndereco(${i})" style="padding:10px 14px;border-top:1px solid rgba(255,255,255,.06);cursor:pointer;font-size:.8rem;color:#ddd;">📍 ${texto.replace(/</g,'&lt;')}</div>`;
+          return`<div onclick="_selecionarSugestaoEndereco(${i})" style="padding:10px 14px;border-top:1px solid rgba(46,58,46,.06);cursor:pointer;font-size:.8rem;color:var(--tx-2);">📍 ${texto.replace(/</g,'&lt;')}</div>`;
         }).join('');
       }
       dd.style.display='block';
@@ -961,7 +961,7 @@ async function _buscarSugestoesEndereco(valor){
       }else{
         console.warn('Erro ao buscar endereço:',e);
       }
-      dd.innerHTML='<div style="padding:10px 14px;color:#888;font-size:.78rem;">Não conseguimos buscar sugestões agora. Digite seu endereço completo ou use o botão 📍.</div>';
+      dd.innerHTML='<div style="padding:10px 14px;color:var(--muted);font-size:.78rem;">Não conseguimos buscar sugestões agora. Digite seu endereço completo ou use o botão 📍.</div>';
       dd.style.display='block';
       _posicionarSugestoesEndereco();
     }

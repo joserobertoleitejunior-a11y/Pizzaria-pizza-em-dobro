@@ -8,12 +8,12 @@ function drawHH(canvas,u1,u2){
   Promise.all([load(u1),load(u2)]).then(([a,b])=>{
     ctx.save();ctx.beginPath();ctx.rect(0,0,W/2,H);ctx.clip();ctx.drawImage(a,0,0,W/2,H);ctx.restore();
     ctx.save();ctx.beginPath();ctx.rect(W/2,0,W/2,H);ctx.clip();ctx.drawImage(b,W/2,0,W/2,H);ctx.restore();
-    ctx.strokeStyle='rgba(255,159,28,.85)';ctx.lineWidth=3;ctx.setLineDash([10,6]);
+    ctx.strokeStyle='rgba(193,98,59,.85)';ctx.lineWidth=3;ctx.setLineDash([10,6]);
     ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(0,H-26,W/2,26);ctx.fillRect(W/2,H-26,W/2,26);
-    ctx.fillStyle='#FF9F1C';ctx.font='bold 11px Inter,sans-serif';ctx.textAlign='center';
+    ctx.fillStyle='rgba(46,58,46,.6)';ctx.fillRect(0,H-26,W/2,26);ctx.fillRect(W/2,H-26,W/2,26);
+    ctx.fillStyle='#F3ECDD';ctx.font='bold 11px "Work Sans",sans-serif';ctx.textAlign='center';
     ctx.fillText('½',W/4,H-8);ctx.fillText('½',3*W/4,H-8);
-  }).catch(()=>{ctx.fillStyle='#111';ctx.fillRect(0,0,W,H);});
+  }).catch(()=>{ctx.fillStyle='#EDE3D4';ctx.fillRect(0,0,W,H);});
 }
 
 // ══════════════════════════════════

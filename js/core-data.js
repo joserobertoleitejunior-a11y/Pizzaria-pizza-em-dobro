@@ -93,9 +93,9 @@ function mostrarBotaoAbrirCaixa(){
   btn.id='btn-abrir-caixa-admin';
   btn.href='caixa/index.html';
   btn.innerHTML='🧾 Caixa';
-  btn.style.cssText='position:fixed;right:16px;bottom:152px;z-index:99999;background:linear-gradient(135deg,#FF9F1C,#E71D36);'+
-    'color:#fff;font-family:Oswald,sans-serif;font-weight:700;letter-spacing:.4px;font-size:.8rem;text-transform:uppercase;'+
-    'padding:12px 18px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.45);';
+  btn.style.cssText='position:fixed;right:16px;bottom:152px;z-index:99999;background:linear-gradient(135deg,#C1623B,#A8432F);'+
+    'color:#fff;font-family:"Work Sans",sans-serif;font-weight:700;letter-spacing:.4px;font-size:.8rem;text-transform:uppercase;'+
+    'padding:12px 18px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(46,58,46,.3);';
   document.body.appendChild(btn);
 }
 function setAdminSession(){
@@ -187,7 +187,7 @@ function openPromos(){
       <div class="promo-row-name">${p.nome}</div>
       <div class="promo-row-desc">${p.desc}</div>
       <div class="promo-toggle">
-        <span style="font-size:.68rem;color:#555;">${p.dias.map(d=>dias[d]).join(', ')}</span>
+        <span style="font-size:.68rem;color:var(--tx-5);">${p.dias.map(d=>dias[d]).join(', ')}</span>
         <label class="ptog"><input type="checkbox" id="ptog-${p.id}"${p.ativo?' checked':''}><span class="ptog-sl"></span></label>
       </div>
     </div>`).join('');

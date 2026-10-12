@@ -100,7 +100,7 @@ function resetDash(){
 let _fbSelAll=false;
 async function openGerenciarFb(){
   openModal('modal-gerenciar-fb');
-  document.getElementById('gerenciar-fb-list').innerHTML=`<div style="text-align:center;padding:20px;color:#555;">⏳ Carregando...</div>`;
+  document.getElementById('gerenciar-fb-list').innerHTML=`<div style="text-align:center;padding:20px;color:var(--tx-5);">⏳ Carregando...</div>`;
   const [fbRows,cmRows]=await Promise.all([
     sg('feedbacks',{orderBy:'created_at',orderDir:'desc',limit:50}),
     sg('feedback_comments',{orderBy:'created_at',orderDir:'desc',limit:100})
@@ -109,17 +109,17 @@ async function openGerenciarFb(){
   const filteredFb=(fbRows||[]).filter(r=>!_deletedFbIds.has(r.id));
   const filteredCm=(cmRows||[]).filter(c=>!_deletedCmIds.has(c.id));
   if(!filteredFb.length&&!filteredCm.length){
-    document.getElementById('gerenciar-fb-list').innerHTML=`<p style="color:#444;font-size:.78rem;text-align:center;padding:16px;">Nenhuma avaliação ou comentário.</p>`;
+    document.getElementById('gerenciar-fb-list').innerHTML=`<p style="color:var(--tx-6);font-size:.78rem;text-align:center;padding:16px;">Nenhuma avaliação ou comentário.</p>`;
     return;
   }
   let html=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
-    <label style="display:flex;align-items:center;gap:6px;font-size:.72rem;color:#aaa;cursor:pointer;">
+    <label style="display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--tx-3);cursor:pointer;">
       <input type="checkbox" id="fb-sel-all" onchange="toggleSelectAllFb(this.checked)" style="accent-color:var(--pr);width:16px;height:16px;"> Selecionar tudo
     </label>
     <button onclick="deleteSelectedFb()" style="background:rgba(231,29,54,.15);border:1px solid rgba(231,29,54,.25);color:var(--se);padding:5px 12px;border-radius:8px;font-size:.7rem;font-weight:700;cursor:pointer;margin-left:auto;">🗑 Apagar Selecionados</button>
   </div>`;
   if(filteredFb.length){
-    html+=`<div style="font-size:.65rem;color:#555;letter-spacing:2px;margin:8px 0 6px;">AVALIAÇÕES (${filteredFb.length})</div>`;
+    html+=`<div style="font-size:.65rem;color:var(--tx-5);letter-spacing:2px;margin:8px 0 6px;">AVALIAÇÕES (${filteredFb.length})</div>`;
     html+=filteredFb.map(r=>`
       <div class="gfb-row" id="gfb-row-fb-${r.id}" data-type="fb" data-id="${r.id}">
         <input type="checkbox" class="gfb-check" onchange="gfbCheckChange()" style="accent-color:var(--pr);width:16px;height:16px;flex-shrink:0;">
@@ -131,7 +131,7 @@ async function openGerenciarFb(){
       </div>`).join('');
   }
   if(filteredCm.length){
-    html+=`<div style="font-size:.65rem;color:#555;letter-spacing:2px;margin:12px 0 6px;">COMENTÁRIOS (${filteredCm.length})</div>`;
+    html+=`<div style="font-size:.65rem;color:var(--tx-5);letter-spacing:2px;margin:12px 0 6px;">COMENTÁRIOS (${filteredCm.length})</div>`;
     html+=filteredCm.map(c=>`
       <div class="gfb-row" id="gfb-row-cm-${c.id}" data-type="cm" data-id="${c.id}">
         <input type="checkbox" class="gfb-check" onchange="gfbCheckChange()" style="accent-color:var(--pr);width:16px;height:16px;flex-shrink:0;">
@@ -235,16 +235,16 @@ function _renderDashSkeleton(){
   const {from,to}=_dashDates();
   document.getElementById('dash-content').innerHTML=`
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <span style="font-family:'Oswald',sans-serif;color:var(--pr);font-size:1rem;letter-spacing:2px;">PAINEL DO ESTABELECIMENTO</span>
-      <span id="dash-online-dot" style="display:inline-flex;align-items:center;gap:5px;font-size:.65rem;color:#555;">
+      <span style="font-family:'Work Sans',sans-serif;color:var(--pr);font-size:1rem;letter-spacing:2px;">PAINEL DO ESTABELECIMENTO</span>
+      <span id="dash-online-dot" style="display:inline-flex;align-items:center;gap:5px;font-size:.65rem;color:var(--tx-5);">
         <span id="dash-online-led" style="width:8px;height:8px;border-radius:50%;background:#333;display:inline-block;"></span>
         <span id="dash-online-txt">Verificando...</span>
       </span>
     </div>
 
     <!-- SELETOR DE PERÍODO -->
-    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;margin-bottom:14px;">
-      <div style="font-size:.65rem;color:#555;letter-spacing:2px;margin-bottom:8px;">PERÍODO</div>
+    <div style="background:rgba(46,58,46,.03);border:1px solid rgba(46,58,46,.06);border-radius:12px;padding:12px;margin-bottom:14px;">
+      <div style="font-size:.65rem;color:var(--tx-5);letter-spacing:2px;margin-bottom:8px;">PERÍODO</div>
       <div class="dash-period" style="margin-bottom:10px;">
         <button class="dash-period-btn${dashPeriod===1&&!dashDateFrom?' active':''}" onclick="openDash(1)">Hoje</button>
         <button class="dash-period-btn${dashPeriod===7&&!dashDateFrom?' active':''}" onclick="openDash(7)">7 dias</button>
@@ -253,18 +253,18 @@ function _renderDashSkeleton(){
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
         <div style="flex:1;min-width:120px;">
-          <div style="font-size:.6rem;color:#555;margin-bottom:3px;">DE</div>
-          <input type="date" id="dash-from" value="${from}" max="${today}" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);padding:7px 8px;border-radius:8px;color:#fff;font-size:.78rem;outline:none;">
+          <div style="font-size:.6rem;color:var(--tx-5);margin-bottom:3px;">DE</div>
+          <input type="date" id="dash-from" value="${from}" max="${today}" style="width:100%;background:rgba(46,58,46,.05);border:1px solid rgba(46,58,46,.09);padding:7px 8px;border-radius:8px;color:var(--text);font-size:.78rem;outline:none;">
         </div>
         <div style="flex:1;min-width:120px;">
-          <div style="font-size:.6rem;color:#555;margin-bottom:3px;">ATÉ</div>
-          <input type="date" id="dash-to" value="${to}" max="${today}" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);padding:7px 8px;border-radius:8px;color:#fff;font-size:.78rem;outline:none;">
+          <div style="font-size:.6rem;color:var(--tx-5);margin-bottom:3px;">ATÉ</div>
+          <input type="date" id="dash-to" value="${to}" max="${today}" style="width:100%;background:rgba(46,58,46,.05);border:1px solid rgba(46,58,46,.09);padding:7px 8px;border-radius:8px;color:var(--text);font-size:.78rem;outline:none;">
         </div>
         <button onclick="applyDashDates()" style="background:var(--pr);border:none;color:#000;padding:8px 14px;border-radius:8px;font-size:.72rem;font-weight:700;cursor:pointer;align-self:flex-end;">FILTRAR</button>
       </div>
     </div>
 
-    <div id="dash-body" style="text-align:center;padding:24px;color:#555;">⏳ Carregando dados...</div>`;
+    <div id="dash-body" style="text-align:center;padding:24px;color:var(--tx-5);">⏳ Carregando dados...</div>`;
 }
 
 async function applyDashDates(){
@@ -303,7 +303,7 @@ async function _loadDashData(){
       led.style.cssText='width:8px;height:8px;border-radius:50%;display:inline-block;background:#2ecc71;box-shadow:0 0 6px #2ecc71;';
       txt.style.color='#2ecc71';txt.innerText='Ativo agora';
     } else if(visitsTodayCount>0){
-      led.style.cssText='width:8px;height:8px;border-radius:50%;display:inline-block;background:#FF9F1C;';
+      led.style.cssText='width:8px;height:8px;border-radius:50%;display:inline-block;background:#C1623B;';
       txt.style.color='var(--pr)';txt.innerText=visitsTodayCount+' visitas hoje';
     } else {
       led.style.cssText='width:8px;height:8px;border-radius:50%;display:inline-block;background:#333;';
@@ -332,7 +332,7 @@ async function _loadDashData(){
   });
   const top=Object.entries(fc).sort(function(a,b){return b[1]-a[1];}).slice(0,7);
 
-  const pizzaColors=['#FF9F1C','#E71D36','#2ecc71','#4285F4','#c0392b','#8e44ad','#16a085'];
+  const pizzaColors=['#C1623B','#A8432F','#2ecc71','#4285F4','#c0392b','#8e44ad','#16a085'];
 
   // barras
   const vm={};allVisits.forEach(function(r){vm[r.date]=Number(r.count||0);});
@@ -352,19 +352,19 @@ async function _loadDashData(){
     var w=Math.round(v/maxV*100)||0;
     bars+='<div class="bar-row"><div class="bar-meta"><span>'+lbl+'</span><span><span style="color:var(--pr)">'+v+' vis</span> / <span style="color:#2ecc71">'+oc+' ped</span></span></div><div class="bar-track"><div class="bar-fill" style="width:'+w+'%"></div></div></div>';
   }
-  if(!bars||showDays===0)bars='<p style="color:#444;font-size:.78rem;padding:8px 0;">Sem dados de visitas neste período.</p>';
+  if(!bars||showDays===0)bars='<p style="color:var(--tx-6);font-size:.78rem;padding:8px 0;">Sem dados de visitas neste período.</p>';
 
   const fbH=(fr||[]).slice(0,5).map(function(f){
-    return '<div class="dash-fb"><b>'+f.name+'</b> '+'★'.repeat(f.stars)+'☆'.repeat(5-f.stars)+'<br><span style="color:#aaa;">'+(f.comment||'')+'</span><br><small style="color:#333">'+(f.created_at?new Date(dataStr(f.created_at)).toLocaleString('pt-BR'):'')+'</small></div>';
-  }).join('')||'<p style="color:#444;font-size:.78rem;">Nenhuma avaliação ainda.</p>';
+    return '<div class="dash-fb"><b>'+f.name+'</b> '+'★'.repeat(f.stars)+'☆'.repeat(5-f.stars)+'<br><span style="color:var(--tx-3);">'+(f.comment||'')+'</span><br><small style="color:var(--tx-6)">'+(f.created_at?new Date(dataStr(f.created_at)).toLocaleString('pt-BR'):'')+'</small></div>';
+  }).join('')||'<p style="color:var(--tx-6);font-size:.78rem;">Nenhuma avaliação ainda.</p>';
 
   const orH=allOrders.slice(0,10).map(function(r){
-    return '<div class="ord-row"><span style="float:right;color:var(--pr);font-weight:700;">R$\u00a0'+fmtPrice(r.total||0)+'</span><b>'+(r.client_name||'—')+'</b>'+(r.client_email?' <span style="color:#444;font-size:.63rem;">'+r.client_email+'</span>':'')+'<br><span style="font-size:.7rem;color:#aaa;">'+(r.delivery_type==='retirada'?'🏠 Retirada':'🛵 Entrega')+' · '+(r.payment||'—')+'</span><br><small style="color:#333;">'+(r.created_at?new Date(dataStr(r.created_at)).toLocaleString('pt-BR'):'')+'</small></div>';
-  }).join('')||'<p style="color:#444;font-size:.78rem;">Sem pedidos no período.</p>';
+    return '<div class="ord-row"><span style="float:right;color:var(--pr);font-weight:700;">R$\u00a0'+fmtPrice(r.total||0)+'</span><b>'+(r.client_name||'—')+'</b>'+(r.client_email?' <span style="color:var(--tx-6);font-size:.63rem;">'+r.client_email+'</span>':'')+'<br><span style="font-size:.7rem;color:var(--tx-3);">'+(r.delivery_type==='retirada'?'🏠 Retirada':'🛵 Entrega')+' · '+(r.payment||'—')+'</span><br><small style="color:var(--tx-6);">'+(r.created_at?new Date(dataStr(r.created_at)).toLocaleString('pt-BR'):'')+'</small></div>';
+  }).join('')||'<p style="color:var(--tx-6);font-size:.78rem;">Sem pedidos no período.</p>';
 
   const clientsH=(clients||[]).map(function(c){
-    return '<div class="client-row">'+(c.photo?'<img src="'+c.photo+'" onerror="this.style.display=\'none\'" alt="">':'<div style="width:32px;height:32px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;color:#666;">G</div>')+'<div class="client-info"><div class="client-name">'+(c.name||'—')+'</div><div class="client-email">'+(c.email||'')+'</div></div><small style="color:#333;font-size:.6rem;">'+(c.last_visit?new Date(c.last_visit).toLocaleDateString('pt-BR'):'')+'</small></div>';
-  }).join('')||'<p style="color:#444;font-size:.78rem;">Nenhum cliente cadastrado ainda.</p>';
+    return '<div class="client-row">'+(c.photo?'<img src="'+c.photo+'" onerror="this.style.display=\'none\'" alt="">':'<div style="width:32px;height:32px;border-radius:50%;background:#EDE3D4;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;color:var(--tx-4);">G</div>')+'<div class="client-info"><div class="client-name">'+(c.name||'—')+'</div><div class="client-email">'+(c.email||'')+'</div></div><small style="color:var(--tx-6);font-size:.6rem;">'+(c.last_visit?new Date(c.last_visit).toLocaleDateString('pt-BR'):'')+'</small></div>';
+  }).join('')||'<p style="color:var(--tx-6);font-size:.78rem;">Nenhum cliente cadastrado ainda.</p>';
 
   var saboresBlock='';
   if(top.length){
@@ -373,18 +373,18 @@ async function _loadDashData(){
     top.forEach(function(e,i){
       var n=e[0],c=e[1];
       var w=Math.round(c/maxTop*100);
-      var colors=['#FF9F1C','#E71D36','#2ecc71','#4285F4','#c0392b','#8e44ad','#16a085'];
+      var colors=['#C1623B','#A8432F','#2ecc71','#4285F4','#c0392b','#8e44ad','#16a085'];
       var col=colors[i%colors.length];
       saboresBlock+='<div style="margin-bottom:8px;">'
-        +'<div style="display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:3px;"><span style="color:#ddd;">'+n+'</span><span style="color:'+col+';font-weight:700;">'+c+'× pedido'+(c>1?'s':'')+'</span></div>'
-        +'<div style="height:10px;background:rgba(255,255,255,.05);border-radius:5px;overflow:hidden;">'
+        +'<div style="display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:3px;"><span style="color:var(--tx-2);">'+n+'</span><span style="color:'+col+';font-weight:700;">'+c+'× pedido'+(c>1?'s':'')+'</span></div>'
+        +'<div style="height:10px;background:rgba(46,58,46,.05);border-radius:5px;overflow:hidden;">'
         +'<div style="height:100%;width:'+w+'%;background:'+col+';border-radius:5px;transition:width .5s;"></div>'
         +'</div>'
         +'</div>';
     });
     saboresBlock+='</div>';
   } else {
-    saboresBlock='<p style="color:#444;font-size:.78rem;padding:8px 0;">Nenhum pedido registrado ainda.</p>';
+    saboresBlock='<p style="color:var(--tx-6);font-size:.78rem;padding:8px 0;">Nenhum pedido registrado ainda.</p>';
   }
 
   const body=document.getElementById('dash-body');
@@ -392,8 +392,8 @@ async function _loadDashData(){
 
   body.innerHTML=
     '<div class="dash-grid">'
-    +'<div class="dash-card"><div class="dash-num">'+totalVisits+'</div><div class="dash-lbl">Visitantes<br><span style="font-size:.58rem;color:#555;">'+periodLabel+'</span></div></div>'
-    +'<div class="dash-card"><div class="dash-num">'+totalOrders+'</div><div class="dash-lbl">Pedidos<br><span style="font-size:.58rem;color:#555;">'+periodLabel+'</span></div></div>'
+    +'<div class="dash-card"><div class="dash-num">'+totalVisits+'</div><div class="dash-lbl">Visitantes<br><span style="font-size:.58rem;color:var(--tx-5);">'+periodLabel+'</span></div></div>'
+    +'<div class="dash-card"><div class="dash-num">'+totalOrders+'</div><div class="dash-lbl">Pedidos<br><span style="font-size:.58rem;color:var(--tx-5);">'+periodLabel+'</span></div></div>'
     +'</div>'
     +'<div class="dash-card" style="margin-bottom:14px;text-align:center;"><div class="dash-num" style="font-size:1.5rem;color:#2ecc71;">R$\u00a0'+fmtPrice(receita)+'</div><div class="dash-lbl">Faturamento — '+periodLabel+'</div></div>'
     +'<div class="ds-title">📅 Acessos por dia — '+periodLabel+'</div>'

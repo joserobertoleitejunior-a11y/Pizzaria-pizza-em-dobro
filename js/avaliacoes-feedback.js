@@ -12,11 +12,11 @@ async function openHistorico(){
   const ct=document.getElementById('historico-content');
   if(!fbUser&&!currentUser?.name){
     ct.innerHTML=`
-      <p style="color:#aaa;font-size:.82rem;text-align:center;margin-bottom:14px;">Entre com o Google para ver seu histórico de pedidos.</p>
+      <p style="color:var(--tx-3);font-size:.82rem;text-align:center;margin-bottom:14px;">Entre com o Google para ver seu histórico de pedidos.</p>
       <button class="ggl-login-btn" onclick="loginGoogleClient()">${G_SVG} Entrar com Google</button>`;
     return;
   }
-  ct.innerHTML=`<div style="text-align:center;padding:20px;color:#555;">⏳ Carregando...</div>`;
+  ct.innerHTML=`<div style="text-align:center;padding:20px;color:var(--tx-5);">⏳ Carregando...</div>`;
   const email=fbUser?.email||currentUser?.email||'';
   const name=fbUser?.name||currentUser?.name||'';
   let rows=null;
@@ -29,7 +29,7 @@ async function openHistorico(){
     if(local.length) rows=local;
   }
   if(!rows||!rows.length){
-    ct.innerHTML=`<p style="color:#444;font-size:.82rem;text-align:center;padding:20px;">Nenhum pedido encontrado ainda. Faça seu primeiro pedido! 🍕</p>`;
+    ct.innerHTML=`<p style="color:var(--tx-6);font-size:.82rem;text-align:center;padding:20px;">Nenhum pedido encontrado ainda. Faça seu primeiro pedido! 🍕</p>`;
     return;
   }
   ct.innerHTML=rows.map((r,idx)=>{
@@ -222,7 +222,7 @@ async function renderFeedbacks(){
     const commentsHTML=comments.map(c=>{
       const isMine=myName&&(c.author===myName);
       const editBtn=isMine
-        ?`<button onclick="editOwnComment(${c.id},'${(c.comment||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')" style="background:none;border:none;color:#555;font-size:.65rem;cursor:pointer;padding:0 3px;">✏️</button>`
+        ?`<button onclick="editOwnComment(${c.id},'${(c.comment||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')" style="background:none;border:none;color:var(--tx-5);font-size:.65rem;cursor:pointer;padding:0 3px;">✏️</button>`
         :'';
       const delBtn=(isMine||isAdmin)
         ?`<button onclick="${isMine&&!isAdmin?'deleteOwnComment':'adminDeleteComment'}(${c.id})" style="background:none;border:none;color:var(--se);font-size:.65rem;cursor:pointer;padding:0 3px;">✕</button>`

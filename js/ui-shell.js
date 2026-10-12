@@ -76,7 +76,7 @@ async function openStatsModal(){
       <div class="dash-card"><div class="dash-num">${tv}</div><div class="dash-lbl">Visitas totais</div></div>
       <div class="dash-card"><div class="dash-num">${aval}</div><div class="dash-lbl">Avaliações</div></div>
     </div>
-    <p style="font-size:.72rem;color:#444;text-align:center;margin-top:8px;">Dados do Firebase 🍕</p>`;
+    <p style="font-size:.72rem;color:var(--tx-6);text-align:center;margin-top:8px;">Dados do Firebase 🍕</p>`;
   openModal('modal-stats');
 }
 

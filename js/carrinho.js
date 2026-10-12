@@ -92,25 +92,25 @@ function renderBordas(id){
     // label da metade para o pizzaiolo (ex: "½ MARGHERITA  +  ½ CALABRESA")
     const meiaLabel=isMeia
       ?`<div style="background:rgba(255,159,28,.08);border:1px solid rgba(255,159,28,.2);border-radius:8px;padding:8px 10px;margin-bottom:10px;">
-          <div style="font-size:.55rem;color:#888;letter-spacing:2px;margin-bottom:6px;">🍕 MEIA A MEIA</div>
+          <div style="font-size:.55rem;color:var(--muted);letter-spacing:2px;margin-bottom:6px;">🍕 MEIA A MEIA</div>
           <div style="display:flex;align-items:center;gap:6px;">
             <div style="flex:1;background:rgba(255,159,28,.1);border-radius:6px;padding:6px 8px;text-align:center;">
-              <div style="font-size:.5rem;color:#888;letter-spacing:1.5px;margin-bottom:2px;">1ª METADE</div>
+              <div style="font-size:.5rem;color:var(--muted);letter-spacing:1.5px;margin-bottom:2px;">1ª METADE</div>
               <div style="font-size:.78rem;font-weight:700;color:var(--pr);">½ ${it.halves[0].n}</div>
             </div>
-            <div style="font-size:.9rem;color:#555;">+</div>
+            <div style="font-size:.9rem;color:var(--tx-5);">+</div>
             <div style="flex:1;background:rgba(255,159,28,.1);border-radius:6px;padding:6px 8px;text-align:center;">
-              <div style="font-size:.5rem;color:#888;letter-spacing:1.5px;margin-bottom:2px;">2ª METADE</div>
+              <div style="font-size:.5rem;color:var(--muted);letter-spacing:1.5px;margin-bottom:2px;">2ª METADE</div>
               <div style="font-size:.78rem;font-weight:700;color:var(--pr);">½ ${it.halves[1].n}</div>
             </div>
           </div>
-          <div style="font-size:.55rem;color:#666;margin-top:6px;text-align:center;">As opções abaixo se aplicam à pizza inteira (borda e acréscimos) ou a cada metade (remover ingrediente)</div>
+          <div style="font-size:.55rem;color:var(--tx-4);margin-top:6px;text-align:center;">As opções abaixo se aplicam à pizza inteira (borda e acréscimos) ou a cada metade (remover ingrediente)</div>
         </div>`
       :'';
     const acrSel=it.addedIngredients||[];
 
     return `
-    <div style="border:1px solid rgba(255,159,28,.12);border-radius:10px;padding:10px;margin-top:8px;background:rgba(255,255,255,.02);">
+    <div style="border:1px solid rgba(255,159,28,.12);border-radius:10px;padding:10px;margin-top:8px;background:rgba(46,58,46,.02);">
       ${meiaLabel}
 
       <!-- BORDA toggle -->
@@ -119,7 +119,7 @@ function renderBordas(id){
           🥖 BORDA
           ${it.selectedBorda&&it.selectedBorda.price>0?`<span style="background:rgba(255,159,28,.2);border-radius:10px;padding:1px 8px;margin-left:4px;">${it.selectedBorda.name}</span>`:''}
         </span>
-        <span id="borda-arrow-${id}-${i}" style="font-size:.7rem;color:#555;">▼</span>
+        <span id="borda-arrow-${id}-${i}" style="font-size:.7rem;color:var(--tx-5);">▼</span>
       </div>
       <div id="borda-${id}-${i}" style="display:none;padding-top:6px;">
         <div class="borda-pills">
@@ -145,14 +145,14 @@ function renderBordas(id){
       const label=its.length>1?(isMeia?`½${it.halves[0].n}+½${it.halves[1].n}`:`Pizza ${i+1}`):'';
 
       return `
-      <div style="border:1px solid rgba(231,29,54,.12);border-radius:10px;padding:10px;margin-top:6px;background:rgba(255,255,255,.02);">
+      <div style="border:1px solid rgba(231,29,54,.12);border-radius:10px;padding:10px;margin-top:6px;background:rgba(46,58,46,.02);">
         ${label?`<div style="font-size:.65rem;font-weight:700;color:var(--se);letter-spacing:1px;margin-bottom:8px;opacity:.8;">${label}</div>`:''}
         <div class="opt-toggle-hdr" style="border-color:rgba(231,29,54,.15);" onclick="toggleOpts('rm-${id}-${i}','rm-arrow-${id}-${i}')">
           <span style="font-size:.65rem;font-weight:700;letter-spacing:1.5px;color:var(--se);">
             🚫 REMOVER INGREDIENTE
-            ${remSel.length>0?`<span style="background:rgba(231,29,54,.2);border-radius:10px;padding:1px 8px;margin-left:4px;">${remSel.length} removido${remSel.length>1?'s':''}</span>`:'<span style="font-size:.6rem;color:#555;font-weight:400;margin-left:4px;">(opcional)</span>'}
+            ${remSel.length>0?`<span style="background:rgba(231,29,54,.2);border-radius:10px;padding:1px 8px;margin-left:4px;">${remSel.length} removido${remSel.length>1?'s':''}</span>`:'<span style="font-size:.6rem;color:var(--tx-5);font-weight:400;margin-left:4px;">(opcional)</span>'}
           </span>
-          <span id="rm-arrow-${id}-${i}" style="font-size:.7rem;color:#555;">▼</span>
+          <span id="rm-arrow-${id}-${i}" style="font-size:.7rem;color:var(--tx-5);">▼</span>
         </div>
         <div id="rm-${id}-${i}" style="display:none;padding-top:6px;">
           <div class="rm-pills">
@@ -264,7 +264,7 @@ function updateUI(){
     if(remSel.length>0) ext+=`<span class="sum-rm">🚫 Sem: ${remSel.join(', ')}</span>`;
 
     const nomeHTML=it.type==='half'
-      ?`<span style="color:var(--pr)">½</span> <b>${it.halves[0].n}</b> <span style="color:#555">+</span> <span style="color:var(--pr)">½</span> <b>${it.halves[1].n}</b>`
+      ?`<span style="color:var(--pr)">½</span> <b>${it.halves[0].n}</b> <span style="color:var(--tx-5)">+</span> <span style="color:var(--pr)">½</span> <b>${it.halves[1].n}</b>`
       :`<b>${it.n}</b>`;
 
     const idxRef=g.idxs[g.idxs.length-1];
@@ -273,7 +273,7 @@ function updateUI(){
     sumHTML+=`<div class="sum-item">
       <div class="sum-controls">
         <span class="sum-x" onclick="removeFromSum(${idxRef})" title="Diminuir">−</span>
-        <span style="min-width:20px;text-align:center;font-weight:700;color:#fff;">${g.qty}x</span>
+        <span style="min-width:20px;text-align:center;font-weight:700;color:#F3ECDD;">${g.qty}x</span>
         <span class="sum-x" onclick="duplicarItemCarrinho(${idxRef})" title="Adicionar mais um igual" style="color:var(--pr);">+</span>
       </div>
       ${nomeHTML} — <span class="sum-price">R$ ${fmtPrice(precoLinha)}</span>${ext}
