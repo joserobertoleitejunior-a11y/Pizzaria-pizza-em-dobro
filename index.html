@@ -865,14 +865,6 @@ function fecharBanner(){
   },{threshold:.15});
   itens.forEach(function(el){ obs.observe(el); });
 })();
-
-// pausa a animação de fundo (bgBreath) quando a aba não está visível —
-// mesmo efeito pra quem está olhando, zero gasto de CPU/bateria em segundo plano
-(function(){
-  document.addEventListener('visibilitychange',function(){
-    document.body.classList.toggle('scroll-paused', document.hidden);
-  });
-})();
 </script>
 </body>
 </html>
