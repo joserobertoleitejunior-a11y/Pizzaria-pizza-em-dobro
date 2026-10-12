@@ -1164,23 +1164,15 @@ function imprimirPedido(){
   w.document.close();w.focus();w.print();
   });}
 
-// SPLASH — mostra "CARREGANDO..." (tela de carregamento no estilo do fogo de fundo) até o
-// cardápio estar pronto, depois troca pra "TOQUE PARA ENTRAR" com um flash rápido. O toque
-// sempre funcionou mesmo antes disso pronto (o cardápio tem fallback local instantâneo), então
-// nada trava — só o texto passa a refletir a realidade em vez de convidar antes da hora.
-let _splashPronta=false;
-function marcarSplashPronta(){
-  if(_splashPronta) return;
-  _splashPronta=true;
-  const el=document.getElementById('ws-toque-aviso');
-  if(!el) return;
-  el.textContent='TOQUE PARA ENTRAR';
-  el.classList.add('pronto');
-}
-setTimeout(marcarSplashPronta,3000); // nunca fica preso em "carregando" se a rede estiver lenta
-
-// SPLASH — agora espera o toque do cliente, com efeito de porta abrindo
+// SPLASH — passa sozinha: logo entra com pop, nome da marca revela com wipe,
+// barrinha de progresso enche e dispara a abertura automática. Continua
+// tocável a qualquer momento pra quem quiser pular direto pro cardápio
+// (o fallback local do cardápio já está pronto desde o primeiro instante).
+let _splashAberta=false;
 function abrirPortaSplash(){
+  if(_splashAberta) return;
+  _splashAberta=true;
+  clearTimeout(_splashAutoTimer);
   const ws=document.getElementById('ws');
   if(!ws || ws.classList.contains('aberto')) return;
   ws.classList.add('aberto');
@@ -1189,6 +1181,9 @@ function abrirPortaSplash(){
     ws.style.visibility='hidden';
   },950);
 }
+// mesma duração da barra de progresso (CSS: wsBarFill 2.1s + atraso de .4s) + uma folga
+// pro cliente ver a marca formada antes de entrar sozinho
+const _splashAutoTimer=setTimeout(abrirPortaSplash,2700);
 
 _initFB();
 init();

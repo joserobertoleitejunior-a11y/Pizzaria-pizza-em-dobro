@@ -27,7 +27,6 @@ async function init(){
   if(!loaded){const cm=DB.get('menu_custom');menu=cm&&cm.length?cm:[...DEFAULT_MENU];}
 
   renderMenu();
-  marcarSplashPronta();
   // restaura sessão admin se válida (mantém controles inline visíveis)
   if(checkAdminSession()) activateAdminEditMode();
   if(checkAdminSession()) mostrarBotaoAbrirCaixa();
