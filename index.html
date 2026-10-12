@@ -263,6 +263,9 @@
     <a href="#cat-p" class="hero-cta-btn">VER CARDÁPIO →</a>
     <div class="hero-cta-block"></div>
   </div>
+  <div class="hero-photo reveal">
+    <img src="assets/pizza-hero.jpg" alt="Pizza quente saindo do forno" width="1000" height="666" loading="eager">
+  </div>
 </header>
 
 <!-- NAV -->
@@ -834,6 +837,13 @@ function fecharBanner(){
         scrollTrigger: typeof ScrollTrigger!=='undefined' ? {trigger:el,start:'top 94%'} : undefined
       });
     });
+    // parallax leve na foto do hero — só transform (barato pra GPU, não causa o
+    // mesmo problema de performance que o blur/fundo animado que tiramos antes)
+    var fotoHero=document.querySelector('.hero-photo img');
+    if(fotoHero && !reduzMovimento && typeof ScrollTrigger!=='undefined'){
+      gsap.fromTo(fotoHero,{yPercent:-8,scale:1.12},{yPercent:8,scale:1.12,ease:'none',
+        scrollTrigger:{trigger:fotoHero,start:'top bottom',end:'bottom top',scrub:true}});
+    }
   }catch(e){
     console.warn('Reforço visual (GSAP) não pôde iniciar — site segue normal.',e);
   }

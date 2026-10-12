@@ -124,6 +124,8 @@ header{padding:18px 20px 26px;text-align:left;position:relative;}
 .hero-cta-row{display:flex;gap:10px;margin-top:20px;}
 .hero-cta-btn{flex:1;display:flex;align-items:center;justify-content:center;background:var(--text);color:var(--bg);border:none;border-radius:3px;padding:15px 0;font-family:var(--font-display);font-size:.82rem;letter-spacing:.3px;text-decoration:none;cursor:pointer;}
 .hero-cta-block{width:54px;border-radius:3px;background:var(--pr);flex:none;}
+.hero-photo{margin-top:16px;border-radius:12px;overflow:hidden;border:3px solid var(--text);box-shadow:0 10px 28px rgba(46,58,46,.22);}
+.hero-photo img{width:100%;height:170px;object-fit:cover;display:block;}
 .ig-link{display:inline-flex;opacity:.8;}
 .ig-link:hover{opacity:1;}
 
