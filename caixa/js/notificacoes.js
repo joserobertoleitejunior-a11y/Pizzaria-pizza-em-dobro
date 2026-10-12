@@ -59,6 +59,22 @@ async function tentarReconectarImpressora(){
   await reconectarImpressoraAuto();
 }
 
+// Tira um pedido da fila/notificação atual se ele saiu do status "novo" por qualquer caminho
+// que não seja o botão "Confirmar" desta própria tela — ex: foi finalizado direto em "Vendas de
+// Hoje", editado e reenviado, cancelado, ou finalizado em outra aba/sessão do Caixa. Sem isso, um
+// pedido já resolvido continuava "preso" no sininho e voltava a aparecer como novo a cada F5,
+// porque a fila era só uma lista em memória que nunca conferia de novo o status atual.
+function removerDaFilaSeParado(id){
+  const antes=filaNotificacoes.length;
+  filaNotificacoes=filaNotificacoes.filter(o=>o.id!==id);
+  if(notificacaoAtual && notificacaoAtual.id===id){
+    notificacaoAtual=null;
+    document.getElementById('notif-caixa')?.classList.remove('show');
+    setTimeout(()=>{ prepararNotificacao(); },50);
+  }
+  if(filaNotificacoes.length!==antes || (notificacaoAtual===null)) atualizarBadgeBubble();
+}
+
 function iniciarEscutaNotificacoes(){
   if(!FS) return;
   // pedidos novos (loja, conversor, bot fechou o pedido)
@@ -66,17 +82,26 @@ function iniciarEscutaNotificacoes(){
     const atuais=snap.docs.map(d=>({id:d.id,tipo:'pedido',...d.data()}));
     if(_idsVistos===null){
       _idsVistos=new Set(atuais.map(o=>o.id));
-      // pedidos que já estavam pendentes antes de abrir a tela também entram na fila (sem tocar som)
+      // pedidos que já estavam pendentes antes de abrir a tela também entram na fila (sem tocar
+      // som) — mas só os de HOJE: um pedido antigo travado em "novo" (sessão anterior, bug de
+      // outro fluxo, pedido de teste esquecido) não pode voltar a aparecer como se fosse recém-chegado
+      // toda vez que a tela do Caixa é recarregada.
+      const limiteHoje=limiteDiaBrasilia(_hojeISO());
       atuais.forEach(o=>{
         const ehDaLoja = o.origem!=='caixa' && (o.status==='novo'||!o.status);
-        if(ehDaLoja) filaNotificacoes.push(o);
+        const ehDeHoje = dataStr(o.created_at) >= limiteHoje;
+        if(ehDaLoja && ehDeHoje) filaNotificacoes.push(o);
       });
       if(!notificacaoAtual && filaNotificacoes.length>0) prepararNotificacao();
       return;
     }
     let chegouNovo=false;
     atuais.forEach(o=>{
-      if(_idsVistos.has(o.id)) return;
+      if(_idsVistos.has(o.id)){
+        // já visto antes — se não está mais "novo", garante que não ficou esquecido na fila
+        if(o.status && o.status!=='novo') removerDaFilaSeParado(o.id);
+        return;
+      }
       _idsVistos.add(o.id);
       const ehDaLoja = o.origem!=='caixa' && (o.status==='novo'||!o.status);
       if(!ehDaLoja) return;

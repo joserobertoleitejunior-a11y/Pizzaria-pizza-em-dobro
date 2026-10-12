@@ -35,7 +35,7 @@ async function interpretarPedidoColado(){
   ).join('\n');
   const systemPrompt=`Você interpreta pedidos de pizzaria colados de conversas de WhatsApp (o texto pode vir bagunçado, com quebras de linha, gírias, informação fora de ordem) e devolve APENAS um JSON válido, sem texto antes ou depois, sem markdown, no formato exato:
 
-{"cliente":{"nome":string|null,"telefone":string|null,"endereco":string|null},
+{"cliente":{"nome":string|null,"telefone":string|null,"endereco":{"rua":string|null,"numero":string|null,"complemento":string|null,"bairro":string|null}},
 "pagamento":{"forma_principal":string|null,"misto":[{"metodo":string,"valor":number|null}]|null},
 "itens":[{"tipo":"normal"|"meia_a_meia"|"combo","nome_cardapio":string|null,"nome_cardapio_2":string|null,"combo_faixa":number|null,"qtd":number,"borda":string|null,"remover":[string],"observacao":string|null}]}
 
@@ -57,7 +57,19 @@ REGRAS CRÍTICAS (siga à risca, erros aqui atrapalham o funcionamento real da p
 
 5. Pagamento: se o cliente mencionar MAIS DE UMA forma de pagamento pro mesmo pedido (ex: "30 no dinheiro e o resto no crédito"), preencha "pagamento.misto" com uma entrada por forma e o valor de cada uma (use null se o valor de uma parte não foi dito, tipo "o resto"). "forma_principal" deve ser a primeira forma mencionada. Se for só uma forma de pagamento, preencha apenas "forma_principal" e deixe "misto":null.
 
-6. Extraia nome, telefone e endereço completo (rua, número, bairro/condomínio) exatamente como o cliente escreveu.
+6. Extraia nome, telefone e endereço (rua, bairro/condomínio) exatamente como o cliente escreveu, cada pedaço no campo certo — ver regra 6.1 sobre o número, que é o campo que mais causa erro de entrega quando sai errado.
+
+6.1. NÚMERO DA CASA/APARTAMENTO — CRÍTICO, é o dado que mais causa erro de entrega quando se perde. O número quase nunca vem sozinho nem formatado — procure ATIVAMENTE por ele no texto INTEIRO, não só na frase que parece o "endereço":
+   - Pode vir logo depois do nome da rua ("Rua das Flores 123", "Rua das Flores, 123") — nesse caso "numero":"123".
+   - Pode vir sozinho, sem nome de rua junto, às vezes numa linha separada ou depois de "nº", "n°", "numero", "número", "casa", "apto", "ap", "bloco" (ex: "nº 45", "casa 45", "apto 302 bloco B") — extraia o número mesmo sem o nome da rua por perto; NUNCA descarte um número só porque ele está "solto" no texto.
+   - NUNCA confunda com: número de telefone (vai em "telefone", não em "numero"), valor em dinheiro/troco (ex: "pago com 50"), quantidade de pizza, ou número que faz parte do NOME de um bairro/condomínio (ex: "Condomínio Vila 3", "Jardim das Indústrias II" — isso é "bairro", não "numero").
+   - Se o cliente mencionou rua/bairro mas em NENHUM lugar do texto há um número de casa/apartamento reconhecível, "numero" fica null — não invente, mas também não desista de procurar antes de decidir que não tem.
+
+EXEMPLOS SÓ DE NÚMERO (pra fixar o padrão, endereço completo fora deles pode variar):
+"Rua Sete de Setembro 452, Vila Nova" → {"rua":"Rua Sete de Setembro","numero":"452","complemento":null,"bairro":"Vila Nova"}
+"pode entregar na Rua dos Ipês\nnº 78\napto 12" → {"rua":"Rua dos Ipês","numero":"78","complemento":"apto 12","bairro":null}
+"endereço 205" (sem nome de rua) → {"rua":null,"numero":"205","complemento":null,"bairro":null}
+"Jardim Paulista, perto do mercado" (sem nenhum número em lugar nenhum do texto) → {"rua":null,"numero":null,"complemento":null,"bairro":"Jardim Paulista"}
 
 7. "cliente.nome" é EXCLUSIVAMENTE o nome de uma PESSOA. NUNCA coloque ali nome de rua, avenida, bairro, condomínio ou qualquer trecho de endereço — isso vai em "cliente.endereco". Se o texto tiver algo como "Rua das Palmeiras, 205" ou "Av. Brasil 90", isso é endereço, nunca nome. Se não houver um nome de pessoa claro e separado do endereço, "cliente.nome" deve ser null — nunca "adivinhe" um nome usando parte do endereço.
 
@@ -68,17 +80,17 @@ REGRAS CRÍTICAS (siga à risca, erros aqui atrapalham o funcionamento real da p
 EXEMPLO (cardápio ilustrativo, não é o real — é só pra você entender o padrão esperado):
 Texto recebido: "oi, meu nome é Ana. quero uma meia Frango meia Calabresa, borda catupiry, sem cebola, bem carregado na azeitona por favor. Pagamento: 20 no pix e o resto na entrega em dinheiro. Rua das Flores 123"
 JSON esperado:
-{"cliente":{"nome":"Ana","telefone":null,"endereco":"Rua das Flores 123"},
+{"cliente":{"nome":"Ana","telefone":null,"endereco":{"rua":"Rua das Flores","numero":"123","complemento":null,"bairro":null}},
 "pagamento":{"forma_principal":"Pix","misto":[{"metodo":"Pix","valor":20},{"metodo":"Dinheiro","valor":null}]},
 "itens":[{"tipo":"meia_a_meia","nome_cardapio":"Frango","nome_cardapio_2":"Calabresa","qtd":1,"borda":"Catupiry","remover":["cebola"],"observacao":"cliente pediu bem carregado na azeitona"}]}
 
-CONTRAEXEMPLO (mostra a regra 8 — sabor com "catupiry" no nome NÃO é borda):
+CONTRAEXEMPLO (mostra a regra 8 — sabor com "catupiry" no nome NÃO é borda — e a regra 6.1, número solto sem rua):
 Texto recebido: "quero uma Frango Catupiry e uma Atum, endereço 205, cartão débito"
 JSON esperado:
-{"cliente":{"nome":null,"telefone":null,"endereco":"205"},
+{"cliente":{"nome":null,"telefone":null,"endereco":{"rua":null,"numero":"205","complemento":null,"bairro":null}},
 "pagamento":{"forma_principal":"Cartão de Débito","misto":null},
 "itens":[{"tipo":"normal","nome_cardapio":"Frango Catupiry","nome_cardapio_2":null,"qtd":1,"borda":null,"remover":[],"observacao":null},{"tipo":"normal","nome_cardapio":"Atum","nome_cardapio_2":null,"qtd":1,"borda":null,"remover":[],"observacao":null}]}
-(repare: "Catupiry" aqui é parte do NOME do sabor, nenhum dos dois itens pediu borda, então "borda" fica null nos dois — mesmo a palavra "catupiry" aparecendo no texto.)`;
+(repare: "Catupiry" aqui é parte do NOME do sabor, nenhum dos dois itens pediu borda, então "borda" fica null nos dois — mesmo a palavra "catupiry" aparecendo no texto. E "205" virou "numero" mesmo sem nome de rua junto — nunca jogue um número solto fora.)`;
 
   try{
     const r=await fetch('/.netlify/functions/parse-order',{
@@ -177,14 +189,27 @@ function montarCaixaComPedidoInterpretado(parsed){
 
   const cli=parsed.cliente||{};
   const pag=parsed.pagamento||{};
+  const end=cli.endereco||{};
   const telManual=document.getElementById('colar-tel').value.trim();
   if(cli.nome) document.getElementById('f-nome').value=cli.nome;
   if(telManual) document.getElementById('f-tel').value=telManual;
   else if(cli.telefone) document.getElementById('f-tel').value=cli.telefone;
-  if(cli.endereco){
+  // endereço vem em pedaços (rua/numero/complemento/bairro) — nunca um texto solto — pra o
+  // número da casa/apto nunca ficar "perdido" no meio de uma frase livre. Monta sempre no
+  // mesmo formato, com o número destacado logo depois da rua.
+  let enderecoFaltandoNumero=false;
+  if(end.rua||end.numero||end.complemento||end.bairro){
     document.getElementById('f-tipo').value='entrega';
     alternarCampoEntregador();
-    document.getElementById('f-endereco-colado').value=cli.endereco;
+    const partes=[];
+    if(end.rua) partes.push(end.rua);
+    if(end.numero) partes.push('nº '+end.numero);
+    if(end.complemento) partes.push(end.complemento);
+    if(end.bairro) partes.push(end.bairro);
+    document.getElementById('f-endereco-colado').value=partes.join(', ');
+    // tem rua ou bairro mas NENHUM número — é o erro mais caro que existe aqui (entrega
+    // errada/perdida), avisa antes de deixar ir pro motoboy sem ninguém notar
+    if((end.rua||end.bairro)&&!end.numero) enderecoFaltandoNumero=true;
   }
 
   atualizarBarraCarrinho();
@@ -221,6 +246,7 @@ function montarCaixaComPedidoInterpretado(parsed){
   const avisos=[];
   if(naoIdentificados>0) avisos.push('⚠️ '+naoIdentificados+' item(ns) não foram reconhecidos com certeza e aparecem marcados no carrinho como "CONFERIR" — remova e adicione o item correto pela busca antes de finalizar.');
   if(comboDetectado) avisos.push('🍕🍕 Combo identificado e adicionado ao carrinho — confira os 2 sabores e a faixa de preço antes de finalizar.');
+  if(enderecoFaltandoNumero) avisos.push('📍 Não encontrei o NÚMERO da casa/apartamento no texto colado — confira com o cliente antes de despachar a entrega.');
   if(avisoPagamento) avisos.push(avisoPagamento);
   if(avisos.length) setTimeout(()=>alert(avisos.join('\n\n')),400);
 }

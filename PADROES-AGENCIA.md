@@ -144,4 +144,33 @@ Antes de escrever a primeira linha de funcionalidade:
 
 ---
 
+## 9. SEO e crescimento orgânico (checklist por projeto com página pública)
+
+Todo projeto com página voltada ao cliente final (não só ferramenta interna) passa por isso antes de considerar o SEO "pronto":
+
+**Técnico (código — parte da entrega, não opcional):**
+- [ ] `robots.txt` na raiz, bloqueando toda rota interna/administrativa (`Disallow`) e apontando pro `Sitemap:`
+- [ ] `sitemap.xml` na raiz, listando só as URLs que fazem sentido pro Google indexar (não lista área interna nem página que exige login)
+- [ ] `<title>` e `<meta name="description">` únicos e reais em toda página pública (nunca copiar o mesmo texto genérico em várias páginas)
+- [ ] Open Graph completo (`og:title`, `og:description`, `og:type`, `og:url`, `og:image` com URL absoluta) + `twitter:card` — sem isso o link compartilhado no WhatsApp/Instagram aparece sem preview, o que pesa muito pra um negócio que vende por WhatsApp
+- [ ] Dados estruturados Schema.org (`application/ld+json`) do tipo certo pro negócio (`Restaurant`, `LocalBusiness`, `Store`, etc.) — telefone, endereço, tipo de cozinha/produto, faixa de preço. Conecta com o Google Meu Negócio e habilita resultado rico na busca
+- [ ] `rel="canonical"` e `<html lang="...">` corretos
+- [ ] Nenhuma imagem grande embutida como base64 direto no HTML — sempre arquivo externo (cacheável, não infla o HTML a cada carregamento; se a mesma imagem aparece em várias páginas, extrair pra um arquivo só é ganho automático em todas)
+- [ ] Vídeo/imagem de fundo pesado (>1MB) comprimido antes de ir pro ar
+
+**Contas externas (ação do cliente/agência, não é código):**
+- [ ] Google Search Console — conta criada, propriedade verificada, sitemap enviado
+- [ ] Google Meu Negócio (Perfil da Empresa) — cadastrado e verificado (endereço, horário, fotos, categoria certa)
+- [ ] Google Analytics (GA4) instalado — sem isso o cliente não sabe quantas pessoas visitam nem de onde vêm
+- [ ] Domínio próprio (não subdomínio de plataforma tipo `.netlify.app`/`.vercel.app`) — pesa pra confiança do cliente final e pra ranqueamento
+- [ ] Palavra-chave principal do negócio definida (com o cliente, não advinhada) — título, descrição e conteúdo da home devem mirar nela
+
+**Status neste projeto (Pizza em Dobro)** — auditado em 2026-08-16:
+- ✅ `robots.txt`, `sitemap.xml`, meta description, Open Graph, `og:image`, `twitter:card`, dados estruturados (`Restaurant`), canonical, `lang`, `keywords` já implementados
+- ✅ Logo que estava embutida em base64 em 5 páginas (index, Caixa, Relatórios, Clientes, painel) extraída pra `assets/logo.png` — tirou ~900KB de HTML duplicado do site inteiro
+- ⏳ Pendente (só o José pode fazer, contas externas): Google Search Console, Google Meu Negócio, Google Analytics, domínio próprio
+- ⏳ Pendente (técnico, precisa de ambiente com ffmpeg pra comprimir sem perder qualidade): vídeo de fundo do fogo (2,7MB)
+
+---
+
 *Este arquivo é vivo — atualize conforme o VIBE CODING PROCESS evoluir. Toda mudança aqui deve refletir em todos os projetos ativos da agência, não só nos novos.*

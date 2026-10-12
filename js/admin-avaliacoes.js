@@ -284,7 +284,7 @@ async function _loadDashData(){
 
   const [vr,or_,fr,clients,visitsToday]=await Promise.all([
     sg('visits',{where:[['date','>=',from],['date','<=',to]],orderBy:'date',orderDir:'asc'}),
-    sg('orders',{where:[['created_at','>=',from+'T00:00:00-03:00'],['created_at','<=',to+'T23:59:59-03:00']],limit:500}),
+    sg('orders',{where:[['created_at','>=',limiteDiaBrasilia(from)],['created_at','<=',limiteDiaBrasilia(to,true)]],limit:500}),
     sg('feedbacks',{orderBy:'created_at',orderDir:'desc',limit:20}),
     sg('clients',{orderBy:'last_visit',orderDir:'desc',limit:30}),
     sg('visits',{where:[['date','==',today]]})

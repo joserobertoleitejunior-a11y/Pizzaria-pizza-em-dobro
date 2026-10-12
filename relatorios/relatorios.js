@@ -122,14 +122,14 @@ async function carregarRelatorio(){
   }
   let inicioISO, fimISO=null, cfg;
   if(periodoAtivo==='custom' && dataCustomSelecionada){
-    inicioISO=dataCustomSelecionada+'T00:00:00-03:00';
-    fimISO=dataCustomSelecionada+'T23:59:59-03:00';
+    inicioISO=limiteDiaBrasilia(dataCustomSelecionada);
+    fimISO=limiteDiaBrasilia(dataCustomSelecionada,true);
     cfg={lbl:rotuloDia(dataCustomSelecionada), dias:1};
   }else{
     cfg=PERIODOS.find(p=>p.id===periodoAtivo);
     const hoje=new Date();
     const inicio=new Date(hoje); inicio.setDate(hoje.getDate()-(cfg.dias-1));
-    inicioISO=isoDia(inicio)+'T00:00:00-03:00';
+    inicioISO=limiteDiaBrasilia(isoDia(inicio));
   }
 
   try{

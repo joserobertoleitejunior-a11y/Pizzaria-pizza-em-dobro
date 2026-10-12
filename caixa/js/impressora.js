@@ -4,6 +4,25 @@
 let btDevice=null;
 let btChar=null;
 const BT_STORAGE_KEY='ped_bt_device_name';
+let _tentativasReconexaoBT=0;
+let _timerReconexaoBT=null;
+
+// Tenta reconectar sozinha sem NUNCA desistir de vez — espera crescente (2s, 4s, 6s...) até um
+// teto de 10s entre tentativas, repetindo pra sempre até conseguir. É a diferença entre "a
+// impressora caiu e ficou desconectada até alguém notar e apertar o botão" e "a impressora caiu
+// e voltou sozinha assim que ficou de novo no alcance/religada".
+function agendarReconexaoComBackoff(device,nome){
+  clearTimeout(_timerReconexaoBT);
+  _tentativasReconexaoBT++;
+  const espera=Math.min(2000*_tentativasReconexaoBT,10000);
+  const el=document.getElementById('bt-name');
+  if(el)el.innerText=nome+' (reconectando... tentativa '+_tentativasReconexaoBT+')';
+  _timerReconexaoBT=setTimeout(async()=>{
+    if(btChar)return; // já reconectou por outro caminho (ex: botão manual, outro timer)
+    const ok=await conectarDispositivo(device);
+    if(!ok) agendarReconexaoComBackoff(device,nome);
+  },espera);
+}
 
 async function reconectarImpressoraAuto(){
   const nome=localStorage.getItem(BT_STORAGE_KEY);
@@ -52,16 +71,16 @@ async function conectarDispositivo(device){
     localStorage.setItem(BT_STORAGE_KEY,nome);
     usbEndpointOut=null; usbDevice=null;
     esconderAlertaImpressora();
-    device.addEventListener('gattserverdisconnected',async()=>{
+    _tentativasReconexaoBT=0;
+    // {once:true}: cada reconexão bem-sucedida registra um listener novo (linha acima é
+    // chamada de novo a cada sucesso) — sem "once", cada desconexão/reconexão ia empilhando
+    // mais um listener no mesmo device, e uma queda futura disparava vários reconectando ao
+    // mesmo tempo.
+    device.addEventListener('gattserverdisconnected',()=>{
       btChar=null;
-      const el2=document.getElementById('bt-name');
-      if(el2)el2.innerText=nome+' (reconectando...)';
-      await new Promise(r=>setTimeout(r,2000));
-      try{await conectarDispositivo(device);}catch(e){
-        if(el2)el2.innerText='Desconectada';
-        mostrarAlertaImpressora();
-      }
-    });
+      mostrarAlertaImpressora();
+      agendarReconexaoComBackoff(device,nome);
+    },{once:true});
     return true;
   }catch(e){
     return false;
@@ -238,19 +257,32 @@ function formatarCupom(o){
   txt+=sep+'\n\n\n';
   return txt;
 }
-setTimeout(()=>{ reconectarUSBAuto(); reconectarImpressoraAuto(); },1500);
+// ponto único pra tentar reconectar (USB primeiro, depois Bluetooth) — trava contra tentativas
+// simultâneas dos vários gatilhos abaixo (troca de aba, foco da janela, checagem periódica)
+// pisando uma na outra ao mesmo tempo.
+let _reconectandoAgora=false;
+async function tentarReconectarImpressoraAgora(){
+  if(_reconectandoAgora||btChar||usbEndpointOut) return;
+  _reconectandoAgora=true;
+  try{
+    await reconectarUSBAuto();
+    if(!btChar&&!usbEndpointOut) await reconectarImpressoraAuto();
+  }finally{
+    _reconectandoAgora=false;
+  }
+}
+
+setTimeout(tentarReconectarImpressoraAgora,1500);
 
 // reconecta sozinha sempre que a tela volta a ficar ativa (usuário trocou de aba/app e voltou)
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && !btChar && !usbEndpointOut){ reconectarUSBAuto(); reconectarImpressoraAuto(); }
+  if (!document.hidden) tentarReconectarImpressoraAgora();
 });
-window.addEventListener('focus', () => {
-  if (!btChar && !usbEndpointOut){ reconectarUSBAuto(); reconectarImpressoraAuto(); }
-});
-// checagem periódica de segurança — se cair a conexão, tenta voltar sozinha
-setInterval(() => {
-  if (!btChar && !usbEndpointOut){ reconectarUSBAuto(); reconectarImpressoraAuto(); }
-}, 15000);
+window.addEventListener('focus', tentarReconectarImpressoraAgora);
+// checagem periódica de segurança — se cair a conexão por algum caminho que não disparou o
+// backoff automático (ex: impressora USB, ou perda de estado depois de recarregar a página),
+// tenta voltar sozinha em até 8s.
+setInterval(tentarReconectarImpressoraAgora, 8000);
 
 // veio do Painel pedindo reimpressão (?reimprimir=ID) — imprime direto, sem abrir o carrinho
 (function(){
