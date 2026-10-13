@@ -38,7 +38,7 @@ function renderCombos(){
         <div class="price-row">
           <span class="item-price">R$ ${fmtPrice(c.preco)}</span>
           <div class="controls">
-            <button class="btn-action" style="width:auto;padding:0 16px;border-radius:20px;" onclick="addComboToCart('${c.id}')">+ Adicionar</button>
+            <button class="btn-action btn-plus" style="width:auto;padding:0 16px;border-radius:20px;" onclick="addComboToCart('${c.id}')">+ Adicionar</button>
           </div>
         </div>
       </div>`;
@@ -76,24 +76,28 @@ function renderMenu(){
               <img src="${i.img}" alt="${i.n}"
                 onload="document.getElementById('sk-${i.id}').style.display='none';this.classList.add('loaded');"
                 onerror="this.style.display='none';document.getElementById('sk-${i.id}').style.display='none';">
-              <canvas id="cv-${i.id}" style="display:none;width:100%;height:150px;"></canvas>
+              <canvas id="cv-${i.id}" style="display:none;width:100%;height:72px;"></canvas>
             </div>`
           :'';
-        return`<div class="item-card${sav?' savory':''}" id="card-${i.id}" data-nome="${i.n}" data-desc="${i.d||''}">   
+        return`<div class="item-card${sav?' savory':''}" id="card-${i.id}" data-nome="${i.n}" data-desc="${i.d||''}">
           <div class="sel-trigger" onclick="pickSecond(${i.id})"></div>
-          ${imgH}
-          <div id="hh-wrap-${i.id}"></div>
-          <span class="item-name">#${i.id} - ${i.n}</span>
-          <p class="item-desc">${i.d}</p>
-          <div class="price-row">
-            <span class="item-price">R$ ${fmtPrice(i.p)}</span>
-            <div class="controls">
-              <button class="btn-action" onclick="removeItem(${i.id})">−</button>
-              <span class="qty-val" id="qty-${i.id}">0</span>
-              <button class="btn-action" onclick="addItem(${i.id})">+</button>
-              ${sav?`<button class="btn-half" onclick="startHalf(${i.id})">½&nbsp;MEIO</button>`:''}
+          <div class="item-row">
+            ${imgH}
+            <div class="item-info">
+              <span class="item-name">#${i.id} - ${i.n}</span>
+              <p class="item-desc">${i.d}</p>
+              <div class="price-row">
+                <span class="item-price">R$ ${fmtPrice(i.p)}</span>
+                <div class="controls">
+                  <button class="btn-action btn-minus" onclick="removeItem(${i.id})">−</button>
+                  <span class="qty-val" id="qty-${i.id}">0</span>
+                  <button class="btn-action btn-plus" onclick="addItem(${i.id})">+</button>
+                  ${sav?`<button class="btn-half" onclick="startHalf(${i.id})">½&nbsp;MEIO</button>`:''}
+                </div>
+              </div>
             </div>
           </div>
+          <div id="hh-wrap-${i.id}"></div>
           <div id="bc-${i.id}"></div>
           <div id="rc-${i.id}"></div>
         </div>`;
