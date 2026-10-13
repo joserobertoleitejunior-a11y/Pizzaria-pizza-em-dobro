@@ -25,6 +25,9 @@ async function init(){
     }
   }catch(e){console.warn('menu:',e);}
   if(!loaded){const cm=DB.get('menu_custom');menu=cm&&cm.length?cm:[...DEFAULT_MENU];}
+  // imagem gerada por código pros itens sem foto real cadastrada — nunca duas
+  // iguais, porque nasce dos ingredientes de cada item (ver js/sabor-imagem.js)
+  preencherImagensGeradas(menu);
 
   renderMenu();
   // restaura sessão admin se válida (mesmo login único da equipe, sem bloquear
