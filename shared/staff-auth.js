@@ -38,6 +38,7 @@ function iniciarGateEquipe(){
       <div style="width:100%;max-width:320px;text-align:center;">
         <div style="font-size:2.4rem;margin-bottom:8px;">🍕🔒</div>
         <div style="color:#E8B088;font-size:1rem;font-family:'Archivo Black',sans-serif;letter-spacing:.3px;margin-bottom:18px;">ÁREA DA EQUIPE</div>
+        <style>#gate-senha::placeholder{color:rgba(243,236,221,.55);}</style>
         <input type="password" id="gate-senha" placeholder="Senha da equipe" autocomplete="current-password"
           style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(193,98,59,.35);border-radius:8px;color:#F3ECDD;padding:12px 14px;font-size:1rem;text-align:center;margin-bottom:10px;">
         <button id="gate-btn" style="width:100%;background:#C1623B;color:#fff;border:none;border-radius:8px;padding:12px;font-weight:700;font-size:.9rem;cursor:pointer;">ENTRAR</button>
