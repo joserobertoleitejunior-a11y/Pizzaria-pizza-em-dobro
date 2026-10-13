@@ -15,16 +15,16 @@
 <script>iniciarGateEquipe();</script>
 <style>
 :root{
-  --bg:#0B0B0B; --bg2:#141414;
-  --pr:#D62828; --pr2:#A51D1D; --se:#A51D1D;
-  --card:rgba(26,26,26,.55); --card-bd:rgba(214,40,40,.18);
-  --tx:#FFFFFF; --sub:#A3A3A3; --ok:#3ddc84;
+  --bg:#07060a; --bg2:#0d0a08;
+  --pr:#C1623B; --pr2:#A8432F; --se:#A8432F;
+  --card:rgba(24,19,16,.55); --card-bd:rgba(193,98,59,.18);
+  --tx:#f3ece2; --sub:#9c8f83; --ok:#3ddc84;
   --font-display:'Archivo Black',sans-serif; --font-eyebrow:'Work Sans',sans-serif; --font-body:'Public Sans',system-ui,sans-serif;
 }
 body{
   background:var(--bg); color:var(--tx); font-family:var(--font-body); min-height:100vh; padding-bottom:60px; margin:0;
-  background-image:radial-gradient(circle at 15% -10%, rgba(214,40,40,.14) 0%, transparent 55%),
-                    radial-gradient(circle at 100% 10%, rgba(165,29,29,.08) 0%, transparent 45%);
+  background-image:radial-gradient(circle at 15% -10%, rgba(193,98,59,.14) 0%, transparent 55%),
+                    radial-gradient(circle at 100% 10%, rgba(168,67,47,.08) 0%, transparent 45%);
   background-attachment:fixed;
 }
 .nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
@@ -33,24 +33,24 @@ body{
 .nav-logo{font-family:var(--font-display);font-size:1.3rem;color:var(--pr);letter-spacing:.5px;}
 .nav-links{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
 .nav-links a{font-family:var(--font-eyebrow);font-size:.62rem;letter-spacing:.6px;text-transform:uppercase;
-  color:var(--sub);text-decoration:none;padding:6px 10px;border-radius:2px;
+  color:var(--sub);text-decoration:none;padding:6px 10px;border-radius:8px;
   border-top:2px solid transparent;transition:.2s;}
-.nav-links a:hover{color:#fff;background:var(--pr);border-top-color:transparent;}
+.nav-links a:hover{color:#000;background:var(--pr);border-top-color:transparent;}
 main{max-width:520px;margin:0 auto;padding:20px 16px;}
 h1{font-family:var(--font-display);color:var(--pr);font-size:1.6rem;margin:8px 0 4px;}
 .sub{color:var(--sub);font-size:.85rem;margin-bottom:20px;}
-.card{background:var(--card);border:1px solid var(--card-bd);border-radius:2px;padding:16px;margin-bottom:14px;}
+.card{background:var(--card);border:1px solid var(--card-bd);border-radius:14px;padding:16px;margin-bottom:14px;}
 .card h2{font-family:var(--font-eyebrow);font-size:.75rem;letter-spacing:.6px;text-transform:uppercase;color:var(--pr);margin:0 0 12px;}
 label{display:block;font-size:.75rem;color:var(--sub);margin:10px 0 4px;}
 input[type=text],input[type=number],input[type=password]{
-  width:100%;box-sizing:border-box;background:#161616;border:1px solid var(--card-bd);border-radius:2px;
+  width:100%;box-sizing:border-box;background:#171016;border:1px solid var(--card-bd);border-radius:8px;
   color:var(--tx);padding:10px 12px;font-family:var(--font-body);font-size:.9rem;}
 .row2{display:flex;gap:10px;}
 .row2>div{flex:1;}
 .toggle-line{display:flex;align-items:center;justify-content:space-between;padding:4px 0;}
 .toggle-line span{font-size:.85rem;}
 input[type=checkbox]{width:20px;height:20px;accent-color:var(--pr);}
-button{width:100%;background:var(--pr);color:#1A1A1A;border:none;border-radius:2px;padding:14px;
+button{width:100%;background:var(--pr);color:#1a1200;border:none;border-radius:10px;padding:14px;
   font-family:var(--font-eyebrow);font-size:.9rem;letter-spacing:.5px;text-transform:uppercase;font-weight:600;
   cursor:pointer;margin-top:6px;}
 button:disabled{opacity:.5;}
@@ -75,7 +75,7 @@ button:disabled{opacity:.5;}
   <h1>WhatsApp Bot</h1>
   <p class="sub">Tudo aqui é salvo direto no banco (config/bot). A única chave que não fica aqui é a do Firebase — essa é interna do servidor.</p>
 
-  <a href="conversas/index.html" style="display:block;text-align:center;background:var(--card);border:1px solid var(--card-bd);border-radius:2px;padding:14px;margin-bottom:16px;color:var(--pr);text-decoration:none;font-family:var(--font-eyebrow);text-transform:uppercase;font-size:.8rem;letter-spacing:.5px;">
+  <a href="conversas/index.html" style="display:block;text-align:center;background:var(--card);border:1px solid var(--card-bd);border-radius:12px;padding:14px;margin-bottom:16px;color:var(--pr);text-decoration:none;font-family:var(--font-eyebrow);text-transform:uppercase;font-size:.8rem;letter-spacing:.5px;">
     💬 Ver conversas dos clientes com o bot
   </a>
 
@@ -143,7 +143,7 @@ button:disabled{opacity:.5;}
     <label>Formas de pagamento aceitas</label>
     <input type="text" id="formasPagamento" placeholder="Pix, dinheiro, cartão na entrega">
     <label>Outras informações (promoções, observações, o que mais o bot deve saber)</label>
-    <textarea id="observacoesLoja" rows="4" style="width:100%;box-sizing:border-box;background:#161616;border:1px solid var(--card-bd);border-radius:2px;color:var(--tx);padding:10px 12px;font-family:var(--font-body);font-size:.9rem;" placeholder="ex: às terças toda pizza grande tem 10% de desconto"></textarea>
+    <textarea id="observacoesLoja" rows="4" style="width:100%;box-sizing:border-box;background:#171016;border:1px solid var(--card-bd);border-radius:8px;color:var(--tx);padding:10px 12px;font-family:var(--font-body);font-size:.9rem;" placeholder="ex: às terças toda pizza grande tem 10% de desconto"></textarea>
   </div>
 
   <div class="card">

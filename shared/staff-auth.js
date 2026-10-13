@@ -23,25 +23,25 @@
 function iniciarGateEquipe(){
   const overlay=document.createElement('div');
   overlay.id='gate-equipe';
-  overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:#141414;display:flex;align-items:center;justify-content:center;padding:20px;font-family:"Work Sans",system-ui,sans-serif;';
-  overlay.innerHTML='<div style="color:rgba(255,255,255,.6);font-size:.85rem;">Carregando…</div>';
+  overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:#37473B;display:flex;align-items:center;justify-content:center;padding:20px;font-family:"Work Sans",system-ui,sans-serif;';
+  overlay.innerHTML='<div style="color:rgba(243,236,221,.6);font-size:.85rem;">Carregando…</div>';
   // some ANTES de qualquer verificação — a tela fica bloqueada por padrão (fail-closed);
   // só é liberada explicitamente depois de confirmar login, nunca por omissão/erro.
   (document.body||document.documentElement).appendChild(overlay);
 
   function renderErro(msg){
-    overlay.innerHTML=`<div style="max-width:320px;text-align:center;color:#FF7A70;font-size:.85rem;">⚠️ ${msg}</div>`;
+    overlay.innerHTML=`<div style="max-width:320px;text-align:center;color:#E89A80;font-size:.85rem;">⚠️ ${msg}</div>`;
   }
 
   function renderFormulario(auth){
     overlay.innerHTML=`
-      <div style="width:100%;max-width:320px;text-align:left;">
-        <div style="display:inline-block;background:#D62828;color:#fff;font-size:.62rem;font-weight:700;letter-spacing:2.5px;padding:5px 9px;margin-bottom:14px;">ÁREA RESTRITA</div>
-        <div style="color:#fff;font-size:2.1rem;line-height:.95;font-family:'Archivo Black',sans-serif;letter-spacing:-1px;margin-bottom:22px;">PIZZA EM<br>DOBRO <span style="color:#D62828;">EQUIPE.</span></div>
+      <div style="width:100%;max-width:320px;text-align:center;">
+        <div style="font-size:2.4rem;margin-bottom:8px;">🍕🔒</div>
+        <div style="color:#E8B088;font-size:1rem;font-family:'Archivo Black',sans-serif;letter-spacing:.3px;margin-bottom:18px;">ÁREA DA EQUIPE</div>
         <input type="password" id="gate-senha" placeholder="Senha da equipe" autocomplete="current-password"
-          style="width:100%;box-sizing:border-box;background:#fff;border:3px solid #fff;border-radius:2px;color:#141414;padding:13px 14px;font-size:1rem;margin-bottom:10px;outline:none;">
-        <button id="gate-btn" style="width:100%;background:#D62828;color:#fff;border:none;border-radius:2px;padding:15px;font-family:'Archivo Black',sans-serif;letter-spacing:.6px;font-size:.88rem;cursor:pointer;">ENTRAR</button>
-        <div id="gate-status" style="color:#FF7A70;font-size:.8rem;margin-top:10px;min-height:1.2em;"></div>
+          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(193,98,59,.35);border-radius:8px;color:#F3ECDD;padding:12px 14px;font-size:1rem;text-align:center;margin-bottom:10px;">
+        <button id="gate-btn" style="width:100%;background:#C1623B;color:#fff;border:none;border-radius:8px;padding:12px;font-weight:700;font-size:.9rem;cursor:pointer;">ENTRAR</button>
+        <div id="gate-status" style="color:#E89A80;font-size:.78rem;margin-top:10px;min-height:1.2em;"></div>
       </div>`;
     document.getElementById('gate-senha').focus();
 

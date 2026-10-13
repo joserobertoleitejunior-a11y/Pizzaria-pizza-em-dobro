@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Painel PED">
-<meta name="theme-color" content="#D62828">
+<meta name="theme-color" content="#C1623B">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>🍕 Painel — Pizza em Dobro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,14 +16,14 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{overflow-x:hidden;max-width:100%;}
 :root{
-  --bg:#0B0B0B; --card:rgba(26,26,26,.55); --card-bd:rgba(214,40,40,.18);
-  --pr:#D62828; --se:#A51D1D; --ok:#2ecc71; --tx:#FFFFFF; --sub:#A3A3A3;
+  --bg:#07060a; --card:rgba(24,19,16,.55); --card-bd:rgba(193,98,59,.18);
+  --pr:#C1623B; --se:#A8432F; --ok:#2ecc71; --tx:#f3ece2; --sub:#9c8f83;
   --font-display:'Archivo Black',sans-serif; --font-eyebrow:'Work Sans',sans-serif; --font-body:'Public Sans',system-ui,sans-serif;
 }
 body{
   background:var(--bg);color:var(--tx);font-family:var(--font-body);min-height:100vh;
   background-image:radial-gradient(circle at 15% -10%, rgba(255,159,28,.12) 0%, transparent 55%),
-                    radial-gradient(circle at 100% 10%, rgba(214,40,40,.07) 0%, transparent 45%);
+                    radial-gradient(circle at 100% 10%, rgba(231,29,54,.07) 0%, transparent 45%);
   background-attachment:fixed;
   word-break:break-word;overflow-wrap:break-word;
 }
@@ -36,9 +36,9 @@ body{
   display:flex;align-items:center;gap:8px;}
 .nav-links{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
 .nav-links a{font-family:var(--font-eyebrow);font-size:.62rem;letter-spacing:.6px;text-transform:uppercase;
-  color:var(--sub);text-decoration:none;padding:6px 10px;border-radius:2px;
+  color:var(--sub);text-decoration:none;padding:6px 10px;border-radius:8px;
   border-top:2px solid transparent;transition:.2s;}
-.nav-links a:hover{color:#fff;background:var(--pr);border-top-color:transparent;}
+.nav-links a:hover{color:#000;background:var(--pr);border-top-color:transparent;}
 .nav-links a.on{color:var(--tx);border-top:2px solid #fff;}
 
 .header-status{display:flex;align-items:center;gap:6px;font-family:var(--font-eyebrow);font-size:.6rem;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;margin-left:10px;padding-left:10px;border-left:1px solid var(--card-bd);}
@@ -64,7 +64,7 @@ body{
 .empty span{display:block;font-size:2rem;margin-bottom:12px;}
 
 /* CARD DE PEDIDO */
-.order-card{background:var(--card);backdrop-filter:blur(10px);border-radius:2px;margin-bottom:10px;border:1px solid var(--card-bd);overflow:hidden;transition:.2s;}
+.order-card{background:var(--card);backdrop-filter:blur(10px);border-radius:16px;margin-bottom:10px;border:1px solid var(--card-bd);overflow:hidden;transition:.2s;}
 .order-card.novo{border-color:rgba(255,159,28,.45);animation:newOrder .6s ease;}
 .order-card.confirmado{border-color:rgba(46,204,113,.25);}
 .order-card.pronto{border-color:rgba(100,100,100,.2);opacity:.5;}
@@ -75,7 +75,7 @@ body{
 .card-body.open{user-select:text;-webkit-user-select:text;}
 .card-body.open *{user-select:text;-webkit-user-select:text;}
 .card-hora{font-family:var(--font-eyebrow);font-size:.84rem;color:var(--sub);white-space:nowrap;}
-.card-badge{font-family:var(--font-eyebrow);font-size:.8rem;font-weight:600;padding:3px 9px;border-radius:2px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;flex:none;}
+.card-badge{font-family:var(--font-eyebrow);font-size:.8rem;font-weight:600;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;flex:none;}
 .badge-novo{background:rgba(255,159,28,.15);color:var(--pr);}
 .badge-confirmado{background:rgba(46,204,113,.12);color:var(--ok);}
 .badge-pronto{background:rgba(100,100,100,.1);color:#555;}
@@ -86,7 +86,7 @@ body{
 .card-info{font-size:.92rem;color:var(--sub);margin-bottom:10px;line-height:1.8;word-break:break-word;}
 .card-info b{color:var(--tx);}
 
-.card-items{background:rgba(255,255,255,.03);border-radius:2px;padding:10px;margin-bottom:10px;}
+.card-items{background:rgba(255,255,255,.03);border-radius:8px;padding:10px;margin-bottom:10px;}
 .item-row{font-size:.95rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.6;word-break:break-word;}
 .item-row:last-child{border-bottom:none;}
 .item-price{color:var(--pr);float:right;}
@@ -96,37 +96,37 @@ body{
 .card-total span:last-child{color:var(--pr);}
 
 .card-actions{display:flex;gap:8px;margin-top:10px;}
-.btn-confirmar{flex:1;background:var(--ok);color:#000;border:none;padding:12px;border-radius:2px;font-family:var(--font-eyebrow);font-size:.78rem;text-transform:uppercase;letter-spacing:.4px;font-weight:600;cursor:pointer;}
-.btn-imprimir{background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:12px 16px;border-radius:2px;font-size:.8rem;cursor:pointer;}
-.btn-pronto{flex:1;background:rgba(100,100,100,.15);color:#888;border:1px solid rgba(100,100,100,.2);padding:12px;border-radius:2px;font-family:var(--font-eyebrow);font-size:.78rem;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;}
-.btn-cancelar{background:rgba(214,40,40,.1);color:var(--se);border:1px solid rgba(214,40,40,.2);padding:12px 14px;border-radius:2px;font-size:.8rem;cursor:pointer;}
+.btn-confirmar{flex:1;background:var(--ok);color:#000;border:none;padding:12px;border-radius:10px;font-family:var(--font-eyebrow);font-size:.78rem;text-transform:uppercase;letter-spacing:.4px;font-weight:600;cursor:pointer;}
+.btn-imprimir{background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:12px 16px;border-radius:10px;font-size:.8rem;cursor:pointer;}
+.btn-pronto{flex:1;background:rgba(100,100,100,.15);color:#888;border:1px solid rgba(100,100,100,.2);padding:12px;border-radius:10px;font-family:var(--font-eyebrow);font-size:.78rem;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;}
+.btn-cancelar{background:rgba(231,29,54,.1);color:var(--se);border:1px solid rgba(231,29,54,.2);padding:12px 14px;border-radius:10px;font-size:.8rem;cursor:pointer;}
 
 /* BLUETOOTH */
 .bt-bar{background:rgba(7,6,10,.7);backdrop-filter:blur(8px);border-bottom:1px solid var(--card-bd);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;font-size:.84rem;}
 .bt-info{color:var(--sub);}
 .bt-info b{color:var(--tx);}
-.btn-bt{background:rgba(29,161,242,.12);color:#1da1f2;border:1px solid rgba(29,161,242,.25);padding:6px 12px;border-radius:2px;font-size:.8rem;cursor:pointer;}
+.btn-bt{background:rgba(29,161,242,.12);color:#1da1f2;border:1px solid rgba(29,161,242,.25);padding:6px 12px;border-radius:8px;font-size:.8rem;cursor:pointer;}
 
 /* SOM */
 /* MODAL MOTOBOYS */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:16px;}
 .modal-overlay.open{display:flex;}
-.modal-box{background:#0E0E0E;border:1px solid var(--card-bd);border-radius:2px;width:100%;max-width:480px;padding:16px;margin:auto;}
+.modal-box{background:#0d0b0e;border:1px solid var(--card-bd);border-radius:18px;width:100%;max-width:480px;padding:16px;margin:auto;}
 .modal-box h2{font-family:var(--font-display);font-size:1.1rem;color:var(--pr);margin-bottom:14px;}
-.mb-card{background:var(--card);backdrop-filter:blur(8px);border:1px solid var(--card-bd);border-radius:2px;padding:12px;margin-bottom:8px;}
+.mb-card{background:var(--card);backdrop-filter:blur(8px);border:1px solid var(--card-bd);border-radius:12px;padding:12px;margin-bottom:8px;}
 .mb-name{font-size:.85rem;font-weight:700;color:#fff;}
 .mb-stats{font-family:var(--font-eyebrow);font-size:.8rem;color:var(--sub);margin-top:4px;}
 .mb-taxa{font-size:.75rem;color:var(--pr);margin-top:2px;}
 .mb-actions{display:flex;gap:6px;margin-top:10px;}
-.btn-mb-edit{flex:1;background:rgba(255,159,28,.12);color:var(--pr);border:1px solid rgba(255,159,28,.25);padding:8px;border-radius:2px;font-size:.84rem;cursor:pointer;}
-.btn-mb-del{background:rgba(214,40,40,.1);color:var(--se);border:1px solid rgba(214,40,40,.2);padding:8px 10px;border-radius:2px;font-size:.84rem;cursor:pointer;}
-.mb-form{background:rgba(255,255,255,.03);border:1px solid var(--card-bd);border-radius:2px;padding:12px;margin-top:12px;}
-.mb-input{width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:2px;padding:9px 12px;color:#fff;font-size:.82rem;outline:none;margin-bottom:8px;}
+.btn-mb-edit{flex:1;background:rgba(255,159,28,.12);color:var(--pr);border:1px solid rgba(255,159,28,.25);padding:8px;border-radius:9px;font-size:.84rem;cursor:pointer;}
+.btn-mb-del{background:rgba(231,29,54,.1);color:var(--se);border:1px solid rgba(231,29,54,.2);padding:8px 10px;border-radius:9px;font-size:.84rem;cursor:pointer;}
+.mb-form{background:rgba(255,255,255,.03);border:1px solid var(--card-bd);border-radius:12px;padding:12px;margin-top:12px;}
+.mb-input{width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:9px 12px;color:#fff;font-size:.82rem;outline:none;margin-bottom:8px;}
 .mb-input:focus{border-color:rgba(255,159,28,.5);}
-.btn-mb-save{width:100%;background:var(--pr);color:#fff;border:none;padding:10px;border-radius:2px;font-family:var(--font-eyebrow);font-size:.82rem;text-transform:uppercase;letter-spacing:.4px;font-weight:600;cursor:pointer;}
+.btn-mb-save{width:100%;background:var(--pr);color:#000;border:none;padding:10px;border-radius:10px;font-family:var(--font-eyebrow);font-size:.82rem;text-transform:uppercase;letter-spacing:.4px;font-weight:600;cursor:pointer;}
 /* FAIXAS GPS */
 .faixa-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:.78rem;color:#888;}
-.faixa-input{width:72px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:2px;padding:7px 10px;color:var(--pr);font-size:.82rem;text-align:right;outline:none;}
+.faixa-input{width:72px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 10px;color:var(--pr);font-size:.82rem;text-align:right;outline:none;}
 /* PWA INSTALL BANNER */
 #pwa-banner{position:fixed;bottom:0;left:0;right:0;background:rgba(13,11,14,.95);backdrop-filter:blur(12px);border-top:1px solid var(--card-bd);padding:14px 16px;display:flex;align-items:center;gap:12px;z-index:9999;transform:translateY(100%);transition:transform .35s ease;}
 #pwa-banner.show{transform:translateY(0);}
@@ -134,7 +134,7 @@ body{
 #pwa-banner-txt{flex:1;}
 #pwa-banner-txt b{display:block;font-size:.85rem;color:#fff;margin-bottom:2px;}
 #pwa-banner-txt span{font-size:.82rem;color:#888;}
-#pwa-banner-btn{background:var(--pr);color:#fff;border:none;padding:10px 16px;border-radius:2px;font-family:var(--font-eyebrow);font-size:.78rem;text-transform:uppercase;letter-spacing:.4px;font-weight:600;cursor:pointer;white-space:nowrap;}
+#pwa-banner-btn{background:var(--pr);color:#000;border:none;padding:10px 16px;border-radius:10px;font-family:var(--font-eyebrow);font-size:.78rem;text-transform:uppercase;letter-spacing:.4px;font-weight:600;cursor:pointer;white-space:nowrap;}
 #pwa-banner-close{background:none;border:none;color:#555;font-size:1.2rem;cursor:pointer;padding:4px;}
 </style>
 </head>
@@ -170,17 +170,17 @@ body{
   <div class="tab active" onclick="setTab('novos')">NOVOS</div>
   <div class="tab" onclick="setTab('confirmados')">CONFIRMADOS</div>
   <div class="tab" onclick="setTab('todos')">TODOS</div>
-  <div class="tab" onclick="abrirMotoboys()" style="color:#FFFFFF;flex:none;padding:12px 10px;font-size:.8rem;">MOTOBOYS</div>
-  <div class="tab" onclick="limparPedidos()" style="color:#D62828;flex:none;padding:12px 10px;font-size:.8rem;">LIMPAR</div>
+  <div class="tab" onclick="abrirMotoboys()" style="color:#9b59b6;flex:none;padding:12px 10px;font-size:.8rem;">MOTOBOYS</div>
+  <div class="tab" onclick="limparPedidos()" style="color:#e71d36;flex:none;padding:12px 10px;font-size:.8rem;">LIMPAR</div>
 </div>
 
 <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.06);">
   <span style="font-size:.8rem;color:#888;white-space:nowrap;">📅 Ver dia:</span>
-  <input type="date" id="filtro-data" onchange="mudarFiltroData(this.value)" style="flex:1;background:#151515;border:1px solid rgba(255,255,255,.12);color:#eee;border-radius:2px;padding:6px 8px;font-size:.75rem;">
-  <button id="filtro-hoje-btn" onclick="voltarParaHoje()" style="display:none;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:6px 12px;border-radius:2px;font-size:.82rem;cursor:pointer;white-space:nowrap;">Hoje</button>
+  <input type="date" id="filtro-data" onchange="mudarFiltroData(this.value)" style="flex:1;background:#151515;border:1px solid rgba(255,255,255,.12);color:#eee;border-radius:7px;padding:6px 8px;font-size:.75rem;">
+  <button id="filtro-hoje-btn" onclick="voltarParaHoje()" style="display:none;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:6px 12px;border-radius:7px;font-size:.82rem;cursor:pointer;white-space:nowrap;">Hoje</button>
 </div>
 <div style="padding:8px 12px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--card-bd);">
-  <input type="text" id="filtro-busca" placeholder="🔍 Buscar por nome ou telefone (qualquer data)..." oninput="renderOrders()" style="width:100%;background:#151515;border:1px solid rgba(255,255,255,.12);color:#eee;border-radius:2px;padding:9px 12px;font-size:.8rem;">
+  <input type="text" id="filtro-busca" placeholder="🔍 Buscar por nome ou telefone (qualquer data)..." oninput="renderOrders()" style="width:100%;background:#151515;border:1px solid rgba(255,255,255,.12);color:#eee;border-radius:9px;padding:9px 12px;font-size:.8rem;">
 </div>
 
 <div class="orders-list" id="orders-list">
@@ -198,7 +198,7 @@ body{
     <div style="font-size:.78rem;color:#aaa;margin-bottom:4px;">📞 <b id="perfil-tel" style="color:#fff;">—</b></div>
     <div style="font-size:.78rem;color:#aaa;margin-bottom:12px;">🧾 <b id="perfil-qtd" style="color:#fff;">0</b> pedido(s) · Total: <b id="perfil-total" style="color:var(--pr);">R$ 0,00</b></div>
     <a id="perfil-whatsapp" href="#" target="_blank" style="display:none;align-items:center;gap:8px;background:#25D366;color:#fff;
-      text-decoration:none;padding:10px 16px;border-radius:2px;font-weight:700;font-size:.8rem;margin-bottom:12px;">
+      text-decoration:none;padding:10px 16px;border-radius:10px;font-weight:700;font-size:.8rem;margin-bottom:12px;">
       <svg width="18" height="18" viewBox="0 0 32 32" fill="#fff"><path d="M16.001 3C9.107 3 3.5 8.607 3.5 15.5c0 2.316.63 4.484 1.726 6.35L3 29l7.35-2.188A12.44 12.44 0 0016 28c6.894 0 12.5-5.607 12.5-12.5S22.895 3 16.001 3zm0 22.7c-1.99 0-3.86-.55-5.46-1.51l-.39-.23-4.36 1.3 1.32-4.25-.25-.4a10.16 10.16 0 01-1.56-5.41c0-5.63 4.58-10.2 10.2-10.2 5.63 0 10.2 4.58 10.2 10.2 0 5.63-4.58 10.51-9.7 10.51zm5.6-7.63c-.31-.15-1.82-.9-2.1-1-.28-.1-.49-.15-.69.15-.2.31-.79 1-.97 1.2-.18.2-.36.23-.67.08-.31-.15-1.3-.48-2.47-1.53-.91-.81-1.53-1.82-1.71-2.13-.18-.31-.02-.47.13-.63.14-.14.31-.36.46-.54.15-.18.2-.31.31-.51.1-.2.05-.38-.02-.54-.08-.15-.69-1.67-.95-2.29-.25-.6-.5-.52-.69-.53h-.59c-.2 0-.54.08-.82.38-.28.31-1.08 1.05-1.08 2.57 0 1.51 1.1 2.97 1.26 3.18.15.2 2.17 3.31 5.25 4.65.73.32 1.31.5 1.75.64.74.24 1.41.2 1.94.12.59-.09 1.82-.74 2.08-1.46.26-.71.26-1.32.18-1.45-.07-.13-.28-.2-.59-.36z"/></svg>
       Chamar no WhatsApp
     </a>
@@ -214,10 +214,10 @@ body{
       <button onclick="fecharAddItemManual()" style="background:none;border:none;color:#888;font-size:1.3rem;cursor:pointer;line-height:1;">✕</button>
     </div>
     <div style="font-size:.82rem;color:#888;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">Nome do item</div>
-    <input id="add-item-nome" placeholder="Ex: Parmesão avulso" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:2px;padding:10px 12px;color:#fff;font-size:.85rem;outline:none;margin-bottom:12px;">
+    <input id="add-item-nome" placeholder="Ex: Parmesão avulso" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:.85rem;outline:none;margin-bottom:12px;">
     <div style="font-size:.82rem;color:#888;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">Valor (R$)</div>
-    <input id="add-item-valor" type="number" step="0.01" placeholder="0,00" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:2px;padding:10px 12px;color:var(--pr);font-size:.85rem;outline:none;margin-bottom:16px;">
-    <button onclick="confirmarAddItemManual()" style="width:100%;background:var(--pr);color:#000;border:none;padding:12px;border-radius:2px;font-size:.85rem;font-weight:700;cursor:pointer;">Adicionar e recalcular total</button>
+    <input id="add-item-valor" type="number" step="0.01" placeholder="0,00" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:var(--pr);font-size:.85rem;outline:none;margin-bottom:16px;">
+    <button onclick="confirmarAddItemManual()" style="width:100%;background:var(--pr);color:#000;border:none;padding:12px;border-radius:10px;font-size:.85rem;font-weight:700;cursor:pointer;">Adicionar e recalcular total</button>
   </div>
 </div>
 
@@ -238,7 +238,7 @@ body{
     <!-- Aba: Entregadores -->
     <div id="mb-aba-lista">
       <div id="mb-lista" style="margin-bottom:12px;"></div>
-      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:2px;padding:12px;">
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px;">
         <div style="font-size:.84rem;color:var(--pr);font-weight:700;margin-bottom:10px;" id="mb-form-titulo">Adicionar entregador</div>
         <input class="mb-input" id="mb-nome" placeholder="Nome completo" type="text">
         <input class="mb-input" id="mb-tel" placeholder="WhatsApp (com DDD)" type="tel" inputmode="tel">
@@ -249,7 +249,7 @@ body{
         <input type="hidden" id="mb-edit-id">
         <div style="display:flex;gap:8px;">
           <button class="btn-mb-save" onclick="salvarMotoboy()" style="flex:1;">Salvar</button>
-          <button onclick="cancelarEdicaoMb()" id="mb-btn-cancelar" style="display:none;flex:none;background:rgba(214,40,40,.1);color:var(--se);border:1px solid rgba(214,40,40,.2);padding:10px 14px;border-radius:2px;font-size:.8rem;cursor:pointer;">Cancelar</button>
+          <button onclick="cancelarEdicaoMb()" id="mb-btn-cancelar" style="display:none;flex:none;background:rgba(231,29,54,.1);color:var(--se);border:1px solid rgba(231,29,54,.2);padding:10px 14px;border-radius:8px;font-size:.8rem;cursor:pointer;">Cancelar</button>
         </div>
       </div>
     </div>
@@ -311,7 +311,7 @@ async function mudarFiltroData(valor){
     renderOrders();
   }catch(e){
     console.error('Erro ao buscar histórico:',e);
-    if(el)el.innerHTML=`<div class="empty"><span>⚠️</span>Erro ao buscar histórico deste dia.<br><span style="font-size:.8rem;color:#D62828;">${(e.message||'').replace(/</g,'&lt;')}</span></div>`;
+    if(el)el.innerHTML=`<div class="empty"><span>⚠️</span>Erro ao buscar histórico deste dia.<br><span style="font-size:.8rem;color:#e71d36;">${(e.message||'').replace(/</g,'&lt;')}</span></div>`;
   }
 }
 
@@ -615,15 +615,15 @@ function renderMotoboys(){
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
         <div style="flex:1;">
           <div class="mb-name" style="display:flex;align-items:center;gap:6px;">${mb.nome}${mb.tel?`<a href="${_linkWhatsapp(mb.tel)}" target="_blank" onclick="event.stopPropagation()" title="Chamar no WhatsApp" style="display:flex;align-items:center;">${WA_ICON_SVG}</a>`:''}</div>
-          <div style="margin-top:6px;background:rgba(255,255,255,.03);border-radius:2px;padding:8px 10px;font-size:.74rem;color:#ccc;">
+          <div style="margin-top:6px;background:rgba(255,255,255,.03);border-radius:8px;padding:8px 10px;font-size:.74rem;color:#ccc;">
             <div style="display:flex;justify-content:space-between;padding:2px 0;"><span>Pizzas entregues hoje</span><b style="color:#fff;">${qtdEntregas}</b></div>
             <div style="display:flex;justify-content:space-between;padding:2px 0;"><span>Valor de cada entrega</span><b style="color:#fff;">R$ ${valorCadaUma.toFixed(2).replace('.',',')}</b></div>
             <div style="display:flex;justify-content:space-between;padding:4px 0 0;border-top:1px solid rgba(255,255,255,.08);margin-top:4px;"><span style="color:var(--pr);font-weight:700;">Total a pagar hoje</span><b style="color:var(--pr);">R$ ${totalPagar}</b></div>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;">
-          <button onclick="editarMotoboy('${mb.id}')" style="background:rgba(255,159,28,.12);color:var(--pr);border:1px solid rgba(255,159,28,.25);padding:7px 12px;border-radius:2px;font-size:.84rem;cursor:pointer;">Editar</button>
-          <button onclick="excluirMotoboy('${mb.id}')" style="background:rgba(214,40,40,.08);color:var(--se);border:1px solid rgba(214,40,40,.2);padding:7px 12px;border-radius:2px;font-size:.84rem;cursor:pointer;">Excluir</button>
+          <button onclick="editarMotoboy('${mb.id}')" style="background:rgba(255,159,28,.12);color:var(--pr);border:1px solid rgba(255,159,28,.25);padding:7px 12px;border-radius:7px;font-size:.84rem;cursor:pointer;">Editar</button>
+          <button onclick="excluirMotoboy('${mb.id}')" style="background:rgba(231,29,54,.08);color:var(--se);border:1px solid rgba(231,29,54,.2);padding:7px 12px;border-radius:7px;font-size:.84rem;cursor:pointer;">Excluir</button>
         </div>
       </div>
     </div>`;
@@ -732,9 +732,9 @@ function buildMotoboySelect(docId,currentMbId){
   if(!lista.length) return'<p style="font-size:.84rem;color:#555;margin:0;">Cadastre entregadores em MOTOBOYS</p>';
   const chips=lista.map(m=>{
     const sel=m.id===currentMbId;
-    return`<button type="button" class="mb-chip" data-mbid="${m.id}" onclick="event.stopPropagation();atribuirMotoboy('${docId}','${m.id}')" style="background:${sel?'rgba(46,204,113,.18)':'rgba(255,255,255,.05)'};border:1px solid ${sel?'#2ecc71':'rgba(255,255,255,.15)'};color:${sel?'#2ecc71':'#ccc'};border-radius:2px;padding:6px 12px;font-size:.84rem;cursor:pointer;white-space:nowrap;">${sel?'✓ ':''}${m.nome}</button>`;
+    return`<button type="button" class="mb-chip" data-mbid="${m.id}" onclick="event.stopPropagation();atribuirMotoboy('${docId}','${m.id}')" style="background:${sel?'rgba(46,204,113,.18)':'rgba(255,255,255,.05)'};border:1px solid ${sel?'#2ecc71':'rgba(255,255,255,.15)'};color:${sel?'#2ecc71':'#ccc'};border-radius:20px;padding:6px 12px;font-size:.84rem;cursor:pointer;white-space:nowrap;">${sel?'✓ ':''}${m.nome}</button>`;
   }).join('');
-  const clearChip=currentMbId?`<button type="button" onclick="event.stopPropagation();atribuirMotoboy('${docId}','')" style="background:rgba(214,40,40,.08);border:1px solid rgba(214,40,40,.25);color:var(--se);border-radius:2px;padding:6px 12px;font-size:.84rem;cursor:pointer;white-space:nowrap;">✕ Remover</button>`:'';
+  const clearChip=currentMbId?`<button type="button" onclick="event.stopPropagation();atribuirMotoboy('${docId}','')" style="background:rgba(231,29,54,.08);border:1px solid rgba(231,29,54,.25);color:var(--se);border-radius:20px;padding:6px 12px;font-size:.84rem;cursor:pointer;white-space:nowrap;">✕ Remover</button>`:'';
   return`<div style="font-size:.65rem;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">🛵 Quem vai entregar? <span style="color:#555;text-transform:none;">(opcional)</span></div>
     <div id="mbchip-${docId}" style="display:flex;gap:6px;flex-wrap:wrap;">${chips}${clearChip}</div>`;
 }
@@ -747,7 +747,7 @@ function gerarFechamento(){
   const totalReceita=pedidosHoje.reduce((s,o)=>s+Number(o.total||0),0);
   const hoje=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
 
-  let html=`<div style="background:rgba(255,159,28,.08);border-radius:2px;padding:14px;margin-bottom:12px;">
+  let html=`<div style="background:rgba(255,159,28,.08);border-radius:10px;padding:14px;margin-bottom:12px;">
     <div style="font-size:.84rem;color:#888;margin-bottom:8px;">${hoje}</div>
     <div style="display:flex;justify-content:space-between;font-size:.85rem;font-weight:700;margin-bottom:6px;">
       <span style="color:#ccc;">Total de pedidos</span><span style="color:#fff;">${totalPedidos}</span>
@@ -766,7 +766,7 @@ function gerarFechamento(){
   // Por forma de pagamento
   const porPagto={};
   pedidosHoje.forEach(o=>{const p=o.payment||'Não informado';porPagto[p]=(porPagto[p]||0)+Number(o.total||0);});
-  html+=`<div style="background:rgba(255,255,255,.03);border-radius:2px;padding:12px;margin-bottom:12px;">
+  html+=`<div style="background:rgba(255,255,255,.03);border-radius:10px;padding:12px;margin-bottom:12px;">
     <div style="font-size:.84rem;color:#888;font-weight:700;margin-bottom:8px;">POR PAGAMENTO</div>`;
   Object.entries(porPagto).forEach(([p,v])=>{
     html+=`<div style="display:flex;justify-content:space-between;font-size:.78rem;color:#ccc;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);">
@@ -778,7 +778,7 @@ function gerarFechamento(){
   // Por motoboy
   if(lista.length){
     let totalPagar=0;
-    let mbHtml=`<div style="background:rgba(255,255,255,.03);border-radius:2px;padding:12px;margin-bottom:12px;">
+    let mbHtml=`<div style="background:rgba(255,255,255,.03);border-radius:10px;padding:12px;margin-bottom:12px;">
       <div style="font-size:.84rem;color:#888;font-weight:700;margin-bottom:8px;">ENTREGADORES</div>`;
     lista.forEach(mb=>{
       const entregasMb=pedidosHoje.filter(o=>o.motoboy_id===mb.id&&o.status==='pronto').length;
@@ -800,7 +800,7 @@ function gerarFechamento(){
 
     // Lucro líquido
     const lucro=totalReceita-totalPagar;
-    html+=`<div style="background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.2);border-radius:2px;padding:14px;text-align:center;">
+    html+=`<div style="background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.2);border-radius:10px;padding:14px;text-align:center;">
       <div style="font-size:.84rem;color:#888;margin-bottom:4px;">LUCRO LÍQUIDO ESTIMADO</div>
       <div style="font-size:1.4rem;font-weight:700;color:#2ecc71;">R$ ${lucro.toFixed(2).replace('.',',')}</div>
       <div style="font-size:.65rem;color:#555;margin-top:4px;">(Receita − Entregadores)</div>
@@ -936,7 +936,7 @@ async function salvarCampoPedido(el){
     setTimeout(()=>{el.style.borderColor='rgba(255,255,255,.1)';},1200);
   }catch(e){
     console.error('Erro ao salvar campo do pedido:',e);
-    el.style.borderColor='rgba(214,40,40,.6)';
+    el.style.borderColor='rgba(231,29,54,.6)';
   }
 }
 
@@ -981,7 +981,7 @@ function renderOrders(){
     console.error('Erro ao renderizar pedidos:',e);
     const el=document.getElementById('orders-list');
     if(el){
-      el.innerHTML=`<div class="empty"><span>⚠️</span>Erro ao carregar pedidos.<br><span style="font-size:.8rem;color:#D62828;">${(e.message||'').replace(/</g,'&lt;')}</span><br><button onclick="renderOrders()" style="margin-top:12px;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:8px 16px;border-radius:2px;font-size:.75rem;cursor:pointer;">Tentar novamente</button></div>`;
+      el.innerHTML=`<div class="empty"><span>⚠️</span>Erro ao carregar pedidos.<br><span style="font-size:.8rem;color:#e71d36;">${(e.message||'').replace(/</g,'&lt;')}</span><br><button onclick="renderOrders()" style="margin-top:12px;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:8px 16px;border-radius:8px;font-size:.75rem;cursor:pointer;">Tentar novamente</button></div>`;
     }
   }
 }
@@ -1032,7 +1032,7 @@ function _renderOrdersInner(){
       return _renderOrderCard(o);
     }catch(e){
       console.error('Pedido com dados inválidos, pulado:',o._id,e);
-      return`<div class="order-card" style="border-color:rgba(214,40,40,.3);padding:12px 14px;">
+      return`<div class="order-card" style="border-color:rgba(231,29,54,.3);padding:12px 14px;">
         <div style="font-size:.75rem;color:var(--se);">⚠️ Pedido ${o._id||''} com erro: <b>${(e.message||'erro desconhecido').replace(/</g,'&lt;')}</b></div>
       </div>`;
     }
@@ -1060,7 +1060,7 @@ function _renderOrderCard(o){
       </div>`;
     }).join('');
 
-    const btnExcluir=`<button onclick="excluirPedido('${o._id}')" style="background:rgba(214,40,40,.06);color:var(--se);border:1px solid rgba(214,40,40,.18);padding:8px 12px;border-radius:2px;font-size:.82rem;cursor:pointer;margin-top:8px;width:100%;">🗑️ Excluir pedido</button>`;
+    const btnExcluir=`<button onclick="excluirPedido('${o._id}')" style="background:rgba(231,29,54,.06);color:var(--se);border:1px solid rgba(231,29,54,.18);padding:8px 12px;border-radius:8px;font-size:.82rem;cursor:pointer;margin-top:8px;width:100%;">🗑️ Excluir pedido</button>`;
     const acoes=status==='novo'
       ?`<div style="margin-bottom:8px;">${buildMotoboySelect(o._id,o.motoboy_id||'')}</div>
          <div style="display:flex;gap:8px;">
@@ -1097,18 +1097,18 @@ function _renderOrderCard(o){
       <div class="card-body" id="body-${o._id}">
         <div class="card-info" onclick="event.stopPropagation()">
           <div style="margin-bottom:6px;"><b>Endereço:</b> <span style="font-size:.62rem;color:#666;">(toque para editar)</span><br>
-            <div contenteditable="true" data-id="${o._id}" data-field="address" onblur="salvarCampoPedido(this)" onclick="event.stopPropagation()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:2px;padding:6px 10px;margin-top:3px;font-size:.78rem;color:#ccc;min-height:28px;cursor:text;user-select:text;-webkit-user-select:text;">${o.address||'—'}${o.house_number?', '+o.house_number:''}</div>
+            <div contenteditable="true" data-id="${o._id}" data-field="address" onblur="salvarCampoPedido(this)" onclick="event.stopPropagation()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:6px 10px;margin-top:3px;font-size:.78rem;color:#ccc;min-height:28px;cursor:text;user-select:text;-webkit-user-select:text;">${o.address||'—'}${o.house_number?', '+o.house_number:''}</div>
           </div>
           <div style="margin-bottom:6px;"><b>Pagamento:</b> <span style="font-size:.62rem;color:#666;">(toque para editar)</span><br>
-            <div contenteditable="true" data-id="${o._id}" data-field="payment" onblur="salvarCampoPedido(this)" onclick="event.stopPropagation()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:2px;padding:6px 10px;margin-top:3px;font-size:.78rem;color:#ccc;min-height:28px;cursor:text;user-select:text;-webkit-user-select:text;">${o.payment||'—'}${o.change_for?' · Troco p/ R$ '+o.change_for:''}</div>
+            <div contenteditable="true" data-id="${o._id}" data-field="payment" onblur="salvarCampoPedido(this)" onclick="event.stopPropagation()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:6px 10px;margin-top:3px;font-size:.78rem;color:#ccc;min-height:28px;cursor:text;user-select:text;-webkit-user-select:text;">${o.payment||'—'}${o.change_for?' · Troco p/ R$ '+o.change_for:''}</div>
           </div>
           <div><b>Telefone / Obs:</b> <span style="font-size:.62rem;color:#666;">(toque para editar)</span><br>
-            <div contenteditable="true" data-id="${o._id}" data-field="client_phone" onblur="salvarCampoPedido(this)" onclick="event.stopPropagation()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:2px;padding:6px 10px;margin-top:3px;font-size:.78rem;color:#ccc;min-height:28px;cursor:text;user-select:text;-webkit-user-select:text;">${tel||o.obs||'—'}</div>
+            <div contenteditable="true" data-id="${o._id}" data-field="client_phone" onblur="salvarCampoPedido(this)" onclick="event.stopPropagation()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:6px 10px;margin-top:3px;font-size:.78rem;color:#ccc;min-height:28px;cursor:text;user-select:text;-webkit-user-select:text;">${tel||o.obs||'—'}</div>
           </div>
         </div>
         <div class="card-items">${itemsHtml}</div>
         <div class="card-total"><span>Total</span><span id="tot-${o._id}">${fmtPreco(o.total)}</span></div>
-        <button onclick="event.stopPropagation();abrirAddItemManual('${o._id}')" style="width:100%;background:rgba(46,204,113,.1);color:#2ecc71;border:1px dashed rgba(46,204,113,.35);border-radius:2px;padding:9px;font-size:.75rem;cursor:pointer;margin-bottom:8px;">➕ Adicionar item manual (ex: parmesão avulso)</button>
+        <button onclick="event.stopPropagation();abrirAddItemManual('${o._id}')" style="width:100%;background:rgba(46,204,113,.1);color:#2ecc71;border:1px dashed rgba(46,204,113,.35);border-radius:8px;padding:9px;font-size:.75rem;cursor:pointer;margin-bottom:8px;">➕ Adicionar item manual (ex: parmesão avulso)</button>
         <div class="card-actions">${acoes}</div>
       </div>
     </div>`;
@@ -1156,7 +1156,7 @@ if('bluetooth' in navigator){
 const _loadTimeout=setTimeout(()=>{
   if(primeiraLeitura){
     const el=document.getElementById('orders-list');
-    if(el)el.innerHTML='<div class="empty"><span>⚠️</span>Não foi possível carregar os pedidos.<br><span style="font-size:.8rem;">Verifique sua conexão com a internet.</span><br><button onclick="location.reload()" style="margin-top:12px;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:8px 16px;border-radius:2px;font-size:.75rem;cursor:pointer;">Recarregar</button></div>';
+    if(el)el.innerHTML='<div class="empty"><span>⚠️</span>Não foi possível carregar os pedidos.<br><span style="font-size:.8rem;">Verifique sua conexão com a internet.</span><br><button onclick="location.reload()" style="margin-top:12px;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:8px 16px;border-radius:8px;font-size:.75rem;cursor:pointer;">Recarregar</button></div>';
   }
 },12000);
 
@@ -1183,14 +1183,14 @@ FS.collection('orders')
     }catch(e){
       console.error('Erro ao processar pedidos recebidos do Firebase:',e);
       const el=document.getElementById('orders-list');
-      if(el)el.innerHTML=`<div class="empty"><span>⚠️</span>Erro ao processar pedidos.<br><button onclick="location.reload()" style="margin-top:12px;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:8px 16px;border-radius:2px;font-size:.75rem;cursor:pointer;">Recarregar</button></div>`;
+      if(el)el.innerHTML=`<div class="empty"><span>⚠️</span>Erro ao processar pedidos.<br><button onclick="location.reload()" style="margin-top:12px;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:8px 16px;border-radius:8px;font-size:.75rem;cursor:pointer;">Recarregar</button></div>`;
     }
   },err=>{
     clearTimeout(_loadTimeout);
     setOnline(false);
     console.warn('Firebase listener:',err);
     const el=document.getElementById('orders-list');
-    if(el&&primeiraLeitura)el.innerHTML=`<div class="empty"><span>⚠️</span>Erro de permissão ou conexão com o Firebase.<br><span style="font-size:.8rem;color:#D62828;">${(err&&err.message||'').replace(/</g,'&lt;')}</span></div>`;
+    if(el&&primeiraLeitura)el.innerHTML=`<div class="empty"><span>⚠️</span>Erro de permissão ou conexão com o Firebase.<br><span style="font-size:.8rem;color:#e71d36;">${(err&&err.message||'').replace(/</g,'&lt;')}</span></div>`;
   });
 </script>
 <div id="pwa-banner">
@@ -1233,8 +1233,8 @@ function fecharBanner(){
      Aditivo e isolado: não interfere na lista de pedidos nem no
      listener do Firestore, só reage a ele.
      ══════════════════════════════════════════════════════════ -->
-<div id="notif-drawer" style="position:fixed;top:0;left:0;right:0;z-index:9998;background:#D62828;
-  border-radius:0 0 2px 2px;padding:14px 16px 16px;box-shadow:0 8px 24px rgba(0,0,0,.4);
+<div id="notif-drawer" style="position:fixed;top:0;left:0;right:0;z-index:9998;background:linear-gradient(135deg,#C1623B,#A8432F);
+  border-radius:0 0 18px 18px;padding:14px 16px 16px;box-shadow:0 8px 24px rgba(0,0,0,.4);
   transform:translateY(-120%);transition:transform .35s cubic-bezier(.34,1.56,.64,1);touch-action:pan-y;">
   <div style="width:36px;height:4px;background:rgba(0,0,0,.25);border-radius:3px;margin:0 auto 10px;"></div>
   <div onclick="abrirPedidoDaNotificacao()" style="display:flex;align-items:center;gap:12px;cursor:pointer;">

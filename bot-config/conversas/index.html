@@ -14,9 +14,9 @@
 <script>iniciarGateEquipe();</script>
 <style>
 :root{
-  --bg:#0B0B0B; --pr:#D62828; --se:#A51D1D;
-  --card:rgba(26,26,26,.55); --card-bd:rgba(214,40,40,.18);
-  --tx:#FFFFFF; --sub:#A3A3A3;
+  --bg:#07060a; --pr:#C1623B; --se:#A8432F;
+  --card:rgba(24,19,16,.55); --card-bd:rgba(193,98,59,.18);
+  --tx:#f3ece2; --sub:#9c8f83;
   --font-display:'Archivo Black',sans-serif; --font-eyebrow:'Work Sans',sans-serif; --font-body:'Public Sans',system-ui,sans-serif;
 }
 body{background:var(--bg); color:var(--tx); font-family:var(--font-body); min-height:100vh; margin:0; padding-bottom:40px;}
@@ -26,16 +26,16 @@ body{background:var(--bg); color:var(--tx); font-family:var(--font-body); min-he
 .nav-logo{font-family:var(--font-display);font-size:1.3rem;color:var(--pr);letter-spacing:.5px;}
 .nav a{font-family:var(--font-eyebrow);font-size:.7rem;letter-spacing:.5px;text-transform:uppercase;color:var(--sub);text-decoration:none;}
 main{max-width:600px;margin:0 auto;padding:16px;}
-.lista .item{background:var(--card);border:1px solid var(--card-bd);border-radius:2px;padding:12px 14px;margin-bottom:8px;cursor:pointer;}
+.lista .item{background:var(--card);border:1px solid var(--card-bd);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;}
 .lista .item .tel{font-family:var(--font-eyebrow);color:var(--pr);font-size:.85rem;}
 .lista .item .estado{font-size:.68rem;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
 .chat{display:none;}
 .chat.show{display:block;}
 .chat-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-.chat-header button{background:var(--card);border:1px solid var(--card-bd);color:var(--tx);border-radius:2px;padding:6px 10px;font-size:.8rem;}
-.msg{max-width:78%;padding:8px 12px;border-radius:2px;margin-bottom:8px;font-size:.85rem;line-height:1.35;}
+.chat-header button{background:var(--card);border:1px solid var(--card-bd);color:var(--tx);border-radius:8px;padding:6px 10px;font-size:.8rem;}
+.msg{max-width:78%;padding:8px 12px;border-radius:12px;margin-bottom:8px;font-size:.85rem;line-height:1.35;}
 .msg.cliente{background:var(--card);border:1px solid var(--card-bd);margin-right:auto;}
-.msg.bot{background:var(--pr);color:#FFFFFF;margin-left:auto;font-weight:500;}
+.msg.bot{background:linear-gradient(135deg,var(--pr),var(--se));color:#1a0e00;margin-left:auto;font-weight:500;}
 .msg.atendente{background:#1c3d2e;border:1px solid #2f6b4c;margin-left:auto;}
 .msg small{display:block;opacity:.65;font-size:.62rem;margin-top:4px;}
 .vazio{color:var(--sub);text-align:center;padding:30px 0;font-size:.85rem;}
