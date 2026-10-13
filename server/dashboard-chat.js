@@ -6,17 +6,11 @@
 //  fala com números desatualizados.
 // ══════════════════════════════════════════════════════════
 
-const admin = require('firebase-admin');
+const { admin, db } = require('./lib/firebase');
 const { getSecrets } = require('./lib/secrets');
 const { reportError } = require('./lib/sentry');
 const { decomporSaboresItem } = require('../../shared/utils.js');
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT))
-  });
-}
-const db = admin.firestore();
 
 function categoriaPagamento(raw) {
   const p = (raw || '').toLowerCase();

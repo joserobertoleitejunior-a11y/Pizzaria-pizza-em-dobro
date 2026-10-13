@@ -5,27 +5,16 @@
 //  ÚNICA credencial que fica fora do banco: FIREBASE_SERVICE_ACCOUNT (env var Netlify)
 // ══════════════════════════════════════════════════════════
 
-const admin = require('firebase-admin');
+const { admin, db } = require('./lib/firebase');
 const { getSecrets } = require('./lib/secrets');
 const { reportError } = require('./lib/sentry');
 const { texto } = require('./lib/http');
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT))
-  });
-}
-const db = admin.firestore();
 
 async function obterProximoNumeroSequencial() {
   const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }); // YYYY-MM-DD
-  const ref = db.collection('contadores').doc('pedidos_' + hoje);
-  return db.runTransaction(async (t) => {
-    const doc = await t.get(ref);
-    const atual = (doc.exists ? doc.data().atual : 0) + 1;
-    t.set(ref, { atual }, { merge: true });
-    return atual;
-  });
+  // incremento atômico (mesmo contador que o site e o Caixa usam): sem disputa entre pedidos simultâneos
+  return db.incrementar(db.collection('contadores').doc('pedidos_' + hoje), 'atual', 1);
 }
 
 // Trava final antes de gravar em `orders` — verifica se o PRÓPRIO bot já fechou um pedido

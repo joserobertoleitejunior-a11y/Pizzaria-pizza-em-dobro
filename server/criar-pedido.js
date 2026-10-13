@@ -52,13 +52,8 @@ async function conferirPrecos(itens) {
 }
 
 async function proximoNumero() {
-  const ref = db.collection('contadores').doc('pedidos_' + hojeBrasilia());
-  return db.runTransaction(async (t) => {
-    const doc = await t.get(ref);
-    const atual = (doc.exists ? doc.data().atual : 0) + 1;
-    t.set(ref, { atual }, { merge: true });
-    return atual;
-  });
+  // incremento atômico no banco: pedidos simultâneos nunca recebem o mesmo número
+  return db.incrementar(db.collection('contadores').doc('pedidos_' + hojeBrasilia()), 'atual', 1);
 }
 
 exports.handler = async (event) => {

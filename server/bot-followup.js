@@ -4,16 +4,10 @@
 //  sumido, encerra a conversa educadamente.
 // ══════════════════════════════════════════════════════════
 
-const admin = require('firebase-admin');
+const { admin, db } = require('./lib/firebase');
 const { getSecrets } = require('./lib/secrets');
 const { reportError } = require('./lib/sentry');
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT))
-  });
-}
-const db = admin.firestore();
 
 exports.handler = async () => {
   try {

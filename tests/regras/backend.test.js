@@ -5,12 +5,12 @@ const assert = require('node:assert/strict');
 
 process.env.GCLOUD_PROJECT = 'demo-pizza';
 process.env.STAFF_PASSWORD = 'senha-de-teste-123';
-const { admin, db } = require('../../netlify/functions/lib/firebase');
-const criarPedido = require('../../netlify/functions/criar-pedido').handler;
-const pedidoPublico = require('../../netlify/functions/pedido-publico').handler;
-const registrarVisita = require('../../netlify/functions/registrar-visita').handler;
-const adminApi = require('../../netlify/functions/admin-api').handler;
-const staffLogin = require('../../netlify/functions/staff-login').handler;
+const { admin, db } = require('./admin-teste');
+const criarPedido = require('../../server/criar-pedido').handler;
+const pedidoPublico = require('../../server/pedido-publico').handler;
+const registrarVisita = require('../../server/registrar-visita').handler;
+const adminApi = require('../../server/admin-api').handler;
+const staffLogin = require('../../server/staff-login').handler;
 
 async function idToken(uid, claims) {
   const custom = await admin.auth().createCustomToken(uid, claims);
