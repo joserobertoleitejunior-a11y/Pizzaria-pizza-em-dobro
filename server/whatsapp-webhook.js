@@ -9,6 +9,7 @@ const { admin, db } = require('./lib/firebase');
 const { getSecrets } = require('./lib/secrets');
 const { reportError } = require('./lib/sentry');
 const { texto } = require('./lib/http');
+const { senhaConfere } = require('./lib/senha');
 
 
 async function obterProximoNumeroSequencial() {
@@ -73,6 +74,17 @@ async function buscarPedidoRecenteMesmoTelefone(telefone) {
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 200, body: 'ok' };
+  }
+
+  // Segredo na URL do webhook (…/api/whatsapp-webhook?token=SEGREDO, cadastrada na Evolution API):
+  // sem isso qualquer pessoa na internet poderia mandar "mensagens de cliente" falsas, abrir
+  // conversas e gastar o crédito da IA. Com WEBHOOK_SECRET definido, só entra quem tem o token.
+  const segredo = process.env.WEBHOOK_SECRET || '';
+  if (segredo) {
+    const enviado = String((event.queryStringParameters || {}).token || '');
+    if (!senhaConfere(enviado, segredo)) return { statusCode: 401, body: 'nao autorizado' };
+  } else {
+    console.warn('WEBHOOK_SECRET não configurado — o webhook do WhatsApp está aceitando qualquer chamador.');
   }
 
   let telefone = null;

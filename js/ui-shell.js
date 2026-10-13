@@ -87,7 +87,7 @@ async function trackVisit(){
   const today=_localToday();
   let v=DB.get('visits')||{};v[today]=(v[today]||0)+1;DB.set('visits',v);DB.inc('visits_total');
   // contador do dia é somado no servidor (registrar-visita.js) — o navegador não escreve em "visits"
-  fetch('/.netlify/functions/registrar-visita',{method:'POST'}).catch(()=>{});
+  fetch('/api/registrar-visita',{method:'POST'}).catch(()=>{});
 }
 
 async function trackOrder(items,od){
@@ -114,14 +114,14 @@ async function trackOrder(items,od){
   });
   DB.set('local_orders',localOrders.slice(0,30));
   if(od){
-    // o pedido é gravado NO SERVIDOR (netlify/functions/criar-pedido.js): lá é gerado o número
+    // o pedido é gravado NO SERVIDOR (server/criar-pedido.js): lá é gerado o número
     // do dia, bloqueada a duplicata (mesmo telefone + total em 10 min) e conferido o preço com o
     // cardápio. O navegador não tem mais permissão de escrever em "orders" direto.
     try{
       const headers={'Content-Type':'application/json'};
       _initFB();
       if(AUTH&&AUTH.currentUser){ try{ headers.Authorization='Bearer '+await AUTH.currentUser.getIdToken(); }catch{} }
-      const r=await fetch('/.netlify/functions/criar-pedido',{method:'POST',headers,body:JSON.stringify({
+      const r=await fetch('/api/criar-pedido',{method:'POST',headers,body:JSON.stringify({
         name:od.name,phone:od.phone||null,address:od.address,num:od.num,
         pay:od.pay,change:od.change||null,type:od.type,total:od.total,
         items:items.map(i=>({id:i.id,name:i.n,price:i.p,borda:(i.selectedBorda&&i.selectedBorda.price>0)?i.selectedBorda.name:null,removed:i.removedIngredients||[]}))

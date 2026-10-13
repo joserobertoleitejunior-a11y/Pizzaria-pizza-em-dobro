@@ -443,9 +443,9 @@ async function enviarMensagemIA(){
   adicionarBolhaChatIA(texto,'user');
   historicoChatIA.push({role:'user',content:texto});
   try{
-    const resp=await fetch('/.netlify/functions/dashboard-chat',{
+    const resp=await fetch('/api/dashboard-chat',{
       method:'POST',
-      headers:{'content-type':'application/json'},
+      headers:await cabecalhosEquipe(),
       body:JSON.stringify({mensagens:historicoChatIA})
     });
     const data=await resp.json();

@@ -5,7 +5,10 @@
   "scripts": {
     "test": "node --test tests/*.test.js",
     "lint": "biome lint .",
-    "test:regras": "npx --yes firebase-tools@13 emulators:exec --only firestore,auth --project demo-pizza \"node --test --test-concurrency=1 tests/regras/*.test.js\""
+    "test:regras": "npx --yes firebase-tools@13 emulators:exec --only firestore,auth --project demo-pizza \"node --test --test-concurrency=1 tests/regras/*.test.js\"",
+    "test:worker": "npx --yes firebase-tools@13 emulators:exec --only firestore,auth --project demo-pizza \"node --test --test-concurrency=1 tests/worker/*.test.js\"",
+    "build": "node scripts/build-cf.js",
+    "deploy": "wrangler deploy"
   },
   "engines": {
     "node": ">=20"
@@ -14,7 +17,8 @@
     "@biomejs/biome": "^1.9.4",
     "@firebase/rules-unit-testing": "^3.0.4",
     "firebase": "^10.14.1",
+    "firebase-admin": "^12.0.0",
     "playwright": "^1.62.1",
-    "firebase-admin": "^12.0.0"
+    "wrangler": "^4.150.0"
   }
 }

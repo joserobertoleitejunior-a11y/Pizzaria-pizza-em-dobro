@@ -110,9 +110,9 @@ Pagamento: [forma][Troco p/ R$X se dinheiro]
 ════════════════════════`;
 
   try{
-    const r=await fetch('/.netlify/functions/parse-order',{
+    const r=await fetch('/api/parse-order',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:await(async()=>{const h={'Content-Type':'application/json'};try{_initFB();if(AUTH&&AUTH.currentUser)h.Authorization='Bearer '+await AUTH.currentUser.getIdToken();}catch{}return h;})(),
       body:JSON.stringify({systemPrompt, raw})
     });
     const d=await r.json();

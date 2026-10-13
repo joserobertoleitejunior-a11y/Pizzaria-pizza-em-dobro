@@ -7,9 +7,16 @@
 
 ## Visão geral da arquitetura
 
-Site estático (sem build step, sem bundler) hospedado na Netlify. Firebase/Firestore
-como banco de dados. Netlify Functions pra tudo que precisa rodar no servidor
-(bot do WhatsApp, chat da IA do dashboard). Sem framework — HTML + JS puro em
+Site estático hospedado no **Cloudflare Workers (Static Assets)** — o `wrangler.jsonc`
+serve os arquivos grátis e só `/api/*` passa pelo Worker (`worker/index.js`). Firebase/Firestore
+como banco de dados (acessado por REST + WebCrypto, sem firebase-admin). O servidor
+(`server/*.js`) cuida do bot do WhatsApp, chat da IA do dashboard, pedidos, admin-api.
+`npm run build` copia só os arquivos públicos para `dist/` (código do servidor, regras, docs e testes NUNCA são publicados).
+Cron do bot (follow-up) = `scheduled()` do Worker a cada 5 min. Segredos no painel do Cloudflare:
+`FIREBASE_SERVICE_ACCOUNT`, `STAFF_PASSWORD`, opcionais `SENTRY_DSN` e `WEBHOOK_SECRET`
+(webhook da Evolution: `https://<site>/api/whatsapp-webhook?token=<WEBHOOK_SECRET>`).
+Rotas da equipe (`admin-api`, `send-whatsapp`, `parse-order`, `dashboard-chat`, `dashboard-ai`) exigem ID token com claim `staff`.
+Testes: `npm test`, `npm run test:regras` (emulador), `npm run test:worker` (workerd real). Deploy: `npm run deploy`. Sem framework — HTML + JS puro em
 cada módulo, com scripts compartilhados carregados via `<script src="...">`.
 
 ```
@@ -25,8 +32,8 @@ cada módulo, com scripts compartilhados carregados via `<script src="...">`.
 /shared/utils.js            → Funções e dados compartilhados (ver abaixo) — agora requireável em Node também
 /shared/firebase-config.js  → Chave do Firebase (1 lugar só — pública por design, não é segredo)
 /shared/sentry-config.js    → DSN do Sentry do navegador (vazio = observabilidade desligada)
-/netlify/functions/         → Código de servidor (Node)
-/netlify/functions/lib/     → Módulos compartilhados ENTRE functions (firebase, equipe, http, secrets, senha, sentry)
+/server/                   → Código de servidor (Node)
+/server/lib/               → Módulos compartilhados ENTRE functions (firebase, equipe, http, secrets, senha, sentry)
 /firestore.rules            → Regras v2 (banco trancado) — testadas no emulador; publicar DEPOIS do deploy (ver seção Backend)
 /shared/admin-api.js        → chamarAdminApi(acao, dados) — usado pelo /admin/ e pelo bot-config
 /firebase.json               → Aponta firestore.rules pro `firebase deploy --only firestore:rules`
@@ -66,7 +73,7 @@ num arquivo só", não fragmentar demais. Verificado com `node --check` em
 cada arquivo + teste real de navegador (Playwright) antes de entrar — qualquer
 mudança na ordem dos `<script src>` precisa do mesmo cuidado.
 
-## Funções da Netlify (servidor)
+## Funções do servidor (`server/`, rodam no Worker)
 
 - **whatsapp-webhook.js** — recebe mensagem da Evolution API, chama Claude
   (Haiku), fecha pedido, cria doc em `orders`. Lê config em `config/bot` +
@@ -191,7 +198,7 @@ não tinham NENHUMA proteção — qualquer um que soubesse a URL entrava. Agora
 todas essas páginas carregam `shared/staff-auth.js` e chamam
 `iniciarGateEquipe()` logo depois de carregar `firebase-auth-compat.js` +
 `shared/firebase-config.js` — isso cobre a tela com uma senha até o
-Firebase confirmar (via `netlify/functions/staff-login.js`, que compara com
+Firebase confirmar (via `server/staff-login.js`, que compara com
 a variável de ambiente `STAFF_PASSWORD` na Netlify e devolve um *custom
 token* do Firebase Auth se bater). Depois de entrar uma vez, o navegador
 lembra (sessão do Firebase) — não pede senha nova a cada página nem a cada

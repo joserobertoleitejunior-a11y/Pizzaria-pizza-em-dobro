@@ -114,10 +114,10 @@ async function enviarMensagemAtendente(){
   if(!texto||!_mmTelefoneAtual) return;
   input.value='';
   try{
-    // chave da Evolution API agora fica só no servidor (netlify/functions/send-whatsapp.js) — nunca mais exposta aqui
-    const r=await fetch('/.netlify/functions/send-whatsapp',{
+    // chave da Evolution API agora fica só no servidor (server/send-whatsapp.js) — nunca mais exposta aqui
+    const r=await fetch('/api/send-whatsapp',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:await cabecalhosEquipe(),
       body:JSON.stringify({telefone:_mmTelefoneAtual,texto})
     });
     const d=await r.json().catch(()=>({}));

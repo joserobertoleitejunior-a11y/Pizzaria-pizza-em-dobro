@@ -1,6 +1,6 @@
 // ══════════════════════════════════════════════════════════
 //  PAINEL ADMIN — toda leitura/escrita passa pelo backend
-//  (shared/admin-api.js → netlify/functions/admin-api.js), que confere
+//  (shared/admin-api.js → server/admin-api.js), que confere
 //  o login da equipe no servidor e valida cada campo. Nada aqui fala
 //  com o banco direto. Todo dado vindo do banco é escapado (esc) antes
 //  de virar HTML.

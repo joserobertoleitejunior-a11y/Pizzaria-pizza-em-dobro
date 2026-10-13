@@ -10,7 +10,8 @@
 const { admin, db } = require('./lib/firebase');
 const { getSecrets } = require('./lib/secrets');
 const { reportError } = require('./lib/sentry');
-const { decomporSaboresItem } = require('../../shared/utils.js');
+const { exigirEquipe } = require('./lib/equipe');
+const { decomporSaboresItem } = require('../shared/utils.js');
 
 
 function categoriaPagamento(raw) {
@@ -25,6 +26,11 @@ function categoriaPagamento(raw) {
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 200, body: 'ok' };
+  }
+
+  // rota da equipe: sem o login (ID token + claim staff) qualquer pessoa na internet poderia usá-la
+  if (!(await exigirEquipe(event))) {
+    return { statusCode: 401, body: JSON.stringify({ error: 'Login da equipe necessário.', erro: 'Login da equipe necessário.' }) };
   }
 
   try {

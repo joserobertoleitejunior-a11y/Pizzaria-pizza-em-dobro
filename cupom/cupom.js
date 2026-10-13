@@ -1,6 +1,6 @@
 // ══════════════════════════════════════════════════════════
 //  CUPOM / AVALIAÇÃO — Pizza em Dobro
-//  Lê o pedido (?pedido=ID) pelo servidor (netlify/functions/pedido-publico.js,
+//  Lê o pedido (?pedido=ID) pelo servidor (server/pedido-publico.js,
 //  só primeiro nome/itens/total — "orders" não é legível pelo navegador) e grava
 //  a avaliação em 'avaliacoes' (as regras do banco conferem nota e texto).
 // ══════════════════════════════════════════════════════════
@@ -33,7 +33,7 @@ async function iniciar(){
     return;
   }
   try{
-    const r=await fetch('/.netlify/functions/pedido-publico?id='+encodeURIComponent(id));
+    const r=await fetch('/api/pedido-publico?id='+encodeURIComponent(id));
     if(r.status===404||r.status===400){
       box.innerHTML='<div class="empty">Pedido não encontrado.</div>';
       return;

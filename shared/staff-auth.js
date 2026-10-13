@@ -9,7 +9,7 @@
 //  a página exposta). Só troca pra senha depois de confirmar que o
 //  SDK carregou; só some de vez quando o Firebase confirma (de
 //  verdade, via custom token assinado no servidor —
-//  netlify/functions/staff-login.js) que a senha bate. Depois disso o
+//  server/staff-login.js) que a senha bate. Depois disso o
 //  Firebase guarda a sessão sozinho (o mesmo dispositivo/navegador
 //  não pede senha de novo) — é o "senha única da equipe, digita uma
 //  vez por aparelho".
@@ -53,7 +53,7 @@ function iniciarGateEquipe(){
       if(!senha){ status.textContent='Digite a senha.'; return; }
       btn.disabled=true; btn.textContent='ENTRANDO...'; status.textContent='';
       try{
-        const r=await fetch('/.netlify/functions/staff-login',{
+        const r=await fetch('/api/staff-login',{
           method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({senha})
         });
         const d=await r.json();

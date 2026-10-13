@@ -190,7 +190,7 @@ const FS = firebase.firestore();
 const ref = FS.collection('config').doc('bot');
 // as 3 chaves de API NUNCA ficam no documento público config/bot — vivem em
 // config_secrets/bot, que o navegador não lê nem grava (nem a equipe). Gravar/consultar
-// passa pelo backend do admin (shared/admin-api.js → netlify/functions/admin-api.js),
+// passa pelo backend do admin (shared/admin-api.js → server/admin-api.js),
 // que confere o login da equipe no servidor e nunca devolve o valor da chave.
 
 const camposPublicos = ['numeroWhatsapp','evolutionUrl','instanceName','mensagemFechado','enderecoLoja','taxaEntrega','tempoEntrega','formasPagamento','observacoesLoja','minutosLembrete','minutosEncerrar','horarioInicio','horarioFim','delayMinMs','delayMaxMs','limiteMsgsPorHora'];
