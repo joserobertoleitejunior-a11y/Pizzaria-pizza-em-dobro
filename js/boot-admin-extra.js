@@ -27,7 +27,9 @@ async function init(){
   if(!loaded){const cm=DB.get('menu_custom');menu=cm&&cm.length?cm:[...DEFAULT_MENU];}
 
   renderMenu();
-  // restaura sessão admin se válida (mantém controles inline visíveis)
+  // restaura sessão admin se válida (mesmo login único da equipe, sem bloquear
+  // a loja pro cliente comum — só reativa os controles se já tiver sessão)
+  await restaurarSessaoAdminSilenciosa();
   if(checkAdminSession()) activateAdminEditMode();
   if(checkAdminSession()) mostrarBotaoAbrirCaixa();
   if(checkAdminSession()) publicarNovidadesCardapio(true);

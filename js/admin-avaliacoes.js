@@ -1,33 +1,17 @@
 // ══════════════════════════════════
-//  ADMIN — com session persistente
+//  ADMIN — mesmo login único da equipe do Caixa/Relatórios/Clientes
+//  (shared/staff-auth.js). Sem senha própria fixa no código do navegador.
 // ══════════════════════════════════
-// ⚠️ Senha reativada para teste — login: Marco / senha: 1234
-// (troque para true novamente se quiser liberar sem senha)
-const TEMP_ADMIN_SEM_SENHA=false;
-
-function openAdminLogin(){
-  if(TEMP_ADMIN_SEM_SENHA){
-    setAdminSession();
+async function openAdminLogin(){
+  if(checkAdminSession()){activateAdminEditMode();openDash();return;}
+  try{
+    _initFB();
+    await iniciarGateEquipe();
+    adminSession=true;
     activateAdminEditMode();
-    window.location.href='dashboard/index.html';
-    return;
-  }
-  if(checkAdminSession()){activateAdminEditMode();window.location.href='dashboard/index.html';return;}
-  document.getElementById('adm-err').style.display='none';
-  document.getElementById('adm-user').value='';
-  document.getElementById('adm-pass').value='';
-  openModal('modal-admin-login');
-}
-function doAdminLogin(){
-  const u=document.getElementById('adm-user').value;
-  const p=document.getElementById('adm-pass').value;
-  if(u===ADMIN_USER&&btoa(p)===getAdminPass()){
-    setAdminSession();
-    closeModal('modal-admin-login');
-    activateAdminEditMode();
-    window.location.href='dashboard/index.html';
-  } else {
-    document.getElementById('adm-err').style.display='block';
+    openDash();
+  }catch(e){
+    console.warn('Não foi possível abrir o modo admin agora.',e);
   }
 }
 
@@ -406,15 +390,20 @@ async function _loadDashData(){
     +clientsH
     +'<div class="ds-title">⭐ Avaliações recentes</div>'
     +fbH
-    +'<div class="ds-title">🛠 GESTÃO</div>'
-    +'<button class="m-btn" style="background:rgba(255,159,28,.18);border:1px solid rgba(255,159,28,.5);" onclick="closeModal(\'modal-dash\');openConversor()">📋 CONVERSOR DE PEDIDO</button>'
-    +'<button class="m-btn" style="background:rgba(46,204,113,.08);color:#2ecc71;border:1px solid rgba(46,204,113,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openPedidosConvertidos()">✅ PEDIDOS CONVERTIDOS</button>'
+    +'<div class="ds-title">🍕 Cardápio</div>'
+    +'<button class="m-btn" onclick="closeModal(\'modal-dash\');openEditor()">🍕 EDITAR CARDÁPIO</button>'
+    +'<button class="m-btn" style="background:rgba(193,98,59,.1);color:var(--pr);border:1px solid rgba(193,98,59,.28);margin-top:0;" onclick="closeModal(\'modal-dash\');openBordasAdmin()">🥖 BORDAS</button>'
+    +'<button class="m-btn" style="background:rgba(46,204,113,.08);color:#1e9e52;border:1px solid rgba(46,204,113,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openAcrescimosAdmin()">➕ ACRÉSCIMOS</button>'
+    +'<div class="ds-title">📋 Pedidos</div>'
+    +'<button class="m-btn" style="background:rgba(193,98,59,.18);border:1px solid rgba(193,98,59,.5);" onclick="closeModal(\'modal-dash\');openConversor()">📋 CONVERSOR DE PEDIDO</button>'
+    +'<button class="m-btn" style="background:rgba(46,204,113,.08);color:#1e9e52;border:1px solid rgba(46,204,113,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openPedidosConvertidos()">✅ PEDIDOS CONVERTIDOS</button>'
+    +'<div class="ds-title">👥 Clientes & avaliações</div>'
     +'<button class="m-btn" style="background:rgba(66,133,244,.12);border:1px solid rgba(66,133,244,.3);color:#4285F4;" onclick="closeModal(\'modal-dash\');openClientesAdmin()">👥 PAINEL DE CLIENTES</button>'
-    +'<button class="m-btn" onclick="closeModal(\'modal-dash\');openEditor()">🍕 EDITAR CARDÁPIO</button>'    +'<button class="m-btn" style="background:rgba(255,159,28,.1);color:var(--pr);border:1px solid rgba(255,159,28,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openBordasAdmin()">🥖 BORDAS</button>'    +'<button class="m-btn" style="background:rgba(46,204,113,.08);color:#2ecc71;border:1px solid rgba(46,204,113,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openAcrescimosAdmin()">➕ ACRÉSCIMOS</button>'
-    +'<button class="m-btn" style="background:rgba(255,159,28,.1);color:var(--pr);border:1px solid rgba(255,159,28,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openConfig()">⚙ CONFIGURAÇÕES</button>'
-    +'<button class="m-btn" style="background:rgba(255,159,28,.1);color:var(--pr);border:1px solid rgba(255,159,28,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openMusicAdmin()">🎵 PLAYLIST</button>'
-    +'<button class="m-btn" style="background:rgba(255,159,28,.1);color:var(--pr);border:1px solid rgba(255,159,28,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openGerenciarFb()">💬 GERENCIAR AVALIAÇÕES</button>'
-    +'<button class="m-btn-sec" style="color:var(--se);border-color:rgba(231,29,54,.2);margin-top:8px;" onclick="exitAdminEditMode();closeModal(\'modal-dash\');">🔒 SAIR DO ADMIN</button>'
+    +'<button class="m-btn" style="background:rgba(193,98,59,.1);color:var(--pr);border:1px solid rgba(193,98,59,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openGerenciarFb()">💬 GERENCIAR AVALIAÇÕES</button>'
+    +'<div class="ds-title">⚙ Loja</div>'
+    +'<button class="m-btn" style="background:rgba(193,98,59,.1);color:var(--pr);border:1px solid rgba(193,98,59,.25);" onclick="closeModal(\'modal-dash\');openConfig()">⚙ CONFIGURAÇÕES</button>'
+    +'<button class="m-btn" style="background:rgba(193,98,59,.1);color:var(--pr);border:1px solid rgba(193,98,59,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openMusicAdmin()">🎵 PLAYLIST</button>'
+    +'<button class="m-btn-sec" style="color:var(--se);border-color:rgba(168,67,47,.25);margin-top:16px;" onclick="exitAdminEditMode();closeModal(\'modal-dash\');">🔒 SAIR DO ADMIN</button>'
     +'<button class="m-btn-sec" onclick="closeModal(\'modal-dash\')" style="margin-top:4px;">Fechar</button>';
 }
 

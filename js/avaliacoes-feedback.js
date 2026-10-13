@@ -304,5 +304,4 @@ async function deleteOwnComment(id){
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.modal').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});});
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('modal-admin-login').classList.contains('open'))doAdminLogin();});
 

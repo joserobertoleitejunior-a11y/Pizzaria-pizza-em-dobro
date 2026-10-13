@@ -57,6 +57,7 @@
 <script src="shared/firebase-config.js"></script>
 <script src="shared/utils.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="shared/staff-auth.js"></script>
 <!-- Observabilidade (Sentry) — desligado até shared/sentry-config.js ter um DSN de verdade -->
 <script src="shared/sentry-config.js"></script>
 <script src="https://browser.sentry-cdn.com/7.120.3/bundle.min.js" crossorigin="anonymous"></script>
@@ -216,7 +217,7 @@
   <div class="drawer-separator"></div>
 
   <!-- Painel Admin: engrenagem com logo Facebook pequeno — ou só settings icon -->
-  <div class="drawer-item" onclick="closeDrawer();openAdminLogin()" style="color:#555;">
+  <div class="drawer-item" onclick="closeDrawer();openAdminLogin()" style="color:var(--tx-4);">
     <span class="di">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </span>Painel Admin
@@ -555,17 +556,6 @@
 </div>
 
 
-<div class="modal" id="modal-admin-login">
-  <div class="modal-box center">
-    <div class="m-close" onclick="closeModal('modal-admin-login')">✕</div>
-    <div class="modal-title">⚙ ADMIN</div>
-    <input type="text" class="m-input" id="adm-user" placeholder="Usuário" autocomplete="off">
-    <input type="password" class="m-input" id="adm-pass" placeholder="Senha">
-    <button class="m-btn" onclick="doAdminLogin()">ENTRAR</button>
-    <div id="adm-err" style="color:var(--se);font-size:.78rem;text-align:center;display:none;margin-top:4px;">Credenciais inválidas</div>
-  </div>
-</div>
-
 <!-- DASHBOARD -->
 <div class="modal" id="modal-dash">
   <div class="modal-box">
@@ -690,9 +680,7 @@
     <input type="text" class="m-input" id="cfg-wpp" placeholder="Ex: 5515997058390">
     <div style="font-size:.68rem;color:#555;letter-spacing:2px;margin-bottom:6px;">ENDEREÇO DA LOJA (para o mapa)</div>
     <input type="text" class="m-input" id="cfg-end" placeholder="Ex: Rua XV de Novembro, 123, Itapetininga">
-    <div style="font-size:.68rem;color:#555;letter-spacing:2px;margin-bottom:6px;">NOVA SENHA ADMIN</div>
-    <input type="password" class="m-input" id="cfg-pass1" placeholder="Nova senha">
-    <input type="password" class="m-input" id="cfg-pass2" placeholder="Confirmar nova senha">
+    <div style="font-size:.68rem;color:var(--tx-5);letter-spacing:2px;margin-bottom:10px;line-height:1.5;">A senha da equipe não muda mais por aqui — é a mesma do Caixa/Relatórios, configurada direto no Netlify (STAFF_PASSWORD).</div>
     <button class="m-btn" onclick="saveConfig()">SALVAR CONFIGURAÇÕES</button>
     <button class="m-btn-sec" style="color:var(--se);border-color:rgba(231,29,54,.2);margin-top:4px;" onclick="resetConfig('all')">↩ RESETAR TUDO AO PADRÃO</button>
     <div id="cfg-msg" style="text-align:center;font-size:.78rem;margin-top:4px;display:none;"></div>

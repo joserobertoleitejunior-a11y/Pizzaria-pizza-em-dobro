@@ -250,16 +250,13 @@ function resetConfig(key){
   const msgs={
     wpp:'WhatsApp voltará para o número padrão.',
     end:'Endereço da loja voltará para o padrão.',
-    admin_pass:'Senha voltará para 1234.',
     music:'Música será removida.',
-    all:'TODAS as configurações voltarão ao padrão.'
+    all:'TODAS as configurações voltarão ao padrão (não mexe na senha da equipe — essa é só pelo Netlify).'
   };
   if(!confirm(msgs[key]||'Resetar esta configuração?'))return;
   if(key==='all'){
-    ['pd_cfg_wpp','pd_cfg_end','pd_admin_pass','pd_music','pd_promos','pd_admin_session'].forEach(k=>localStorage.removeItem(k));
-    alert('Tudo resetado. A senha voltou para 1234.');
-  } else if(key==='admin_pass'){
-    localStorage.removeItem('pd_admin_pass');
+    ['pd_cfg_wpp','pd_cfg_end','pd_music','pd_promos'].forEach(k=>localStorage.removeItem(k));
+    alert('Tudo resetado.');
   } else {
     localStorage.removeItem('pd_cfg_'+key);
   }
