@@ -5,26 +5,17 @@
 //  ÚNICA credencial que fica fora do banco: FIREBASE_SERVICE_ACCOUNT (env var Netlify)
 // ══════════════════════════════════════════════════════════
 
-const admin = require('firebase-admin');
+const { admin, db } = require('./lib/firebase');
 const { getSecrets } = require('./lib/secrets');
 const { reportError } = require('./lib/sentry');
+const { texto } = require('./lib/http');
+const { senhaConfere } = require('./lib/senha');
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT))
-  });
-}
-const db = admin.firestore();
 
 async function obterProximoNumeroSequencial() {
   const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }); // YYYY-MM-DD
-  const ref = db.collection('contadores').doc('pedidos_' + hoje);
-  return db.runTransaction(async (t) => {
-    const doc = await t.get(ref);
-    const atual = (doc.exists ? doc.data().atual : 0) + 1;
-    t.set(ref, { atual }, { merge: true });
-    return atual;
-  });
+  // incremento atômico (mesmo contador que o site e o Caixa usam): sem disputa entre pedidos simultâneos
+  return db.incrementar(db.collection('contadores').doc('pedidos_' + hoje), 'atual', 1);
 }
 
 // Trava final antes de gravar em `orders` — verifica se o PRÓPRIO bot já fechou um pedido
@@ -83,6 +74,17 @@ async function buscarPedidoRecenteMesmoTelefone(telefone) {
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 200, body: 'ok' };
+  }
+
+  // Segredo na URL do webhook (…/api/whatsapp-webhook?token=SEGREDO, cadastrada na Evolution API):
+  // sem isso qualquer pessoa na internet poderia mandar "mensagens de cliente" falsas, abrir
+  // conversas e gastar o crédito da IA. Com WEBHOOK_SECRET definido, só entra quem tem o token.
+  const segredo = process.env.WEBHOOK_SECRET || '';
+  if (segredo) {
+    const enviado = String((event.queryStringParameters || {}).token || '');
+    if (!senhaConfere(enviado, segredo)) return { statusCode: 401, body: 'nao autorizado' };
+  } else {
+    console.warn('WEBHOOK_SECRET não configurado — o webhook do WhatsApp está aceitando qualquer chamador.');
   }
 
   let telefone = null;
@@ -342,12 +344,18 @@ Se o cliente pedir pra falar com uma pessoa, reclamar de algo, ou o caso for com
         if (enderecoFinal && !/\d/.test(enderecoFinal)) {
           enderecoFinal = '⚠️ SEM NÚMERO — CONFIRMAR COM CLIENTE — ' + enderecoFinal;
         }
+        // texto vindo da conversa (nome do perfil do WhatsApp, endereço digitado, itens que a
+        // IA montou) passa pela mesma limpeza do criar-pedido: sem < > " ` \ — é o que viraria
+        // código ao aparecer no Caixa/painel
+        const itensLimpos = (Array.isArray(pedidoFechado.itens) ? pedidoFechado.itens : []).map(i => (
+          i && typeof i === 'object' ? { ...i, name: texto(i.name, 160) || '', borda: i.borda ? texto(i.borda, 60) : (i.borda ?? null) } : i
+        ));
         const orderRef = await db.collection('orders').add({
-          client_name: pedidoFechado.nome || '',
+          client_name: texto(pedidoFechado.nome, 80) || '',
           client_phone: telefone,
-          address: enderecoFinal,
-          payment: pedidoFechado.pagamento || '',
-          items_json: pedidoFechado.itens || [],
+          address: texto(enderecoFinal, 260) || '',
+          payment: texto(pedidoFechado.pagamento, 40) || '',
+          items_json: itensLimpos,
           status: 'novo',
           origem: 'whatsapp_bot',
           whatsapp_sent: true,

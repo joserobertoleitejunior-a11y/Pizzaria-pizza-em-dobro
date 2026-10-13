@@ -1,3 +1,6 @@
+// tira < > (o banco recusa) e corta no tamanho máximo aceito pelas regras do Firestore
+function _semHtml(v,max){ return String(v||'').replace(/[<>]/g,'').trim().slice(0,max); }
+
 // ══════════════════════════════════
 //  ATALHO: fecha carrinho e abre avaliação
 // ══════════════════════════════════
@@ -12,24 +15,23 @@ async function openHistorico(){
   const ct=document.getElementById('historico-content');
   if(!fbUser&&!currentUser?.name){
     ct.innerHTML=`
-      <p style="color:#aaa;font-size:.82rem;text-align:center;margin-bottom:14px;">Entre com o Google para ver seu histórico de pedidos.</p>
+      <p style="color:var(--tx-3);font-size:.82rem;text-align:center;margin-bottom:14px;">Entre com o Google para ver seu histórico de pedidos.</p>
       <button class="ggl-login-btn" onclick="loginGoogleClient()">${G_SVG} Entrar com Google</button>`;
     return;
   }
-  ct.innerHTML=`<div style="text-align:center;padding:20px;color:#555;">⏳ Carregando...</div>`;
+  ct.innerHTML=`<div style="text-align:center;padding:20px;color:var(--tx-5);">⏳ Carregando...</div>`;
   const email=fbUser?.email||currentUser?.email||'';
-  const name=fbUser?.name||currentUser?.name||'';
   let rows=null;
-  // tenta por email primeiro (mais preciso), depois por nome
   if(email){rows=await sg('orders',{where:[['client_email','==',email]],limit:30});if(rows)rows.sort((a,b)=>dataStr(b.created_at).localeCompare(dataStr(a.created_at)));}
-  if((!rows||!rows.length)&&name){rows=await sg('orders',{where:[['client_name','==',name]],limit:30});if(rows)rows.sort((a,b)=>dataStr(b.created_at).localeCompare(dataStr(a.created_at)));}
+  // (busca por NOME removida: mostraria pedidos de outra pessoa com o mesmo nome — o banco
+  // agora só entrega ao cliente os pedidos do e-mail Google verificado dele)
   // fallback: pedidos salvos localmente
   if(!rows||!rows.length){
     const local=DB.get('local_orders')||[];
     if(local.length) rows=local;
   }
   if(!rows||!rows.length){
-    ct.innerHTML=`<p style="color:#444;font-size:.82rem;text-align:center;padding:20px;">Nenhum pedido encontrado ainda. Faça seu primeiro pedido! 🍕</p>`;
+    ct.innerHTML=`<p style="color:var(--tx-6);font-size:.82rem;text-align:center;padding:20px;">Nenhum pedido encontrado ainda. Faça seu primeiro pedido! 🍕</p>`;
     return;
   }
   ct.innerHTML=rows.map((r,idx)=>{
@@ -99,8 +101,11 @@ async function enviarComentario(){
   const tag=document.getElementById('comentar-tag').value.trim();
   const autor=fbUser?.name||currentUser?.name||'Anônimo';
   if(!txt)return;
-  const payload={feedback_id:parseInt(fbId),author:autor,comment:txt,photo:fbUser?.photo||null};
-  if(tag) payload.tagged_user=tag;
+  // feedback_id vai como texto (id do Firestore); author_uid deixa o autor logado editar depois.
+  // _semHtml/limites: as regras do banco recusam < > e texto longo — limpar aqui evita falha muda
+  const payload={feedback_id:String(fbId),author:_semHtml(autor,60)||'Anônimo',author_uid:AUTH?.currentUser?.uid||null,
+    comment:_semHtml(txt,600),photo:fbUser?.photo||null};
+  if(tag) payload.tagged_user=_semHtml(tag,60);
   if(_commentPhotoB64) payload.pizza_photo=_commentPhotoB64;
   await sp('feedback_comments',payload);
   _commentPhotoB64=null;
@@ -112,7 +117,7 @@ async function editOwnComment(id,currentText){
   const novo=prompt('Editar comentário:',currentText);
   if(novo===null||novo.trim()===currentText)return;
   if(!novo.trim()){alert('Comentário não pode ficar vazio.');return;}
-  await spatch('feedback_comments',id,{comment:novo.trim()});
+  await spatch('feedback_comments',id,{comment:_semHtml(novo,600)});
   const el=document.getElementById(`fc-txt-${id}`);
   if(el) el.innerText=novo.trim();
 }
@@ -172,7 +177,7 @@ async function submitFeedback(){
   const name=document.getElementById('fb-name').value.trim();
   const text=document.getElementById('fb-text').value.trim();
   if(!name||!text||!selStars)return alert('Preencha nome, estrelas e comentário.');
-  const payload={name,stars:selStars,comment:text,
+  const payload={name:_semHtml(name,60),stars:selStars,comment:_semHtml(text,1000),
     fb_photo:fbUser?.photo||null,via_facebook:!!fbUser,
     pizza_photo:_fbPizzaB64||null};
   const fb={...payload,date:new Date().toLocaleString('pt-BR')};
@@ -222,7 +227,7 @@ async function renderFeedbacks(){
     const commentsHTML=comments.map(c=>{
       const isMine=myName&&(c.author===myName);
       const editBtn=isMine
-        ?`<button onclick="editOwnComment(${c.id},'${(c.comment||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')" style="background:none;border:none;color:#555;font-size:.65rem;cursor:pointer;padding:0 3px;">✏️</button>`
+        ?`<button onclick="editOwnComment(${c.id},'${(c.comment||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')" style="background:none;border:none;color:var(--tx-5);font-size:.65rem;cursor:pointer;padding:0 3px;">✏️</button>`
         :'';
       const delBtn=(isMine||isAdmin)
         ?`<button onclick="${isMine&&!isAdmin?'deleteOwnComment':'adminDeleteComment'}(${c.id})" style="background:none;border:none;color:var(--se);font-size:.65rem;cursor:pointer;padding:0 3px;">✕</button>`
@@ -262,7 +267,7 @@ async function renderFeedbacks(){
           <svg viewBox="0 0 24 24" fill="${liked?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           <span class="like-count">${f.likes||0}</span>
         </button>
-        <button class="fb-comment-btn" onclick="abrirComentar(${f.id})">
+        <button class="fb-comment-btn" onclick="abrirComentar('${f.id}')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           Comentar
         </button>
@@ -304,5 +309,4 @@ async function deleteOwnComment(id){
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.modal').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});});
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('modal-admin-login').classList.contains('open'))doAdminLogin();});
 

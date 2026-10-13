@@ -13,7 +13,7 @@
 //  manual e sem derrubar o bot no meio da migração.
 // ══════════════════════════════════════════════════════════
 
-const admin = require('firebase-admin');
+const { admin } = require('./firebase');
 
 const CAMPOS_SECRETOS = ['anthropicKey', 'evolutionKey', 'geminiKey'];
 

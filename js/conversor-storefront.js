@@ -110,9 +110,9 @@ Pagamento: [forma][Troco p/ R$X se dinheiro]
 ════════════════════════`;
 
   try{
-    const r=await fetch('/.netlify/functions/parse-order',{
+    const r=await fetch('/api/parse-order',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:await(async()=>{const h={'Content-Type':'application/json'};try{_initFB();if(AUTH&&AUTH.currentUser)h.Authorization='Bearer '+await AUTH.currentUser.getIdToken();}catch{}return h;})(),
       body:JSON.stringify({systemPrompt, raw})
     });
     const d=await r.json();
@@ -800,7 +800,7 @@ function _renderConvStats(list){
   el.innerHTML=
     '<div class="dash-grid">'
     +'<div class="dash-card"><div class="dash-num">'+totalHoje+'</div><div class="dash-lbl">Convertidos hoje</div></div>'
-    +'<div class="dash-card"><div class="dash-num">'+totalPeriodo+'</div><div class="dash-lbl">No período<br><span style="font-size:.58rem;color:#555;">'+periodLbl+'</span></div></div>'
+    +'<div class="dash-card"><div class="dash-num">'+totalPeriodo+'</div><div class="dash-lbl">No período<br><span style="font-size:.58rem;color:var(--tx-5);">'+periodLbl+'</span></div></div>'
     +'</div>'
     +'<div class="dash-card" style="margin-bottom:10px;text-align:center;"><div class="dash-num" style="font-size:1.4rem;">'+totalGeral+'</div><div class="dash-lbl">Total geral de convertidos</div></div>'
     +'<div class="dash-card" style="text-align:center;"><div class="dash-num" style="font-size:1rem;color:#4285F4;">'+pagLabel+'</div><div class="dash-lbl">Pagamento mais usado — '+periodLbl+'</div></div>';
@@ -814,7 +814,7 @@ function setConvStatsPeriod(p){
 }
 async function openPedidosConvertidos(){
   const el=document.getElementById('conv-orders-list');
-  el.innerHTML='<p style="text-align:center;color:#555;padding:24px 0;">Carregando...</p>';
+  el.innerHTML='<p style="text-align:center;color:var(--tx-5);padding:24px 0;">Carregando...</p>';
   convStatsPeriod=7;
   document.querySelectorAll('.conv-period-btn').forEach(function(b){b.classList.remove('active');});
   const defBtn=document.getElementById('conv-period-7');
@@ -846,19 +846,19 @@ async function openPedidosConvertidos(){
   if(!list.length) list=DB.get('conv_orders')||[];
   _renderConvStats(list);
   if(!list.length){
-    el.innerHTML='<p style="text-align:center;color:#555;padding:32px 0;">Nenhum pedido convertido ainda.<br><span style="font-size:.75rem;">Os pedidos aparecem aqui após você copiar ou imprimir pelo conversor.</span></p>';
+    el.innerHTML='<p style="text-align:center;color:var(--tx-5);padding:32px 0;">Nenhum pedido convertido ainda.<br><span style="font-size:.75rem;">Os pedidos aparecem aqui após você copiar ou imprimir pelo conversor.</span></p>';
     return;
   }
   el.innerHTML=list.map((r,i)=>{
     const dt=new Date(r.ts||dataStr(r.created_at)||Date.now());
     const data=dt.toLocaleDateString('pt-BR');
     const hora=dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    return `<div onclick="verPedidoConvertido(${i})" style="border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;background:rgba(255,255,255,.03);">
+    return `<div onclick="verPedidoConvertido(${i})" style="border:1px solid var(--card-bd);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;background:rgba(20,20,20,.03);">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <span style="font-size:.85rem;font-weight:700;color:#fff;">${r.nome}</span>
-        <span style="font-size:.65rem;color:#555;">${data} ${hora}</span>
+        <span style="font-size:.85rem;font-weight:700;color:var(--text);">${r.nome}</span>
+        <span style="font-size:.65rem;color:var(--tx-5);">${data} ${hora}</span>
       </div>
-      <div style="font-size:.72rem;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.end}</div>
+      <div style="font-size:.72rem;color:var(--tx-4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.end}</div>
       <div style="font-size:.7rem;color:var(--pr);margin-top:3px;">💳 ${r.pag}</div>
     </div>`;
   }).join('');
@@ -929,7 +929,7 @@ async function _buscarSugestoesEndereco(valor){
   if(texto.length<4){dd.style.display='none';dd.innerHTML='';return;}
   if(!window.google||!google.maps||!google.maps.places){
     dd.style.display='block';
-    dd.innerHTML='<div style="padding:10px 14px;color:#888;font-size:.78rem;">Carregando busca do Maps...</div>';
+    dd.innerHTML='<div style="padding:10px 14px;color:var(--muted);font-size:.78rem;">Carregando busca do Maps...</div>';
     _posicionarSugestoesEndereco();
     return;
   }
@@ -945,11 +945,11 @@ async function _buscarSugestoesEndereco(valor){
       const{suggestions}=await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(req);
       window._acSuggestions=suggestions||[];
       if(!window._acSuggestions.length){
-        dd.innerHTML='<div style="padding:10px 14px;color:#888;font-size:.78rem;">Nenhum endereço encontrado. Tente digitar de outro jeito.</div>';
+        dd.innerHTML='<div style="padding:10px 14px;color:var(--muted);font-size:.78rem;">Nenhum endereço encontrado. Tente digitar de outro jeito.</div>';
       }else{
         dd.innerHTML=window._acSuggestions.map((s,i)=>{
           const texto=(s.placePrediction&&s.placePrediction.text&&s.placePrediction.text.text)||'';
-          return`<div onclick="_selecionarSugestaoEndereco(${i})" style="padding:10px 14px;border-top:1px solid rgba(255,255,255,.06);cursor:pointer;font-size:.8rem;color:#ddd;">📍 ${texto.replace(/</g,'&lt;')}</div>`;
+          return`<div onclick="_selecionarSugestaoEndereco(${i})" style="padding:10px 14px;border-top:1px solid rgba(20,20,20,.06);cursor:pointer;font-size:.8rem;color:var(--tx-2);">📍 ${texto.replace(/</g,'&lt;')}</div>`;
         }).join('');
       }
       dd.style.display='block';
@@ -961,7 +961,7 @@ async function _buscarSugestoesEndereco(valor){
       }else{
         console.warn('Erro ao buscar endereço:',e);
       }
-      dd.innerHTML='<div style="padding:10px 14px;color:#888;font-size:.78rem;">Não conseguimos buscar sugestões agora. Digite seu endereço completo ou use o botão 📍.</div>';
+      dd.innerHTML='<div style="padding:10px 14px;color:var(--muted);font-size:.78rem;">Não conseguimos buscar sugestões agora. Digite seu endereço completo ou use o botão 📍.</div>';
       dd.style.display='block';
       _posicionarSugestoesEndereco();
     }
@@ -1164,31 +1164,26 @@ function imprimirPedido(){
   w.document.close();w.focus();w.print();
   });}
 
-// SPLASH — mostra "CARREGANDO..." (tela de carregamento no estilo do fogo de fundo) até o
-// cardápio estar pronto, depois troca pra "TOQUE PARA ENTRAR" com um flash rápido. O toque
-// sempre funcionou mesmo antes disso pronto (o cardápio tem fallback local instantâneo), então
-// nada trava — só o texto passa a refletir a realidade em vez de convidar antes da hora.
-let _splashPronta=false;
-function marcarSplashPronta(){
-  if(_splashPronta) return;
-  _splashPronta=true;
-  const el=document.getElementById('ws-toque-aviso');
-  if(!el) return;
-  el.textContent='TOQUE PARA ENTRAR';
-  el.classList.add('pronto');
-}
-setTimeout(marcarSplashPronta,3000); // nunca fica preso em "carregando" se a rede estiver lenta
-
-// SPLASH — agora espera o toque do cliente, com efeito de porta abrindo
+// SPLASH — passa sozinha: logo com reflexo de vidro, nome completo (fica fixo) e a
+// pizza inteira perdendo as 8 fatias uma a uma até sobrar o prato; aí a tela some.
+// Continua tocável a qualquer momento pra quem quiser pular direto pro cardápio
+// (o fallback local do cardápio já está pronto desde o primeiro instante).
+let _splashAberta=false;
 function abrirPortaSplash(){
+  if(_splashAberta) return;
+  _splashAberta=true;
+  clearTimeout(_splashAutoTimer);
   const ws=document.getElementById('ws');
   if(!ws || ws.classList.contains('aberto')) return;
   ws.classList.add('aberto');
   setTimeout(()=>{
     ws.style.display='none';
     ws.style.visibility='hidden';
-  },950);
+  },400);
 }
+// última fatia: atraso 1.05s + 7 × .17s = 2.24s, mais .5s de animação = 2.74s; folga curta
+// pro cliente ver o prato vazio antes de entrar sozinho
+const _splashAutoTimer=setTimeout(abrirPortaSplash,2950);
 
 _initFB();
 init();

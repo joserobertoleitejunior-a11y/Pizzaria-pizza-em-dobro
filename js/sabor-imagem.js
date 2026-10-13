@@ -1,0 +1,244 @@
+// ══════════════════════════════════════════════════════════
+//  IMAGEM GERADA POR CÓDIGO — um SVG único por item, montado a partir dos
+//  dados reais do próprio cardápio (não é foto de banco de imagens, nunca
+//  repete entre dois itens diferentes). Determinístico por id (o mesmo
+//  item sempre gera a mesma imagem; dois itens diferentes nunca coincidem).
+//  Pizza/calzone → recheio "cheio" (camada de queijo derretido por baixo +
+//  ingredientes de cima, não só pontinhos soltos). Bebida → garrafa/lata
+//  ilustrada por cor real da bebida (nunca desenho de pizza numa bebida).
+// ══════════════════════════════════════════════════════════
+
+function _seedRand(seed){
+  let s=(seed*9301+49297)%233280;
+  return function(){ s=(s*9301+49297)%233280; return s/233280; };
+}
+
+// cor + tamanho de cada ingrediente reconhecido na descrição do item
+const _INGREDIENTES_VISUAL=[
+  {kw:'calabresa',color:'#A8432F',r:9},
+  {kw:'peperone',color:'#A8432F',r:9},
+  {kw:'bacon',color:'#8B4A2E',r:6},
+  {kw:'lombo',color:'#D9A679',r:8},
+  {kw:'frango',color:'#E8C9A0',r:8},
+  {kw:'catupiry',color:'#FFF6E0',r:5},
+  {kw:'requeijão',color:'#FFF6E0',r:5},
+  {kw:'milho',color:'#F4C430',r:4},
+  {kw:'presunto',color:'#E8A0A0',r:8},
+  {kw:'peru',color:'#E8C4A8',r:8},
+  {kw:'palmito',color:'#D4C896',r:6},
+  {kw:'atum',color:'#8B6F47',r:8},
+  {kw:'cebola',color:'#F5ECD8',r:6},
+  {kw:'azeitona',color:'#2E3A2E',r:4},
+  {kw:'gorgonzola',color:'#D8D4B8',r:6},
+  {kw:'cheddar',color:'#E8A33D',r:5},
+  {kw:'parmesão',color:'#F0E0A8',r:3},
+  {kw:'brócolis',color:'#4A6B3A',r:7},
+  {kw:'ervilha',color:'#6B8E4E',r:4},
+  {kw:'ovo',color:'#F4D35E',r:8},
+  {kw:'alho',color:'#F5ECD8',r:4},
+  {kw:'pimenta',color:'#C1281E',r:4},
+];
+const _DOCE_VISUAL=[
+  {kw:'granulado',color:'#3A2818',r:3},
+  {kw:'coco',color:'#FFF8E7',r:3},
+  {kw:'confete',rainbow:true,r:5},
+  {kw:'morango',color:'#D14D4D',r:7},
+];
+const _PALETA_CONFETE=['#C1623B','#E8B088','#4A6B3A','#4285F4','#E8C430','#A8432F'];
+
+function gerarImagemSaborSVG(item){
+  const seed=Number(item.id)||1;
+  const rnd=_seedRand(seed);
+  const desc=((item.d||'')+' '+(item.n||'')).toLowerCase();
+  const isDoce=item.cat==='dw'||(item.cat==='cz'&&/chocolate|confete|amores|prestígio|brigadeiro/.test(desc));
+  const isCalzone=item.cat==='cz';
+  const temGoiabada=/goiabada/.test(desc);
+
+  const W=300,H=200,cx=150,cy=100;
+  const crustColor='#D9A54A', crustColor2='#B97830', crustHi='#F4CE86';
+  let baseColor1,baseColor2,baseHi,charColor,sauceRing=true;
+
+  if(isDoce && !temGoiabada){
+    baseColor1=['#4A3426','#5A4030'][Math.floor(rnd()*2)]; baseColor2='#3A281C'; baseHi='#6B4B34'; charColor='#241711'; sauceRing=false;
+  }else if(temGoiabada){
+    baseColor1='#FFF6E0'; baseColor2='#F5E8C8'; baseHi='#FFFBF2'; charColor='#C9A35E'; sauceRing=false;
+  }else{
+    baseColor1='#F2D98A'; baseColor2='#E8C867'; baseHi='#FFF3C4'; charColor='#7A4A1E';
+  }
+
+  const raio=isCalzone?74:78;
+  const raioBase=raio-14;
+  const centroY=isCalzone?cy+raio*.22:cy;
+  const escalaY=isCalzone?.55:1;
+
+  // defs únicos por imagem: cada <img src="data:..."> é um documento SVG isolado,
+  // então reusar os mesmos ids entre itens diferentes não gera conflito nenhum
+  const defs=`<defs>
+    <filter id="dsh" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#2E3A2E" flood-opacity=".28"/>
+    </filter>
+    <radialGradient id="gCrust" cx="38%" cy="30%" r="78%">
+      <stop offset="0%" stop-color="${crustHi}"/>
+      <stop offset="55%" stop-color="${crustColor}"/>
+      <stop offset="100%" stop-color="${crustColor2}"/>
+    </radialGradient>
+    <radialGradient id="gCheese" cx="40%" cy="30%" r="82%">
+      <stop offset="0%" stop-color="${baseHi}"/>
+      <stop offset="62%" stop-color="${baseColor1}"/>
+      <stop offset="100%" stop-color="${baseColor2}"/>
+    </radialGradient>
+    <radialGradient id="gVinheta" cx="50%" cy="48%" r="52%">
+      <stop offset="74%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity=".2"/>
+    </radialGradient>
+  </defs>`;
+
+  let formaBase;
+  if(isCalzone){
+    formaBase=`<g filter="url(#dsh)">
+      <path d="M ${cx-raio},${cy} A ${raio},${raio} 0 0 1 ${cx+raio},${cy} L ${cx+raio},${cy+raio*.55} A ${raio},${raio*.55} 0 0 1 ${cx-raio},${cy+raio*.55} Z"
+        fill="url(#gCrust)" stroke="${crustColor2}" stroke-width="3"/>
+      <path d="M ${cx-raio+10},${cy+4} A ${raio-10},${raio-10} 0 0 1 ${cx+raio-10},${cy+4} L ${cx+raio-10},${cy+raio*.5} A ${raio-10},${raio*.42} 0 0 1 ${cx-raio+10},${cy+raio*.5} Z"
+        fill="url(#gCheese)"/>
+    </g>`;
+  }else{
+    formaBase=`<g filter="url(#dsh)">
+      <circle cx="${cx}" cy="${cy}" r="${raio}" fill="url(#gCrust)" stroke="${crustColor2}" stroke-width="2"/>
+      ${sauceRing?`<circle cx="${cx}" cy="${cy}" r="${raio-9}" fill="#B4432E"/>`:''}
+      <circle cx="${cx}" cy="${cy}" r="${raioBase}" fill="url(#gCheese)"/>
+    </g>`;
+  }
+
+  // camada de "queijo derretido" — blobs irregulares e sobrepostos cobrindo quase
+  // toda a superfície, pra nunca ficar com cara de vazio/sem recheio
+  let queijoDerretido='';
+  const nBlobs=9;
+  for(let k=0;k<nBlobs;k++){
+    const ang=(k/nBlobs)*Math.PI*2+rnd()*.6;
+    const dist=rnd()*(raioBase*.65);
+    const px=cx+Math.cos(ang)*dist;
+    const py=centroY+Math.sin(ang)*dist*escalaY;
+    const rx=(raioBase*.32)*(.75+rnd()*.5);
+    const ry=rx*(.75+rnd()*.4);
+    const rot=Math.floor(rnd()*360);
+    queijoDerretido+=`<ellipse cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${baseColor2}" opacity="${(.4+rnd()*.3).toFixed(2)}" transform="rotate(${rot} ${px.toFixed(1)} ${py.toFixed(1)})"/>`;
+  }
+
+  // manchinhas tostadas — queijo/massa que pegou mais forno em alguns pontos,
+  // discretas, dão a sensação de "assado de verdade" em vez de plano/liso
+  let tostado='';
+  for(let k=0;k<7;k++){
+    const ang=rnd()*Math.PI*2;
+    const dist=Math.sqrt(rnd())*(raioBase*.82);
+    const px=cx+Math.cos(ang)*dist;
+    const py=centroY+Math.sin(ang)*dist*escalaY;
+    const rr=1.6+rnd()*2.4;
+    tostado+=`<ellipse cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" rx="${rr.toFixed(1)}" ry="${(rr*.8).toFixed(1)}" fill="${charColor}" opacity="${(.18+rnd()*.18).toFixed(2)}"/>`;
+  }
+
+  // ingredientes detectados na descrição real do item
+  const ativos=(isDoce?_DOCE_VISUAL:_INGREDIENTES_VISUAL).filter(ing=>desc.includes(ing.kw));
+  if(temGoiabada) ativos.push({kw:'goiabada',color:'#C1623B',r:9});
+  if(!ativos.length) ativos.push({kw:'queijo',color:'#FFE9A8',r:5}); // mussarela/queijo simples
+
+  let toppings='';
+  const baseQtd=isDoce&&ativos.some(a=>a.rainbow)?26:16;
+  ativos.forEach(ing=>{
+    const qtd=ing.rainbow?baseQtd:Math.max(6,Math.floor(baseQtd/ativos.length)+3);
+    for(let k=0;k<qtd;k++){
+      const ang=rnd()*Math.PI*2;
+      const raioMax=isCalzone?raio*.5:raioBase-6;
+      const dist=Math.sqrt(rnd())*raioMax;
+      const px=cx+Math.cos(ang)*dist;
+      const py=centroY+Math.sin(ang)*dist*escalaY;
+      const cor=ing.rainbow?_PALETA_CONFETE[Math.floor(rnd()*_PALETA_CONFETE.length)]:ing.color;
+      const rr=(ing.r*(.75+rnd()*.5));
+      const rot=Math.floor(rnd()*360);
+      // sombra projetada sutil embaixo do pedaço — dá volume/profundidade real
+      const sx=px+rr*.18, sy=py+rr*.28;
+      toppings+=`<ellipse cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" rx="${rr.toFixed(1)}" ry="${(rr*.8).toFixed(1)}" fill="#000" opacity=".14" transform="rotate(${rot} ${sx.toFixed(1)} ${sy.toFixed(1)})"/>`;
+      // pedaço irregular (elipse levemente rotacionada) em vez de círculo perfeito — lê mais
+      // como "pedaço de ingrediente de verdade" do que "bolinha decorativa"
+      toppings+=`<ellipse cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" rx="${rr.toFixed(1)}" ry="${(rr*.8).toFixed(1)}" fill="${cor}" opacity="${(.88+rnd()*.12).toFixed(2)}" transform="rotate(${rot} ${px.toFixed(1)} ${py.toFixed(1)})"/>`;
+      // brilho gorduroso — só nos pedaços maiores, metade deles, pra não virar padrão óbvio
+      if(rr>=5 && k%2===0){
+        const hx=px-rr*.28, hy=py-rr*.28;
+        toppings+=`<ellipse cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" rx="${(rr*.3).toFixed(1)}" ry="${(rr*.2).toFixed(1)}" fill="#fff" opacity=".3" transform="rotate(${rot} ${hx.toFixed(1)} ${hy.toFixed(1)})"/>`;
+      }
+    }
+  });
+
+  // vinheta — escurece sutilmente a borda do recheio, unifica a luz e dá
+  // sensação de profundidade embaixo da aba da massa
+  const vinheta=`<circle cx="${cx}" cy="${centroY}" r="${raioBase}" fill="url(#gVinheta)" transform="${isCalzone?`scale(1 ${escalaY})`:''}" transform-origin="${cx}px ${centroY}px"/>`;
+
+  // brilho quente por cima, pra dar sensação de "assado na hora"
+  const brilho=isCalzone
+    ?`<ellipse cx="${cx-raio*.3}" cy="${cy+raio*.15}" rx="${raio*.5}" ry="${raio*.25}" fill="#fff" opacity=".1"/>`
+    :`<ellipse cx="${cx-raio*.28}" cy="${cy-raio*.28}" rx="${raio*.42}" ry="${raio*.3}" fill="#fff" opacity=".12"/>`;
+
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}">
+    ${defs}
+    <rect width="${W}" height="${H}" fill="#1F1F1F"/>
+    <ellipse cx="${cx}" cy="${cy+raio*.78}" rx="${raio*.86}" ry="${raio*.14}" fill="#2E3A2E" opacity=".14"/>
+    ${formaBase}
+    ${queijoDerretido}
+    ${tostado}
+    ${toppings}
+    ${vinheta}
+    ${brilho}
+  </svg>`;
+  return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg);
+}
+
+// ── BEBIDAS — garrafa ou lata ilustrada, cor real da bebida, nunca pizza ──
+const _BEBIDA_VISUAL=[
+  {kw:'água',cor:'#BFE3F0',tampa:'#4285F4',rotulo:'#fff',formato:'garrafa'},
+  {kw:'cerveja',cor:'#E8A33D',tampa:'#C1623B',rotulo:'#FFF6E0',formato:'lata'},
+  {kw:'coca',cor:'#5C1A1A',tampa:'#3A2818',rotulo:'#fff',formato:'garrafa'},
+  {kw:'fanta',cor:'#E8792E',tampa:'#A8432F',rotulo:'#fff',formato:'garrafa'},
+  {kw:'kuat',cor:'#8B2E2E',tampa:'#5C1A1A',rotulo:'#F4C430',formato:'garrafa'},
+  {kw:'tubaína',cor:'#8BAA4E',tampa:'#4A6B3A',rotulo:'#fff',formato:'garrafa'},
+  {kw:'del valle',cor:'#E8A33D',tampa:'#C1623B',rotulo:'#fff',formato:'caixinha'},
+  {kw:'suco',cor:'#E8A33D',tampa:'#C1623B',rotulo:'#fff',formato:'caixinha'},
+];
+function gerarImagemBebidaSVG(item){
+  const seed=Number(item.id)||1;
+  const rnd=_seedRand(seed);
+  const desc=((item.n||'')+' '+(item.d||'')).toLowerCase();
+  const match=_BEBIDA_VISUAL.find(b=>desc.includes(b.kw))||{cor:'#8BAA4E',tampa:'#4A6B3A',rotulo:'#fff',formato:'garrafa'};
+  const W=300,H=200,cx=150;
+
+  let corpo;
+  if(match.formato==='lata'){
+    corpo=`<rect x="${cx-34}" y="55" width="68" height="110" rx="10" fill="${match.cor}"/>
+      <rect x="${cx-34}" y="55" width="68" height="18" rx="9" fill="${match.tampa}"/>
+      <rect x="${cx-34}" y="147" width="68" height="18" rx="9" fill="${match.tampa}" opacity=".6"/>
+      <rect x="${cx-24}" y="90" width="48" height="38" rx="4" fill="${match.rotulo}" opacity=".92"/>`;
+  }else if(match.formato==='caixinha'){
+    corpo=`<path d="M ${cx-32},70 L ${cx-32},165 L ${cx+32},165 L ${cx+32},70 L ${cx},52 Z" fill="${match.cor}"/>
+      <rect x="${cx-32}" y="70" width="64" height="95" fill="${match.cor}"/>
+      <path d="M ${cx-32},70 L ${cx},52 L ${cx+32},70 Z" fill="${match.tampa}"/>
+      <rect x="${cx-22}" y="95" width="44" height="34" rx="3" fill="${match.rotulo}" opacity=".92"/>`;
+  }else{
+    corpo=`<path d="M ${cx-16},40 L ${cx-16},62 L ${cx-30},88 L ${cx-30},162 Q ${cx-30},170 ${cx-22},170 L ${cx+22},170 Q ${cx+30},170 ${cx+30},162 L ${cx+30},88 L ${cx+16},62 L ${cx+16},40 Z" fill="${match.cor}"/>
+      <rect x="${cx-9}" y="26" width="18" height="18" rx="3" fill="${match.tampa}"/>
+      <rect x="${cx-24}" y="105" width="48" height="36" rx="4" fill="${match.rotulo}" opacity=".92"/>`;
+  }
+  const brilho=`<ellipse cx="${cx-14}" cy="95" rx="6" ry="46" fill="#fff" opacity=".16"/>`;
+
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}">
+    <rect width="${W}" height="${H}" fill="#1F1F1F"/>
+    ${corpo}
+    ${brilho}
+  </svg>`;
+  return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg);
+}
+
+// preenche img só de quem não tem (nunca sobrescreve foto real cadastrada no Firestore)
+function preencherImagensGeradas(lista){
+  (lista||[]).forEach(i=>{
+    if(i.img) return;
+    i.img = i.cat==='d' ? gerarImagemBebidaSVG(i) : gerarImagemSaborSVG(i);
+  });
+}

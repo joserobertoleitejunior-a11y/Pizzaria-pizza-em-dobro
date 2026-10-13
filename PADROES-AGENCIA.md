@@ -139,7 +139,8 @@ Antes de escrever a primeira linha de funcionalidade:
 - [ ] RLS ativa em toda tabela — `firestore.rules` foi escrito (agora com checagem de papel `isEquipe()` pras coleções só-equipe) mas **precisa ser publicado manualmente** no console do Firebase (sem credencial deste projeto aqui para publicar) — e precisa da variável `STAFF_PASSWORD` configurada na Netlify antes, senão ninguém consegue logar
 - [x] Estrutura de testes inicial criada e rodando (`tests/`, `npm test`, 19 testes passando)
 - [x] Definido: projeto único de cliente (não SaaS da agência)
-- [x] Autenticação de rota administrativa separada da autenticação do cliente final — senha única da equipe (decisão do José) pra Caixa/Relatórios/Clientes/bot-config/painel.html, verificada no servidor (`netlify/functions/staff-login.js`) e checável de verdade nas regras via `request.auth.token.staff` — falta só publicar `firestore.rules` e configurar `STAFF_PASSWORD` (ver acima)
+- [x] Autenticação de rota administrativa separada da autenticação do cliente final — senha única da equipe (decisão do José) pra Caixa/Relatórios/Clientes/bot-config/painel.html **e agora também o modo admin do site público (index.html)**, verificada no servidor (`netlify/functions/staff-login.js`) e checável de verdade nas regras via `request.auth.token.staff` — falta só publicar `firestore.rules` e configurar `STAFF_PASSWORD` (ver acima)
+- [x] Falha de segurança corrigida: o modo admin do site público tinha senha própria fixa no código-fonte do navegador (usuário "Marco", senha "1234" em base64 — visível a qualquer um pelo DevTools, sem verificação no servidor). Unificado com o login real da equipe; não existe mais senha hardcoded em JS neste projeto.
 - [ ] Definido: quem tem acesso a produção e onde ficam as chaves de verdade — pendente de decisão do José/Marco
 
 ---

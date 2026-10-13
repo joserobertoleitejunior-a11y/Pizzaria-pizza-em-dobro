@@ -7,9 +7,16 @@
 
 ## Visão geral da arquitetura
 
-Site estático (sem build step, sem bundler) hospedado na Netlify. Firebase/Firestore
-como banco de dados. Netlify Functions pra tudo que precisa rodar no servidor
-(bot do WhatsApp, chat da IA do dashboard). Sem framework — HTML + JS puro em
+Site estático hospedado no **Cloudflare Workers (Static Assets)** — o `wrangler.jsonc`
+serve os arquivos grátis e só `/api/*` passa pelo Worker (`worker/index.js`). Firebase/Firestore
+como banco de dados (acessado por REST + WebCrypto, sem firebase-admin). O servidor
+(`server/*.js`) cuida do bot do WhatsApp, chat da IA do dashboard, pedidos, admin-api.
+`npm run build` copia só os arquivos públicos para `dist/` (código do servidor, regras, docs e testes NUNCA são publicados).
+Cron do bot (follow-up) = `scheduled()` do Worker a cada 5 min. Segredos no painel do Cloudflare:
+`FIREBASE_SERVICE_ACCOUNT`, `STAFF_PASSWORD`, opcionais `SENTRY_DSN` e `WEBHOOK_SECRET`
+(webhook da Evolution: `https://<site>/api/whatsapp-webhook?token=<WEBHOOK_SECRET>`).
+Rotas da equipe (`admin-api`, `send-whatsapp`, `parse-order`, `dashboard-chat`, `dashboard-ai`) exigem ID token com claim `staff`.
+Testes: `npm test`, `npm run test:regras` (emulador), `npm run test:worker` (workerd real). Deploy: `npm run deploy`. Sem framework — HTML + JS puro em
 cada módulo, com scripts compartilhados carregados via `<script src="...">`.
 
 ```
@@ -20,15 +27,18 @@ cada módulo, com scripts compartilhados carregados via `<script src="...">`.
 /bot-config/                → Configuração do bot WhatsApp
 /bot-config/conversas/      → Histórico de conversas do bot
 /cupom/                     → Avaliação pós-pedido            cupom.js
+/admin/                     → PAINEL ADMIN (equipe)           admin.js — tudo via admin-api, nada direto no banco
 /dashboard/                 → ÓRFÃO — só redireciona pra /relatorios/
 /shared/utils.js            → Funções e dados compartilhados (ver abaixo) — agora requireável em Node também
 /shared/firebase-config.js  → Chave do Firebase (1 lugar só — pública por design, não é segredo)
 /shared/sentry-config.js    → DSN do Sentry do navegador (vazio = observabilidade desligada)
-/netlify/functions/         → Código de servidor (Node)
-/netlify/functions/lib/     → Módulos compartilhados ENTRE functions (secrets.js, sentry.js)
-/firestore.rules            → Regras de segurança do Firestore — NUNCA publicado ainda, ver nota lá dentro
+/server/                   → Código de servidor (Node)
+/server/lib/               → Módulos compartilhados ENTRE functions (firebase, equipe, http, secrets, senha, sentry)
+/firestore.rules            → Regras v2 (banco trancado) — testadas no emulador; publicar DEPOIS do deploy (ver seção Backend)
+/shared/admin-api.js        → chamarAdminApi(acao, dados) — usado pelo /admin/ e pelo bot-config
 /firebase.json               → Aponta firestore.rules pro `firebase deploy --only firestore:rules`
 /tests/                      → Testes unitários (`npm test`, node --test nativo, sem dependência nova)
+/tests/regras/               → Regras + backend no emulador (`npm run test:regras` — precisa de Java)
 /sw.js                      → Service worker (cache de assets, NÃO cacheia Firestore)
 ```
 
@@ -63,7 +73,7 @@ num arquivo só", não fragmentar demais. Verificado com `node --check` em
 cada arquivo + teste real de navegador (Playwright) antes de entrar — qualquer
 mudança na ordem dos `<script src>` precisa do mesmo cuidado.
 
-## Funções da Netlify (servidor)
+## Funções do servidor (`server/`, rodam no Worker)
 
 - **whatsapp-webhook.js** — recebe mensagem da Evolution API, chama Claude
   (Haiku), fecha pedido, cria doc em `orders`. Lê config em `config/bot` +
@@ -81,8 +91,28 @@ mudança na ordem dos `<script src>` precisa do mesmo cuidado.
 - **send-whatsapp.js** *(novo)* — envia mensagem manual do mini-mensageiro
   do Caixa. Existe pra chave da Evolution API nunca precisar rodar no
   navegador (antes rodava — ver gotcha #12).
-- **secrets-status.js** *(novo)* — devolve só `{anthropicKey: true/false, ...}`
-  pro bot-config saber o que já está configurado, sem nunca devolver o valor.
+- **admin-api.js** — BACKEND DO ADMIN. `POST {acao, dados}` com
+  `Authorization: Bearer <ID token>`; recusa (401) quem não tem o claim
+  `staff`. Ações: resumo, cardapio.*, pedidos.*, clientes.*, avaliacoes.*,
+  config.*, segredos.* (só gravação/status, nunca devolve a chave),
+  motoboys.*, auditoria.listar. Valida cada campo (listas fechadas de
+  categoria/status, texto sem < > aspas duplas, crase e barra invertida, limites) e grava cada alteração
+  em `auditoria`. Pedido excluído vai antes pra `pedidos_excluidos`.
+- **criar-pedido.js** — ÚNICA porta de entrada dos pedidos da loja: limpa os
+  campos, número sequencial (fuso de São Paulo), trava de duplicata (mesmo
+  telefone + total em 10 min), confere preço item a item com `menu_items`
+  (divergência → `conferir_preco: true`, nunca recusa — o pedido já foi pelo
+  WhatsApp). `client_email` só de login Google com e-mail verificado.
+- **pedido-publico.js** — o cupom (/cupom/) lê o pedido por aqui: só primeiro
+  nome, itens e total (sem telefone/endereço).
+- **registrar-visita.js** — soma 1 em `visits/<AAAA-MM-DD>` (incremento atômico).
+- **staff-login.js** — além da senha, bloqueia 8 erros por IP em 15 min
+  (`seguranca_login`, IP guardado só como hash).
+- ~~secrets-status.js~~ — removido (respondia sem login; o status das chaves
+  agora vem de `admin-api` → `segredos.status`).
+- **lib/firebase.js** — init único do Admin SDK (usa o emulador se
+  `FIRESTORE_EMULATOR_HOST` existir). **lib/equipe.js** — `exigirEquipe(event)`.
+  **lib/http.js** — `json`, `texto` (sanitização), `numero`, `hojeBrasilia`.
 - **lib/secrets.js** *(novo)* — `getSecrets(db)`: lê/migra as chaves de
   `config/bot` (legado) pra `config_secrets/bot` automaticamente, uma vez,
   sem ação manual. Toda function que precisa de `anthropicKey`/`evolutionKey`/
@@ -120,7 +150,7 @@ gotcha #1 abaixo.
 
 | Coleção | O que guarda | Quem escreve |
 |---|---|---|
-| `orders` | Todo pedido (site, Caixa, bot, conversor) | index.html, caixa.js, webhook.js |
+| `orders` | Todo pedido (site, Caixa, bot, conversor) | criar-pedido.js (loja), caixa.js (equipe), webhook.js |
 | `menu_items` | Cardápio — 1 doc por item, doc ID = `String(slug_id)` | index.html (admin), dashboard-chat.js |
 | `config/bot` | Config PÚBLICA do negócio (endereço, taxa, horário) — NUNCA mais tem chave de API aqui | bot-config/index.html |
 | `config_secrets/bot` | As 3 chaves de API (Anthropic/Evolution/Gemini) — só Admin SDK lê, navegador nunca | Netlify Functions (via `lib/secrets.js`), bot-config/index.html só escreve (nunca lê de volta) |
@@ -132,13 +162,34 @@ gotcha #1 abaixo.
 | `avaliacoes` | Avaliação pós-pedido (fluxo do cupom) | cupom.js |
 | `feedbacks` + `feedback_comments` | Depoimento geral da loja + comentários — moderação hoje passa pelo modo admin da loja, não pela equipe | index.html |
 | `conv_orders` | Conversor de pedido embutido na própria loja (modo admin da loja) | index.html |
-| `visits` | Contador de visitas (estatística pública) | index.html |
+| `visits` | Contador de visitas — 1 doc por dia (id = data) a partir da v2 | registrar-visita.js |
+| `auditoria` | Quem alterou o quê e quando (toda ação do admin-api) | admin-api.js (navegador só lê, equipe) |
+| `pedidos_excluidos` | Cópia de segurança de pedido apagado pelo painel | admin-api.js (só servidor) |
+| `seguranca_login` | Contagem de senha errada por IP (hash) | staff-login.js (só servidor) |
 
-⚠️ `firestore.rules` (na raiz do repo) documenta o que cada coleção precisa
-de acesso, mas **nunca foi publicado no Firebase de verdade** — ninguém aqui
-tem a credencial do projeto pra publicar. Antes de publicar, testar cada
-tela (loja, Caixa, Relatórios, Clientes, bot-config, painel) — ver aviso no
-topo do arquivo.
+## Backend e segurança (v2) — como o banco ficou trancado
+
+- **Cliente (navegador da loja)**: lê cardápio, config pública e depoimentos;
+  cria avaliação/depoimento/comentário/o próprio perfil Google com campos
+  conferidos pelas regras (sem `< >`, tamanho máximo, sem campo extra). Lê
+  SÓ os próprios pedidos (e-mail Google verificado). Pedido e visita: só
+  pelo servidor.
+- **Equipe (claim `staff`)**: Caixa, Relatórios, Clientes, painel e o modo
+  admin da loja continuam falando direto com o Firestore — as regras liberam
+  só pra quem tem o claim (checado pelos servidores do Google). O painel
+  novo `/admin/` e as chaves de API vão pelo `admin-api`.
+- **Ninguém pelo navegador**: `config_secrets`, `pedidos_excluidos`,
+  `seguranca_login`; `visits`/`auditoria`/`analises_ia` só leitura da equipe.
+- Testes: `npm run test:regras` (29 casos: visitante, cliente Google, conta
+  com e-mail não verificado, equipe).
+
+⚠️ **ORDEM PRA PUBLICAR** (o deploy preview usa o MESMO banco de produção):
+1. Mergear/publicar o site novo na Netlify (as functions novas usam as
+   mesmas variáveis `FIREBASE_SERVICE_ACCOUNT` e `STAFF_PASSWORD`).
+2. SÓ DEPOIS publicar `firestore.rules` (Firebase Console → Firestore →
+   Regras → colar o arquivo → Publicar). Publicar antes quebra o site antigo,
+   que ainda grava pedido direto do navegador.
+3. Testar: pedido pela loja aparece no Caixa; /admin/ abre com a senha.
 
 ## Login da equipe (senha única)
 
@@ -147,21 +198,16 @@ não tinham NENHUMA proteção — qualquer um que soubesse a URL entrava. Agora
 todas essas páginas carregam `shared/staff-auth.js` e chamam
 `iniciarGateEquipe()` logo depois de carregar `firebase-auth-compat.js` +
 `shared/firebase-config.js` — isso cobre a tela com uma senha até o
-Firebase confirmar (via `netlify/functions/staff-login.js`, que compara com
+Firebase confirmar (via `server/staff-login.js`, que compara com
 a variável de ambiente `STAFF_PASSWORD` na Netlify e devolve um *custom
 token* do Firebase Auth se bater). Depois de entrar uma vez, o navegador
 lembra (sessão do Firebase) — não pede senha nova a cada página nem a cada
 recarregamento no mesmo aparelho.
 
-`firestore.rules` usa `isEquipe()` (`request.auth.token.staff==true`) pra
-travar de verdade `caixa_sessoes`, `motoboys` e `bot_conversas` — essas 3
-coleções só a equipe (nem cliente logado com Google) consegue ler/escrever
-depois que a regra for publicada. As demais coleções que a LOJA também usa
-(orders, menu_items, config, clients, avaliacoes, feedbacks etc.) **não**
-foram travadas atrás dessa senha nesta passada — a loja tem seu próprio modo
-admin mais antigo (`checkAdminSession()`, separado, senha diferente) que
-ainda gerencia essas coleções, e unificar os dois exige mexer no index.html
-com mais tempo de teste. Ver nota 4 dentro do `firestore.rules`.
+`firestore.rules` (v2) usa `isEquipe()` (`request.auth.token.staff==true`)
+em todas as coleções internas — ver seção "Backend e segurança (v2)". O gate
+(`shared/staff-auth.js`) também exige o claim: antes bastava QUALQUER login,
+então um cliente logado com Google na loja abria o Caixa.
 
 **Sem a variável `STAFF_PASSWORD` configurada na Netlify, ninguém consegue
 entrar em nenhuma dessas páginas** (a function devolve erro 500 "senha

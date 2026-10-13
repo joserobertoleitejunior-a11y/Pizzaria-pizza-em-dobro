@@ -6,7 +6,7 @@
 //  Itens que a IA não reconhecer com certeza viram um aviso manual
 //  no carrinho, nunca são adicionados "no escuro".
 // ══════════════════════════════════════════════════════════
-// chave da IA agora fica só no servidor (netlify/functions/parse-order.js) — nunca mais exposta aqui
+// chave da IA agora fica só no servidor (server/parse-order.js) — nunca mais exposta aqui
 
 function abrirColarPedido(){
   if(cart.length>0){
@@ -93,9 +93,9 @@ JSON esperado:
 (repare: "Catupiry" aqui é parte do NOME do sabor, nenhum dos dois itens pediu borda, então "borda" fica null nos dois — mesmo a palavra "catupiry" aparecendo no texto. E "205" virou "numero" mesmo sem nome de rua junto — nunca jogue um número solto fora.)`;
 
   try{
-    const r=await fetch('/.netlify/functions/parse-order',{
+    const r=await fetch('/api/parse-order',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:await cabecalhosEquipe(),
       body:JSON.stringify({systemPrompt, raw:texto})
     });
     const d=await r.json();

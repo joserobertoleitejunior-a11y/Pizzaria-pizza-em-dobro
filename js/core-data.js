@@ -73,19 +73,31 @@ const DB={
 };
 
 // ══════════════════════════════════
-//  CIRURGIA: ADMIN SESSION + HASH
+//  ADMIN SESSION — mesmo login único da equipe usado no Caixa/Relatórios/
+//  Clientes/bot-config/painel.html (shared/staff-auth.js). Antes disso o
+//  modo admin da loja tinha SENHA PRÓPRIA fixa no código-fonte do navegador
+//  (visível pra qualquer um que abrisse o DevTools) — removido por ser uma
+//  falha de segurança real, não só duplicação de código.
 // ══════════════════════════════════
-const ADMIN_USER='Marco';
-const ADMIN_PASS_DEFAULT=btoa('1234');
 let adminSession=false;
+function checkAdminSession(){ return adminSession; }
 
-function getAdminPass(){
-  return DB.get('admin_pass')||ADMIN_PASS_DEFAULT;
-}
-function checkAdminSession(){
-  const s=DB.get('admin_session');
-  if(s&&s.exp>Date.now()){adminSession=true;return true;}
-  adminSession=false;return false;
+// Checagem silenciosa no boot: se o navegador já tem sessão da equipe válida
+// (mesmo login usado no Caixa), reativa o modo admin sem pedir senha de novo
+// e SEM bloquear a tela com o gate — a loja é pública, só o modo admin é
+// restrito. Nunca mostra nada pro cliente comum; resolve rápido e quieto.
+async function restaurarSessaoAdminSilenciosa(){
+  try{
+    _initFB();
+    if(!AUTH) return false;
+    const user=await new Promise(resolve=>{
+      const unsub=AUTH.onAuthStateChanged(u=>{unsub();resolve(u);});
+    });
+    if(!user) return false;
+    const token=await user.getIdTokenResult();
+    if(token.claims && token.claims.staff){ adminSession=true; return true; }
+    return false;
+  }catch(e){ console.warn('Checagem silenciosa de sessão admin falhou:',e); return false; }
 }
 function mostrarBotaoAbrirCaixa(){
   if(document.getElementById('btn-abrir-caixa-admin')) return;
@@ -93,14 +105,10 @@ function mostrarBotaoAbrirCaixa(){
   btn.id='btn-abrir-caixa-admin';
   btn.href='caixa/index.html';
   btn.innerHTML='🧾 Caixa';
-  btn.style.cssText='position:fixed;right:16px;bottom:152px;z-index:99999;background:linear-gradient(135deg,#FF9F1C,#E71D36);'+
-    'color:#fff;font-family:Oswald,sans-serif;font-weight:700;letter-spacing:.4px;font-size:.8rem;text-transform:uppercase;'+
-    'padding:12px 18px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.45);';
+  btn.style.cssText='position:fixed;right:16px;bottom:152px;z-index:99999;background:linear-gradient(135deg,#D62828,#A51D1D);'+
+    'color:#fff;font-family:"Work Sans",sans-serif;font-weight:700;letter-spacing:.4px;font-size:.8rem;text-transform:uppercase;'+
+    'padding:12px 18px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(20,20,20,.3);';
   document.body.appendChild(btn);
-}
-function setAdminSession(){
-  DB.set('admin_session',{exp:Date.now()+30*24*60*60*1000}); // 30 dias
-  adminSession=true;
 }
 
 // ══════════════════════════════════
@@ -115,23 +123,15 @@ function getEndereco(){return getCfg('end','Itapetininga, SP');}
 function openConfig(){
   document.getElementById('cfg-wpp').value=getWhatsApp();
   document.getElementById('cfg-end').value=getEndereco();
-  document.getElementById('cfg-pass1').value='';
-  document.getElementById('cfg-pass2').value='';
   document.getElementById('cfg-msg').style.display='none';
   openModal('modal-config');
 }
 function saveConfig(){
   const wpp=document.getElementById('cfg-wpp').value.trim();
   const end=document.getElementById('cfg-end').value.trim();
-  const p1=document.getElementById('cfg-pass1').value;
-  const p2=document.getElementById('cfg-pass2').value;
   const msg=document.getElementById('cfg-msg');
   if(wpp) setCfg('wpp',wpp);
   if(end) setCfg('end',end);
-  if(p1){
-    if(p1!==p2){msg.style.display='block';msg.style.color='var(--se)';msg.innerText='Senhas não conferem.';return;}
-    DB.set('admin_pass',btoa(p1));
-  }
   msg.style.display='block';msg.style.color='#2ecc71';msg.innerText='✓ Configurações salvas!';
   setTimeout(()=>msg.style.display='none',2000);
 }
@@ -187,7 +187,7 @@ function openPromos(){
       <div class="promo-row-name">${p.nome}</div>
       <div class="promo-row-desc">${p.desc}</div>
       <div class="promo-toggle">
-        <span style="font-size:.68rem;color:#555;">${p.dias.map(d=>dias[d]).join(', ')}</span>
+        <span style="font-size:.68rem;color:var(--tx-5);">${p.dias.map(d=>dias[d]).join(', ')}</span>
         <label class="ptog"><input type="checkbox" id="ptog-${p.id}"${p.ativo?' checked':''}><span class="ptog-sl"></span></label>
       </div>
     </div>`).join('');

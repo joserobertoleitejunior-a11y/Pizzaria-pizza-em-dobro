@@ -1,13 +1,9 @@
 // Testa a migração automática das chaves de API pra config_secrets/bot (ver
-// netlify/functions/lib/secrets.js). Simula o Firestore com um mock em memória —
+// server/lib/secrets.js). Simula o Firestore com um mock em memória —
 // sem isso, uma mudança aqui só seria descoberta ao vivo, na primeira mensagem do bot.
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const admin = require('firebase-admin');
-if (!admin.firestore.FieldValue) admin.firestore.FieldValue = {};
-admin.firestore.FieldValue.delete = () => ({ _delete: true });
-
-const { getSecrets, CAMPOS_SECRETOS } = require('../netlify/functions/lib/secrets.js');
+const { getSecrets, CAMPOS_SECRETOS } = require('../server/lib/secrets.js');
 
 function makeDb(initial) {
   const store = JSON.parse(JSON.stringify(initial));
@@ -23,7 +19,7 @@ function makeDb(initial) {
               if (!store[key]) throw new Error('doc inexistente: ' + key);
               Object.keys(data).forEach(k => {
                 const v = data[k];
-                if (v && v._delete) delete store[key][k]; else store[key][k] = v;
+                if (v && v.tipo === 'delete') delete store[key][k]; else store[key][k] = v;
               });
             }
           };

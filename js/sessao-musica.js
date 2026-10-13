@@ -82,8 +82,22 @@ function applyGoogleSession(){
   const uname=document.getElementById('u-name');
   if(uname&&!uname.value) uname.value=fbUser.name;
   loadClientBadge();
-  // upsert no Supabase (on_conflict email)
-  _initFB();if(FS)FS.collection('clients').doc(fbUser.email).set({uid:AUTH?.currentUser?.uid||'',name:fbUser.name,email:fbUser.email,photo:fbUser.photo,via_google:true,last_visit:new Date().toISOString()},{merge:true}).catch(()=>{});
+  salvarPerfilGoogle();
+}
+
+// Grava o perfil só DEPOIS que o Firebase Auth confirmar o login Google com o mesmo e-mail:
+// as regras do banco só deixam o cliente escrever em clients/<o e-mail verificado dele>.
+function salvarPerfilGoogle(){
+  _initFB();
+  if(!FS||!AUTH||!fbUser||!fbUser.email) return;
+  const unsub=AUTH.onAuthStateChanged(u=>{
+    if(!u||u.email!==fbUser.email) return;
+    unsub();
+    FS.collection('clients').doc(fbUser.email).set({
+      uid:u.uid,name:String(fbUser.name||'').replace(/[<>]/g,'').slice(0,80),email:fbUser.email,
+      photo:fbUser.photo||null,via_google:true,last_visit:new Date().toISOString()
+    },{merge:true}).catch(()=>{});
+  });
 }
 
 function loginGoogleFeedback(){_gCtx='feedback';promptGoogle();}
@@ -182,7 +196,7 @@ function addPlaylistTrack(){
   const wrap=document.getElementById('playlist-tracks');
   const idx=wrap.children.length;
   const div=document.createElement('div');
-  div.style.cssText='background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px;margin-bottom:8px;position:relative;';
+  div.style.cssText='background:rgba(20,20,20,.03);border:1px solid rgba(20,20,20,.07);border-radius:10px;padding:10px;margin-bottom:8px;position:relative;';
   div.innerHTML=`<div style="font-size:.65rem;color:var(--pr);letter-spacing:1px;margin-bottom:6px;">FAIXA ${idx+1}</div>
     <input type="text" class="m-input" placeholder="URL do áudio (.mp3 / .ogg)" data-type="url" style="margin-bottom:6px;">
     <input type="text" class="m-input" placeholder="Título da música" data-type="title" style="margin-bottom:6px;">
@@ -250,16 +264,13 @@ function resetConfig(key){
   const msgs={
     wpp:'WhatsApp voltará para o número padrão.',
     end:'Endereço da loja voltará para o padrão.',
-    admin_pass:'Senha voltará para 1234.',
     music:'Música será removida.',
-    all:'TODAS as configurações voltarão ao padrão.'
+    all:'TODAS as configurações voltarão ao padrão (não mexe na senha da equipe — essa é só pelo Netlify).'
   };
   if(!confirm(msgs[key]||'Resetar esta configuração?'))return;
   if(key==='all'){
-    ['pd_cfg_wpp','pd_cfg_end','pd_admin_pass','pd_music','pd_promos','pd_admin_session'].forEach(k=>localStorage.removeItem(k));
-    alert('Tudo resetado. A senha voltou para 1234.');
-  } else if(key==='admin_pass'){
-    localStorage.removeItem('pd_admin_pass');
+    ['pd_cfg_wpp','pd_cfg_end','pd_music','pd_promos'].forEach(k=>localStorage.removeItem(k));
+    alert('Tudo resetado.');
   } else {
     localStorage.removeItem('pd_cfg_'+key);
   }

@@ -62,7 +62,7 @@ function rotuloDia(iso){
     return d+'/'+m+'/'+a;
   }catch(e){ return iso; }
 }
-const CORES=['#FF9F1C','#E71D36','#3ddc84','#4aa8ff','#c084fc','#ffd166','#ff6a1a','#9c8f83'];
+const CORES=['#C1623B','#A8432F','#3ddc84','#4aa8ff','#c084fc','#ffd166','#ff6a1a','#9c8f83'];
 
 function renderChipsPeriodo(){
   document.getElementById('periodo').innerHTML=PERIODOS.map(p=>
@@ -190,13 +190,13 @@ function renderGraficoFaturamento(dias){
   gradient.addColorStop(1,'rgba(255,159,28,0)');
   charts.fat=new Chart(ctx,{
     type:'line',
-    data:{labels:rotulos,datasets:[{label:'Faturamento (R$)',data:valores,borderColor:'#FF9F1C',borderWidth:2.5,
-      backgroundColor:gradient,fill:true,tension:.4,pointRadius:3,pointHoverRadius:6,pointBackgroundColor:'#FF9F1C',
+    data:{labels:rotulos,datasets:[{label:'Faturamento (R$)',data:valores,borderColor:'#C1623B',borderWidth:2.5,
+      backgroundColor:gradient,fill:true,tension:.4,pointRadius:3,pointHoverRadius:6,pointBackgroundColor:'#C1623B',
       pointBorderColor:'#07060a',pointBorderWidth:2}]},
     options:{
       responsive:true,maintainAspectRatio:false,
       interaction:{intersect:false,mode:'index'},
-      plugins:{legend:{display:false},tooltip:{backgroundColor:'#181310',borderColor:'rgba(255,159,28,.4)',borderWidth:1,padding:10,titleColor:'#FF9F1C',bodyColor:'#f3ece2',callbacks:{label:c=>fmt(c.parsed.y)}}},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#181310',borderColor:'rgba(193,98,59,.4)',borderWidth:1,padding:10,titleColor:'#C1623B',bodyColor:'#f3ece2',callbacks:{label:c=>fmt(c.parsed.y)}}},
       scales:{
         y:{ticks:{color:'#9c8f83',callback:v=>'R$'+v},grid:{color:'rgba(255,255,255,.06)'}},
         x:{ticks:{color:'#9c8f83'},grid:{display:false}}
@@ -227,7 +227,7 @@ function renderGraficoPagamento(){
     options:{
       responsive:true,maintainAspectRatio:false,cutout:'62%',
       plugins:{legend:{position:'right',labels:{color:'#f3ece2',font:{size:10},boxWidth:12,padding:12}},
-        tooltip:{backgroundColor:'#181310',borderColor:'rgba(255,159,28,.4)',borderWidth:1,padding:10,titleColor:'#FF9F1C',bodyColor:'#f3ece2',callbacks:{label:c=>c.label+': '+fmt(c.parsed)}}}
+        tooltip:{backgroundColor:'#181310',borderColor:'rgba(193,98,59,.4)',borderWidth:1,padding:10,titleColor:'#C1623B',bodyColor:'#f3ece2',callbacks:{label:c=>c.label+': '+fmt(c.parsed)}}}
     }
   });
 }
@@ -258,10 +258,10 @@ function renderGraficoSabores(){
   ctx.style.display='';
   charts.sab=new Chart(ctx,{
     type:'bar',
-    data:{labels:ranking.map(r=>r[0]),datasets:[{label:'Vezes pedida',data:ranking.map(r=>r[1]),backgroundColor:'#FF9F1C',hoverBackgroundColor:'#ffb238',borderRadius:8,barThickness:16}]},
+    data:{labels:ranking.map(r=>r[0]),datasets:[{label:'Vezes pedida',data:ranking.map(r=>r[1]),backgroundColor:'#C1623B',hoverBackgroundColor:'#ffb238',borderRadius:8,barThickness:16}]},
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{backgroundColor:'#181310',borderColor:'rgba(255,159,28,.4)',borderWidth:1,padding:10,titleColor:'#FF9F1C',bodyColor:'#f3ece2'}},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#181310',borderColor:'rgba(193,98,59,.4)',borderWidth:1,padding:10,titleColor:'#C1623B',bodyColor:'#f3ece2'}},
       scales:{
         x:{ticks:{color:'#9c8f83',precision:0},grid:{color:'rgba(255,255,255,.06)'}},
         y:{ticks:{color:'#f3ece2',font:{size:10}},grid:{display:false}}
@@ -337,7 +337,7 @@ function renderSequencia(){
     let hora='—'; try{ hora=new Date(dataStr(p.created_at)).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }catch(e){}
     html+=`<div class="seq-row" style="${cancelado?'opacity:.5;':''}">
       <div class="seq-badge" style="${cancelado?'background:#666;':''}">${num}</div>
-      <div class="seq-info"><b>${p.client_name||'Cliente'}</b>${cancelado?' <span style="color:#E71D36;">CANCELADO</span>':''}<div class="seq-sub">${hora} · ${p.payment||'—'} · ${p.delivery_type||'—'}</div></div>
+      <div class="seq-info"><b>${p.client_name||'Cliente'}</b>${cancelado?' <span style="color:#A8432F;">CANCELADO</span>':''}<div class="seq-sub">${hora} · ${p.payment||'—'} · ${p.delivery_type||'—'}</div></div>
       <div class="seq-total">${fmt(p.total)}</div>
     </div>`;
   });
@@ -443,9 +443,9 @@ async function enviarMensagemIA(){
   adicionarBolhaChatIA(texto,'user');
   historicoChatIA.push({role:'user',content:texto});
   try{
-    const resp=await fetch('/.netlify/functions/dashboard-chat',{
+    const resp=await fetch('/api/dashboard-chat',{
       method:'POST',
-      headers:{'content-type':'application/json'},
+      headers:await cabecalhosEquipe(),
       body:JSON.stringify({mensagens:historicoChatIA})
     });
     const data=await resp.json();

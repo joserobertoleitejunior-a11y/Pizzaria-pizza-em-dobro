@@ -9,7 +9,7 @@
 //  a página exposta). Só troca pra senha depois de confirmar que o
 //  SDK carregou; só some de vez quando o Firebase confirma (de
 //  verdade, via custom token assinado no servidor —
-//  netlify/functions/staff-login.js) que a senha bate. Depois disso o
+//  server/staff-login.js) que a senha bate. Depois disso o
 //  Firebase guarda a sessão sozinho (o mesmo dispositivo/navegador
 //  não pede senha de novo) — é o "senha única da equipe, digita uma
 //  vez por aparelho".
@@ -23,25 +23,26 @@
 function iniciarGateEquipe(){
   const overlay=document.createElement('div');
   overlay.id='gate-equipe';
-  overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:#07060a;display:flex;align-items:center;justify-content:center;padding:20px;font-family:system-ui,sans-serif;';
-  overlay.innerHTML='<div style="color:#9c8f83;font-size:.85rem;">Carregando…</div>';
+  overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:#37473B;display:flex;align-items:center;justify-content:center;padding:20px;font-family:"Work Sans",system-ui,sans-serif;';
+  overlay.innerHTML='<div style="color:rgba(243,236,221,.6);font-size:.85rem;">Carregando…</div>';
   // some ANTES de qualquer verificação — a tela fica bloqueada por padrão (fail-closed);
   // só é liberada explicitamente depois de confirmar login, nunca por omissão/erro.
   (document.body||document.documentElement).appendChild(overlay);
 
   function renderErro(msg){
-    overlay.innerHTML=`<div style="max-width:320px;text-align:center;color:#e71d36;font-size:.85rem;">⚠️ ${msg}</div>`;
+    overlay.innerHTML=`<div style="max-width:320px;text-align:center;color:#E89A80;font-size:.85rem;">⚠️ ${msg}</div>`;
   }
 
   function renderFormulario(auth){
     overlay.innerHTML=`
       <div style="width:100%;max-width:320px;text-align:center;">
         <div style="font-size:2.4rem;margin-bottom:8px;">🍕🔒</div>
-        <div style="color:#FF9F1C;font-size:1rem;font-weight:700;letter-spacing:1px;margin-bottom:18px;">ÁREA DA EQUIPE</div>
+        <div style="color:#E8B088;font-size:1rem;font-family:'Archivo Black',sans-serif;letter-spacing:.3px;margin-bottom:18px;">ÁREA DA EQUIPE</div>
+        <style>#gate-senha::placeholder{color:rgba(243,236,221,.55);}</style>
         <input type="password" id="gate-senha" placeholder="Senha da equipe" autocomplete="current-password"
-          style="width:100%;box-sizing:border-box;background:#171016;border:1px solid rgba(255,159,28,.3);border-radius:8px;color:#f3ece2;padding:12px 14px;font-size:1rem;text-align:center;margin-bottom:10px;">
-        <button id="gate-btn" style="width:100%;background:#FF9F1C;color:#000;border:none;border-radius:8px;padding:12px;font-weight:700;font-size:.9rem;cursor:pointer;">ENTRAR</button>
-        <div id="gate-status" style="color:#e71d36;font-size:.78rem;margin-top:10px;min-height:1.2em;"></div>
+          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(193,98,59,.35);border-radius:8px;color:#F3ECDD;padding:12px 14px;font-size:1rem;text-align:center;margin-bottom:10px;">
+        <button id="gate-btn" style="width:100%;background:#C1623B;color:#fff;border:none;border-radius:8px;padding:12px;font-weight:700;font-size:.9rem;cursor:pointer;">ENTRAR</button>
+        <div id="gate-status" style="color:#E89A80;font-size:.78rem;margin-top:10px;min-height:1.2em;"></div>
       </div>`;
     document.getElementById('gate-senha').focus();
 
@@ -52,7 +53,7 @@ function iniciarGateEquipe(){
       if(!senha){ status.textContent='Digite a senha.'; return; }
       btn.disabled=true; btn.textContent='ENTRANDO...'; status.textContent='';
       try{
-        const r=await fetch('/.netlify/functions/staff-login',{
+        const r=await fetch('/api/staff-login',{
           method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({senha})
         });
         const d=await r.json();
@@ -73,9 +74,16 @@ function iniciarGateEquipe(){
       if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
       const auth=firebase.auth();
       auth.onAuthStateChanged(
-        user=>{
-          if(user){ overlay.remove(); resolve(user); }
-          else{ renderFormulario(auth); }
+        async user=>{
+          // só libera quem tem o claim "staff" (emitido pelo staff-login.js). Antes bastava
+          // QUALQUER login — um cliente logado com Google na loja abria o Caixa direto.
+          if(user){
+            try{
+              const t=await user.getIdTokenResult();
+              if(t.claims && t.claims.staff===true){ overlay.remove(); resolve(user); return; }
+            }catch(e){ /* cai pro formulário */ }
+          }
+          renderFormulario(auth);
         },
         ()=>renderErro('Não foi possível verificar o login. Recarregue a página.')
       );

@@ -7,18 +7,18 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Painel PED">
-<meta name="theme-color" content="#FF9F1C">
+<meta name="theme-color" content="#C1623B">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>🍕 Painel — Pizza em Dobro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Oswald:wght@300;500;600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{overflow-x:hidden;max-width:100%;}
 :root{
-  --bg:#07060a; --card:rgba(24,19,16,.55); --card-bd:rgba(255,159,28,.16);
-  --pr:#FF9F1C; --se:#e71d36; --ok:#2ecc71; --tx:#f3ece2; --sub:#9c8f83;
-  --font-display:'Bangers',cursive; --font-eyebrow:'Oswald',sans-serif; --font-body:'Inter',system-ui,sans-serif;
+  --bg:#07060a; --card:rgba(24,19,16,.55); --card-bd:rgba(193,98,59,.18);
+  --pr:#C1623B; --se:#A8432F; --ok:#2ecc71; --tx:#f3ece2; --sub:#9c8f83;
+  --font-display:'Archivo Black',sans-serif; --font-eyebrow:'Work Sans',sans-serif; --font-body:'Public Sans',system-ui,sans-serif;
 }
 body{
   background:var(--bg);color:var(--tx);font-family:var(--font-body);min-height:100vh;
@@ -142,7 +142,7 @@ body{
 
 <div class="nav">
   <div class="nav-logo" style="display:flex;align-items:center;gap:10px;min-width:0;"><img src="assets/logo.png" alt="Pizza em Dobro" width="26" height="26" style="width:32px;height:32px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:8px;flex:none;">
-    <span style="font-family:'Oswald',sans-serif;font-size:1rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Pedidos</span>
+    <span style="font-family:'Work Sans',sans-serif;font-size:1rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Pedidos</span>
   </div>
   <div style="display:flex;align-items:center;gap:10px;flex:none;">
     <div class="header-status">
@@ -1233,17 +1233,17 @@ function fecharBanner(){
      Aditivo e isolado: não interfere na lista de pedidos nem no
      listener do Firestore, só reage a ele.
      ══════════════════════════════════════════════════════════ -->
-<div id="notif-drawer" style="position:fixed;top:0;left:0;right:0;z-index:9998;background:linear-gradient(135deg,#FF9F1C,#E71D36);
+<div id="notif-drawer" style="position:fixed;top:0;left:0;right:0;z-index:9998;background:linear-gradient(135deg,#C1623B,#A8432F);
   border-radius:0 0 18px 18px;padding:14px 16px 16px;box-shadow:0 8px 24px rgba(0,0,0,.4);
   transform:translateY(-120%);transition:transform .35s cubic-bezier(.34,1.56,.64,1);touch-action:pan-y;">
   <div style="width:36px;height:4px;background:rgba(0,0,0,.25);border-radius:3px;margin:0 auto 10px;"></div>
   <div onclick="abrirPedidoDaNotificacao()" style="display:flex;align-items:center;gap:12px;cursor:pointer;">
     <div style="font-size:1.8rem;flex:none;">🍕</div>
     <div style="flex:1;min-width:0;">
-      <div style="font-family:'Oswald',sans-serif;font-weight:600;font-size:.85rem;color:#000;" id="notif-title">Novo pedido!</div>
+      <div style="font-family:'Work Sans',sans-serif;font-weight:600;font-size:.85rem;color:#000;" id="notif-title">Novo pedido!</div>
       <div style="font-size:.84rem;color:rgba(0,0,0,.7);word-break:break-word;" id="notif-sub"></div>
     </div>
-    <div style="font-family:'Bangers',cursive;font-size:1.1rem;color:#000;flex:none;" id="notif-total"></div>
+    <div style="font-family:'Archivo Black',sans-serif;font-size:1.1rem;color:#000;flex:none;" id="notif-total"></div>
   </div>
   <div style="text-align:center;font-size:.6rem;color:rgba(0,0,0,.55);margin-top:8px;">arraste para cima pra dispensar · toque para abrir</div>
 </div>

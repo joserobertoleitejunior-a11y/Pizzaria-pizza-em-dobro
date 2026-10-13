@@ -1,9 +1,9 @@
-// Testa a comparação de senha da equipe (netlify/functions/lib/senha.js) —
+// Testa a comparação de senha da equipe (server/lib/senha.js) —
 // crítica porque é a única porta de entrada pra Caixa/Relatórios/Clientes/
 // bot-config/painel, que hoje não têm nenhuma outra proteção.
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { senhaConfere } = require('../netlify/functions/lib/senha.js');
+const { senhaConfere } = require('../server/lib/senha.js');
 
 test('senhaConfere aceita a senha certa', () => {
   assert.equal(senhaConfere('pizza123', 'pizza123'), true);
