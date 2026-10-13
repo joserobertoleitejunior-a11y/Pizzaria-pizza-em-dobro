@@ -1,43 +1,22 @@
 // ══════════════════════════════════════════════════════════
-//  REGRAS DE SEGURANÇA DO FIRESTORE — Pizza em Dobro
+//  REGRAS DE SEGURANÇA DO FIRESTORE — Pizza em Dobro (v2, banco trancado)
 //
-//  IMPORTANTE — leia antes de publicar:
-//  1. Este arquivo NUNCA foi publicado neste projeto (não existia
-//     antes). Ninguém aqui tem acesso ao console do Firebase para
-//     publicar por vocês — isso precisa ser feito manualmente
-//     (Firebase Console → Firestore → Regras, ou `firebase deploy
-//     --only firestore:rules` com a CLI autenticada na conta de
-//     vocês) DEPOIS de ter configurado a variável de ambiente
-//     STAFF_PASSWORD na Netlify (veja netlify/functions/staff-login.js
-//     e shared/staff-auth.js) — sem a senha configurada, ninguém
-//     consegue logar como equipe e as coleções abaixo marcadas
-//     "isEquipe()" ficam inacessíveis pelo navegador até vocês
-//     configurarem. Testem cada tela (loja, Caixa, Relatórios,
-//     Clientes, bot-config, painel) logo depois de publicar.
+//  Princípio: o navegador do CLIENTE só lê o que é público (cardápio,
+//  config pública, depoimentos) e só cria o que é dele (avaliação,
+//  depoimento, comentário, o próprio perfil Google) — sempre com campo,
+//  tipo e tamanho conferidos aqui, e sem < > (nada de HTML/script
+//  entrando no banco). Pedido e contador de visitas são criados SÓ
+//  pelo servidor (netlify/functions/criar-pedido.js e
+//  registrar-visita.js), que usa o Admin SDK e ignora estas regras.
 //
-//  2. O que este arquivo GARANTE, sem dúvida: as 3 chaves de API
-//     (Anthropic, Evolution, Gemini) em config_secrets/bot ficam
-//     100% inacessíveis pelo navegador — nem leitura nem escrita.
-//     Só o Admin SDK (Netlify Functions, que ignora estas regras)
-//     consegue ler.
+//  Equipe = quem passou pela senha (staff-login.js → claim "staff").
+//  Cliente logado com Google NÃO é equipe (não tem o claim).
 //
-//  3. isEquipe() só é verdadeiro pra quem passou pela senha única da
-//     equipe (Caixa/Relatórios/Clientes/bot-config/painel — ver
-//     shared/staff-auth.js) — NUNCA pra um cliente logado com Google
-//     na loja (esse também tem request.auth != null, só que sem o
-//     claim "staff", por isso a checagem usa o claim, não só
-//     "auth != null").
-//
-//  4. Coleções que a LOJA (index.html) usa e que têm seu próprio modo
-//     admin interno (senha separada, mais antiga, gerenciada dentro
-//     do próprio index.html — checkAdminSession()) continuam com
-//     escrita aberta por enquanto: orders, menu_items, config,
-//     clients, feedbacks, feedback_comments, avaliacoes, conv_orders,
-//     visits, motoboys(leitura). Unificar esse modo admin da loja com
-//     a senha única da equipe é o próximo passo natural, mas exige
-//     mexer no index.html com mais tempo de teste — não incluído
-//     nesta passada pra não arriscar quebrar o admin da loja sem
-//     conseguir testar ao vivo.
+//  Testes: tests/firestore-rules.test.js (rodam no emulador local —
+//  `npm run test:regras`). Publicar: Firebase Console → Firestore →
+//  Regras (colar este arquivo) ou `firebase deploy --only firestore:rules`.
+//  Publicar SÓ depois do deploy do site novo (as telas antigas ainda
+//  gravam pedido direto do navegador e parariam de funcionar).
 // ══════════════════════════════════════════════════════════
 
 rules_version = '2';
@@ -47,98 +26,140 @@ service cloud.firestore {
     function isEquipe() {
       return request.auth != null && request.auth.token.staff == true;
     }
+    function emailDoLogin() {
+      // só e-mail VERIFICADO (login Google) — conta com e-mail alheio não verificado não lê nada
+      return request.auth != null && request.auth.token.email != null
+        && request.auth.token.email_verified == true ? request.auth.token.email : '';
+    }
+    function textoLimpo(v, min, max) {
+      return v is string && v.size() >= min && v.size() <= max && v.matches('[^<>]*');
+    }
+    function textoOpcional(v, max) {
+      return v == null || textoLimpo(v, 0, max);
+    }
+    function imagemOpcional(v) {
+      return v == null || (v is string && v.size() <= 400000 && v.matches('data:image/(jpeg|png|webp);base64,.*'));
+    }
+    function urlFotoOpcional(v) {
+      return v == null || (v is string && v.size() <= 600 && v.matches('https://[^<>" ]+'));
+    }
+    function so(campos) {
+      return request.resource.data.keys().hasOnly(campos);
+    }
+    function mudouSo(campos) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(campos);
+    }
 
-    // ── Segredos: NUNCA acessível pelo navegador, em nenhuma hipótese ──
+    // ── Segredos (chaves de API do bot): ninguém pelo navegador, nunca ──
     match /config_secrets/{doc} {
       allow read, write: if false;
     }
 
-    // ── Config pública (endereço, horário, taxa, mensagens do bot) ──
+    // ── Config pública (endereço, horário, taxa) ──
     match /config/{doc} {
       allow read: if true;
-      allow write: if true; // ver nota 4 — não isolado do modo admin da loja ainda
-    }
-
-    // ── Pedidos: site, Caixa, bot e conversor gravam aqui ──
-    match /orders/{orderId} {
-      allow read: if true;
-      allow create: if true;
-      allow update, delete: if true; // ver nota 4
+      allow write: if isEquipe();
     }
 
     // ── Cardápio ──
     match /menu_items/{itemId} {
       allow read: if true;
-      allow write: if true; // ver nota 4
+      allow write: if isEquipe();
     }
 
-    // ── Contador do número sequencial do pedido (reinicia por dia) ──
-    match /contadores/{diaId} {
+    // ── Pedidos: equipe tudo; cliente logado com Google só LÊ os próprios.
+    //    Criação pública passa pelo servidor (criar-pedido.js). ──
+    match /orders/{orderId} {
+      allow read, write: if isEquipe();
+      allow read: if emailDoLogin() != '' && resource.data.client_email == emailDoLogin();
+    }
+
+    // ── Perfil do cliente (login Google): o próprio cliente grava só os dados
+    //    dele; anotações da equipe (admin_obs etc.) só a equipe mexe ──
+    match /clients/{email} {
+      allow read, write: if isEquipe();
+      allow read: if emailDoLogin() == email;
+      allow create: if emailDoLogin() == email
+        && so(['uid', 'name', 'email', 'photo', 'via_google', 'last_visit', 'updated_at'])
+        && request.resource.data.email == email
+        && textoOpcional(request.resource.data.get('name', null), 80)
+        && urlFotoOpcional(request.resource.data.get('photo', null));
+      allow update: if emailDoLogin() == email
+        && mudouSo(['uid', 'name', 'photo', 'via_google', 'last_visit', 'updated_at'])
+        && textoOpcional(request.resource.data.get('name', null), 80)
+        && urlFotoOpcional(request.resource.data.get('photo', null));
+    }
+
+    // ── Avaliação pós-pedido (página /cupom/) — só pra pedido que existe ──
+    match /avaliacoes/{id} {
+      allow read, update, delete: if isEquipe();
+      allow create: if so(['pedido_id', 'client_name', 'nota', 'comentario', 'created_at'])
+        && request.resource.data.pedido_id is string
+        && exists(/databases/$(database)/documents/orders/$(request.resource.data.pedido_id))
+        && request.resource.data.nota is int
+        && request.resource.data.nota >= 1 && request.resource.data.nota <= 5
+        && textoOpcional(request.resource.data.get('comentario', null), 1000)
+        && textoOpcional(request.resource.data.get('client_name', null), 80)
+        && request.resource.data.created_at is string;
+    }
+
+    // ── Depoimentos da loja ──
+    match /feedbacks/{id} {
       allow read: if true;
-      allow write: if true;
+      allow update, delete: if isEquipe();
+      allow create: if so(['name', 'stars', 'comment', 'fb_photo', 'via_facebook', 'pizza_photo', 'created_at'])
+        && textoLimpo(request.resource.data.name, 1, 60)
+        && request.resource.data.stars is int
+        && request.resource.data.stars >= 1 && request.resource.data.stars <= 5
+        && textoLimpo(request.resource.data.comment, 1, 1000)
+        && urlFotoOpcional(request.resource.data.get('fb_photo', null))
+        && request.resource.data.get('via_facebook', false) is bool
+        && imagemOpcional(request.resource.data.get('pizza_photo', null));
+      // curtir: só o contador, de 1 em 1
+      allow update: if mudouSo(['likes', 'updated_at'])
+        && request.resource.data.likes is int
+        && request.resource.data.likes >= 0
+        && request.resource.data.likes <= resource.data.get('likes', 0) + 1;
     }
 
-    // ── Sessões de abertura/fechamento do Caixa — só o Caixa usa isso,
-    // nenhuma página de cliente toca aqui: trava total pra equipe. ──
-    match /caixa_sessoes/{sessaoId} {
-      allow read, write: if isEquipe();
+    // ── Comentários nos depoimentos ──
+    match /feedback_comments/{id} {
+      allow read: if true;
+      allow delete: if isEquipe();
+      allow update: if isEquipe();
+      allow create: if so(['feedback_id', 'author', 'author_uid', 'comment', 'photo', 'tagged_user', 'pizza_photo', 'created_at'])
+        && (request.resource.data.feedback_id is string || request.resource.data.feedback_id is int)
+        && textoLimpo(request.resource.data.author, 1, 60)
+        && textoLimpo(request.resource.data.comment, 1, 600)
+        && textoOpcional(request.resource.data.get('tagged_user', null), 60)
+        && urlFotoOpcional(request.resource.data.get('photo', null))
+        && imagemOpcional(request.resource.data.get('pizza_photo', null))
+        && (request.resource.data.get('author_uid', null) == null
+            || (request.auth != null && request.resource.data.author_uid == request.auth.uid));
+      // o autor (logado) edita só o texto do próprio comentário
+      allow update: if request.auth != null
+        && resource.data.get('author_uid', null) == request.auth.uid
+        && mudouSo(['comment', 'updated_at'])
+        && textoLimpo(request.resource.data.comment, 1, 600);
     }
 
-    // ── Motoboys — só Caixa e painel.html usam: trava total pra equipe. ──
-    match /motoboys/{motoboyId} {
-      allow read, write: if isEquipe();
-    }
-
-    // ── Conversas do bot do WhatsApp — Caixa (mini-mensageiro) e
-    // bot-config/conversas leem/escrevem do navegador; o webhook do
-    // bot usa Admin SDK (ignora esta regra). Trava total pra equipe. ──
+    // ── Só equipe ──
+    match /contadores/{diaId} { allow read, write: if isEquipe(); }
+    match /caixa_sessoes/{sessaoId} { allow read, write: if isEquipe(); }
+    match /motoboys/{motoboyId} { allow read, write: if isEquipe(); }
+    match /conv_orders/{id} { allow read, write: if isEquipe(); }
     match /bot_conversas/{telefone} {
       allow read, write: if isEquipe();
-      match /mensagens/{msgId} {
-        allow read, write: if isEquipe();
-      }
+      match /mensagens/{msgId} { allow read, write: if isEquipe(); }
     }
+    match /visits/{diaId} { allow read: if isEquipe(); allow write: if false; }
+    match /analises_ia/{doc} { allow read: if isEquipe(); allow write: if false; }
+    match /auditoria/{doc} { allow read: if isEquipe(); allow write: if false; }
 
-    // ── Análises de IA do dashboard (só o servidor grava; painel só lê) ──
-    match /analises_ia/{doc} {
-      allow read: if true;
-      allow write: if false;
-    }
+    // ── Só o servidor ──
+    match /pedidos_excluidos/{doc} { allow read, write: if false; }
+    match /seguranca_login/{doc} { allow read, write: if false; }
 
-    // ── Perfil do cliente (login Google na loja) — auto-serviço do
-    // próprio cliente + editado pelo modo admin da loja (ver nota 4) ──
-    match /clients/{email} {
-      allow read, write: if true;
-    }
-
-    // ── Avaliações pós-pedido (cupom) e feedback geral da loja —
-    // criação é sempre pública (cliente avaliando); moderação (editar/
-    // apagar) hoje passa pelo modo admin da loja, não pela equipe (nota 4) ──
-    match /avaliacoes/{id} {
-      allow read, create: if true;
-      allow update, delete: if true; // ver nota 4
-    }
-    match /feedbacks/{id} {
-      allow read, create: if true;
-      allow update, delete: if true; // ver nota 4
-    }
-    match /feedback_comments/{id} {
-      allow read, create: if true;
-      allow update, delete: if true; // ver nota 4
-    }
-
-    // ── Conversor de pedido embutido na loja (modo admin da loja) ──
-    match /conv_orders/{id} {
-      allow read, write: if true; // ver nota 4
-    }
-
-    // ── Contador de visitas (estatística pública da loja) ──
-    match /visits/{diaId} {
-      allow read, write: if true;
-    }
-
-    // Qualquer outra coleção não listada acima fica bloqueada por padrão
-    // (comportamento padrão do Firestore quando a coleção não bate com
-    // nenhum "match" — mantido explícito aqui só como lembrete).
+    // Qualquer coleção não listada: bloqueada (padrão do Firestore).
   }
 }
