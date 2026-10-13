@@ -115,27 +115,32 @@
      mais portas deslizando pros lados — outro mecanismo de transição). -->
 <div id="ws">
   <div id="ws-conteudo" onclick="abrirPortaSplash()">
-    <svg id="ws-fatia" viewBox="0 0 140 140" aria-hidden="true">
-      <defs>
-        <clipPath id="ws-fatia-clip"><path d="M70,70 L18,118 A74,74 0 0 1 70,4 Z"/></clipPath>
-      </defs>
-      <g clip-path="url(#ws-fatia-clip)">
-        <rect x="0" y="0" width="140" height="140" fill="#F2D98A"/>
-        <circle cx="38" cy="100" r="9" fill="#A8432F"/>
-        <circle cx="58" cy="78" r="8" fill="#A8432F"/>
-        <circle cx="40" cy="70" r="6" fill="#FFF6E0"/>
-        <circle cx="62" cy="50" r="7" fill="#A8432F"/>
-        <circle cx="30" cy="88" r="5" fill="#4A6B3A"/>
-      </g>
-      <path d="M70,70 L18,118 A74,74 0 0 1 70,4 Z" fill="none" stroke="#D9A54A" stroke-width="7"/>
-      <path d="M18,118 A74,74 0 0 1 70,4" fill="none" stroke="#C4883A" stroke-width="10" stroke-linecap="round"/>
-    </svg>
     <div id="ws-brand" aria-label="Pizza em Dobro">
       <span class="ws-palavra" style="--i:0">PIZZA</span>
       <span class="ws-palavra" style="--i:1">EM</span>
       <span class="ws-palavra ws-destaque" style="--i:2">DOBRO</span>
     </div>
-    <div id="ws-bar-wrap"><div id="ws-bar-fill"></div></div>
+    <div id="ws-fatia-wrap">
+      <svg id="ws-fatia" viewBox="0 0 140 140" aria-hidden="true">
+        <defs>
+          <clipPath id="ws-fatia-clip"><path d="M70,70 L18,118 A74,74 0 0 1 70,4 Z"/></clipPath>
+        </defs>
+        <g clip-path="url(#ws-fatia-clip)">
+          <rect x="0" y="0" width="140" height="140" fill="#F2D98A"/>
+          <circle cx="38" cy="100" r="9" fill="#A8432F"/>
+          <circle cx="58" cy="78" r="8" fill="#A8432F"/>
+          <circle cx="40" cy="70" r="6" fill="#FFF6E0"/>
+          <circle cx="62" cy="50" r="7" fill="#A8432F"/>
+          <circle cx="30" cy="88" r="5" fill="#4A6B3A"/>
+        </g>
+        <path d="M70,70 L18,118 A74,74 0 0 1 70,4 Z" fill="none" stroke="#D9A54A" stroke-width="7"/>
+        <path d="M18,118 A74,74 0 0 1 70,4" fill="none" stroke="#C4883A" stroke-width="10" stroke-linecap="round"/>
+      </svg>
+      <div class="ws-mordida" id="wm1"></div>
+      <div class="ws-mordida" id="wm2"></div>
+      <div class="ws-mordida" id="wm3"></div>
+      <div class="ws-mordida" id="wm4"></div>
+    </div>
     <div id="ws-toque-aviso" aria-live="polite">toque pra entrar</div>
   </div>
 </div>
@@ -280,8 +285,39 @@
       <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.74.46 3.43 1.32 4.92L2.05 22l5.3-1.39c1.44.79 3.06 1.2 4.69 1.2h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 1.67c2.21 0 4.29.86 5.85 2.42a8.23 8.23 0 0 1 2.43 5.82c0 4.54-3.7 8.24-8.24 8.24a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.14.82.84-3.06-.2-.32a8.19 8.19 0 0 1-1.25-4.37c0-4.54 3.7-8.22 8.2-8.22zm-4.38 4.2c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.67 2.63 4.14 3.59 2.05.8 2.47.64 2.92.6.45-.04 1.44-.59 1.64-1.15.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28-.24-.12-1.44-.71-1.66-.79-.22-.08-.39-.12-.55.12-.16.24-.63.79-.78.96-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.34-1.67-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.34-.76-1.83-.2-.48-.4-.42-.55-.42z"/></svg>
     </a>
   </div>
-  <div class="hero-photo reveal">
-    <img src="assets/pizza-hero.jpg" alt="Pizza quente saindo do forno" width="1000" height="666" loading="eager">
+  <div class="hero-pizza-wrap reveal" aria-hidden="true">
+    <svg class="hero-pizza" viewBox="0 0 300 300">
+      <defs>
+        <radialGradient id="hp-cheese" cx="42%" cy="38%" r="75%">
+          <stop offset="0%" stop-color="#FCE8A8"/>
+          <stop offset="55%" stop-color="#F2C85C"/>
+          <stop offset="100%" stop-color="#E0A93A"/>
+        </radialGradient>
+      </defs>
+      <circle cx="150" cy="150" r="138" fill="#D9A54A"/>
+      <circle cx="150" cy="150" r="124" fill="url(#hp-cheese)"/>
+      <g stroke="rgba(193,98,59,.22)" stroke-width="2">
+        <line x1="150" y1="150" x2="150" y2="26"/>
+        <line x1="150" y1="150" x2="257" y2="88"/>
+        <line x1="150" y1="150" x2="257" y2="212"/>
+        <line x1="150" y1="150" x2="150" y2="274"/>
+        <line x1="150" y1="150" x2="43" y2="212"/>
+        <line x1="150" y1="150" x2="43" y2="88"/>
+      </g>
+      <circle cx="110" cy="95" r="14" fill="#A8432F"/>
+      <circle cx="190" cy="110" r="13" fill="#A8432F"/>
+      <circle cx="205" cy="190" r="14" fill="#A8432F"/>
+      <circle cx="120" cy="205" r="12" fill="#A8432F"/>
+      <circle cx="160" cy="160" r="13" fill="#A8432F"/>
+      <circle cx="90" cy="160" r="11" fill="#A8432F"/>
+      <ellipse cx="150" cy="80" rx="9" ry="5" fill="#4A6B3A" transform="rotate(20 150 80)"/>
+      <ellipse cx="220" cy="150" rx="9" ry="5" fill="#4A6B3A" transform="rotate(100 220 150)"/>
+      <ellipse cx="100" cy="230" rx="9" ry="5" fill="#4A6B3A" transform="rotate(-30 100 230)"/>
+      <ellipse cx="110" cy="90" rx="46" ry="22" fill="rgba(255,255,255,.18)" transform="rotate(-25 110 90)"/>
+    </svg>
+    <div class="hero-vapor v1"></div>
+    <div class="hero-vapor v2"></div>
+    <div class="hero-vapor v3"></div>
   </div>
 </header>
 
@@ -828,31 +864,59 @@ function fecharBanner(){
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
-(function(){
+// Exposta em window porque o cardápio/combos nascem depois de um await (Firestore)
+// — quando esse script roda pela primeira vez (no carregamento da página) esses
+// cards ainda não existem no DOM. js/boot-admin-extra.js chama essa mesma função
+// de novo assim que o renderMenu() termina, pra pegar os elementos que faltaram.
+// Marca cada elemento com data-anim-entrada pra nunca animar o mesmo 2x.
+window._iniciarAnimacoesScroll=function(){
   try{
     if(typeof gsap==='undefined') return;
     // respeita "reduzir movimento" do sistema — sem isso, CSS trava a duração da animação
     // mas o GSAP (JS puro) ainda ia animar opacidade/posição por baixo
     var reduzMovimento=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(typeof ScrollTrigger!=='undefined') gsap.registerPlugin(ScrollTrigger);
-    var alvos=document.querySelectorAll('.item-card,.promo-card,#last-order-banner,#stats-publico,.fb-card,.nav-pill');
+    var alvos=document.querySelectorAll('.item-card,.combo-card,.promo-card,#last-order-banner,#stats-publico,.nav-pill');
     alvos.forEach(function(el){
+      if(el.dataset.animEntrada) return;
+      el.dataset.animEntrada='1';
       gsap.from(el,{
         opacity:0, y:16, duration: reduzMovimento?0:.5, ease:'power2.out',
         scrollTrigger: typeof ScrollTrigger!=='undefined' ? {trigger:el,start:'top 94%'} : undefined
       });
     });
-    // parallax leve na foto do hero — só transform (barato pra GPU, não causa o
-    // mesmo problema de performance que o blur/fundo animado que tiramos antes)
-    var fotoHero=document.querySelector('.hero-photo img');
-    if(fotoHero && !reduzMovimento && typeof ScrollTrigger!=='undefined'){
-      gsap.fromTo(fotoHero,{yPercent:-8,scale:1.12},{yPercent:8,scale:1.12,ease:'none',
-        scrollTrigger:{trigger:fotoHero,start:'top bottom',end:'bottom top',scrub:true}});
+    // botões de destaque "pulam" pra dentro da tela em vez de só aparecer — dá mais
+    // vida sem custo (só poucos elementos, não todo botão + de cada item do cardápio)
+    var botoesDestaque=document.querySelectorAll('.hero-cta-btn,.hero-cta-block,.combo-add-btn');
+    botoesDestaque.forEach(function(el){
+      if(el.dataset.animEntrada) return;
+      el.dataset.animEntrada='1';
+      gsap.fromTo(el,{scale:.7,opacity:0},{scale:1,opacity:1,duration: reduzMovimento?0:.45,ease:'back.out(2.5)',
+        scrollTrigger: typeof ScrollTrigger!=='undefined' ? {trigger:el,start:'top 95%'} : undefined});
+    });
+    // parallax + rotação dos ícones de destaque são elementos estáticos (existem desde
+    // o primeiro carregamento) — só precisam ser configurados uma única vez
+    if(!window._animScrollBaseFeita){
+      window._animScrollBaseFeita=true;
+      // parallax leve na pizza do hero — só transform (barato pra GPU)
+      var pizzaHero=document.querySelector('.hero-pizza-wrap');
+      if(pizzaHero && !reduzMovimento && typeof ScrollTrigger!=='undefined'){
+        gsap.fromTo(pizzaHero,{yPercent:-6},{yPercent:14,ease:'none',
+          scrollTrigger:{trigger:pizzaHero,start:'top bottom',end:'bottom top',scrub:true}});
+      }
+      // rotação sutil dos ícones de "destaque" conforme passam pela tela — dá vida
+      // sem custo (só transform), independente do .reveal genérico
+      var destaqueIcones=document.querySelectorAll('.destaque-ic');
+      destaqueIcones.forEach(function(el){
+        gsap.fromTo(el,{rotate:-8,scale:.85},{rotate:0,scale:1,duration: reduzMovimento?0:.5,ease:'back.out(2)',
+          scrollTrigger: typeof ScrollTrigger!=='undefined' ? {trigger:el,start:'top 92%'} : undefined});
+      });
     }
   }catch(e){
     console.warn('Reforço visual (GSAP) não pôde iniciar — site segue normal.',e);
   }
-})();
+};
+window._iniciarAnimacoesScroll();
 </script>
 
 <!-- ══════════════════════════════════════════════════════════

@@ -1164,11 +1164,12 @@ function imprimirPedido(){
   w.document.close();w.focus();w.print();
   });}
 
-// SPLASH — passa sozinha: fatia de pizza voa até o centro, nome entra palavra
-// por palavra, barrinha de progresso enche e dispara a saída em íris
-// (fecha a partir do centro, tipo câmera). Continua tocável a qualquer
-// momento pra quem quiser pular direto pro cardápio (o fallback local do
-// cardápio já está pronto desde o primeiro instante).
+// SPLASH — passa sozinha: nome entra palavra por palavra, a fatia pousa
+// embaixo e vai sendo mordida pedaço a pedaço até sumir — essa sequência de
+// mordidas é a própria saída (sem barra de progresso, sem íris separada).
+// Continua tocável a qualquer momento pra quem quiser pular direto pro
+// cardápio (o fallback local do cardápio já está pronto desde o primeiro
+// instante).
 let _splashAberta=false;
 function abrirPortaSplash(){
   if(_splashAberta) return;
@@ -1180,11 +1181,11 @@ function abrirPortaSplash(){
   setTimeout(()=>{
     ws.style.display='none';
     ws.style.visibility='hidden';
-  },900);
+  },400);
 }
-// mesma duração da barra de progresso (CSS: wsBarFill 2.3s + atraso de .5s) + uma folga
-// pro cliente ver a marca formada antes de entrar sozinho
-const _splashAutoTimer=setTimeout(abrirPortaSplash,3000);
+// mesma duração da última mordida (CSS: wm4 com delay 1.86s + animação .32s) + uma
+// folga curta pro cliente ver a última mordida sumir antes de entrar sozinho
+const _splashAutoTimer=setTimeout(abrirPortaSplash,2350);
 
 _initFB();
 init();

@@ -22,24 +22,27 @@ function drawHH(canvas,u1,u2){
 // ══════════════════════════════════
 //  COMBOS "2 POR X" — seleção real de sabores
 // ══════════════════════════════════
+const COMBO_CORES={combo65:'#4A6B3A',combo75:'#C1623B',combo80:'#8B4A2B',combo85:'#D9A54A'};
 function renderCombos(){
   const el=document.getElementById('cat-co');
   if(!el||typeof COMBOS_DEFAULT==='undefined')return;
   el.innerHTML=`<h2 class="cat-title reveal" id="anc-co">Combos</h2>`+
+    `<p class="combo-intro reveal">Duas pizzas diferentes, um preço só. Escolha os 2 sabores e pronto. 🍕+🍕</p>`+
     COMBOS_DEFAULT.map(c=>{
-      const opts=c.sabores.map(s=>`<option value="${s}">${s}</option>`).join('');
-      return `<div class="item-card savory" id="combo-card-${c.id}">
-        <span class="item-name">🍕🍕 ${c.titulo}</span>
-        <p class="item-desc">Escolha 2 sabores diferentes (uma pizza de cada):</p>
-        <div style="display:flex;flex-direction:column;gap:8px;margin:10px 0;">
-          <select id="${c.id}-s1" class="m-input" style="width:100%;">${opts}</select>
-          <select id="${c.id}-s2" class="m-input" style="width:100%;">${opts}</select>
+      const optsS1=c.sabores.map((s,i)=>`<option value="${s}"${i===0?' selected':''}>${s}</option>`).join('');
+      const optsS2=c.sabores.map((s,i)=>`<option value="${s}"${i===1?' selected':''}>${s}</option>`).join('');
+      const cor=COMBO_CORES[c.id]||'var(--pr)';
+      return `<div class="combo-card" id="combo-card-${c.id}" style="--combo-cor:${cor};">
+        <span class="combo-ribbon">${c.titulo}</span>
+        <p class="combo-desc">Escolha 2 sabores diferentes (uma pizza de cada)</p>
+        <div class="combo-select-row">
+          <select id="${c.id}-s1" class="combo-select">${optsS1}</select>
+          <span class="combo-plus">+</span>
+          <select id="${c.id}-s2" class="combo-select">${optsS2}</select>
         </div>
-        <div class="price-row">
-          <span class="item-price">R$ ${fmtPrice(c.preco)}</span>
-          <div class="controls">
-            <button class="btn-action btn-plus" style="width:auto;padding:0 16px;border-radius:20px;" onclick="addComboToCart('${c.id}')">+ Adicionar</button>
-          </div>
+        <div class="combo-footer">
+          <span class="combo-price">R$ ${fmtPrice(c.preco)}</span>
+          <button class="combo-add-btn" onclick="addComboToCart('${c.id}')">Adicionar<span>+</span></button>
         </div>
       </div>`;
     }).join('');

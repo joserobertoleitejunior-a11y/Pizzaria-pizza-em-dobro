@@ -55,15 +55,15 @@ function gerarImagemSaborSVG(item){
   const temGoiabada=/goiabada/.test(desc);
 
   const W=300,H=200,cx=150,cy=100;
-  const crustColor='#D9A54A', crustColor2='#B97830';
-  let baseColor1,baseColor2,sauceRing=true;
+  const crustColor='#D9A54A', crustColor2='#B97830', crustHi='#F4CE86';
+  let baseColor1,baseColor2,baseHi,charColor,sauceRing=true;
 
   if(isDoce && !temGoiabada){
-    baseColor1=['#4A3426','#5A4030'][Math.floor(rnd()*2)]; baseColor2='#3A281C'; sauceRing=false;
+    baseColor1=['#4A3426','#5A4030'][Math.floor(rnd()*2)]; baseColor2='#3A281C'; baseHi='#6B4B34'; charColor='#241711'; sauceRing=false;
   }else if(temGoiabada){
-    baseColor1='#FFF6E0'; baseColor2='#F5E8C8'; sauceRing=false;
+    baseColor1='#FFF6E0'; baseColor2='#F5E8C8'; baseHi='#FFFBF2'; charColor='#C9A35E'; sauceRing=false;
   }else{
-    baseColor1='#F2D98A'; baseColor2='#E8C867';
+    baseColor1='#F2D98A'; baseColor2='#E8C867'; baseHi='#FFF3C4'; charColor='#7A4A1E';
   }
 
   const raio=isCalzone?74:78;
@@ -71,16 +71,42 @@ function gerarImagemSaborSVG(item){
   const centroY=isCalzone?cy+raio*.22:cy;
   const escalaY=isCalzone?.55:1;
 
+  // defs únicos por imagem: cada <img src="data:..."> é um documento SVG isolado,
+  // então reusar os mesmos ids entre itens diferentes não gera conflito nenhum
+  const defs=`<defs>
+    <filter id="dsh" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#2E3A2E" flood-opacity=".28"/>
+    </filter>
+    <radialGradient id="gCrust" cx="38%" cy="30%" r="78%">
+      <stop offset="0%" stop-color="${crustHi}"/>
+      <stop offset="55%" stop-color="${crustColor}"/>
+      <stop offset="100%" stop-color="${crustColor2}"/>
+    </radialGradient>
+    <radialGradient id="gCheese" cx="40%" cy="30%" r="82%">
+      <stop offset="0%" stop-color="${baseHi}"/>
+      <stop offset="62%" stop-color="${baseColor1}"/>
+      <stop offset="100%" stop-color="${baseColor2}"/>
+    </radialGradient>
+    <radialGradient id="gVinheta" cx="50%" cy="48%" r="52%">
+      <stop offset="74%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity=".2"/>
+    </radialGradient>
+  </defs>`;
+
   let formaBase;
   if(isCalzone){
-    formaBase=`<path d="M ${cx-raio},${cy} A ${raio},${raio} 0 0 1 ${cx+raio},${cy} L ${cx+raio},${cy+raio*.55} A ${raio},${raio*.55} 0 0 1 ${cx-raio},${cy+raio*.55} Z"
-      fill="${crustColor}" stroke="${crustColor2}" stroke-width="3"/>
+    formaBase=`<g filter="url(#dsh)">
+      <path d="M ${cx-raio},${cy} A ${raio},${raio} 0 0 1 ${cx+raio},${cy} L ${cx+raio},${cy+raio*.55} A ${raio},${raio*.55} 0 0 1 ${cx-raio},${cy+raio*.55} Z"
+        fill="url(#gCrust)" stroke="${crustColor2}" stroke-width="3"/>
       <path d="M ${cx-raio+10},${cy+4} A ${raio-10},${raio-10} 0 0 1 ${cx+raio-10},${cy+4} L ${cx+raio-10},${cy+raio*.5} A ${raio-10},${raio*.42} 0 0 1 ${cx-raio+10},${cy+raio*.5} Z"
-      fill="${baseColor1}"/>`;
+        fill="url(#gCheese)"/>
+    </g>`;
   }else{
-    formaBase=`<circle cx="${cx}" cy="${cy}" r="${raio}" fill="${crustColor}" stroke="${crustColor2}" stroke-width="2"/>
+    formaBase=`<g filter="url(#dsh)">
+      <circle cx="${cx}" cy="${cy}" r="${raio}" fill="url(#gCrust)" stroke="${crustColor2}" stroke-width="2"/>
       ${sauceRing?`<circle cx="${cx}" cy="${cy}" r="${raio-9}" fill="#B4432E"/>`:''}
-      <circle cx="${cx}" cy="${cy}" r="${raioBase}" fill="${baseColor1}"/>`;
+      <circle cx="${cx}" cy="${cy}" r="${raioBase}" fill="url(#gCheese)"/>
+    </g>`;
   }
 
   // camada de "queijo derretido" — blobs irregulares e sobrepostos cobrindo quase
@@ -96,6 +122,18 @@ function gerarImagemSaborSVG(item){
     const ry=rx*(.75+rnd()*.4);
     const rot=Math.floor(rnd()*360);
     queijoDerretido+=`<ellipse cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}" fill="${baseColor2}" opacity="${(.4+rnd()*.3).toFixed(2)}" transform="rotate(${rot} ${px.toFixed(1)} ${py.toFixed(1)})"/>`;
+  }
+
+  // manchinhas tostadas — queijo/massa que pegou mais forno em alguns pontos,
+  // discretas, dão a sensação de "assado de verdade" em vez de plano/liso
+  let tostado='';
+  for(let k=0;k<7;k++){
+    const ang=rnd()*Math.PI*2;
+    const dist=Math.sqrt(rnd())*(raioBase*.82);
+    const px=cx+Math.cos(ang)*dist;
+    const py=centroY+Math.sin(ang)*dist*escalaY;
+    const rr=1.6+rnd()*2.4;
+    tostado+=`<ellipse cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" rx="${rr.toFixed(1)}" ry="${(rr*.8).toFixed(1)}" fill="${charColor}" opacity="${(.18+rnd()*.18).toFixed(2)}"/>`;
   }
 
   // ingredientes detectados na descrição real do item
@@ -116,22 +154,38 @@ function gerarImagemSaborSVG(item){
       const cor=ing.rainbow?_PALETA_CONFETE[Math.floor(rnd()*_PALETA_CONFETE.length)]:ing.color;
       const rr=(ing.r*(.75+rnd()*.5));
       const rot=Math.floor(rnd()*360);
+      // sombra projetada sutil embaixo do pedaço — dá volume/profundidade real
+      const sx=px+rr*.18, sy=py+rr*.28;
+      toppings+=`<ellipse cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" rx="${rr.toFixed(1)}" ry="${(rr*.8).toFixed(1)}" fill="#000" opacity=".14" transform="rotate(${rot} ${sx.toFixed(1)} ${sy.toFixed(1)})"/>`;
       // pedaço irregular (elipse levemente rotacionada) em vez de círculo perfeito — lê mais
       // como "pedaço de ingrediente de verdade" do que "bolinha decorativa"
       toppings+=`<ellipse cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" rx="${rr.toFixed(1)}" ry="${(rr*.8).toFixed(1)}" fill="${cor}" opacity="${(.88+rnd()*.12).toFixed(2)}" transform="rotate(${rot} ${px.toFixed(1)} ${py.toFixed(1)})"/>`;
+      // brilho gorduroso — só nos pedaços maiores, metade deles, pra não virar padrão óbvio
+      if(rr>=5 && k%2===0){
+        const hx=px-rr*.28, hy=py-rr*.28;
+        toppings+=`<ellipse cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" rx="${(rr*.3).toFixed(1)}" ry="${(rr*.2).toFixed(1)}" fill="#fff" opacity=".3" transform="rotate(${rot} ${hx.toFixed(1)} ${hy.toFixed(1)})"/>`;
+      }
     }
   });
 
+  // vinheta — escurece sutilmente a borda do recheio, unifica a luz e dá
+  // sensação de profundidade embaixo da aba da massa
+  const vinheta=`<circle cx="${cx}" cy="${centroY}" r="${raioBase}" fill="url(#gVinheta)" transform="${isCalzone?`scale(1 ${escalaY})`:''}" transform-origin="${cx}px ${centroY}px"/>`;
+
   // brilho quente por cima, pra dar sensação de "assado na hora"
   const brilho=isCalzone
-    ?`<ellipse cx="${cx-raio*.3}" cy="${cy+raio*.15}" rx="${raio*.5}" ry="${raio*.25}" fill="#fff" opacity=".08"/>`
-    :`<ellipse cx="${cx-raio*.28}" cy="${cy-raio*.28}" rx="${raio*.42}" ry="${raio*.3}" fill="#fff" opacity=".1"/>`;
+    ?`<ellipse cx="${cx-raio*.3}" cy="${cy+raio*.15}" rx="${raio*.5}" ry="${raio*.25}" fill="#fff" opacity=".1"/>`
+    :`<ellipse cx="${cx-raio*.28}" cy="${cy-raio*.28}" rx="${raio*.42}" ry="${raio*.3}" fill="#fff" opacity=".12"/>`;
 
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}">
+    ${defs}
     <rect width="${W}" height="${H}" fill="#EDE3D4"/>
+    <ellipse cx="${cx}" cy="${cy+raio*.78}" rx="${raio*.86}" ry="${raio*.14}" fill="#2E3A2E" opacity=".14"/>
     ${formaBase}
     ${queijoDerretido}
+    ${tostado}
     ${toppings}
+    ${vinheta}
     ${brilho}
   </svg>`;
   return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg);
