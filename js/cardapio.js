@@ -22,7 +22,7 @@ function drawHH(canvas,u1,u2){
 // ══════════════════════════════════
 //  COMBOS "2 POR X" — seleção real de sabores
 // ══════════════════════════════════
-const COMBO_CORES={combo65:'#141414',combo75:'#D62828',combo80:'#A51D1D',combo85:'#3D3D3D'};
+const COMBO_CORES={combo65:'#D62828',combo75:'#E8541E',combo80:'#B71C1C',combo85:'#7A1010'};
 function renderCombos(){
   const el=document.getElementById('cat-co');
   if(!el||typeof COMBOS_DEFAULT==='undefined')return;

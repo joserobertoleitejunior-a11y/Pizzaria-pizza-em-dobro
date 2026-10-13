@@ -179,7 +179,7 @@ function gerarImagemSaborSVG(item){
 
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}">
     ${defs}
-    <rect width="${W}" height="${H}" fill="#F2F2F2"/>
+    <rect width="${W}" height="${H}" fill="#1F1F1F"/>
     <ellipse cx="${cx}" cy="${cy+raio*.78}" rx="${raio*.86}" ry="${raio*.14}" fill="#2E3A2E" opacity=".14"/>
     ${formaBase}
     ${queijoDerretido}
@@ -228,7 +228,7 @@ function gerarImagemBebidaSVG(item){
   const brilho=`<ellipse cx="${cx-14}" cy="95" rx="6" ry="46" fill="#fff" opacity=".16"/>`;
 
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}">
-    <rect width="${W}" height="${H}" fill="#F2F2F2"/>
+    <rect width="${W}" height="${H}" fill="#1F1F1F"/>
     ${corpo}
     ${brilho}
   </svg>`;
