@@ -623,3 +623,22 @@ body.admin-edit-active .item-card{border:1px dashed rgba(214,40,40,.4)!important
 #pwa-banner-txt span{font-size:.7rem;color:var(--tx-4);}
 #pwa-banner-btn{background:var(--pr);color:#fff;border:none;padding:10px 16px;border-radius:2px;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;}
 #pwa-banner-close{background:none;border:none;color:var(--tx-5);font-size:1.2rem;cursor:pointer;padding:4px;}
+
+/* ══ FUNDO: FOTO DA FACHADA, DESFOCADA ══════════════════════════════════
+   A foto já vem desfocada no próprio arquivo (assets/fachada-fundo.jpg, 25 KB) — nada
+   de filter:blur nem backdrop-filter, que repintavam a tela a cada rolagem e deixavam o
+   site lento no celular. Fica num elemento fixo próprio (camada separada na GPU) em vez
+   de background-attachment:fixed pelo mesmo motivo. Os blocos viram painéis
+   translúcidos com respiro nas laterais, pra fachada aparecer em volta e entre eles. */
+body{background:#141414;}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:#141414 url("fachada-fundo.jpg") 55% center/cover no-repeat;transform:translateZ(0);}
+#topbar{background:rgba(255,255,255,.97);}
+.nav-bar{background:rgba(255,255,255,.96);}
+header{background:rgba(255,255,255,.86);margin:12px 12px 0;padding:20px 18px 22px;border-radius:2px;}
+.hero-faixa{margin-top:14px;background:rgba(214,40,40,.92);}
+#destaques{background:rgba(255,255,255,.86);width:calc(100% - 24px);padding:0 14px;}
+.promo-card{background:rgba(20,20,20,.84);width:calc(100% - 24px);}
+.container{background:rgba(255,255,255,.9);width:calc(100% - 24px);margin:16px auto 0;padding:0 14px 200px;border-radius:2px;}
+.item-card,.combo-card{background:transparent;}
+#feedback-section{background:rgba(255,255,255,.9);width:calc(100% - 24px);padding:6px 14px 14px;border-radius:2px;}

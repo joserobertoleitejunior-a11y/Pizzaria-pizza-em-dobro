@@ -878,7 +878,9 @@ window._iniciarAnimacoesScroll=function(){
     if(typeof ScrollTrigger!=='undefined') gsap.registerPlugin(ScrollTrigger);
     var alvos=document.querySelectorAll('.item-card,.combo-card,.promo-card,#last-order-banner,#stats-publico,.nav-pill');
     alvos.forEach(function(el){
-      if(el.dataset.animEntrada) return;
+      // quem já tem .reveal anima pelo CSS; animar pelos dois faz o GSAP "congelar" o
+      // opacity:0 inicial do .reveal como estado final (o bloco ficava invisível no celular)
+      if(el.dataset.animEntrada || el.classList.contains('reveal')) return;
       el.dataset.animEntrada='1';
       gsap.from(el,{
         opacity:0, y:16, duration: reduzMovimento?0:.5, ease:'power2.out',
