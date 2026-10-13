@@ -25,7 +25,7 @@ function drawHH(canvas,u1,u2){
 function renderCombos(){
   const el=document.getElementById('cat-co');
   if(!el||typeof COMBOS_DEFAULT==='undefined')return;
-  el.innerHTML=`<h2 class="cat-title" id="anc-co">Combos</h2>`+
+  el.innerHTML=`<h2 class="cat-title reveal" id="anc-co">Combos</h2>`+
     COMBOS_DEFAULT.map(c=>{
       const opts=c.sabores.map(s=>`<option value="${s}">${s}</option>`).join('');
       return `<div class="item-card savory" id="combo-card-${c.id}">
@@ -68,7 +68,7 @@ function renderMenu(){
     if(!el)return;
     const items=menu.filter(m=>m.cat===cat).slice().sort((a,b)=>a.n.localeCompare(b.n,'pt-BR'));
     const sav=cat==='p'||cat==='s';
-    el.innerHTML=`<h2 class="cat-title" id="anc-${cat}">${CATLABELS[cat]}</h2>`+
+    el.innerHTML=`<h2 class="cat-title reveal" id="anc-${cat}">${CATLABELS[cat]}</h2>`+
       items.map(i=>{
         const imgH=i.img
           ?`<div class="item-img-wrap" id="iw-${i.id}" style="display:block;">

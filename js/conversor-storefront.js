@@ -1164,10 +1164,11 @@ function imprimirPedido(){
   w.document.close();w.focus();w.print();
   });}
 
-// SPLASH — passa sozinha: logo entra com pop, nome da marca revela com wipe,
-// barrinha de progresso enche e dispara a abertura automática. Continua
-// tocável a qualquer momento pra quem quiser pular direto pro cardápio
-// (o fallback local do cardápio já está pronto desde o primeiro instante).
+// SPLASH — passa sozinha: fatia de pizza voa até o centro, nome entra palavra
+// por palavra, barrinha de progresso enche e dispara a saída em íris
+// (fecha a partir do centro, tipo câmera). Continua tocável a qualquer
+// momento pra quem quiser pular direto pro cardápio (o fallback local do
+// cardápio já está pronto desde o primeiro instante).
 let _splashAberta=false;
 function abrirPortaSplash(){
   if(_splashAberta) return;
@@ -1179,11 +1180,11 @@ function abrirPortaSplash(){
   setTimeout(()=>{
     ws.style.display='none';
     ws.style.visibility='hidden';
-  },950);
+  },900);
 }
-// mesma duração da barra de progresso (CSS: wsBarFill 2.1s + atraso de .4s) + uma folga
+// mesma duração da barra de progresso (CSS: wsBarFill 2.3s + atraso de .5s) + uma folga
 // pro cliente ver a marca formada antes de entrar sozinho
-const _splashAutoTimer=setTimeout(abrirPortaSplash,2700);
+const _splashAutoTimer=setTimeout(abrirPortaSplash,3000);
 
 _initFB();
 init();
