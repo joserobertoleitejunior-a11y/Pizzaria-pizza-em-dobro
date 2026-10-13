@@ -60,9 +60,10 @@ test('criar-pedido: bloqueia duplicata (mesmo telefone e total em 10 min)', asyn
   assert.equal((await db.collection('orders').get()).size, 1);
 });
 test('criar-pedido: tira HTML e ignora e-mail mandado no corpo', async () => {
-  const r = corpo(await criarPedido(post({ ...pedidoBase(), name: '<script>x</script>Ana', email: 'outra@gmail.com' })));
+  const r = corpo(await criarPedido(post({ ...pedidoBase(), name: '<script>x</script>Ana" onmouseover="x`\\', address: "Rua D'Ávila", email: 'outra@gmail.com' })));
   const doc = (await db.doc('orders/' + r.id).get()).data();
-  assert.ok(!/[<>]/.test(doc.client_name));
+  assert.ok(!/[<>"`\\]/.test(doc.client_name));
+  assert.equal(doc.address, "Rua D'Ávila");
   assert.equal(doc.client_email, null);
 });
 test('criar-pedido: e-mail vem do login Google verificado', async () => {

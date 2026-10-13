@@ -8,11 +8,12 @@ function lerCorpo(event) {
   try { return JSON.parse(event.body || '{}'); } catch { return null; }
 }
 
-// texto livre vindo de fora: corta tamanho e remove < > (nenhuma tela precisa deles, e
-// é o que viraria HTML/script quando o Caixa ou o painel renderiza o dado)
+// texto livre vindo de fora: corta tamanho e remove < > " ` \ — nenhum nome/endereço precisa
+// deles, e são o que viraria HTML/script quando o Caixa ou o painel montam o dado dentro de
+// innerHTML ou de um atributo onclick="...('nome')". Apóstrofo fica (D'Ávila); essas telas já o escapam.
 function texto(v, max) {
   if (v === undefined || v === null) return null;
-  const s = String(v).replace(/[<>]/g, '').trim().slice(0, max);
+  const s = String(v).replace(/[<>"`\\]/g, '').trim().slice(0, max);
   return s || null;
 }
 

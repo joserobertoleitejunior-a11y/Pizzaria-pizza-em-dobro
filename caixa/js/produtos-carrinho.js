@@ -223,7 +223,7 @@ function openCartModal(){
 function renderCartItems(){
   const box=document.getElementById('cart-items');
   box.innerHTML=cart.map((i,idx)=>`
-    <div class="cart-item" style="${i.precisaRevisao?'background:rgba(231,29,54,.08);border-radius:10px;padding:8px;border-bottom:none;':''}">
+    <div class="cart-item" style="${i.precisaRevisao?'background:rgba(214,40,40,.08);border-radius:2px;padding:8px;border-bottom:none;':''}">
       <div class="cart-item-info">
         <div style="${i.precisaRevisao?'color:var(--se);font-weight:700;':''}">${i.name}</div>
         <div class="cart-item-sub">${[i.borda?('Borda: '+i.borda):null, i.addedIng&&i.addedIng.length?('+ '+i.addedIng.join(', ')):null, i.removedIng&&i.removedIng.length?('Sem: '+i.removedIng.join(', ')):null, i.obs?('Obs: '+i.obs):null].filter(Boolean).join(' · ')||''}</div>

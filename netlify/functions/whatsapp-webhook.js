@@ -8,6 +8,7 @@
 const admin = require('firebase-admin');
 const { getSecrets } = require('./lib/secrets');
 const { reportError } = require('./lib/sentry');
+const { texto } = require('./lib/http');
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -342,12 +343,18 @@ Se o cliente pedir pra falar com uma pessoa, reclamar de algo, ou o caso for com
         if (enderecoFinal && !/\d/.test(enderecoFinal)) {
           enderecoFinal = '⚠️ SEM NÚMERO — CONFIRMAR COM CLIENTE — ' + enderecoFinal;
         }
+        // texto vindo da conversa (nome do perfil do WhatsApp, endereço digitado, itens que a
+        // IA montou) passa pela mesma limpeza do criar-pedido: sem < > " ` \ — é o que viraria
+        // código ao aparecer no Caixa/painel
+        const itensLimpos = (Array.isArray(pedidoFechado.itens) ? pedidoFechado.itens : []).map(i => (
+          i && typeof i === 'object' ? { ...i, name: texto(i.name, 160) || '', borda: i.borda ? texto(i.borda, 60) : (i.borda ?? null) } : i
+        ));
         const orderRef = await db.collection('orders').add({
-          client_name: pedidoFechado.nome || '',
+          client_name: texto(pedidoFechado.nome, 80) || '',
           client_phone: telefone,
-          address: enderecoFinal,
-          payment: pedidoFechado.pagamento || '',
-          items_json: pedidoFechado.itens || [],
+          address: texto(enderecoFinal, 260) || '',
+          payment: texto(pedidoFechado.pagamento, 40) || '',
+          items_json: itensLimpos,
           status: 'novo',
           origem: 'whatsapp_bot',
           whatsapp_sent: true,
