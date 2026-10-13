@@ -11,6 +11,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="../shared/firebase-config.js"></script>
 <script src="../shared/staff-auth.js"></script>
+<script src="../shared/admin-api.js"></script>
 <script>iniciarGateEquipe();</script>
 <style>
 :root{
@@ -187,12 +188,10 @@ const _fbCfg=FB_CONFIG;
 if(!firebase.apps.length) firebase.initializeApp(_fbCfg);
 const FS = firebase.firestore();
 const ref = FS.collection('config').doc('bot');
-// as 3 chaves de API NUNCA ficam no documento público config/bot — elas vivem em
-// config_secrets/bot, que o navegador não tem permissão de ler (só de escrever uma
-// chave nova). Isso fecha o vazamento que existia: antes, qualquer página que lesse
-// config/bot (Caixa, este painel) baixava as chaves secretas junto com os campos
-// normais. Ver netlify/functions/lib/secrets.js.
-const refSecretos = FS.collection('config_secrets').doc('bot');
+// as 3 chaves de API NUNCA ficam no documento público config/bot — vivem em
+// config_secrets/bot, que o navegador não lê nem grava (nem a equipe). Gravar/consultar
+// passa pelo backend do admin (shared/admin-api.js → netlify/functions/admin-api.js),
+// que confere o login da equipe no servidor e nunca devolve o valor da chave.
 
 const camposPublicos = ['numeroWhatsapp','evolutionUrl','instanceName','mensagemFechado','enderecoLoja','taxaEntrega','tempoEntrega','formasPagamento','observacoesLoja','minutosLembrete','minutosEncerrar','horarioInicio','horarioFim','delayMinMs','delayMaxMs','limiteMsgsPorHora'];
 const camposSecretos = ['evolutionKey','anthropicKey','geminiKey'];
@@ -208,8 +207,7 @@ async function carregar(){
   }
   // as chaves nunca são carregadas pro navegador — só mostramos se JÁ existe uma configurada
   try{
-    const r = await fetch('/.netlify/functions/secrets-status');
-    const st = await r.json();
+    const st = await chamarAdminApi('segredos.status');
     camposSecretos.forEach(c => {
       const hint = document.getElementById('hint-'+c);
       if(hint) hint.textContent = (st[c] ? '✓ chave já configurada — deixe em branco pra manter.' : '⚠️ nenhuma chave configurada ainda.') + (hint.dataset.extra ? ' '+hint.dataset.extra : '');
@@ -238,7 +236,7 @@ document.getElementById('salvar').onclick = async () => {
       const v = document.getElementById(c).value.trim();
       if(v) dadosSecretos[c] = v;
     });
-    if(Object.keys(dadosSecretos).length) await refSecretos.set(dadosSecretos, { merge: true });
+    if(Object.keys(dadosSecretos).length) await chamarAdminApi('segredos.salvar', dadosSecretos);
     camposSecretos.forEach(c => { document.getElementById(c).value=''; });
 
     status.textContent = '✓ Salvo com sucesso';

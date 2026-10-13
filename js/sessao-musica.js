@@ -82,8 +82,22 @@ function applyGoogleSession(){
   const uname=document.getElementById('u-name');
   if(uname&&!uname.value) uname.value=fbUser.name;
   loadClientBadge();
-  // upsert no Supabase (on_conflict email)
-  _initFB();if(FS)FS.collection('clients').doc(fbUser.email).set({uid:AUTH?.currentUser?.uid||'',name:fbUser.name,email:fbUser.email,photo:fbUser.photo,via_google:true,last_visit:new Date().toISOString()},{merge:true}).catch(()=>{});
+  salvarPerfilGoogle();
+}
+
+// Grava o perfil só DEPOIS que o Firebase Auth confirmar o login Google com o mesmo e-mail:
+// as regras do banco só deixam o cliente escrever em clients/<o e-mail verificado dele>.
+function salvarPerfilGoogle(){
+  _initFB();
+  if(!FS||!AUTH||!fbUser||!fbUser.email) return;
+  const unsub=AUTH.onAuthStateChanged(u=>{
+    if(!u||u.email!==fbUser.email) return;
+    unsub();
+    FS.collection('clients').doc(fbUser.email).set({
+      uid:u.uid,name:String(fbUser.name||'').replace(/[<>]/g,'').slice(0,80),email:fbUser.email,
+      photo:fbUser.photo||null,via_google:true,last_visit:new Date().toISOString()
+    },{merge:true}).catch(()=>{});
+  });
 }
 
 function loginGoogleFeedback(){_gCtx='feedback';promptGoogle();}

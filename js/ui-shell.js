@@ -85,16 +85,9 @@ async function openStatsModal(){
 // ══════════════════════════════════
 async function trackVisit(){
   const today=_localToday();
-  const now=new Date().toISOString();
   let v=DB.get('visits')||{};v[today]=(v[today]||0)+1;DB.set('visits',v);DB.inc('visits_total');
-  _initFB();
-  if(FS){
-    try{
-      const exS=await FS.collection('visits').where('date','==',today).get();
-      if(!exS.empty){const d=exS.docs[0];await d.ref.update({count:(d.data().count||0)+1,updated_at:now});}
-      else await FS.collection('visits').add({date:today,count:1,updated_at:now});
-    }catch(e){ console.warn('Não foi possível registrar a visita no Firestore (contador local continua funcionando).',e); }
-  }
+  // contador do dia é somado no servidor (registrar-visita.js) — o navegador não escreve em "visits"
+  fetch('/.netlify/functions/registrar-visita',{method:'POST'}).catch(()=>{});
 }
 
 async function trackOrder(items,od){
@@ -121,38 +114,20 @@ async function trackOrder(items,od){
   });
   DB.set('local_orders',localOrders.slice(0,30));
   if(od){
-    _initFB();
-    // trava contra pedido duplicado ANTES de gravar — cliente que clica "enviar" mais de uma vez
-    // (duplo toque que escapou do _enviandoPedido, reabriu a aba, app perdeu conexão e reenviou
-    // sozinho etc.) não pode virar 2 pedidos reais no Caixa. Considera duplicata: mesmo telefone,
-    // mesmo total, criado nos últimos 10 minutos — sinal forte de "é o mesmo pedido de novo".
-    if(od.phone){
-      const recentes = await sg('orders',{where:[['client_phone','==',od.phone]],limit:10});
-      if(recentes){
-        const dezMinAtras = Date.now()-10*60*1000;
-        const duplicata = recentes.find(p=>{
-          const criadoEm = toMillis(p.created_at);
-          return criadoEm>=dezMinAtras && Math.abs(Number(p.total||0)-Number(od.total||0))<0.01;
-        });
-        if(duplicata){
-          console.warn('Pedido duplicado bloqueado — mesmo telefone/total já registrado há pouco (id '+duplicata.id+').');
-          return;
-        }
-      }
-    }
-    const numeroSequencial=await obterProximoNumeroSequencial(FS);
-    await sp('orders',{
-      client_name:od.name,client_email:fbUser?.email||od.email||null,client_uid:AUTH?.currentUser?.uid||null,
-      client_phone:od.phone||null,
-      address:od.address,house_number:od.num,
-      payment:od.pay,change_for:od.change||null,delivery_type:od.type,
-      total:od.total,
-      items_json:items.map(i=>({id:i.id,name:i.n,price:i.p,borda:(i.selectedBorda&&i.selectedBorda.price>0)?i.selectedBorda.name:null,removed:i.removedIngredients})),
-      whatsapp_sent:true,
-      status:'novo',
-      origem:'loja',
-      numero_sequencial:numeroSequencial
-    });
+    // o pedido é gravado NO SERVIDOR (netlify/functions/criar-pedido.js): lá é gerado o número
+    // do dia, bloqueada a duplicata (mesmo telefone + total em 10 min) e conferido o preço com o
+    // cardápio. O navegador não tem mais permissão de escrever em "orders" direto.
+    try{
+      const headers={'Content-Type':'application/json'};
+      _initFB();
+      if(AUTH&&AUTH.currentUser){ try{ headers.Authorization='Bearer '+await AUTH.currentUser.getIdToken(); }catch{} }
+      const r=await fetch('/.netlify/functions/criar-pedido',{method:'POST',headers,body:JSON.stringify({
+        name:od.name,phone:od.phone||null,address:od.address,num:od.num,
+        pay:od.pay,change:od.change||null,type:od.type,total:od.total,
+        items:items.map(i=>({id:i.id,name:i.n,price:i.p,borda:(i.selectedBorda&&i.selectedBorda.price>0)?i.selectedBorda.name:null,removed:i.removedIngredients||[]}))
+      })});
+      if(!r.ok) console.warn('Pedido não registrado no sistema (já foi pelo WhatsApp):',await r.text());
+    }catch(e){ console.warn('Pedido não registrado no sistema (já foi pelo WhatsApp):',e); }
   }
 }
 

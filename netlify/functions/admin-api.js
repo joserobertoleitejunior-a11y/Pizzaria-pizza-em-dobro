@@ -193,6 +193,7 @@ const acoes = {
         bot[k] = typeof v === 'number' ? numero(v, 0, 10000000) : texto(v, 1000);
       }
     });
+    ['ativo', 'lojaFechada'].forEach(k => { if (d.bot && typeof d.bot[k] === 'boolean') bot[k] = d.bot[k]; });
     const loja = {};
     if (d.loja && d.loja.taxaEntrega !== undefined) {
       loja.taxaEntrega = numero(d.loja.taxaEntrega, 0, 100);

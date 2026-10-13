@@ -32,7 +32,7 @@ function limparItens(lista) {
   return itens;
 }
 
-async function conferirPrecos(itens, total) {
+async function conferirPrecos(itens) {
   const divergencias = [];
   const ids = [...new Set(itens.map(i => i.id).filter(Boolean))].slice(0, 30);
   if (ids.length) {
@@ -46,8 +46,8 @@ async function conferirPrecos(itens, total) {
       }
     }
   }
-  const soma = itens.reduce((s, i) => s + i.price, 0);
-  if (total + 0.01 < soma) divergencias.push(`total ${total.toFixed(2)} menor que a soma dos itens ${soma.toFixed(2)}`);
+  // o total NÃO é comparado com a soma dos itens: a loja aplica desconto de promoção e soma
+  // borda/acréscimos/entrega por cima — a conferência confiável é preço de cada item vs. cardápio
   return divergencias;
 }
 
@@ -95,7 +95,7 @@ exports.handler = async (event) => {
 
     // e-mail só entra se vier de um login Google verificado — nunca do corpo da requisição
     const usuario = await usuarioDoToken(event);
-    const divergencias = await conferirPrecos(pedido.items_json, pedido.total);
+    const divergencias = await conferirPrecos(pedido.items_json);
     const numero_sequencial = await proximoNumero();
 
     const ref = await db.collection('orders').add({

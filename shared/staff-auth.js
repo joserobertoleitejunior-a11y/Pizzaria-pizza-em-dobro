@@ -73,9 +73,16 @@ function iniciarGateEquipe(){
       if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
       const auth=firebase.auth();
       auth.onAuthStateChanged(
-        user=>{
-          if(user){ overlay.remove(); resolve(user); }
-          else{ renderFormulario(auth); }
+        async user=>{
+          // só libera quem tem o claim "staff" (emitido pelo staff-login.js). Antes bastava
+          // QUALQUER login — um cliente logado com Google na loja abria o Caixa direto.
+          if(user){
+            try{
+              const t=await user.getIdTokenResult();
+              if(t.claims && t.claims.staff===true){ overlay.remove(); resolve(user); return; }
+            }catch(e){ /* cai pro formulário */ }
+          }
+          renderFormulario(auth);
         },
         ()=>renderErro('Não foi possível verificar o login. Recarregue a página.')
       );
