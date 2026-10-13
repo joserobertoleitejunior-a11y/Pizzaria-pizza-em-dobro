@@ -182,7 +182,7 @@ function addPlaylistTrack(){
   const wrap=document.getElementById('playlist-tracks');
   const idx=wrap.children.length;
   const div=document.createElement('div');
-  div.style.cssText='background:rgba(46,58,46,.03);border:1px solid rgba(46,58,46,.07);border-radius:10px;padding:10px;margin-bottom:8px;position:relative;';
+  div.style.cssText='background:rgba(20,20,20,.03);border:1px solid rgba(20,20,20,.07);border-radius:10px;padding:10px;margin-bottom:8px;position:relative;';
   div.innerHTML=`<div style="font-size:.65rem;color:var(--pr);letter-spacing:1px;margin-bottom:6px;">FAIXA ${idx+1}</div>
     <input type="text" class="m-input" placeholder="URL do áudio (.mp3 / .ogg)" data-type="url" style="margin-bottom:6px;">
     <input type="text" class="m-input" placeholder="Título da música" data-type="title" style="margin-bottom:6px;">

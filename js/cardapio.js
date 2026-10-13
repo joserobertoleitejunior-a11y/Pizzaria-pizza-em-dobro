@@ -8,12 +8,12 @@ function drawHH(canvas,u1,u2){
   Promise.all([load(u1),load(u2)]).then(([a,b])=>{
     ctx.save();ctx.beginPath();ctx.rect(0,0,W/2,H);ctx.clip();ctx.drawImage(a,0,0,W/2,H);ctx.restore();
     ctx.save();ctx.beginPath();ctx.rect(W/2,0,W/2,H);ctx.clip();ctx.drawImage(b,W/2,0,W/2,H);ctx.restore();
-    ctx.strokeStyle='rgba(193,98,59,.85)';ctx.lineWidth=3;ctx.setLineDash([10,6]);
+    ctx.strokeStyle='rgba(214,40,40,.85)';ctx.lineWidth=3;ctx.setLineDash([10,6]);
     ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='rgba(46,58,46,.6)';ctx.fillRect(0,H-26,W/2,26);ctx.fillRect(W/2,H-26,W/2,26);
-    ctx.fillStyle='#F3ECDD';ctx.font='bold 11px "Work Sans",sans-serif';ctx.textAlign='center';
+    ctx.fillStyle='rgba(20,20,20,.6)';ctx.fillRect(0,H-26,W/2,26);ctx.fillRect(W/2,H-26,W/2,26);
+    ctx.fillStyle='#FFFFFF';ctx.font='bold 11px "Work Sans",sans-serif';ctx.textAlign='center';
     ctx.fillText('½',W/4,H-8);ctx.fillText('½',3*W/4,H-8);
-  }).catch(()=>{ctx.fillStyle='#EDE3D4';ctx.fillRect(0,0,W,H);});
+  }).catch(()=>{ctx.fillStyle='#F2F2F2';ctx.fillRect(0,0,W,H);});
 }
 
 // ══════════════════════════════════
@@ -22,7 +22,7 @@ function drawHH(canvas,u1,u2){
 // ══════════════════════════════════
 //  COMBOS "2 POR X" — seleção real de sabores
 // ══════════════════════════════════
-const COMBO_CORES={combo65:'#4A6B3A',combo75:'#C1623B',combo80:'#8B4A2B',combo85:'#D9A54A'};
+const COMBO_CORES={combo65:'#141414',combo75:'#D62828',combo80:'#A51D1D',combo85:'#3D3D3D'};
 function renderCombos(){
   const el=document.getElementById('cat-co');
   if(!el||typeof COMBOS_DEFAULT==='undefined')return;
@@ -87,7 +87,7 @@ function renderMenu(){
           <div class="item-row">
             ${imgH}
             <div class="item-info">
-              <span class="item-name">#${i.id} - ${i.n}</span>
+              <span class="item-name"><span class="item-num">#${i.id}</span>${i.n}</span>
               <p class="item-desc">${i.d}</p>
               <div class="price-row">
                 <span class="item-price">R$ ${fmtPrice(i.p)}</span>
@@ -95,7 +95,7 @@ function renderMenu(){
                   <button class="btn-action btn-minus" onclick="removeItem(${i.id})">−</button>
                   <span class="qty-val" id="qty-${i.id}">0</span>
                   <button class="btn-action btn-plus" onclick="addItem(${i.id})">+</button>
-                  ${sav?`<button class="btn-half" onclick="startHalf(${i.id})">½&nbsp;MEIO</button>`:''}
+                  ${sav?`<button class="btn-half" onclick="startHalf(${i.id})">½&nbsp;MEIA</button>`:''}
                 </div>
               </div>
             </div>

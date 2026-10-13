@@ -110,7 +110,7 @@ function renderBordas(id){
     const acrSel=it.addedIngredients||[];
 
     return `
-    <div style="border:1px solid rgba(255,159,28,.12);border-radius:10px;padding:10px;margin-top:8px;background:rgba(46,58,46,.02);">
+    <div style="border:1px solid rgba(255,159,28,.12);border-radius:10px;padding:10px;margin-top:8px;background:rgba(20,20,20,.02);">
       ${meiaLabel}
 
       <!-- BORDA toggle -->
@@ -145,7 +145,7 @@ function renderBordas(id){
       const label=its.length>1?(isMeia?`½${it.halves[0].n}+½${it.halves[1].n}`:`Pizza ${i+1}`):'';
 
       return `
-      <div style="border:1px solid rgba(231,29,54,.12);border-radius:10px;padding:10px;margin-top:6px;background:rgba(46,58,46,.02);">
+      <div style="border:1px solid rgba(231,29,54,.12);border-radius:10px;padding:10px;margin-top:6px;background:rgba(20,20,20,.02);">
         ${label?`<div style="font-size:.65rem;font-weight:700;color:var(--se);letter-spacing:1px;margin-bottom:8px;opacity:.8;">${label}</div>`:''}
         <div class="opt-toggle-hdr" style="border-color:rgba(231,29,54,.15);" onclick="toggleOpts('rm-${id}-${i}','rm-arrow-${id}-${i}')">
           <span style="font-size:.65rem;font-weight:700;letter-spacing:1.5px;color:var(--se);">
@@ -273,7 +273,7 @@ function updateUI(){
     sumHTML+=`<div class="sum-item">
       <div class="sum-controls">
         <span class="sum-x" onclick="removeFromSum(${idxRef})" title="Diminuir">−</span>
-        <span style="min-width:20px;text-align:center;font-weight:700;color:#F3ECDD;">${g.qty}x</span>
+        <span style="min-width:20px;text-align:center;font-weight:700;color:#FFFFFF;">${g.qty}x</span>
         <span class="sum-x" onclick="duplicarItemCarrinho(${idxRef})" title="Adicionar mais um igual" style="color:var(--pr);">+</span>
       </div>
       ${nomeHTML} — <span class="sum-price">R$ ${fmtPrice(precoLinha)}</span>${ext}

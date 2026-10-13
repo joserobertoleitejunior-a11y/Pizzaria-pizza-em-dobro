@@ -65,12 +65,12 @@ function renderAcrescimosAdmin(){
     <div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(46,204,113,.04);border-radius:9px;border:1px solid rgba(46,204,113,.12);margin-bottom:6px;">
       <div style="flex:1;min-width:0;">
         <input type="text" value="${a.name}" data-idx="${i}" data-field="name"
-          style="width:100%;background:rgba(46,58,46,.05);border:1px solid rgba(46,58,46,.08);padding:6px 8px;border-radius:7px;color:var(--text);font-size:.78rem;outline:none;margin-bottom:4px;"
+          style="width:100%;background:rgba(20,20,20,.05);border:1px solid rgba(20,20,20,.08);padding:6px 8px;border-radius:7px;color:var(--text);font-size:.78rem;outline:none;margin-bottom:4px;"
           placeholder="Nome do acréscimo">
         <div style="display:flex;align-items:center;gap:6px;">
           <span style="font-size:.68rem;color:var(--muted);">R$</span>
           <input type="number" value="${a.price}" min="0" step="0.5" data-idx="${i}" data-field="price"
-            style="width:80px;background:rgba(46,58,46,.05);border:1px solid rgba(46,58,46,.08);padding:6px 8px;border-radius:7px;color:var(--text);font-size:.78rem;outline:none;"
+            style="width:80px;background:rgba(20,20,20,.05);border:1px solid rgba(20,20,20,.08);padding:6px 8px;border-radius:7px;color:var(--text);font-size:.78rem;outline:none;"
             placeholder="0">
         </div>
       </div>
@@ -114,15 +114,15 @@ function openBordasAdmin(){
 function renderBordasAdmin(){
   const list=document.getElementById('bordas-admin-list');
   list.innerHTML=BORDAS.map((b,i)=>`
-    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(46,58,46,.03);border-radius:9px;border:1px solid rgba(46,58,46,.06);margin-bottom:6px;">
+    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(20,20,20,.03);border-radius:9px;border:1px solid rgba(20,20,20,.06);margin-bottom:6px;">
       <div style="flex:1;min-width:0;">
         <input type="text" value="${b.name}" data-idx="${i}" data-field="name"
-          style="width:100%;background:rgba(46,58,46,.05);border:1px solid rgba(46,58,46,.08);padding:6px 8px;border-radius:7px;color:var(--text);font-size:.78rem;outline:none;margin-bottom:4px;"
+          style="width:100%;background:rgba(20,20,20,.05);border:1px solid rgba(20,20,20,.08);padding:6px 8px;border-radius:7px;color:var(--text);font-size:.78rem;outline:none;margin-bottom:4px;"
           placeholder="Nome da borda/acréscimo">
         <div style="display:flex;align-items:center;gap:6px;">
           <span style="font-size:.68rem;color:var(--muted);">R$</span>
           <input type="number" value="${b.price}" min="0" step="0.5" data-idx="${i}" data-field="price"
-            style="width:80px;background:rgba(46,58,46,.05);border:1px solid rgba(46,58,46,.08);padding:6px 8px;border-radius:7px;color:var(--text);font-size:.78rem;outline:none;"
+            style="width:80px;background:rgba(20,20,20,.05);border:1px solid rgba(20,20,20,.08);padding:6px 8px;border-radius:7px;color:var(--text);font-size:.78rem;outline:none;"
             placeholder="0">
           ${i===0?'<span style="font-size:.62rem;color:var(--tx-5);">(grátis = padrão)</span>':''}
         </div>
@@ -191,8 +191,8 @@ async function openClientesAdmin(){
         const nped=pedidosPorEmail[c.email||'']||0;
         const obs=DB.get('cli_obs_'+(c.email||''))||'';
         const aniv=DB.get('cli_aniv_'+(c.email||''))||c.birthday||'';
-        return`<div style="cursor:pointer;border:1px solid rgba(46,58,46,.05);border-radius:10px;padding:10px;margin-bottom:6px;background:rgba(46,58,46,.02);display:flex;align-items:center;gap:10px;" onclick="abrirDetalheCliente('${(c.email||'').replace(/'/g,"\\'")}');" data-name="${(c.name||'').toLowerCase()}" data-email="${(c.email||'').toLowerCase()}">
-          ${c.photo?`<img src="${c.photo}" onerror="this.style.display='none'" alt="" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid rgba(66,133,244,.4);flex-shrink:0;">`:`<div style="width:38px;height:38px;border-radius:50%;background:#EDE3D4;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;color:var(--tx-4);">G</div>`}
+        return`<div style="cursor:pointer;border:1px solid rgba(20,20,20,.05);border-radius:10px;padding:10px;margin-bottom:6px;background:rgba(20,20,20,.02);display:flex;align-items:center;gap:10px;" onclick="abrirDetalheCliente('${(c.email||'').replace(/'/g,"\\'")}');" data-name="${(c.name||'').toLowerCase()}" data-email="${(c.email||'').toLowerCase()}">
+          ${c.photo?`<img src="${c.photo}" onerror="this.style.display='none'" alt="" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid rgba(66,133,244,.4);flex-shrink:0;">`:`<div style="width:38px;height:38px;border-radius:50%;background:#F2F2F2;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;color:var(--tx-4);">G</div>`}
           <div style="flex:1;min-width:0;">
             <div style="font-size:.82rem;color:var(--text);font-weight:600;">${c.name||'—'}</div>
             <div style="font-size:.65rem;color:var(--tx-5);">${c.email||''}</div>
@@ -228,7 +228,7 @@ async function abrirDetalheCliente(email){
   const aniv=DB.get('cli_aniv_'+email)||c.birthday||'';
   const tel=DB.get('cli_tel_'+email)||c.phone||'';
   const pedidosHTML=pedidos.length
-    ?pedidos.slice(0,20).map(o=>{let items=o.items_json||[];if(typeof items==='string'){try{items=JSON.parse(items);}catch{items=[];}}const nms=items.map(i=>i.name||i.n||'?').join(', ');return`<div style="background:rgba(46,58,46,.03);border-radius:8px;padding:9px 11px;margin-bottom:5px;"><div style="font-size:.62rem;color:var(--tx-6);">${o.created_at?new Date(dataStr(o.created_at)).toLocaleString('pt-BR'):''}</div><div style="font-size:.75rem;color:var(--tx-2);margin-top:2px;">${nms||'—'}</div><div style="display:flex;justify-content:space-between;margin-top:3px;"><span style="font-size:.68rem;color:var(--muted);">${o.delivery_type==='retirada'?'🏠 Retirada':'🛵 Entrega'} · ${o.payment||'—'}</span><span style="font-size:.75rem;color:var(--pr);font-weight:700;">R$\u00a0${fmtPrice(o.total||0)}</span></div></div>`;}).join('')
+    ?pedidos.slice(0,20).map(o=>{let items=o.items_json||[];if(typeof items==='string'){try{items=JSON.parse(items);}catch{items=[];}}const nms=items.map(i=>i.name||i.n||'?').join(', ');return`<div style="background:rgba(20,20,20,.03);border-radius:8px;padding:9px 11px;margin-bottom:5px;"><div style="font-size:.62rem;color:var(--tx-6);">${o.created_at?new Date(dataStr(o.created_at)).toLocaleString('pt-BR'):''}</div><div style="font-size:.75rem;color:var(--tx-2);margin-top:2px;">${nms||'—'}</div><div style="display:flex;justify-content:space-between;margin-top:3px;"><span style="font-size:.68rem;color:var(--muted);">${o.delivery_type==='retirada'?'🏠 Retirada':'🛵 Entrega'} · ${o.payment||'—'}</span><span style="font-size:.75rem;color:var(--pr);font-weight:700;">R$\u00a0${fmtPrice(o.total||0)}</span></div></div>`;}).join('')
     :'<p style="color:var(--tx-6);font-size:.78rem;padding:8px 0;">Nenhum pedido registrado.</p>';
   ct.innerHTML=`
     <div style="text-align:center;margin-bottom:16px;">
@@ -242,7 +242,7 @@ async function abrirDetalheCliente(email){
       </div>
     </div>
     <div style="font-size:.65rem;color:var(--tx-5);letter-spacing:2px;margin-bottom:6px;">DADOS EDITÁVEIS</div>
-    <div style="background:rgba(46,58,46,.03);border-radius:10px;padding:12px;margin-bottom:12px;">
+    <div style="background:rgba(20,20,20,.03);border-radius:10px;padding:12px;margin-bottom:12px;">
       <div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;">📱 Telefone</div>
       <input type="tel" id="det-tel" class="m-input" value="${tel}" placeholder="(15) 99999-9999" style="margin-bottom:10px;">
       <div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;">🎂 Aniversário</div>

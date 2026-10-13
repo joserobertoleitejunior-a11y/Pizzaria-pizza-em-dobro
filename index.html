@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Pizza em Dobro">
-<meta name="theme-color" content="#C1623B">
+<meta name="theme-color" content="#141414">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Pizza em Dobro | Oficial</title>
 <meta name="description" content="Pizzaria em Itapetininga-SP com delivery e retirada. Pizzas tradicionais, especiais e combos 2 por preço único. Peça pelo site ou WhatsApp (15) 99705-8390.">
@@ -64,82 +64,110 @@
 <script>if(typeof Sentry!=='undefined'&&SENTRY_DSN){Sentry.init({dsn:SENTRY_DSN,tracesSampleRate:0});}</script>
 </head>
 <body>
-<!-- Vídeo de fogo real no rodapé, com fade suave pra virar "sombra" em vez de retângulo.
-     mix-blend-mode/mask ficam no WRAPPER, nunca direto no <video> — combinar as duas coisas
-     no próprio elemento de vídeo trava a composição no Safari/iOS (fica com o primeiro frame
-     congelado, "fogo parado"). object-fit puro no vídeo é seguro em qualquer navegador. -->
-<div id="fogo-video-wrap" style="position:fixed;left:0;right:0;bottom:0;width:100%;height:38vh;
-  z-index:-1;pointer-events:none;opacity:.55;mix-blend-mode:screen;overflow:hidden;
-  -webkit-mask-image:linear-gradient(to top, black 40%, transparent 100%);
-  mask-image:linear-gradient(to top, black 40%, transparent 100%);">
-  <video id="fogo-video" muted loop playsinline webkit-playsinline="true" preload="auto"
-    style="width:100%;height:100%;object-fit:cover;display:block;">
-    <source src="assets/fogo-fundo.mp4" type="video/mp4">
-  </video>
-</div>
-<!-- Brilho quente no topo, pra "conversar" visualmente com o fogo lá embaixo -->
-<div style="position:fixed;top:0;left:0;right:0;height:26vh;z-index:-1;pointer-events:none;
-  background:radial-gradient(ellipse at 50% -10%, rgba(255,140,20,.22) 0%, rgba(231,29,54,.08) 45%, transparent 75%);"></div>
-<script>
-// ── Fogo de fundo: robusto no iPhone ──
-// iOS bloqueia autoplay de vídeo em Modo de Baixo Consumo mesmo com muted+playsinline, e
-// pausa vídeo em segundo plano/troca de app. Em vez de confiar só no atributo "autoplay",
-// forçamos .muted por JS (Safari é mais confiável assim) e tentamos de novo em vários
-// gatilhos. Se realmente não conseguir tocar, escondemos o vídeo em vez de deixar um frame
-// congelado — o body já tem gradiente quente de fundo (CSS), então o visual continua no tema.
-(function(){
-  const tentarTocarFogo=()=>{
-    document.querySelectorAll('#fogo-video').forEach(v=>{
-      v.muted=true; v.playsInline=true;
-      const p=v.play();
-      if(p&&p.catch) p.catch(()=>{ /* tenta de novo nos gatilhos abaixo */ });
-    });
-  };
-  tentarTocarFogo();
-  ['touchstart','visibilitychange','pageshow'].forEach(ev=>{
-    document.addEventListener(ev, tentarTocarFogo, {passive:true});
-  });
-  // depois de um tempo razoável, se o vídeo principal nunca chegou a tocar de verdade
-  // (currentTime parado em 0), esconde e deixa só o gradiente — nunca mostra fogo congelado.
-  setTimeout(()=>{
-    const v=document.getElementById('fogo-video');
-    if(v && v.paused && v.currentTime===0){
-      document.getElementById('fogo-video-wrap').style.display='none';
-    }
-  }, 4000);
-})();
-</script>
-
-<!-- WELCOME — fatia de pizza gira e "pousa" no centro, nome entra palavra por
-     palavra com salto, e a saída é uma íris que abre a partir do centro (não
-     mais portas deslizando pros lados — outro mecanismo de transição). -->
+<!-- WELCOME — logo com reflexo de vidro, nome completo e a pizza inteira perdendo
+     as 8 fatias uma a uma (ver assets/site.css e js/conversor-storefront.js). -->
 <div id="ws">
   <div id="ws-conteudo" onclick="abrirPortaSplash()">
+    <div id="ws-logo"><img src="assets/logo.png" alt="" width="104" height="104"><span class="ws-vidro"></span></div>
     <div id="ws-brand" aria-label="Pizza em Dobro">
       <span class="ws-palavra" style="--i:0">PIZZA</span>
       <span class="ws-palavra" style="--i:1">EM</span>
       <span class="ws-palavra ws-destaque" style="--i:2">DOBRO</span>
     </div>
-    <div id="ws-fatia-wrap">
-      <svg id="ws-fatia" viewBox="0 0 140 140" aria-hidden="true">
+    <div id="ws-pizza-wrap">
+      <svg id="ws-pizza" viewBox="0 0 160 160" aria-hidden="true">
         <defs>
-          <clipPath id="ws-fatia-clip"><path d="M70,70 L18,118 A74,74 0 0 1 70,4 Z"/></clipPath>
+          <radialGradient id="wsMassa" cx="80" cy="80" r="74" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#F0C277"/><stop offset="86%" stop-color="#DDA14D"/><stop offset="100%" stop-color="#B97830"/>
+          </radialGradient>
+          <radialGradient id="wsQueijo" cx="70" cy="66" r="70" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#FFEBB0"/><stop offset="65%" stop-color="#F4C85A"/><stop offset="100%" stop-color="#E3A840"/>
+          </radialGradient>
         </defs>
-        <g clip-path="url(#ws-fatia-clip)">
-          <rect x="0" y="0" width="140" height="140" fill="#F2D98A"/>
-          <circle cx="38" cy="100" r="9" fill="#A8432F"/>
-          <circle cx="58" cy="78" r="8" fill="#A8432F"/>
-          <circle cx="40" cy="70" r="6" fill="#FFF6E0"/>
-          <circle cx="62" cy="50" r="7" fill="#A8432F"/>
-          <circle cx="30" cy="88" r="5" fill="#4A6B3A"/>
+        <circle cx="80" cy="80" r="78" fill="#F2F2F2" stroke="#E2E2E2" stroke-width="2"/>
+        <circle cx="62" cy="96" r="1.6" fill="#DDA14D"/><circle cx="98" cy="70" r="1.3" fill="#DDA14D"/><circle cx="86" cy="104" r="1.1" fill="#C0472F" opacity=".6"/>
+        <g class="ws-fp" style="--k:0;--dx:57px;--dy:-139px;--r:-24deg">
+          <path d="M80,80 L80.0,6.0 A74,74 0 0 1 132.3,27.7 Z" fill="url(#wsMassa)"/>
+          <path d="M80,80 L80.0,16.0 A64,64 0 0 1 125.3,34.7 Z" fill="url(#wsQueijo)"/>
+          <path d="M80.0,14.0 A66,66 0 0 1 126.7,33.3" fill="none" stroke="#C0472F" stroke-width="2.2" opacity=".75"/>
+          <circle cx="96.5" cy="40.3" r="7.6" fill="#A8432F"/>
+          <circle cx="94.3" cy="38.1" r="2.2" fill="#fff" opacity=".28"/>
+          <circle cx="84.6" cy="57.5" r="5.6" fill="#A8432F"/>
+          <ellipse cx="111.9" cy="35.2" rx="4.6" ry="2.4" fill="#3F6B34" transform="rotate(-28 111.9 35.2)"/>
+          <ellipse cx="92.8" cy="26.5" rx="3.4" ry="2.4" fill="#FFF4CF" opacity=".8"/>
+          <path d="M80,80 L80.0,6.0 A74,74 0 0 1 132.3,27.7 Z" fill="none" stroke="#9C6420" stroke-width=".8" opacity=".45"/>
+        </g><g class="ws-fp" style="--k:1;--dx:139px;--dy:-57px;--r:24deg">
+          <path d="M80,80 L132.3,27.7 A74,74 0 0 1 154.0,80.0 Z" fill="url(#wsMassa)"/>
+          <path d="M80,80 L125.3,34.7 A64,64 0 0 1 144.0,80.0 Z" fill="url(#wsQueijo)"/>
+          <path d="M126.7,33.3 A66,66 0 0 1 146.0,80.0" fill="none" stroke="#C0472F" stroke-width="2.2" opacity=".75"/>
+          <circle cx="119.7" cy="63.5" r="7.6" fill="#A8432F"/>
+          <circle cx="117.5" cy="61.3" r="2.2" fill="#fff" opacity=".28"/>
+          <circle cx="102.5" cy="75.4" r="5.6" fill="#A8432F"/>
+          <ellipse cx="124.8" cy="48.1" rx="4.6" ry="2.4" fill="#3F6B34" transform="rotate(18 124.8 48.1)"/>
+          <ellipse cx="133.5" cy="67.2" rx="3.4" ry="2.4" fill="#FFF4CF" opacity=".8"/>
+          <path d="M80,80 L132.3,27.7 A74,74 0 0 1 154.0,80.0 Z" fill="none" stroke="#9C6420" stroke-width=".8" opacity=".45"/>
+        </g><g class="ws-fp" style="--k:2;--dx:139px;--dy:57px;--r:-24deg">
+          <path d="M80,80 L154.0,80.0 A74,74 0 0 1 132.3,132.3 Z" fill="url(#wsMassa)"/>
+          <path d="M80,80 L144.0,80.0 A64,64 0 0 1 125.3,125.3 Z" fill="url(#wsQueijo)"/>
+          <path d="M146.0,80.0 A66,66 0 0 1 126.7,126.7" fill="none" stroke="#C0472F" stroke-width="2.2" opacity=".75"/>
+          <circle cx="119.7" cy="96.5" r="7.6" fill="#A8432F"/>
+          <circle cx="117.5" cy="94.3" r="2.2" fill="#fff" opacity=".28"/>
+          <circle cx="102.5" cy="84.6" r="5.6" fill="#A8432F"/>
+          <ellipse cx="124.8" cy="111.9" rx="4.6" ry="2.4" fill="#3F6B34" transform="rotate(62 124.8 111.9)"/>
+          <ellipse cx="133.5" cy="92.8" rx="3.4" ry="2.4" fill="#FFF4CF" opacity=".8"/>
+          <path d="M80,80 L154.0,80.0 A74,74 0 0 1 132.3,132.3 Z" fill="none" stroke="#9C6420" stroke-width=".8" opacity=".45"/>
+        </g><g class="ws-fp" style="--k:3;--dx:57px;--dy:139px;--r:24deg">
+          <path d="M80,80 L132.3,132.3 A74,74 0 0 1 80.0,154.0 Z" fill="url(#wsMassa)"/>
+          <path d="M80,80 L125.3,125.3 A64,64 0 0 1 80.0,144.0 Z" fill="url(#wsQueijo)"/>
+          <path d="M126.7,126.7 A66,66 0 0 1 80.0,146.0" fill="none" stroke="#C0472F" stroke-width="2.2" opacity=".75"/>
+          <circle cx="96.5" cy="119.7" r="7.6" fill="#A8432F"/>
+          <circle cx="94.3" cy="117.5" r="2.2" fill="#fff" opacity=".28"/>
+          <circle cx="84.6" cy="102.5" r="5.6" fill="#A8432F"/>
+          <ellipse cx="111.9" cy="124.8" rx="4.6" ry="2.4" fill="#3F6B34" transform="rotate(108 111.9 124.8)"/>
+          <ellipse cx="92.8" cy="133.5" rx="3.4" ry="2.4" fill="#FFF4CF" opacity=".8"/>
+          <path d="M80,80 L132.3,132.3 A74,74 0 0 1 80.0,154.0 Z" fill="none" stroke="#9C6420" stroke-width=".8" opacity=".45"/>
+        </g><g class="ws-fp" style="--k:4;--dx:-57px;--dy:139px;--r:-24deg">
+          <path d="M80,80 L80.0,154.0 A74,74 0 0 1 27.7,132.3 Z" fill="url(#wsMassa)"/>
+          <path d="M80,80 L80.0,144.0 A64,64 0 0 1 34.7,125.3 Z" fill="url(#wsQueijo)"/>
+          <path d="M80.0,146.0 A66,66 0 0 1 33.3,126.7" fill="none" stroke="#C0472F" stroke-width="2.2" opacity=".75"/>
+          <circle cx="63.5" cy="119.7" r="7.6" fill="#A8432F"/>
+          <circle cx="61.3" cy="117.5" r="2.2" fill="#fff" opacity=".28"/>
+          <circle cx="75.4" cy="102.5" r="5.6" fill="#A8432F"/>
+          <ellipse cx="48.1" cy="124.8" rx="4.6" ry="2.4" fill="#3F6B34" transform="rotate(152 48.1 124.8)"/>
+          <ellipse cx="67.2" cy="133.5" rx="3.4" ry="2.4" fill="#FFF4CF" opacity=".8"/>
+          <path d="M80,80 L80.0,154.0 A74,74 0 0 1 27.7,132.3 Z" fill="none" stroke="#9C6420" stroke-width=".8" opacity=".45"/>
+        </g><g class="ws-fp" style="--k:5;--dx:-139px;--dy:57px;--r:24deg">
+          <path d="M80,80 L27.7,132.3 A74,74 0 0 1 6.0,80.0 Z" fill="url(#wsMassa)"/>
+          <path d="M80,80 L34.7,125.3 A64,64 0 0 1 16.0,80.0 Z" fill="url(#wsQueijo)"/>
+          <path d="M33.3,126.7 A66,66 0 0 1 14.0,80.0" fill="none" stroke="#C0472F" stroke-width="2.2" opacity=".75"/>
+          <circle cx="40.3" cy="96.5" r="7.6" fill="#A8432F"/>
+          <circle cx="38.1" cy="94.3" r="2.2" fill="#fff" opacity=".28"/>
+          <circle cx="57.5" cy="84.6" r="5.6" fill="#A8432F"/>
+          <ellipse cx="35.2" cy="111.9" rx="4.6" ry="2.4" fill="#3F6B34" transform="rotate(198 35.2 111.9)"/>
+          <ellipse cx="26.5" cy="92.8" rx="3.4" ry="2.4" fill="#FFF4CF" opacity=".8"/>
+          <path d="M80,80 L27.7,132.3 A74,74 0 0 1 6.0,80.0 Z" fill="none" stroke="#9C6420" stroke-width=".8" opacity=".45"/>
+        </g><g class="ws-fp" style="--k:6;--dx:-139px;--dy:-57px;--r:-24deg">
+          <path d="M80,80 L6.0,80.0 A74,74 0 0 1 27.7,27.7 Z" fill="url(#wsMassa)"/>
+          <path d="M80,80 L16.0,80.0 A64,64 0 0 1 34.7,34.7 Z" fill="url(#wsQueijo)"/>
+          <path d="M14.0,80.0 A66,66 0 0 1 33.3,33.3" fill="none" stroke="#C0472F" stroke-width="2.2" opacity=".75"/>
+          <circle cx="40.3" cy="63.5" r="7.6" fill="#A8432F"/>
+          <circle cx="38.1" cy="61.3" r="2.2" fill="#fff" opacity=".28"/>
+          <circle cx="57.5" cy="75.4" r="5.6" fill="#A8432F"/>
+          <ellipse cx="35.2" cy="48.1" rx="4.6" ry="2.4" fill="#3F6B34" transform="rotate(242 35.2 48.1)"/>
+          <ellipse cx="26.5" cy="67.2" rx="3.4" ry="2.4" fill="#FFF4CF" opacity=".8"/>
+          <path d="M80,80 L6.0,80.0 A74,74 0 0 1 27.7,27.7 Z" fill="none" stroke="#9C6420" stroke-width=".8" opacity=".45"/>
+        </g><g class="ws-fp" style="--k:7;--dx:-57px;--dy:-139px;--r:24deg">
+          <path d="M80,80 L27.7,27.7 A74,74 0 0 1 80.0,6.0 Z" fill="url(#wsMassa)"/>
+          <path d="M80,80 L34.7,34.7 A64,64 0 0 1 80.0,16.0 Z" fill="url(#wsQueijo)"/>
+          <path d="M33.3,33.3 A66,66 0 0 1 80.0,14.0" fill="none" stroke="#C0472F" stroke-width="2.2" opacity=".75"/>
+          <circle cx="63.5" cy="40.3" r="7.6" fill="#A8432F"/>
+          <circle cx="61.3" cy="38.1" r="2.2" fill="#fff" opacity=".28"/>
+          <circle cx="75.4" cy="57.5" r="5.6" fill="#A8432F"/>
+          <ellipse cx="48.1" cy="35.2" rx="4.6" ry="2.4" fill="#3F6B34" transform="rotate(288 48.1 35.2)"/>
+          <ellipse cx="67.2" cy="26.5" rx="3.4" ry="2.4" fill="#FFF4CF" opacity=".8"/>
+          <path d="M80,80 L27.7,27.7 A74,74 0 0 1 80.0,6.0 Z" fill="none" stroke="#9C6420" stroke-width=".8" opacity=".45"/>
         </g>
-        <path d="M70,70 L18,118 A74,74 0 0 1 70,4 Z" fill="none" stroke="#D9A54A" stroke-width="7"/>
-        <path d="M18,118 A74,74 0 0 1 70,4" fill="none" stroke="#C4883A" stroke-width="10" stroke-linecap="round"/>
       </svg>
-      <div class="ws-mordida" id="wm1"></div>
-      <div class="ws-mordida" id="wm2"></div>
-      <div class="ws-mordida" id="wm3"></div>
-      <div class="ws-mordida" id="wm4"></div>
     </div>
     <div id="ws-toque-aviso" aria-live="polite">toque pra entrar</div>
   </div>
@@ -152,7 +180,7 @@
   <div id="hamburger" onclick="toggleDrawer()" role="button" tabindex="0" aria-label="Abrir menu" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleDrawer();}">
     <span></span><span></span><span></span>
   </div>
-  <div class="tb-brand">🍕 PIZZA EM DOBRO</div>
+  <div class="tb-brand">PIZZA EM DOBRO</div>
   <span id="status-loja" class="status-badge">...</span>
 </div>
 
@@ -277,49 +305,21 @@
       </svg>
     </a>
   </div>
+  <span class="hero-kicker">Itapetininga · SP</span>
   <h1 class="viva-title reveal">O DOBRO<br>DE <span>SABOR.</span></h1>
-  <span class="viva-sub">ITAPETININGA • DELIVERY E RETIRADA</span>
+  <span class="viva-sub">Delivery e retirada. Peça pelo site ou chame no WhatsApp.</span>
   <div class="hero-cta-row reveal">
     <a href="#cat-p" class="hero-cta-btn">VER CARDÁPIO →</a>
     <a href="#" onclick="window.open('https://wa.me/'+getWhatsApp(),'_blank');return false;" class="hero-cta-block" aria-label="Chamar no WhatsApp" title="Chamar no WhatsApp">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.74.46 3.43 1.32 4.92L2.05 22l5.3-1.39c1.44.79 3.06 1.2 4.69 1.2h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 1.67c2.21 0 4.29.86 5.85 2.42a8.23 8.23 0 0 1 2.43 5.82c0 4.54-3.7 8.24-8.24 8.24a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.14.82.84-3.06-.2-.32a8.19 8.19 0 0 1-1.25-4.37c0-4.54 3.7-8.22 8.2-8.22zm-4.38 4.2c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.67 2.63 4.14 3.59 2.05.8 2.47.64 2.92.6.45-.04 1.44-.59 1.64-1.15.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28-.24-.12-1.44-.71-1.66-.79-.22-.08-.39-.12-.55.12-.16.24-.63.79-.78.96-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.43-1.34-1.67-.14-.24-.01-.37.11-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.34-.76-1.83-.2-.48-.4-.42-.55-.42z"/></svg>
     </a>
   </div>
-  <div class="hero-pizza-wrap reveal" aria-hidden="true">
-    <svg class="hero-pizza" viewBox="0 0 300 300">
-      <defs>
-        <radialGradient id="hp-cheese" cx="42%" cy="38%" r="75%">
-          <stop offset="0%" stop-color="#FCE8A8"/>
-          <stop offset="55%" stop-color="#F2C85C"/>
-          <stop offset="100%" stop-color="#E0A93A"/>
-        </radialGradient>
-      </defs>
-      <circle cx="150" cy="150" r="138" fill="#D9A54A"/>
-      <circle cx="150" cy="150" r="124" fill="url(#hp-cheese)"/>
-      <g stroke="rgba(193,98,59,.22)" stroke-width="2">
-        <line x1="150" y1="150" x2="150" y2="26"/>
-        <line x1="150" y1="150" x2="257" y2="88"/>
-        <line x1="150" y1="150" x2="257" y2="212"/>
-        <line x1="150" y1="150" x2="150" y2="274"/>
-        <line x1="150" y1="150" x2="43" y2="212"/>
-        <line x1="150" y1="150" x2="43" y2="88"/>
-      </g>
-      <circle cx="110" cy="95" r="14" fill="#A8432F"/>
-      <circle cx="190" cy="110" r="13" fill="#A8432F"/>
-      <circle cx="205" cy="190" r="14" fill="#A8432F"/>
-      <circle cx="120" cy="205" r="12" fill="#A8432F"/>
-      <circle cx="160" cy="160" r="13" fill="#A8432F"/>
-      <circle cx="90" cy="160" r="11" fill="#A8432F"/>
-      <ellipse cx="150" cy="80" rx="9" ry="5" fill="#4A6B3A" transform="rotate(20 150 80)"/>
-      <ellipse cx="220" cy="150" rx="9" ry="5" fill="#4A6B3A" transform="rotate(100 220 150)"/>
-      <ellipse cx="100" cy="230" rx="9" ry="5" fill="#4A6B3A" transform="rotate(-30 100 230)"/>
-      <ellipse cx="110" cy="90" rx="46" ry="22" fill="rgba(255,255,255,.18)" transform="rotate(-25 110 90)"/>
-    </svg>
-    <div class="hero-vapor v1"></div>
-    <div class="hero-vapor v2"></div>
-    <div class="hero-vapor v3"></div>
-  </div>
 </header>
+
+<!-- FAIXA EDITORIAL (corre sozinha, decorativa) -->
+<div class="hero-faixa" aria-hidden="true">
+  <div class="hero-faixa-trilho"><span>PIZZA EM DOBRO ✦ TRADICIONAIS ✦ ESPECIAIS ✦ COMBOS 2 POR ✦ DOCES ✦ CALZONES ✦ BEBIDAS ✦&nbsp;</span><span>PIZZA EM DOBRO ✦ TRADICIONAIS ✦ ESPECIAIS ✦ COMBOS 2 POR ✦ DOCES ✦ CALZONES ✦ BEBIDAS ✦&nbsp;</span></div>
+</div>
 
 <!-- NAV -->
 <div class="nav-bar">
@@ -898,12 +898,6 @@ window._iniciarAnimacoesScroll=function(){
     // o primeiro carregamento) — só precisam ser configurados uma única vez
     if(!window._animScrollBaseFeita){
       window._animScrollBaseFeita=true;
-      // parallax leve na pizza do hero — só transform (barato pra GPU)
-      var pizzaHero=document.querySelector('.hero-pizza-wrap');
-      if(pizzaHero && !reduzMovimento && typeof ScrollTrigger!=='undefined'){
-        gsap.fromTo(pizzaHero,{yPercent:-6},{yPercent:14,ease:'none',
-          scrollTrigger:{trigger:pizzaHero,start:'top bottom',end:'bottom top',scrub:true}});
-      }
       // rotação sutil dos ícones de "destaque" conforme passam pela tela — dá vida
       // sem custo (só transform), independente do .reveal genérico
       var destaqueIcones=document.querySelectorAll('.destaque-ic');

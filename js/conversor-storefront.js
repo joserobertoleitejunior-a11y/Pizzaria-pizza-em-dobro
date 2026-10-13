@@ -853,7 +853,7 @@ async function openPedidosConvertidos(){
     const dt=new Date(r.ts||dataStr(r.created_at)||Date.now());
     const data=dt.toLocaleDateString('pt-BR');
     const hora=dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-    return `<div onclick="verPedidoConvertido(${i})" style="border:1px solid var(--card-bd);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;background:rgba(46,58,46,.03);">
+    return `<div onclick="verPedidoConvertido(${i})" style="border:1px solid var(--card-bd);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;background:rgba(20,20,20,.03);">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
         <span style="font-size:.85rem;font-weight:700;color:var(--text);">${r.nome}</span>
         <span style="font-size:.65rem;color:var(--tx-5);">${data} ${hora}</span>
@@ -949,7 +949,7 @@ async function _buscarSugestoesEndereco(valor){
       }else{
         dd.innerHTML=window._acSuggestions.map((s,i)=>{
           const texto=(s.placePrediction&&s.placePrediction.text&&s.placePrediction.text.text)||'';
-          return`<div onclick="_selecionarSugestaoEndereco(${i})" style="padding:10px 14px;border-top:1px solid rgba(46,58,46,.06);cursor:pointer;font-size:.8rem;color:var(--tx-2);">📍 ${texto.replace(/</g,'&lt;')}</div>`;
+          return`<div onclick="_selecionarSugestaoEndereco(${i})" style="padding:10px 14px;border-top:1px solid rgba(20,20,20,.06);cursor:pointer;font-size:.8rem;color:var(--tx-2);">📍 ${texto.replace(/</g,'&lt;')}</div>`;
         }).join('');
       }
       dd.style.display='block';
@@ -1164,12 +1164,10 @@ function imprimirPedido(){
   w.document.close();w.focus();w.print();
   });}
 
-// SPLASH — passa sozinha: nome entra palavra por palavra, a fatia pousa
-// embaixo e vai sendo mordida pedaço a pedaço até sumir — essa sequência de
-// mordidas é a própria saída (sem barra de progresso, sem íris separada).
-// Continua tocável a qualquer momento pra quem quiser pular direto pro
-// cardápio (o fallback local do cardápio já está pronto desde o primeiro
-// instante).
+// SPLASH — passa sozinha: logo com reflexo de vidro, nome completo (fica fixo) e a
+// pizza inteira perdendo as 8 fatias uma a uma até sobrar o prato; aí a tela some.
+// Continua tocável a qualquer momento pra quem quiser pular direto pro cardápio
+// (o fallback local do cardápio já está pronto desde o primeiro instante).
 let _splashAberta=false;
 function abrirPortaSplash(){
   if(_splashAberta) return;
@@ -1183,9 +1181,9 @@ function abrirPortaSplash(){
     ws.style.visibility='hidden';
   },400);
 }
-// mesma duração da última mordida (CSS: wm4 com delay 1.86s + animação .32s) + uma
-// folga curta pro cliente ver a última mordida sumir antes de entrar sozinho
-const _splashAutoTimer=setTimeout(abrirPortaSplash,2350);
+// última fatia: atraso 1.05s + 7 × .17s = 2.24s, mais .5s de animação = 2.74s; folga curta
+// pro cliente ver o prato vazio antes de entrar sozinho
+const _splashAutoTimer=setTimeout(abrirPortaSplash,2950);
 
 _initFB();
 init();

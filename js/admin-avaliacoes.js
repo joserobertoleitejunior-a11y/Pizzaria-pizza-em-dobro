@@ -227,7 +227,7 @@ function _renderDashSkeleton(){
     </div>
 
     <!-- SELETOR DE PERÍODO -->
-    <div style="background:rgba(46,58,46,.03);border:1px solid rgba(46,58,46,.06);border-radius:12px;padding:12px;margin-bottom:14px;">
+    <div style="background:rgba(20,20,20,.03);border:1px solid rgba(20,20,20,.06);border-radius:12px;padding:12px;margin-bottom:14px;">
       <div style="font-size:.65rem;color:var(--tx-5);letter-spacing:2px;margin-bottom:8px;">PERÍODO</div>
       <div class="dash-period" style="margin-bottom:10px;">
         <button class="dash-period-btn${dashPeriod===1&&!dashDateFrom?' active':''}" onclick="openDash(1)">Hoje</button>
@@ -238,11 +238,11 @@ function _renderDashSkeleton(){
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
         <div style="flex:1;min-width:120px;">
           <div style="font-size:.6rem;color:var(--tx-5);margin-bottom:3px;">DE</div>
-          <input type="date" id="dash-from" value="${from}" max="${today}" style="width:100%;background:rgba(46,58,46,.05);border:1px solid rgba(46,58,46,.09);padding:7px 8px;border-radius:8px;color:var(--text);font-size:.78rem;outline:none;">
+          <input type="date" id="dash-from" value="${from}" max="${today}" style="width:100%;background:rgba(20,20,20,.05);border:1px solid rgba(20,20,20,.09);padding:7px 8px;border-radius:8px;color:var(--text);font-size:.78rem;outline:none;">
         </div>
         <div style="flex:1;min-width:120px;">
           <div style="font-size:.6rem;color:var(--tx-5);margin-bottom:3px;">ATÉ</div>
-          <input type="date" id="dash-to" value="${to}" max="${today}" style="width:100%;background:rgba(46,58,46,.05);border:1px solid rgba(46,58,46,.09);padding:7px 8px;border-radius:8px;color:var(--text);font-size:.78rem;outline:none;">
+          <input type="date" id="dash-to" value="${to}" max="${today}" style="width:100%;background:rgba(20,20,20,.05);border:1px solid rgba(20,20,20,.09);padding:7px 8px;border-radius:8px;color:var(--text);font-size:.78rem;outline:none;">
         </div>
         <button onclick="applyDashDates()" style="background:var(--pr);border:none;color:#000;padding:8px 14px;border-radius:8px;font-size:.72rem;font-weight:700;cursor:pointer;align-self:flex-end;">FILTRAR</button>
       </div>
@@ -287,7 +287,7 @@ async function _loadDashData(){
       led.style.cssText='width:8px;height:8px;border-radius:50%;display:inline-block;background:#2ecc71;box-shadow:0 0 6px #2ecc71;';
       txt.style.color='#2ecc71';txt.innerText='Ativo agora';
     } else if(visitsTodayCount>0){
-      led.style.cssText='width:8px;height:8px;border-radius:50%;display:inline-block;background:#C1623B;';
+      led.style.cssText='width:8px;height:8px;border-radius:50%;display:inline-block;background:#D62828;';
       txt.style.color='var(--pr)';txt.innerText=visitsTodayCount+' visitas hoje';
     } else {
       led.style.cssText='width:8px;height:8px;border-radius:50%;display:inline-block;background:#333;';
@@ -316,7 +316,7 @@ async function _loadDashData(){
   });
   const top=Object.entries(fc).sort(function(a,b){return b[1]-a[1];}).slice(0,7);
 
-  const pizzaColors=['#C1623B','#A8432F','#2ecc71','#4285F4','#c0392b','#8e44ad','#16a085'];
+  const pizzaColors=['#D62828','#A51D1D','#2ecc71','#4285F4','#c0392b','#8e44ad','#16a085'];
 
   // barras
   const vm={};allVisits.forEach(function(r){vm[r.date]=Number(r.count||0);});
@@ -347,7 +347,7 @@ async function _loadDashData(){
   }).join('')||'<p style="color:var(--tx-6);font-size:.78rem;">Sem pedidos no período.</p>';
 
   const clientsH=(clients||[]).map(function(c){
-    return '<div class="client-row">'+(c.photo?'<img src="'+c.photo+'" onerror="this.style.display=\'none\'" alt="">':'<div style="width:32px;height:32px;border-radius:50%;background:#EDE3D4;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;color:var(--tx-4);">G</div>')+'<div class="client-info"><div class="client-name">'+(c.name||'—')+'</div><div class="client-email">'+(c.email||'')+'</div></div><small style="color:var(--tx-6);font-size:.6rem;">'+(c.last_visit?new Date(c.last_visit).toLocaleDateString('pt-BR'):'')+'</small></div>';
+    return '<div class="client-row">'+(c.photo?'<img src="'+c.photo+'" onerror="this.style.display=\'none\'" alt="">':'<div style="width:32px;height:32px;border-radius:50%;background:#F2F2F2;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;color:var(--tx-4);">G</div>')+'<div class="client-info"><div class="client-name">'+(c.name||'—')+'</div><div class="client-email">'+(c.email||'')+'</div></div><small style="color:var(--tx-6);font-size:.6rem;">'+(c.last_visit?new Date(c.last_visit).toLocaleDateString('pt-BR'):'')+'</small></div>';
   }).join('')||'<p style="color:var(--tx-6);font-size:.78rem;">Nenhum cliente cadastrado ainda.</p>';
 
   var saboresBlock='';
@@ -357,11 +357,11 @@ async function _loadDashData(){
     top.forEach(function(e,i){
       var n=e[0],c=e[1];
       var w=Math.round(c/maxTop*100);
-      var colors=['#C1623B','#A8432F','#2ecc71','#4285F4','#c0392b','#8e44ad','#16a085'];
+      var colors=['#D62828','#A51D1D','#2ecc71','#4285F4','#c0392b','#8e44ad','#16a085'];
       var col=colors[i%colors.length];
       saboresBlock+='<div style="margin-bottom:8px;">'
         +'<div style="display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:3px;"><span style="color:var(--tx-2);">'+n+'</span><span style="color:'+col+';font-weight:700;">'+c+'× pedido'+(c>1?'s':'')+'</span></div>'
-        +'<div style="height:10px;background:rgba(46,58,46,.05);border-radius:5px;overflow:hidden;">'
+        +'<div style="height:10px;background:rgba(20,20,20,.05);border-radius:5px;overflow:hidden;">'
         +'<div style="height:100%;width:'+w+'%;background:'+col+';border-radius:5px;transition:width .5s;"></div>'
         +'</div>'
         +'</div>';
@@ -392,18 +392,18 @@ async function _loadDashData(){
     +fbH
     +'<div class="ds-title">🍕 Cardápio</div>'
     +'<button class="m-btn" onclick="closeModal(\'modal-dash\');openEditor()">🍕 EDITAR CARDÁPIO</button>'
-    +'<button class="m-btn" style="background:rgba(193,98,59,.1);color:var(--pr);border:1px solid rgba(193,98,59,.28);margin-top:0;" onclick="closeModal(\'modal-dash\');openBordasAdmin()">🥖 BORDAS</button>'
+    +'<button class="m-btn" style="background:rgba(214,40,40,.1);color:var(--pr);border:1px solid rgba(214,40,40,.28);margin-top:0;" onclick="closeModal(\'modal-dash\');openBordasAdmin()">🥖 BORDAS</button>'
     +'<button class="m-btn" style="background:rgba(46,204,113,.08);color:#1e9e52;border:1px solid rgba(46,204,113,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openAcrescimosAdmin()">➕ ACRÉSCIMOS</button>'
     +'<div class="ds-title">📋 Pedidos</div>'
-    +'<button class="m-btn" style="background:rgba(193,98,59,.18);border:1px solid rgba(193,98,59,.5);" onclick="closeModal(\'modal-dash\');openConversor()">📋 CONVERSOR DE PEDIDO</button>'
+    +'<button class="m-btn" style="background:rgba(214,40,40,.18);border:1px solid rgba(214,40,40,.5);" onclick="closeModal(\'modal-dash\');openConversor()">📋 CONVERSOR DE PEDIDO</button>'
     +'<button class="m-btn" style="background:rgba(46,204,113,.08);color:#1e9e52;border:1px solid rgba(46,204,113,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openPedidosConvertidos()">✅ PEDIDOS CONVERTIDOS</button>'
     +'<div class="ds-title">👥 Clientes & avaliações</div>'
     +'<button class="m-btn" style="background:rgba(66,133,244,.12);border:1px solid rgba(66,133,244,.3);color:#4285F4;" onclick="closeModal(\'modal-dash\');openClientesAdmin()">👥 PAINEL DE CLIENTES</button>'
-    +'<button class="m-btn" style="background:rgba(193,98,59,.1);color:var(--pr);border:1px solid rgba(193,98,59,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openGerenciarFb()">💬 GERENCIAR AVALIAÇÕES</button>'
+    +'<button class="m-btn" style="background:rgba(214,40,40,.1);color:var(--pr);border:1px solid rgba(214,40,40,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openGerenciarFb()">💬 GERENCIAR AVALIAÇÕES</button>'
     +'<div class="ds-title">⚙ Loja</div>'
-    +'<button class="m-btn" style="background:rgba(193,98,59,.1);color:var(--pr);border:1px solid rgba(193,98,59,.25);" onclick="closeModal(\'modal-dash\');openConfig()">⚙ CONFIGURAÇÕES</button>'
-    +'<button class="m-btn" style="background:rgba(193,98,59,.1);color:var(--pr);border:1px solid rgba(193,98,59,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openMusicAdmin()">🎵 PLAYLIST</button>'
-    +'<button class="m-btn-sec" style="color:var(--se);border-color:rgba(168,67,47,.25);margin-top:16px;" onclick="exitAdminEditMode();closeModal(\'modal-dash\');">🔒 SAIR DO ADMIN</button>'
+    +'<button class="m-btn" style="background:rgba(214,40,40,.1);color:var(--pr);border:1px solid rgba(214,40,40,.25);" onclick="closeModal(\'modal-dash\');openConfig()">⚙ CONFIGURAÇÕES</button>'
+    +'<button class="m-btn" style="background:rgba(214,40,40,.1);color:var(--pr);border:1px solid rgba(214,40,40,.25);margin-top:0;" onclick="closeModal(\'modal-dash\');openMusicAdmin()">🎵 PLAYLIST</button>'
+    +'<button class="m-btn-sec" style="color:var(--se);border-color:rgba(165,29,29,.25);margin-top:16px;" onclick="exitAdminEditMode();closeModal(\'modal-dash\');">🔒 SAIR DO ADMIN</button>'
     +'<button class="m-btn-sec" onclick="closeModal(\'modal-dash\')" style="margin-top:4px;">Fechar</button>';
 }
 
