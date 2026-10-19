@@ -435,3 +435,4 @@ e sem `STAFF_PASSWORD`. É temporário: trocar por senha forte (e reativar o lim
 - Cartaz "Promoções" agora leva ao combo 2 por R$ 65 (`#combo-card-combo65`), não ao broto.
 - Carrinho da loja em tema CLARO: bloco "CARRINHO CLARO" no fim de `assets/site.css` (fundo branco, corpo cinza-claro com cartões brancos, títulos com barra vermelha, total em vermelho).
 - Esfihas: 8 sabores (6 salgadas + doces Confete e Brigadeiro, `ESFIHA_SABORES`); o combo sem sabor escolhido usa só as salgadas (`ESFIHA_PADRAO`). Doces aparecem com etiqueta "doce" na loja e no Caixa.
+- Selos de entrega (grátis / taxa única): componente `.eg-selo` (+ `.mini`, `.taxa`) em `assets/site.css`, ícones SVG em `EG_ICONES` (`shared/utils.js`), mensagens do carrinho `.eg-cart` com barra `egProgresso`. Sem emoji nem sinais de teclado nos textos.

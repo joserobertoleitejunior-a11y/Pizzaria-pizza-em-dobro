@@ -1136,16 +1136,34 @@ a.credito-txt{text-decoration:none;display:block}
 @media (prefers-reduced-motion:reduce){.sk{animation:none}}
 @view-transition{navigation:auto}
 
-/* ── ENTREGA GRÁTIS (3+ combos) ── */
-.entrega-gratis-card{display:flex;align-items:center;gap:14px;max-width:480px;margin:14px auto;padding:16px 18px;border-radius:18px;background:linear-gradient(135deg,#16A34A,#15803D);color:#fff;box-shadow:0 10px 26px rgba(22,163,74,.35);border:2px solid #86EFAC;}
-.eg-icone{font-size:2.4rem;line-height:1;flex:none;animation:egPulso 1.8s ease-in-out infinite}
-.eg-txt b{display:block;font-family:'Archivo Black','Work Sans',sans-serif;font-size:1.35rem;letter-spacing:.5px}
-.eg-txt span{display:block;font-size:1rem;line-height:1.4;margin-top:2px}
-.eg-txt strong{color:#FEF08A}
-.eg-faixa{max-width:480px;margin:0 auto 12px;padding:10px 14px;border-radius:12px;background:#ECFDF5;color:#065F46;border:1px solid #6EE7B7;font-size:.98rem;line-height:1.35;text-align:center}
-@keyframes egPulso{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
-@media (prefers-reduced-motion:reduce){.eg-icone{animation:none}}
-@media (min-width:900px){.entrega-gratis-card,.eg-faixa{max-width:760px}}
+/* ── SELOS DE ENTREGA (grátis / taxa única) — mesma linguagem visual em todo o site ── */
+.eg-selo{position:relative;display:flex;align-items:center;gap:16px;max-width:480px;width:calc(100% - 32px);margin:16px auto;padding:16px 18px;border-radius:22px;overflow:hidden;color:#fff;
+  background:linear-gradient(135deg,#14532D 0%,#15803D 45%,#22C55E 100%);border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 14px 30px rgba(21,128,61,.42),inset 0 1px 0 rgba(255,255,255,.4)}
+.eg-selo.taxa{background:linear-gradient(135deg,#7F1D1D 0%,#B91C1C 50%,#EF4444 100%);box-shadow:0 14px 30px rgba(185,28,28,.42),inset 0 1px 0 rgba(255,255,255,.4)}
+.eg-selo::before{content:"";position:absolute;right:-30px;top:-40px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 70%);pointer-events:none}
+.eg-selo::after{content:"";position:absolute;top:0;bottom:0;width:60px;left:-80px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-18deg);animation:egBrilho 4.5s ease-in-out infinite;pointer-events:none}
+.eg-ico{flex:none;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.2);box-shadow:0 0 0 6px rgba(255,255,255,.12),inset 0 1px 0 rgba(255,255,255,.5)}
+.eg-ico svg{width:36px;height:36px;color:#fff}
+.eg-t{position:relative;z-index:1;min-width:0}
+.eg-t b{display:block;font-family:'Archivo Black','Work Sans',sans-serif;font-size:1.25rem;letter-spacing:.3px;text-transform:uppercase;line-height:1.1}
+.eg-t span{display:block;font-size:.98rem;line-height:1.4;margin-top:4px;color:rgba(255,255,255,.95)}
+.eg-t strong{color:#FEF08A;font-weight:800}
+.eg-chip{display:inline-block;margin-top:8px;font-style:normal;background:#FEF08A;color:#713F12;border-radius:999px;padding:4px 12px;font-weight:800;font-size:.8rem}
+.eg-selo.mini{margin:0 auto 14px;padding:11px 14px;border-radius:16px;gap:12px}
+.eg-selo.mini .eg-ico{width:46px;height:46px;box-shadow:0 0 0 4px rgba(255,255,255,.12)}
+.eg-selo.mini .eg-ico svg{width:28px;height:28px}
+.eg-selo.mini .eg-t b{font-size:1.02rem}
+.eg-selo.mini .eg-t span{font-size:.88rem;margin-top:2px}
+/* mensagens do carrinho */
+.eg-cart{display:flex;align-items:center;gap:8px;margin-top:6px;padding:7px 10px;border-radius:12px;background:#FFFBEB;border:1px solid #FCD34D;color:#92400E;font-weight:700;font-size:.86rem;line-height:1.25}
+.eg-cart svg{width:24px;height:24px;flex:none}
+.eg-cart.ok{background:#ECFDF5;border-color:#6EE7B7;color:#047857}
+.eg-prog{display:block;height:7px;border-radius:7px;background:#E5E7EB;margin-top:7px;overflow:hidden}
+.eg-prog i{display:block;height:100%;border-radius:7px;background:linear-gradient(90deg,#F59E0B,#22C55E);transition:width .35s}
+@keyframes egBrilho{0%,55%{left:-80px}100%{left:120%}}
+@media (prefers-reduced-motion:reduce){.eg-selo::after{animation:none}}
+@media (min-width:900px){.eg-selo{max-width:760px}}
 
 /* ══════════════════════════════════════════════════════════
    CARRINHO CLARO — fundo branco, cada bloco bem separado e fácil de distinguir
@@ -1193,3 +1211,5 @@ a.credito-txt{text-decoration:none;display:block}
 @media (min-width:900px){#cart-bar{border-radius:20px!important;}}
 
 .esf-doce{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:#FEF3C7;color:#92400E;font-size:.72rem;font-weight:700;vertical-align:middle}
+#cart-bar #delivery-msg .eg-cart,#cart-bar #delivery-msg .eg-cart span{color:#92400E!important}
+#cart-bar #delivery-msg .eg-cart.ok,#cart-bar #delivery-msg .eg-cart.ok span{color:#047857!important}

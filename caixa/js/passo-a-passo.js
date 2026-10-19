@@ -71,7 +71,7 @@ function ppRender(){
   }else if(_pp.passo==='entrega'){
     titulo='Entrega ou retirada?';
     const np=pizzasNoCaixa(), nc=combosNoCaixa(), gratis=np>=PIZZAS_ENTREGA_GRATIS||nc>=COMBOS_ENTREGA_GRATIS;
-    corpo=`<div class="pp-duas"><button type="button" class="pp-grande sim" onclick="ppFechar('entrega')">🛵 Entrega<small>${gratis?'🎁 entrega GRÁTIS neste pedido':(np>0?'faltam '+Math.max(1,PIZZAS_ENTREGA_GRATIS-np)+' pizza(s) para entrega grátis':'taxa padrão')}</small></button><button type="button" class="pp-grande" onclick="ppFechar('retirada')">🏠 Retirada<small>cliente busca no balcão</small></button></div>`;
+    corpo=`<div class="pp-duas"><button type="button" class="pp-grande sim" onclick="ppFechar('entrega')">Entrega<small>${gratis?'Entrega GRÁTIS neste pedido':(np>0?'faltam '+Math.max(1,PIZZAS_ENTREGA_GRATIS-np)+' pizza(s) para entrega grátis':'taxa padrão')}</small></button><button type="button" class="pp-grande" onclick="ppFechar('retirada')">Retirada<small>cliente busca no balcão</small></button></div>`;
     rodape=`<button type="button" class="pp-sec" onclick="ppIr('bebida')">← Voltar</button>`;
   }
   t.textContent=titulo; b.innerHTML=corpo; f.innerHTML=rodape+_ppResumo();

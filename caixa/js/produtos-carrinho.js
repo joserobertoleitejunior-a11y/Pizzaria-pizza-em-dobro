@@ -362,8 +362,8 @@ function renderCartItems(){
   const aviso=document.getElementById('aviso-entrega-gratis');
   if(aviso){
     const np=pizzasNoCaixa(), nc=combosNoCaixa(), ent=document.getElementById('f-tipo')?.value==='entrega';
-    if(ent&&caixaEntregaGratis()){ aviso.textContent='🎁 ENTREGA GRÁTIS — '+(np>=PIZZAS_ENTREGA_GRATIS?np+' pizzas':nc+' combos')+' no pedido'; aviso.style.display='block'; }
-    else if(ent&&!window._taxaManual&&np>0){ aviso.textContent='🎁 Faltam '+Math.max(1,PIZZAS_ENTREGA_GRATIS-np)+' pizza(s) para entrega grátis'; aviso.style.display='block'; }
+    if(ent&&caixaEntregaGratis()){ aviso.innerHTML=EG_ICONES.moto+'<span>Entrega grátis: '+(np>=PIZZAS_ENTREGA_GRATIS?np+' pizzas':nc+' combos')+' no pedido</span>'; aviso.style.display='flex'; }
+    else if(ent&&!window._taxaManual&&np>0){ aviso.innerHTML=EG_ICONES.presente+'<span>Faltam '+Math.max(1,PIZZAS_ENTREGA_GRATIS-np)+' pizza(s) para a entrega ser grátis</span>'; aviso.style.display='flex'; }
     else aviso.style.display='none';
   }
   document.getElementById('tot-taxa').textContent=fmt(taxa);

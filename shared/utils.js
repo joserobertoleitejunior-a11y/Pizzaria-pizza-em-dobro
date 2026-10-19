@@ -89,6 +89,13 @@ const ESFIHA_SABORES=['Carne','Frango Catupiry','Mussarela','Calabresa','Bacon',
 const ESFIHA_PADRAO=['Carne','Frango Catupiry','Mussarela','Calabresa','Bacon','Mista'];
 const ESFIHA_PRECO_UN=5.00;
 const ESFIHA_PACOTES=[{qtd:10,preco:50.00},{qtd:20,preco:90.00},{qtd:30,preco:130.00}];
+// Ícones de traço usados nos selos de entrega (SVG, sem emoji)
+const EG_ICONES={
+  moto:'<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="35" r="6"/><circle cx="38" cy="35" r="6"/><path d="M17 35h12l5-15h-8"/><path d="M34 20l4 15"/><path d="M28 12h7l3 8"/><path d="M5 22h10M3 28h8"/></svg>',
+  presente:'<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="19" width="34" height="22" rx="3"/><path d="M5 13h38v6H5zM24 13v28"/><path d="M24 13c-3-7-11-7-10-2 .5 3 6 2 10 2zM24 13c3-7 11-7 10-2-.5 3-6 2-10 2z"/></svg>'
+};
+function egProgresso(atual,meta){ const p=Math.max(0,Math.min(100,Math.round(atual/meta*100))); return '<span class="eg-prog" aria-hidden="true"><i style="width:'+p+'%"></i></span>'; }
+
 // ── ENTREGA GRÁTIS: 3 ou mais combos no mesmo pedido (combo de pizza "2 por X", combo broto e
 // combos de esfiha — cada 10 esfihas = 1 combo). Muda aqui pra mudar na loja, no Caixa e no WhatsApp.
 const COMBOS_ENTREGA_GRATIS=3;
