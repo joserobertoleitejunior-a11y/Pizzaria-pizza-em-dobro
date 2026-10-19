@@ -400,3 +400,8 @@ e sem `STAFF_PASSWORD`. É temporário: trocar por senha forte (e reativar o lim
 - Fim da loja (`index.html`): `#local-section` = mapa (carrega só ao chegar perto) + botões **Waze** e **Google Maps** + **Avaliações no Google** (ver / avaliar). Endereço vem de `getEndereco()` (config da loja). Pra abrir direto a janela de avaliar, gravar o Place ID do Google na config `gplace` (`getCfg('gplace')`). Código: `js/ui-shell.js` (`iniciarLocal`).
 - Rodapé `#rodape`: marca, atalhos, contato, crédito "Vibe Coding Process" com cubo 3D CSS (`.cubo`, só transform — leve) e direitos autorais. CSS no fim de `assets/site.css`.
 - Caixa: faixa "Hoje" (vendas/total/ticket/gaveta) em `#resumo-rail` (`pintarResumoRail`, `atualizarTotaisHoje` em `caixa/js/produtos-carrinho.js`); barra do total sempre colada embaixo.
+
+## Impressora térmica (POS-5890U) e impressão automática
+- `caixa/js/impressora.js`: USB (WebUSB), Bluetooth LE e **AUTO** (driver do Windows via `window.print()` num iframe, silencioso com Chrome `--kiosk-printing`). `impressoraPronta()` é o teste único usado por Caixa/notificações/fechamento.
+- Acentos: texto convertido pra tabela da impressora (`cp850` padrão, `cp1252` ou `sem` acento). Botão "Teste" imprime uma linha com acentos e troca o modo a cada toque (salvo em `localStorage.ped_acento`).
+- Pedido do site chegando + impressora pronta → imprime e finaliza sozinho (`iniciarEscutaNotificacoes` em `notificacoes.js`). Sem impressora → entra na fila de notificações com som.

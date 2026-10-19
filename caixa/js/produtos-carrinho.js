@@ -682,7 +682,7 @@ async function reimprimir(id){
     const doc=await FS.collection('orders').doc(id).get();
     if(!doc.exists){ alert('Pedido não encontrado.'); return; }
     const pedido={id:doc.id,...doc.data()};
-    if(btChar||usbEndpointOut){
+    if(impressoraPronta()){
       await imprimirBluetooth(formatarCupom(pedido));
       avisoRapido('🖨️ Enviado pra impressora');
     }else{

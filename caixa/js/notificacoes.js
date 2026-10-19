@@ -114,11 +114,11 @@ function iniciarEscutaNotificacoes(){
       const ehDaLoja = o.origem!=='caixa' && (o.status==='novo'||!o.status);
       if(!ehDaLoja) return;
       // pedido do site ou do bot + impressora conectada aqui no caixa → imprime e finaliza sozinho
-      if((o.origem==='loja') && (btChar||usbEndpointOut)){
+      if((o.origem==='loja') && impressoraPronta()){
         finalizarPedidoAutomaticoBot(o);
       }else{
         filaNotificacoes.push(o); chegouNovo=true;
-        if((o.origem==='loja') && !btChar && !usbEndpointOut) mostrarAlertaImpressora();
+        if((o.origem==='loja') && !impressoraPronta()) mostrarAlertaImpressora();
       }
     });
     if(chegouNovo) tocarSom();

@@ -191,7 +191,7 @@ async function fecharCaixa(){
     const txt='FECHAMENTO DO CAIXA\n'+new Date().toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})+'\n--------------------------------\n'
       +(linhas.length?linhas.join('\n'):'Sem vendas no turno')+'\n--------------------------------\nTotal vendido: '+fmt(totalGeral)
       +'\nTroco inicial: '+fmt(abertura)+'\nDinheiro esperado na gaveta: '+fmt(abertura+dinheiro)+'\n\n\n';
-    try{ if(typeof btChar!=='undefined'&&(btChar||usbEndpointOut)) await imprimirBluetooth(txt); }catch(e){ console.warn('Resumo do fechamento não foi impresso:',e); }
+    try{ if(typeof btChar!=='undefined'&&impressoraPronta()) await imprimirBluetooth(txt); }catch(e){ console.warn('Resumo do fechamento não foi impresso:',e); }
     alert(txt.replace(/\n\n\n$/,''));
     sessaoCaixaAtual=null;
     mostrarCaixaFechado();
