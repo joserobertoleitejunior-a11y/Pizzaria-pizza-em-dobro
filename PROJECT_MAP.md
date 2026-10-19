@@ -433,3 +433,4 @@ e sem `STAFF_PASSWORD`. É temporário: trocar por senha forte (e reativar o lim
 - Caixa rápido: Combos por toque nos sabores (`cmbToque`, entra sozinho ao escolher o 2º), Esfihas com botões 10/20/30 (sabores padrão, `esfCxPacote`) + contadores, Bebidas com − qtd + (`ajustarQtdSimples`, item `simples|id`). Carrinho vazio sempre R$ 0,00 (antes mostrava a taxa).
 - Caixa passo a passo (`caixa/js/passo-a-passo.js`, botão "🧭 Montar pedido passo a passo"): tipo de pedido → itens (reusa combos/esfihas/pizza/meia) → "Mais alguma coisa?" → "Quer bebida?" (sim: quantidades) → entrega/retirada → carrinho final. Ganchos: `ppAposAdicionar()` chamado ao adicionar item.
 - Cartaz "Promoções" agora leva ao combo 2 por R$ 65 (`#combo-card-combo65`), não ao broto.
+- Carrinho da loja em tema CLARO: bloco "CARRINHO CLARO" no fim de `assets/site.css` (fundo branco, corpo cinza-claro com cartões brancos, títulos com barra vermelha, total em vermelho).

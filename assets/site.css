@@ -1146,3 +1146,48 @@ a.credito-txt{text-decoration:none;display:block}
 @keyframes egPulso{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
 @media (prefers-reduced-motion:reduce){.eg-icone{animation:none}}
 @media (min-width:900px){.entrega-gratis-card,.eg-faixa{max-width:760px}}
+
+/* ══════════════════════════════════════════════════════════
+   CARRINHO CLARO — fundo branco, cada bloco bem separado e fácil de distinguir
+   (topo com total · seu pedido · como receber · dados · pagamento · enviar)
+   ══════════════════════════════════════════════════════════ */
+#cart-bar{background:#FFFFFF!important;color:#111827!important;border:1px solid #E5E7EB!important;border-top:4px solid var(--pr)!important;box-shadow:0 -10px 40px rgba(0,0,0,.28)!important;}
+#cart-hint-row{background:#FFFFFF;padding-top:10px;}
+#cart-hint{color:#6B7280!important;opacity:1!important;font-weight:700;}
+#cart-bar .cart-mid-lbl{color:#374151!important;opacity:1!important;font-weight:800;}
+#cart-bar #delivery-msg{color:#4B5563!important;}
+#cart-bar #delivery-msg b{color:#B45309!important;}
+#cart-bar #delivery-msg span{color:#15803D!important;}
+#cart-bar #total-val{color:#D62828!important;}
+#cart-body{background:#F3F4F6;padding:14px 14px 24px!important;border-top:1px solid #E5E7EB;}
+#cart-bar .cart-sec-titulo{color:#111827!important;font-size:.9rem;letter-spacing:.6px;margin:18px 0 8px;padding-left:10px;border-left:5px solid var(--pr);line-height:1.1;}
+#cart-bar #order-summary{background:#FFFFFF;border:1px solid #E5E7EB;border-radius:16px;padding:4px 14px 8px!important;margin-bottom:8px;box-shadow:0 1px 2px rgba(16,24,40,.06);}
+#cart-bar .sum-item{color:#111827!important;border-bottom:1px solid #E5E7EB!important;}
+#cart-bar .sum-item b{color:#111827!important;}
+#cart-bar .sum-borda,#cart-bar .sum-desc,#cart-bar .sum-rm{color:#4B5563!important;}
+#cart-bar .sum-borda{color:#047857!important;}
+#cart-bar .sum-price{color:#D62828!important;}
+#cart-bar .sum-controls{background:#F3F4F6!important;border:1px solid #E5E7EB;}
+#cart-bar .sum-x{color:#374151!important;}
+#cart-bar .sum-x.mais{color:#D62828!important;}
+#cart-bar .sum-qty{color:#111827;}
+#cart-bar .sum-linha{color:#374151!important;border-bottom:1px dashed #E5E7EB;}
+#cart-bar .sum-linha.ok{color:#15803D!important;font-weight:700;}
+#cart-bar .sum-linha.total{color:#111827!important;border-top:2px solid #111827!important;border-bottom:0;background:#FEF2F2;margin:6px -14px -8px;padding:12px 14px;border-radius:0 0 16px 16px;}
+#cart-bar .sum-linha.total span:last-child{color:#D62828!important;}
+#cart-bar .cart-modo{background:#E5E7EB!important;}
+#cart-bar .cart-modo button{color:#374151!important;background:transparent;}
+#cart-bar .cart-modo button.on{background:var(--pr)!important;color:#fff!important;box-shadow:0 4px 10px rgba(214,40,40,.35)!important;}
+#cart-bar .c-input{background:#FFFFFF!important;color:#111827!important;border:1.5px solid #D1D5DB!important;}
+#cart-bar .c-input::placeholder{color:#9CA3AF!important;}
+#cart-bar .c-input:focus{border-color:var(--pr)!important;box-shadow:0 0 0 3px rgba(214,40,40,.15);outline:0;}
+#cart-bar .btn-local{background:#EFF6FF!important;color:#1D4ED8!important;border:1.5px solid #BFDBFE!important;}
+#cart-bar #addr-suggestions{background:#FFFFFF!important;border:1px solid #D1D5DB!important;color:#111827!important;}
+#addr-suggestions *{color:#111827;}
+#cart-bar .pay-chips button{background:#FFFFFF!important;color:#111827!important;border:1.5px solid #D1D5DB!important;}
+#cart-bar .pay-chips button.on{background:var(--pr)!important;color:#fff!important;border-color:var(--pr)!important;}
+#cart-bar #del-time{background:#FFFFFF;border:1px solid #E5E7EB;border-radius:12px;padding:10px 12px;color:#374151!important;}
+#cart-bar #del-time b{color:#111827!important;}
+#cart-bar .cart-tip{background:#FFFBEB!important;color:#92400E!important;border-left-color:#F59E0B!important;}
+#cart-google-cta .ggl-login-btn{box-shadow:0 2px 6px rgba(37,211,102,.35);}
+@media (min-width:900px){#cart-bar{border-radius:20px!important;}}
