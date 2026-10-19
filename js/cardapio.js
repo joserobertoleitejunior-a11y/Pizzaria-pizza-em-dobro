@@ -170,7 +170,7 @@ function renderEsfihas(){
       <div class="esf-barra" aria-hidden="true"><div class="esf-barra-fill" id="esf-barra-fill"></div><i style="left:33.3%"></i><i style="left:66.6%"></i></div>
       <div class="esf-prox" id="esf-prox">Toque num pacote ou escolha os sabores abaixo.</div>
       <div class="esf-lista">`+
-      ESFIHA_SABORES.map((sab,i)=>`<div class="esf-linha"><span class="esf-nome">${sab}</span>
+      ESFIHA_SABORES.map((sab,i)=>`<div class="esf-linha"><span class="esf-nome">${sab}${ESFIHA_PADRAO.includes(sab)?'':' <small class="esf-doce">🍫 doce</small>'}</span>
         <div class="controls"><button class="btn-action btn-minus" onclick="esfMudar(${i},-1)" aria-label="menos ${sab}">−</button>
         <span class="qty-val" id="esf-q-${i}">0</span>
         <button class="btn-action btn-plus" onclick="esfMudar(${i},1)" aria-label="mais ${sab}">+</button></div></div>`).join('')+

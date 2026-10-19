@@ -1191,3 +1191,5 @@ a.credito-txt{text-decoration:none;display:block}
 #cart-bar .cart-tip{background:#FFFBEB!important;color:#92400E!important;border-left-color:#F59E0B!important;}
 #cart-google-cta .ggl-login-btn{box-shadow:0 2px 6px rgba(37,211,102,.35);}
 @media (min-width:900px){#cart-bar{border-radius:20px!important;}}
+
+.esf-doce{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:#FEF3C7;color:#92400E;font-size:.72rem;font-weight:700;vertical-align:middle}

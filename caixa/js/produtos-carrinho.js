@@ -139,7 +139,7 @@ function renderEsfihasCaixa(grid){
     <div class="esf-cx-titulo">🥟 Esfihas — R$ 5,00 cada</div>
     <div class="esf-cx-rapido">`+ESFIHA_PACOTES.map(pk=>`<button type="button" class="esf-pk" onclick="esfCxPacote(${pk.qtd})"><b>${pk.qtd}</b><span>esfihas</span><em>${fmt(pk.preco)}</em></button>`).join('')+`</div>
     <div class="esf-cx-dica">Toque num combo: entra no caixa com os <b>sabores padrão</b>. Quer escolher os sabores? Use + e − abaixo e toque em Adicionar.</div>`+
-    ESFIHA_SABORES.map((s,i)=>`<div class="esf-cx-linha"><span>${s}</span>
+    ESFIHA_SABORES.map((s,i)=>`<div class="esf-cx-linha"><span>${s}${ESFIHA_PADRAO.includes(s)?'':' <small style="color:#B45309;font-weight:700">(doce)</small>'}</span>
       <span class="esf-cx-ctl"><button type="button" onclick="esfCxMudar(${i},-1)">−</button><b id="cx-esf-q-${i}">${_esfCx[s]||0}</b><button type="button" class="mais" onclick="esfCxMudar(${i},1)">+</button></span></div>`).join('')+
     `<div id="cx-esf-resumo" class="esf-cx-resumo"></div>
     <button type="button" class="esf-cx-add" onclick="adicionarEsfihasCaixa()">+ Adicionar esfihas escolhidas</button></div>`;

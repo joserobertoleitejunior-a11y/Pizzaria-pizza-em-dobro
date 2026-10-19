@@ -1,4 +1,4 @@
-const CACHE='ped-v49'; // versão bumped: reforma visual completa (cores, splash, imagens geradas por
+const CACHE='ped-v50'; // versão bumped: reforma visual completa (cores, splash, imagens geradas por
 // código) — sem isso o service worker antigo (sem clients.claim()) ficava "preso" controlando
 // as abas já abertas até o cliente fechar TODAS as abas do site manualmente, então toda
 // atualização de verdade parecia "não ter saído do ar" pra quem já tinha visitado antes.

@@ -81,10 +81,12 @@ const COMBOS_DEFAULT=[
 // ── Combo BROTO: 2 pizzas broto por R$ 50,00, QUALQUER sabor (tradicional ou especial), pode repetir ──
 const COMBO_BROTO={id:'broto50', preco:50.00, titulo:'2 Broto por R$ 50,00'};
 
-// ── ESFIHAS: R$ 5,00 cada, 6 sabores. O cliente monta o próprio combo: 10 por R$ 50, 20 por R$ 90,
+// ── ESFIHAS: R$ 5,00 cada, 6 salgadas + 2 doces (Confete, Brigadeiro). O cliente monta o próprio combo: 10 por R$ 50, 20 por R$ 90,
 // 30 por R$ 130 (o de 10 custa igual a 10 avulsas). Qualquer quantidade é cobrada pelo MENOR preço
 // combinando pacotes de 20/30 + avulsas (ex.: 25 = 20 por 90 + 5 avulsas = R$ 115).
-const ESFIHA_SABORES=['Carne','Frango Catupiry','Mussarela','Calabresa','Bacon','Mista'];
+const ESFIHA_SABORES=['Carne','Frango Catupiry','Mussarela','Calabresa','Bacon','Mista','Confete','Brigadeiro'];
+// Sabores usados quando o cliente não escolhe (só salgadas — as doces, Confete e Brigadeiro, só entram se pedidas)
+const ESFIHA_PADRAO=['Carne','Frango Catupiry','Mussarela','Calabresa','Bacon','Mista'];
 const ESFIHA_PRECO_UN=5.00;
 const ESFIHA_PACOTES=[{qtd:10,preco:50.00},{qtd:20,preco:90.00},{qtd:30,preco:130.00}];
 // ── ENTREGA GRÁTIS: 3 ou mais combos no mesmo pedido (combo de pizza "2 por X", combo broto e
@@ -99,7 +101,7 @@ function combosDeEsfiha(n){ return Math.floor((Number(n)||0)/10); }
 function esfDistribuirPadrao(n, base){
   const cont=Object.assign({},base||{});
   let falta=Math.max(0,Math.floor(Number(n)||0)-ESFIHA_SABORES.reduce((t,s)=>t+(cont[s]||0),0));
-  for(let k=0;falta>0;k++,falta--){ const s=ESFIHA_SABORES[k%ESFIHA_SABORES.length]; cont[s]=(cont[s]||0)+1; }
+  for(let k=0;falta>0;k++,falta--){ const s=ESFIHA_PADRAO[k%ESFIHA_PADRAO.length]; cont[s]=(cont[s]||0)+1; }
   return cont;
 }
 
@@ -198,5 +200,5 @@ function bordaReal(b){
 }
 
 if(typeof module!=='undefined' && module.exports){
-  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao, bordaReal, COMBOS_ENTREGA_GRATIS, PIZZAS_ENTREGA_GRATIS, combosDeEsfiha, esfDistribuirPadrao };
+  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PADRAO, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao, bordaReal, COMBOS_ENTREGA_GRATIS, PIZZAS_ENTREGA_GRATIS, combosDeEsfiha, esfDistribuirPadrao };
 }
