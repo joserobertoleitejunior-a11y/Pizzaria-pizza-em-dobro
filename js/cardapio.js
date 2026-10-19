@@ -187,8 +187,8 @@ function esfMudar(i,d){
 }
 // atalho: já deixa o total do pacote, distribuindo igualmente (o cliente depois ajusta)
 function esfSugerir(qtd){
-  ESFIHA_SABORES.forEach(s=>_esf[s]=0);
-  for(let k=0;k<qtd;k++){ const s=ESFIHA_SABORES[k%ESFIHA_SABORES.length]; _esf[s]++; }
+  const padrao=esfDistribuirPadrao(qtd);
+  ESFIHA_SABORES.forEach(s=>_esf[s]=padrao[s]||0);
   esfAtualizar();
 }
 function esfAtualizar(){

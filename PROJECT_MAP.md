@@ -427,3 +427,4 @@ e sem `STAFF_PASSWORD`. É temporário: trocar por senha forte (e reativar o lim
 - Destaques: cartão verde "ENTREGA GRÁTIS" (`#entrega-gratis-card`), faixas `.eg-faixa` nas seções Combos e Esfihas, e mensagem de progresso ("faltam N combos") no carrinho.
 - Cupom da cozinha (`formatarCupom`): sem preço por item, sabores um por linha (`linhasDoItem`), ESC/POS alinhado à esquerda e em negrito; no modo AUTO (navegador) fonte Arial negrito 13px, largura 46mm (a área imprimível de 58mm é ~48mm).
 - Botão "📥 Pedidos" (`autoPedidosAtivo`): define qual aparelho imprime sozinho os pedidos do site (notebook: sim; celular: só avisa). Duplicata no servidor: mesma pessoa + mesmo total só em 90 s.
+- Conversor: brotos vêm 1 item por pizza e `consolidarBrotos` junta de 2 em 2 (2 sabores = 1 combo); esfihas sem sabor usam `esfDistribuirPadrao` (mesma distribuição do site, `esfSugerir`) com `esfihas_total`; qtd de combos iguais respeitada. Testes em `tests/colar.test.js`.

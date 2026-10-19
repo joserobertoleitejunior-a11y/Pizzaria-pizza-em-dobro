@@ -92,6 +92,15 @@ const ESFIHA_PACOTES=[{qtd:10,preco:50.00},{qtd:20,preco:90.00},{qtd:30,preco:13
 const COMBOS_ENTREGA_GRATIS=3;
 function combosDeEsfiha(n){ return Math.floor((Number(n)||0)/10); }
 
+// Sabores padrão de um combo de esfihas sem sabor escolhido: divide igualmente na ordem do cardápio
+// (10 = 2 Carne, 2 Frango Catupiry, 2 Mussarela, 2 Calabresa, 1 Bacon, 1 Mista). Igual ao botão do site.
+function esfDistribuirPadrao(n, base){
+  const cont=Object.assign({},base||{});
+  let falta=Math.max(0,Math.floor(Number(n)||0)-ESFIHA_SABORES.reduce((t,s)=>t+(cont[s]||0),0));
+  for(let k=0;falta>0;k++,falta--){ const s=ESFIHA_SABORES[k%ESFIHA_SABORES.length]; cont[s]=(cont[s]||0)+1; }
+  return cont;
+}
+
 function precoEsfihas(n){
   n=Math.max(0,Math.floor(Number(n)||0));
   const f=[0];
@@ -187,5 +196,5 @@ function bordaReal(b){
 }
 
 if(typeof module!=='undefined' && module.exports){
-  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao, bordaReal, COMBOS_ENTREGA_GRATIS, combosDeEsfiha };
+  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao, bordaReal, COMBOS_ENTREGA_GRATIS, combosDeEsfiha, esfDistribuirPadrao };
 }
