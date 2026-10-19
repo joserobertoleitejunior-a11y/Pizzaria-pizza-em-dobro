@@ -88,6 +88,7 @@ function ajustarQtdSimples(id,d){
   c.qty+=d;
   if(c.qty<=0) cart.splice(cart.indexOf(c),1);
   atualizarBarraCarrinho(); renderProdutos();
+  if(window._ppAtivo&&typeof ppRender==='function') ppRender();
 }
 
 // ── COMBOS: toque nos 2 sabores e já entra no caixa (nada de listas suspensas) ──
@@ -107,9 +108,10 @@ function _cardCombo(tierId,titulo,preco,sabores,permiteRepetir,dica){
     <div class="chips-sab">${_chipsCombo(tierId,sabores,permiteRepetir)}</div>
   </div>`;
 }
+let _cmbAlvo=null, _cmbSo=null;
 function cmbToque(tierId,sab,permiteRepetir){
   let sel=_cmbSel[tierId]=_cmbSel[tierId]||[];
-  if(sel.length===1&&sel[0]===sab&&!permiteRepetir){ _cmbSel[tierId]=[]; renderCombosCaixa(document.getElementById('prod-grid')); return; } // tocar de novo desmarca
+  if(sel.length===1&&sel[0]===sab&&!permiteRepetir){ _cmbSel[tierId]=[]; renderCombosCaixa(_cmbAlvo||document.getElementById('prod-grid'),_cmbSo); return; } // tocar de novo desmarca
   sel.push(sab);
   if(sel.length===2){
     if(tierId==='broto50') adicionarBrotoAoCarrinho(sel[0],sel[1],1);
@@ -117,15 +119,17 @@ function cmbToque(tierId,sab,permiteRepetir){
     _cmbSel[tierId]=[];
     atualizarBarraCarrinho();
     avisoRapido('✓ Combo adicionado');
+    if(typeof ppAposAdicionar==='function') ppAposAdicionar();
   }
-  renderCombosCaixa(document.getElementById('prod-grid'));
+  renderCombosCaixa(_cmbAlvo||document.getElementById('prod-grid'),_cmbSo);
 }
-function renderCombosCaixa(grid){
+function renderCombosCaixa(grid,so){
+  _cmbAlvo=grid; _cmbSo=so||null;
   if(typeof COMBOS_DEFAULT==='undefined'){ grid.innerHTML='<div class="empty">Combos indisponíveis.</div>'; return; }
   const saboresBroto=DEFAULT_MENU.filter(i=>i.cat==='p'||i.cat==='s').map(i=>i.n).sort((a,b)=>a.localeCompare(b,'pt-BR'));
   grid.innerHTML='<div class="cmb-lista">'+
-    _cardCombo('broto50',COMBO_BROTO.titulo,COMBO_BROTO.preco,saboresBroto,true,'Toque nos 2 sabores (qualquer pizza, pode repetir)')+
-    COMBOS_DEFAULT.map(c=>_cardCombo(c.id,c.titulo,c.preco,c.sabores,false,'Toque em 2 sabores diferentes')).join('')+'</div>';
+    (so==='combos'?'':_cardCombo('broto50',COMBO_BROTO.titulo,COMBO_BROTO.preco,saboresBroto,true,'Toque nos 2 sabores (qualquer pizza, pode repetir)'))+
+    (so==='broto'?'':COMBOS_DEFAULT.map(c=>_cardCombo(c.id,c.titulo,c.preco,c.sabores,false,'Toque em 2 sabores diferentes')).join(''))+'</div>';
 }
 
 // ── ESFIHAS (R$ 5 cada; 10 = R$ 50, 20 = R$ 90, 30 = R$ 130) — mesma regra e mesmo preço do site ──
@@ -144,6 +148,7 @@ function renderEsfihasCaixa(grid){
 function esfCxPacote(qtd){
   adicionarEsfihasAoCarrinho(esfDistribuirPadrao(qtd),1);
   atualizarBarraCarrinho(); avisoRapido('✓ Combo de '+qtd+' esfihas adicionado');
+  if(typeof ppAposAdicionar==='function') ppAposAdicionar();
 }
 function esfCxMudar(i,d){ const s=ESFIHA_SABORES[i]; _esfCx[s]=Math.max(0,Math.min(120,(_esfCx[s]||0)+d)); esfCxAtualizar(); }
 function esfCxAtualizar(){
@@ -156,6 +161,7 @@ function adicionarEsfihasCaixa(){
   adicionarEsfihasAoCarrinho(_esfCx,1);
   ESFIHA_SABORES.forEach(s=>_esfCx[s]=0); esfCxAtualizar();
   atualizarBarraCarrinho(); avisoRapido('✓ Esfihas adicionadas');
+  if(typeof ppAposAdicionar==='function') ppAposAdicionar();
 }
 // ── FUNÇÃO ÚNICA para montar item de combo — usada pelo botão manual E pelo Colar Pedido,
 // mesma lógica de deduplicação/soma de quantidade do meia a meia (chave determinística, nunca Math.random()).
@@ -273,6 +279,7 @@ function confirmarItem(){
   }
   closeModal('modal-item');
   atualizarBarraCarrinho();
+  if(typeof ppAposAdicionar==='function') ppAposAdicionar();
 }
 
 // ---- MODAL HELPERS ----

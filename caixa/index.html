@@ -321,6 +321,32 @@ body{
 .prod-card.bebida{display:flex;flex-direction:column;gap:4px}
 .prod-card.bebida.tem{border-color:#D62828;background:#FEF2F2}
 .bebida-qtd{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:6px}
+
+/* ── passo a passo ── */
+.pp-abrir{width:100%;margin-bottom:10px;background:#111827;color:#fff;border:0;border-radius:14px;padding:14px;font-size:1.05rem;font-weight:800;cursor:pointer}
+.pp-ov{position:fixed;inset:0;z-index:300;background:#F4F5F7;display:none;flex-direction:column}
+.pp-ov.open{display:flex}
+.pp-top{padding:12px 16px 8px;background:#fff;border-bottom:1px solid #E5E7EB;position:relative}
+.pp-x{position:absolute;right:12px;top:10px;width:44px;height:44px;border-radius:12px;border:1px solid #E5E7EB;background:#F9FAFB;font-size:1.2rem;cursor:pointer}
+.pp-tit{font-size:1.35rem;font-weight:800;padding-right:56px;color:#111827}
+.pp-trilha{display:flex;gap:6px;margin-top:8px}.pp-trilha i{flex:1;height:6px;border-radius:6px;background:#E5E7EB}.pp-trilha i.on{background:#D62828}
+.pp-corpo{flex:1;overflow-y:auto;padding:14px 16px}
+.pp-corpo h4{margin:14px 0 6px;color:#6B7280;font-size:.85rem;letter-spacing:1px;text-transform:uppercase}
+.pp-dica{font-size:1rem;color:#374151;margin:0 0 10px}
+.pp-tipos{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.pp-tipo{display:flex;flex-direction:column;align-items:center;gap:4px;padding:18px 10px;min-height:128px;background:#fff;border:2px solid #E5E7EB;border-radius:18px;cursor:pointer;color:#111827}
+.pp-tipo:active{border-color:#D62828;background:#FEF2F2}
+.pp-ico{font-size:2.2rem;line-height:1}.pp-tipo b{font-size:1.1rem}.pp-tipo small{color:#6B7280;text-align:center}
+.pp-pergunta{font-size:1.5rem;font-weight:800;text-align:center;margin:26px 0 18px;color:#111827}
+.pp-duas{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pp-grande{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:110px;border-radius:18px;border:2px solid #D1D5DB;background:#fff;font-size:1.3rem;font-weight:800;cursor:pointer;color:#111827;padding:10px}
+.pp-grande.sim{background:#D62828;border-color:#D62828;color:#fff}.pp-grande small{font-size:.85rem;font-weight:600;opacity:.85}
+.pp-lista{background:#fff;border:1px solid #E5E7EB;border-radius:14px;padding:6px 12px}.pp-lista div{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #F3F4F6}.pp-lista div:last-child{border:0}
+.pp-rodape{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid #E5E7EB}
+.pp-prim,.pp-sec{border-radius:14px;padding:14px 20px;font-size:1.05rem;font-weight:800;cursor:pointer;border:2px solid #D62828}
+.pp-prim{background:#D62828;color:#fff;flex:1}.pp-sec{background:#fff;color:#D62828}
+.pp-resumo{display:flex;align-items:center;gap:12px;width:100%;order:-1;font-weight:700;color:#374151}.pp-resumo b{color:#111827;font-size:1.15rem}.pp-resumo button{margin-left:auto;border:1px solid #E5E7EB;background:#F9FAFB;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer}
+.chip-sab small{opacity:.65;font-weight:500}
 </style>
 <link rel="stylesheet" href="../shared/app-clean.css">
 </head>
@@ -336,6 +362,15 @@ body{
   </div>
 </div>
 
+
+
+<!-- PASSO A PASSO -->
+<div id="pp-ov" class="pp-ov" role="dialog" aria-label="Pedido passo a passo">
+  <div class="pp-top"><button type="button" class="pp-x" onclick="fecharPasso()" aria-label="Fechar">✕</button><div class="pp-tit" id="pp-titulo"></div>
+    <div class="pp-trilha" id="pp-trilha"><i class="on"></i><i></i><i></i></div></div>
+  <div class="pp-corpo" id="pp-corpo"></div>
+  <div class="pp-rodape" id="pp-rodape"></div>
+</div>
 
 <div id="notif-caixa">
   <div class="handle"></div>
@@ -400,6 +435,7 @@ body{
       <div class="tab" id="tab-hoje" onclick="setView('hoje')">Vendas de Hoje</div>
     </div>
     <div class="pdv-controls">
+      <button type="button" class="pp-abrir" onclick="abrirPasso()">🧭 Montar pedido passo a passo</button>
       <div class="toolbar-row">
         <div class="search-box">
           <span class="search-icon">🔍</span>
@@ -574,6 +610,7 @@ body{
 <script src="js/dados-sessao.js"></script>
 <script src="js/produtos-carrinho.js"></script>
 <script src="js/colar-pedido.js"></script>
+<script src="js/passo-a-passo.js"></script>
 <script src="js/notificacoes.js"></script>
 <script src="js/impressora.js"></script>
 </body>
