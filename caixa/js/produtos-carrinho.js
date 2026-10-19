@@ -284,7 +284,7 @@ function renderCartItems(){
     <div class="cart-item" style="${i.precisaRevisao?'background:rgba(231,29,54,.08);border-radius:10px;padding:8px;border-bottom:none;':''}">
       <div class="cart-item-info">
         <div style="${i.precisaRevisao?'color:var(--se);font-weight:700;':''}">${i.name}</div>
-        <div class="cart-item-sub">${[i.borda?('Borda: '+i.borda):null, i.addedIng&&i.addedIng.length?('+ '+i.addedIng.join(', ')):null, i.removedIng&&i.removedIng.length?('Sem: '+i.removedIng.join(', ')):null, i.obs?('Obs: '+i.obs):null].filter(Boolean).join(' · ')||''}</div>
+        <div class="cart-item-sub">${[bordaReal(i.borda)?('Borda: '+i.borda):null, i.addedIng&&i.addedIng.length?('+ '+i.addedIng.join(', ')):null, i.removedIng&&i.removedIng.length?('Sem: '+i.removedIng.join(', ')):null, i.obs?('Obs: '+i.obs):null].filter(Boolean).join(' · ')||''}</div>
         <div class="qty-ctrl">
           <div class="qty-btn" onclick="alterarQtd(${idx},-1)">−</div>
           <div class="qty-val">${i.qty}</div>
@@ -462,7 +462,7 @@ async function finalizarVenda(){
     entregador: tipo==='entrega' ? (entregador||null) : null,
     taxa_entrega: tipo==='entrega' ? (Number(document.getElementById('f-taxa-entrega')?.value)||0) : 0,
     total: Math.round(total*100)/100,
-    items_json: cart.map(i=>({id:i.id,name:i.name,price:i.unitPrice,qty:i.qty,borda:i.borda,removed:i.removedIng||[],added:i.addedIng||[],obs:i.obs||null,isMeia:!!i.isMeia})),
+    items_json: cart.map(i=>({id:i.id,name:i.name,price:i.unitPrice,qty:i.qty,borda:bordaReal(i.borda),removed:i.removedIng||[],added:i.addedIng||[],obs:i.obs||null,isMeia:!!i.isMeia})),
     status: 'finalizado',
     origem: pedidoEmEdicaoId ? 'loja' : 'caixa', // pedido de notificação mantém a origem real (loja/conversor)
     whatsapp_sent:false,
@@ -525,7 +525,7 @@ const LOGO_PIZZARIA_SRC="../assets/logo-recibo.png"; // arquivo pequeno (antes e
 function imprimirRecibo(p){
   const linhasItens=p.items_json.map(i=>{
     const detalhes=[];
-    if(i.borda) detalhes.push('Borda: '+i.borda);
+    if(bordaReal(i.borda)) detalhes.push('Borda: '+i.borda);
     if(i.added&&i.added.length) detalhes.push('Com: '+i.added.join(', '));
     if(i.removed&&i.removed.length) detalhes.push('SEM: '+i.removed.join(', ').toUpperCase());
     if(i.obs) detalhes.push('Obs: '+i.obs);
@@ -649,7 +649,7 @@ function editarPedidoExistente(id){
   if(typeof itens==='string'){ try{itens=JSON.parse(itens);}catch(e){itens=[];} }
   cart=[];
   (Array.isArray(itens)?itens:[]).forEach(i=>{
-    const borda=i.borda||null;
+    const borda=bordaReal(i.borda);
     const removedIng=i.removed||[];
     const addedIng=i.added||[];
     const qty=i.qty||1;

@@ -274,7 +274,7 @@ function formatarCupom(o){
     const qty=Number(it.qty)||1;
     const precoUnit=Number(it.price||0);
     txt+=(i+1)+'. '+(qty>1?qty+'x ':'')+nome+'\n';
-    if(it.borda)txt+='   Borda: '+it.borda+'\n';
+    if(bordaReal(it.borda))txt+='   Borda: '+it.borda+'\n';
     if(it.removed&&it.removed.length)txt+='   Sem: '+it.removed.join(', ')+'\n';
     if(it.obs)txt+='   Obs: '+it.obs+'\n';
     if(qty>1){

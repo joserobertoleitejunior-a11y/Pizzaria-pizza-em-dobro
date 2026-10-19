@@ -57,14 +57,8 @@ const BORDAS_DEFAULT=[
   {name:'Chocolate',price:15}
 ];
 const ACRESCIMOS_DEFAULT=[
-  {name:'Catupiry Extra',price:5},{name:'Cheddar Extra',price:5},
-  {name:'Bacon',price:7},{name:'Calabresa Extra',price:5},
-  {name:'Frango Extra',price:6},{name:'Mussarela Extra',price:5},
-  {name:'Ovo',price:3},{name:'Palmito',price:5},
-  {name:'Milho',price:3},{name:'Cebola',price:2},
-  {name:'Tomate',price:2},{name:'Azeitona',price:2},
-  {name:'Alho Frito',price:3},{name:'Parmesão',price:4},
-  {name:'Peperone',price:6},{name:'Presunto Extra',price:5}
+  {name:'Bacon',price:7},{name:'Mussarela',price:7},{name:'Frango',price:7},
+  {name:'Cheddar',price:7},{name:'Catupiry',price:7},{name:'Parmesão',price:7}
 ];
 const CATS_ORDER=['p','s','co','es','dw','cz','d'];
 const CATLABELS={p:'Tradicionais',s:'Especiais',co:'Combos',es:'Esfihas',dw:'Doces',cz:'Calzones',d:'Bebidas'};

@@ -502,7 +502,7 @@ function formatarCupom(o){
   items.forEach((it,i)=>{
     const nome=it.name||(it.halves?it.halves.map(h=>h.n).join(' + '):it.n)||'—';
     txt+=(i+1)+'. '+nome+'\n';
-    if(it.borda)txt+='   Borda: '+it.borda+'\n';
+    if(it.borda&&!/^(sem|nenhuma|n[aã]o)\b/i.test(String(it.borda).trim()))txt+='   Borda: '+it.borda+'\n';
     if(it.removed&&it.removed.length)txt+='   Sem: '+it.removed.join(', ')+'\n';
     txt+='   R$ '+Number(it.price||0).toFixed(2)+'\n';
   });
@@ -1044,7 +1044,7 @@ function _renderOrderCard(o){
     const itemsHtml=items.map(it=>{
       const nome=it.name||'—';
       let det='';
-      if(it.borda)det+=`Borda: ${it.borda} `;
+      if(it.borda&&!/^(sem|nenhuma|n[aã]o)\b/i.test(String(it.borda).trim()))det+=`Borda: ${it.borda} `;
       if(it.removed&&it.removed.length)det+=`Sem: ${it.removed.join(', ')}`;
       return`<div class="item-row">
         ${nome}<span class="item-price">${fmtPreco(it.price)}</span>

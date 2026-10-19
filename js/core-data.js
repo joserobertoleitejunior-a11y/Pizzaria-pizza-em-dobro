@@ -254,14 +254,8 @@ const BORDAS_DEFAULT=[
 let BORDAS=DB.get('bordas_custom')||BORDAS_DEFAULT;
 
 const ACRESCIMOS_DEFAULT=[
-  {name:'Catupiry Extra',price:5},{name:'Cheddar Extra',price:5},
-  {name:'Bacon',price:7},{name:'Calabresa Extra',price:5},
-  {name:'Frango Extra',price:6},{name:'Mussarela Extra',price:5},
-  {name:'Ovo',price:3},{name:'Palmito',price:5},
-  {name:'Milho',price:3},{name:'Cebola',price:2},
-  {name:'Tomate',price:2},{name:'Azeitona',price:2},
-  {name:'Alho Frito',price:3},{name:'Parmesão',price:4},
-  {name:'Peperone',price:6},{name:'Presunto Extra',price:5}
+  {name:'Bacon',price:7},{name:'Mussarela',price:7},{name:'Frango',price:7},
+  {name:'Cheddar',price:7},{name:'Catupiry',price:7},{name:'Parmesão',price:7}
 ];
 let ACRESCIMOS=DB.get('acrescimos_custom')||ACRESCIMOS_DEFAULT;
 

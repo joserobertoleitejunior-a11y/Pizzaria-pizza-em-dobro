@@ -201,7 +201,7 @@ function confirmarPedidoNotificacao(){
   cart=[];
   itens.forEach(i=>{
     const nome=i.name||i.nome||i.item||'Item sem nome';
-    const borda=i.borda||null;
+    const borda=bordaReal(i.borda);
     const removedIng=i.removed||i.removidos||[];
     const addedIng=i.added||i.adicionados||[];
     const qty=Number(i.qty??i.quantidade??i.qtd)||1;

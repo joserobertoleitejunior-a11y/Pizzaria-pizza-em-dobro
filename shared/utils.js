@@ -172,6 +172,15 @@ function ehClienteBalcao(p){
   return /^(cliente\s+)?balcao$/.test(n);
 }
 
+// Borda só aparece quando existe de verdade: "Sem borda", "Sem Borda Recheada", "nenhuma"... = nada
+// (não imprime nem mostra linha de borda).
+function bordaReal(b){
+  const t=String(b==null?'':b).trim();
+  if(!t) return null;
+  if(/^(sem|nenhuma|nao|não)\b/i.test(t)||/^(simples|normal|sem borda.*)$/i.test(t)) return null;
+  return t;
+}
+
 if(typeof module!=='undefined' && module.exports){
-  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao };
+  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao, bordaReal };
 }

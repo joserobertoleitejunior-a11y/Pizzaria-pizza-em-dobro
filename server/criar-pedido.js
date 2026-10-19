@@ -25,7 +25,7 @@ function limparItens(lista) {
       id: texto(i.id, 60),
       name,
       price,
-      borda: texto(i.borda, 60),
+      borda: /^(sem|nenhuma|n[aã]o)\b/i.test(String(i.borda || '').trim()) ? null : texto(i.borda, 60),
       removed: Array.isArray(i.removed) ? i.removed.slice(0, 20).map(r => texto(r, 60)).filter(Boolean) : []
     });
   }
