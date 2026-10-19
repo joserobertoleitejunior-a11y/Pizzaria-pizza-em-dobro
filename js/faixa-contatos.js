@@ -179,7 +179,6 @@
 
   function iniciarTodas() {
     iniciarFaixaArrastavel(".faixa-trilha");                                  // ícones de contato: da direita pra esquerda
-    iniciarFaixaArrastavel(".hero-faixa-trilho", { velocidade: 0.05 });       // faixa vermelha: da esquerda pra direita
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", iniciarTodas);
   else iniciarTodas();

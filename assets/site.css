@@ -188,8 +188,7 @@ header{position:relative;min-height:74vh;display:flex;flex-direction:column;just
 /* faixa vermelha correndo, levemente inclinada pra dar movimento — só transform */
 .hero-faixa{position:relative;z-index:2;margin:-6px -8px 0;background:var(--pr);border-bottom:5px solid var(--amarelo);color:#FFFFFF;overflow:hidden;transform:rotate(-2deg);
   box-shadow:0 10px 26px rgba(214,40,40,.40);}
-.hero-faixa-trilho{display:flex;align-items:center;width:max-content;will-change:transform;touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none;}
-.hero-faixa-trilho.arrastando{cursor:grabbing;}
+.hero-faixa-trilho{display:flex;align-items:center;width:max-content;}
 .hero-faixa-trilho a{color:inherit;text-decoration:none;font-family:var(--font-display);font-size:.9rem;letter-spacing:.5px;padding:11px 0;white-space:nowrap;-webkit-user-drag:none;transition:color .15s;}
 .hero-faixa-trilho a:hover,.hero-faixa-trilho a:focus-visible{color:var(--amarelo);}
 .hero-faixa-trilho i{font-style:normal;padding:0 14px;opacity:.9;}
@@ -904,3 +903,10 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .fb-card,.lo-card,.sp-card{background:rgba(26,26,26,.62);}
 .lo-card{border-color:rgba(255,255,255,.14);}
 .combo-slot-box:not(.cheio) b{font-size:.78rem;font-weight:500;}
+
+/* FAIXA VERMELHA = rolagem horizontal NATIVA (dedo arrasta com a inércia do próprio celular, o toque
+   no link sempre funciona; no mouse, o js/faixa-vermelha.js faz o "agarrar e arrastar") */
+.hero-faixa{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;cursor:grab;user-select:none;-webkit-user-select:none;}
+.hero-faixa::-webkit-scrollbar{display:none;}
+.hero-faixa.arrastando{cursor:grabbing;}
+.hero-faixa.arrastando a{pointer-events:none;}
