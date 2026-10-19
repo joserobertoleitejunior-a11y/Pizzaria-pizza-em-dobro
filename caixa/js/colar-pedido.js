@@ -37,7 +37,7 @@ async function interpretarPedidoColado(){
 
 {"cliente":{"nome":string|null,"telefone":string|null,"endereco":{"rua":string|null,"numero":string|null,"complemento":string|null,"bairro":string|null}},
 "pagamento":{"forma_principal":string|null,"misto":[{"metodo":string,"valor":number|null}]|null},
-"itens":[{"tipo":"normal"|"meia_a_meia"|"combo","nome_cardapio":string|null,"nome_cardapio_2":string|null,"combo_faixa":number|null,"qtd":number,"borda":string|null,"remover":[string],"observacao":string|null}]}
+"itens":[{"tipo":"normal"|"meia_a_meia"|"combo"|"broto"|"esfihas","nome_cardapio":string|null,"nome_cardapio_2":string|null,"combo_faixa":number|null,"esfihas":[{"sabor":string,"qtd":number}]|null,"qtd":number,"borda":string|null,"remover":[string],"observacao":string|null}]}
 
 CARDÁPIO REAL — "nome_cardapio" e "nome_cardapio_2" DEVEM ser EXATAMENTE um destes nomes (copie a grafia exata), ou null se não tiver certeza absoluta: ${JSON.stringify(nomesCardapio)}
 BORDAS REAIS — "borda" DEVE ser EXATAMENTE um destes nomes, ou null: ${JSON.stringify(nomesBordas)}
@@ -76,6 +76,10 @@ EXEMPLOS SÓ DE NÚMERO (pra fixar o padrão, endereço completo fora deles pode
 8. "borda" É INDIVIDUAL DE CADA ITEM e só pode ser preenchida se o cliente pediu uma borda recheada EXPLICITAMENTE para aquela pizza específica (ex: "borda de catupiry", "borda recheada de chocolate"). Muitos sabores do cardápio já contêm palavras como "Catupiry" no PRÓPRIO NOME/descrição (ex: "Frango Catupiry", "Calabresa Piry", "Franqueijo Piry") — isso é o RECHEIO da pizza, não é pedido de borda, e NUNCA deve fazer você preencher "borda" nesse item nem em nenhum outro. Preencher "borda" em um item nunca deve influenciar os outros itens do pedido — cada item é avaliado sozinho, olhando só o que foi dito sobre ELE. Na dúvida, "borda":null.
 
 9. COMBO "2 por X": se o cliente pedir um combo (duas pizzas de sabores diferentes por um preço fixo, ex: "quero o 2 por 65", "o combo de mussarela com calabresa"), use "tipo":"combo". Preencha "nome_cardapio" com o 1º sabor e "nome_cardapio_2" com o 2º sabor, EXATAMENTE como aparecem na lista de FAIXAS DE COMBO acima (nunca do cardápio normal). Preencha "combo_faixa" com o valor da faixa (65, 75, 80 ou 85) SE o cliente disse o preço/faixa explicitamente — senão deixe "combo_faixa":null, o sistema descobre sozinho pelos 2 sabores. O combo é sempre 2 sabores DIFERENTES — nunca repita o mesmo sabor nos dois campos. Se não tiver certeza se é combo ou 2 pizzas avulsas, ou não tiver certeza da faixa/sabores, prefira "tipo":"normal" com um item pra cada sabor (nunca invente uma faixa de combo que o cliente não pediu claramente).
+
+10. COMBO BROTO — "2 pizzas broto por R$ 50" (o cliente diz "combo broto", "2 broto", "duas brotinho", "broto 50"): use "tipo":"broto", "nome_cardapio" = 1º sabor e "nome_cardapio_2" = 2º sabor, EXATAMENTE como no CARDÁPIO REAL (qualquer pizza tradicional ou especial). Aqui os 2 sabores PODEM ser iguais. "qtd" = quantos combos broto (cada combo = 2 pizzas broto). Se o cliente disser só 1 sabor para o combo, repita o mesmo sabor nos dois campos. Se disser "broto" mas não ficar claro que é o combo de 2, use "tipo":"normal".
+
+11. ESFIHAS (R$ 5,00 cada; sabores fixos: ${JSON.stringify(typeof ESFIHA_SABORES!=='undefined'?ESFIHA_SABORES:[])}): quando o cliente pedir esfihas (ex: "10 esfihas, 5 de carne e 5 de frango catupiry", "combo de 20 esfiha", "3 esfiha de bacon"), use "tipo":"esfihas" em UM ÚNICO item para TODAS as esfihas do pedido, e preencha "esfihas":[{"sabor":"<nome exato da lista acima>","qtd":N}, ...] com a quantidade de cada sabor. "qtd" do item é sempre 1. NÃO calcule preço — o sistema aplica 10=R$50, 20=R$90, 30=R$130 sozinho. Se o cliente pediu uma quantidade total (ex: "10 esfihas") sem dividir por sabor, divida igualmente pelos sabores que ele citou; se não citou nenhum, use "tipo":"normal" com nome_cardapio null e uma "observacao" explicando (o atendente confere). "Esfiha mista" é um sabor da lista (Mista).
 
 EXEMPLO (cardápio ilustrativo, não é o real — é só pra você entender o padrão esperado):
 Texto recebido: "oi, meu nome é Ana. quero uma meia Frango meia Calabresa, borda catupiry, sem cebola, bem carregado na azeitona por favor. Pagamento: 20 no pix e o resto na entrega em dinheiro. Rua das Flores 123"
@@ -137,6 +141,49 @@ function montarCaixaComPedidoInterpretado(parsed){
       }
       // usa a MESMA função do botão manual de combo — zero divergência entre os dois caminhos
       adicionarComboAoCarrinho(combo, s1, s2, qtd);
+      comboDetectado=true;
+      return;
+    }
+
+    // ---- COMBO BROTO (2 broto por R$ 50, qualquer sabor p/s, pode repetir) ----
+    if(it.tipo==='broto'){
+      const sabOk=n=>DEFAULT_MENU.some(m=>(m.cat==='p'||m.cat==='s')&&m.n===n);
+      const s1=it.nome_cardapio, s2=it.nome_cardapio_2||it.nome_cardapio;
+      if(!s1||!sabOk(s1)||!sabOk(s2)){
+        naoIdentificados++;
+        cart.push({
+          _chave:'manual-'+Date.now()+'-'+Math.random(),
+          id:null, name:'⚠️ CONFERIR (combo broto): '+(it.observacao||[s1,s2].filter(Boolean).join(' + ')||'sabores não identificados'),
+          unitPrice:0, qty:qtd, borda:null, removedIng:[], addedIng:[], isMeia:false, precisaRevisao:true
+        });
+        return;
+      }
+      adicionarBrotoAoCarrinho(s1, s2, qtd);
+      comboDetectado=true;
+      return;
+    }
+
+    // ---- ESFIHAS (R$ 5; 10=50, 20=90, 30=130) ----
+    if(it.tipo==='esfihas'){
+      const norm=t=>(t||'').toString().trim().toLowerCase();
+      const cont={}; let ok=true;
+      (it.esfihas||[]).forEach(e=>{
+        const sab=ESFIHA_SABORES.find(x=>norm(x)===norm(e.sabor));
+        const q=Math.max(0,parseInt(e.qtd)||0);
+        if(!sab){ ok=false; return; }
+        cont[sab]=(cont[sab]||0)+q;
+      });
+      const total=ESFIHA_SABORES.reduce((t,x)=>t+(cont[x]||0),0);
+      if(!ok||!total){
+        naoIdentificados++;
+        cart.push({
+          _chave:'manual-'+Date.now()+'-'+Math.random(),
+          id:null, name:'⚠️ CONFERIR (esfihas): '+(it.observacao||'sabores/quantidades não identificados'),
+          unitPrice:0, qty:1, borda:null, removedIng:[], addedIng:[], isMeia:false, precisaRevisao:true
+        });
+        return;
+      }
+      adicionarEsfihasAoCarrinho(cont, 1);
       comboDetectado=true;
       return;
     }
@@ -245,7 +292,7 @@ function montarCaixaComPedidoInterpretado(parsed){
   }
   const avisos=[];
   if(naoIdentificados>0) avisos.push('⚠️ '+naoIdentificados+' item(ns) não foram reconhecidos com certeza e aparecem marcados no carrinho como "CONFERIR" — remova e adicione o item correto pela busca antes de finalizar.');
-  if(comboDetectado) avisos.push('🍕🍕 Combo identificado e adicionado ao carrinho — confira os 2 sabores e a faixa de preço antes de finalizar.');
+  if(comboDetectado) avisos.push('🍕🍕 Combo/esfihas identificados e adicionados ao carrinho — confira os sabores, quantidades e o preço antes de finalizar.');
   if(enderecoFaltandoNumero) avisos.push('📍 Não encontrei o NÚMERO da casa/apartamento no texto colado — confira com o cliente antes de despachar a entrega.');
   if(avisoPagamento) avisos.push(avisoPagamento);
   if(avisos.length) setTimeout(()=>alert(avisos.join('\n\n')),400);

@@ -71,13 +71,24 @@ function renderCombosCaixa(grid){
     </div>`;
   }).join('');
 }
+// ── FUNÇÕES ÚNICAS (botões e Colar Pedido): combo broto e esfihas ──
+function adicionarBrotoAoCarrinho(s1, s2, qtd){
+  const novo={ _chave:'combo|broto50|'+[s1,s2].slice().sort().join('+'), id:null, name:`${COMBO_BROTO.titulo} — ${s1} + ${s2}`,
+    unitPrice:COMBO_BROTO.preco, qty:qtd||1, borda:null, removedIng:[], addedIng:[], isMeia:false };
+  const ex=cart.find(c=>c._chave===novo._chave);
+  if(ex) ex.qty+=novo.qty; else cart.push(novo);
+}
+function adicionarEsfihasAoCarrinho(contagens, qtd){
+  const n=ESFIHA_SABORES.reduce((t,sab)=>t+(contagens[sab]||0),0); if(!n)return;
+  const nome=nomeEsfihas(contagens);
+  const novo={ _chave:'esf|'+nome, id:null, name:nome, unitPrice:precoEsfihas(n), qty:qtd||1, borda:null, removedIng:[], addedIng:[], isMeia:false };
+  const ex=cart.find(c=>c._chave===novo._chave);
+  if(ex) ex.qty+=novo.qty; else cart.push(novo);
+}
 function adicionarBrotoAoCarrinhoCaixa(){
   const s1=document.getElementById('cx-broto50-s1')?.value, s2=document.getElementById('cx-broto50-s2')?.value;
   if(!s1||!s2)return;
-  const novo={ _chave:'combo|broto50|'+[s1,s2].slice().sort().join('+'), id:null, name:`${COMBO_BROTO.titulo} — ${s1} + ${s2}`,
-    unitPrice:COMBO_BROTO.preco, qty:1, borda:null, removedIng:[], addedIng:[], isMeia:false };
-  const ex=cart.find(c=>c._chave===novo._chave);
-  if(ex) ex.qty+=1; else cart.push(novo);
+  adicionarBrotoAoCarrinho(s1,s2,1);
   atualizarBarraCarrinho();
 }
 // ── ESFIHAS (R$ 5 cada; 10 = R$ 50, 20 = R$ 90, 30 = R$ 130) — mesma regra e mesmo preço do site
@@ -101,11 +112,7 @@ function esfCxAtualizar(){
   if(r) r.textContent=n?`${n} esfiha(s) = ${fmt(precoEsfihas(n))}`:'Escolha as quantidades.';
 }
 function adicionarEsfihasCaixa(){
-  const n=ESFIHA_SABORES.reduce((t,s)=>t+(_esfCx[s]||0),0); if(!n)return;
-  const nome=nomeEsfihas(_esfCx);
-  const novo={ _chave:'esf|'+nome, id:null, name:nome, unitPrice:precoEsfihas(n), qty:1, borda:null, removedIng:[], addedIng:[], isMeia:false };
-  const ex=cart.find(c=>c._chave===novo._chave);
-  if(ex) ex.qty+=1; else cart.push(novo);
+  adicionarEsfihasAoCarrinho(_esfCx,1);
   ESFIHA_SABORES.forEach(s=>_esfCx[s]=0); esfCxAtualizar();
   atualizarBarraCarrinho();
 }
