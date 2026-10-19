@@ -211,7 +211,7 @@ header{position:relative;min-height:74vh;display:flex;flex-direction:column;just
   box-shadow:0 8px 20px rgba(20,20,20,.10);scrollbar-width:none;}
 .nav-bar::-webkit-scrollbar{display:none;}
 /* ao tocar numa categoria, o título para logo abaixo do topo + barra fixa (não escondido atrás) */
-#cat-p,#cat-s,#cat-co,#cat-es,#cat-dw,#cat-cz,#cat-d{scroll-margin-top:120px;}
+#cat-p,#cat-s,#cat-co,#cat-es,#cat-dw,#cat-cz,#cat-d{scroll-margin-top:76px;}
 .nav-pill{white-space:nowrap;background:var(--painel);border:1px solid rgba(255,255,255,.10);color:var(--text);padding:8px 15px;border-radius:999px;font-size:.7rem;font-weight:700;
   letter-spacing:.5px;text-decoration:none;text-transform:uppercase;box-shadow:var(--sombra-1);transition:background .15s,color .15s,transform .12s;}
 .nav-pill:hover,.nav-pill:active{background:var(--amarelo);color:#1A1A1A;transform:translateY(-1px);}
@@ -747,7 +747,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   .hero-faixa-trilho i{padding:0 20px;}
   .nav-bar{top:64px;justify-content:center;gap:12px;padding:12px var(--lado);}
   .nav-pill{font-size:.78rem;padding:10px 22px;}
-  #cat-p,#cat-s,#cat-co,#cat-es,#cat-dw,#cat-cz,#cat-d{scroll-margin-top:150px;}
+  #cat-p,#cat-s,#cat-co,#cat-es,#cat-dw,#cat-cz,#cat-d{scroll-margin-top:84px;}
   #destaques,.promo-card,#last-order-banner,#stats-publico{max-width:760px;}
   #destaques{margin-top:40px;gap:18px;}
   .destaque-card{padding:22px 20px;transition:transform .15s,box-shadow .15s;}
@@ -859,3 +859,6 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 /* esqueleto de imagem sem animação infinita (uma animação por foto repintava a tela toda) */
 .img-skel{animation:none;}
 /* fundo da fachada: camada própria, nunca repinta na rolagem */
+
+/* a faixa preta de pílulas foi removida: a faixa vermelha (clicável/arrastável) faz esse papel */
+.nav-bar{display:none;}
