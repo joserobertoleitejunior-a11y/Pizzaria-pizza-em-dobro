@@ -335,18 +335,22 @@
 </div>
 
 <!-- DESTAQUES -->
-<div id="destaques">
-  <div class="destaque-card reveal">
-    <span class="destaque-ic">⚡</span>
-    <div class="destaque-ttl">Entrega<br>super rápida</div>
-    <div class="destaque-sub">Direto do forno pra sua porta</div>
+<!-- PROMOÇÕES IMPERDÍVEIS — cartazes arrastáveis (dedo/mouse) e clicáveis: cada um leva direto ao item.
+     Pra adicionar outro cartaz: copie um <a class="promo-slide"> e troque imagem, texto e data-alvo (id do elemento de destino). -->
+<section id="promos" aria-label="Promoções imperdíveis">
+  <h2 class="promos-titulo reveal">Promoções <span>imperdíveis</span></h2>
+  <div class="promos-trilho" id="promos-trilho">
+    <a class="promo-slide" href="#cat-es" data-alvo="cat-es" aria-label="Esfihas apenas R$ 5,00 — monte o seu combo">
+      <img src="assets/promo/esfihas.jpg" width="600" height="900" alt="Esfihas apenas R$ 5,00. Combos de 10, 20 e 30. Entrega grátis" loading="lazy" decoding="async" draggable="false">
+      <span class="promo-chip">Montar meu combo →</span>
+    </a>
+    <a class="promo-slide" href="#combo-card-broto50" data-alvo="combo-card-broto50" aria-label="Combo de 2 pizzas broto por R$ 50,00">
+      <img src="assets/promo/broto.jpg" width="600" height="900" alt="Combo de 2 pizzas broto por R$ 50,00, qualquer sabor do cardápio" loading="lazy" decoding="async" draggable="false">
+      <span class="promo-chip">Escolher meus sabores →</span>
+    </a>
   </div>
-  <a href="#cat-co" class="destaque-card reveal" style="text-decoration:none;color:inherit;">
-    <span class="destaque-ic">🍕</span>
-    <div class="destaque-ttl">Combos<br>imperdíveis</div>
-    <div class="destaque-sub">2 pizzas por um preço só</div>
-  </a>
-</div>
+  <div class="promos-pontos" id="promos-pontos" aria-hidden="true"><i class="on"></i><i></i></div>
+</section>
 
 <!-- AVISO: TAXA ÚNICA -->
 <div class="promo-card reveal">
@@ -835,6 +839,7 @@
 <script src="js/conversor-storefront.js"></script>
 <script src="js/faixa-contatos.js"></script>
 <script src="js/faixa-vermelha.js"></script>
+<script src="js/promos.js"></script>
 <div id="pwa-banner">
   <div id="pwa-banner-icon"><img src="assets/logo.png" alt="Pizza em Dobro" width="26" height="26" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"></div>
   <div id="pwa-banner-txt">
