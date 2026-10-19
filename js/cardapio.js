@@ -45,7 +45,8 @@ function _cardCombo(cfg, rotulo){
       <span class="combo-plus">+</span>
       <div class="combo-slot-box" id="slot-${cfg.id}-1"></div>
     </div>
-    <div class="combo-dica">${cfg.repete?'Qualquer sabor do cardápio — toque de novo no mesmo para repetir':'Toque em 2 sabores diferentes'}</div>
+    <div class="combo-dica">${cfg.repete?'Qualquer sabor do cardápio · toque de novo num sabor para tirar':'Toque em 2 sabores diferentes · toque de novo para tirar'}</div>
+    ${cfg.repete?`<button type="button" class="combo-repetir" id="rep-${cfg.id}" style="display:none" onclick="comboRepetir('${cfg.id}')">🍕🍕 Quero 2 do mesmo sabor</button>`:''}
     <div class="combo-chips${rolagem}" id="chips-${cfg.id}">`+
       cfg.sabores.map(sab=>`<button type="button" class="combo-chip" data-sab="${sab.replace(/"/g,'&quot;')}" onclick="comboToque('${cfg.id}',this.dataset.sab)">${sab}</button>`).join('')+
     `</div>
@@ -55,28 +56,33 @@ function _cardCombo(cfg, rotulo){
 function comboToque(id,sab){
   const cfg=_comboCfg(id); if(!cfg)return;
   const sel=_sel[id]=_sel[id]||[];
-  const i=sel.indexOf(sab);
-  if(i>=0){
-    // já escolhido: no broto, 1 escolhido + toque de novo = o mesmo sabor nas duas; senão, desmarca
-    if(cfg.repete&&sel.length===1) sel.push(sab); else sel.splice(i,1);
+  if(sel.includes(sab)){
+    // tocar de novo num sabor já escolhido TIRA o sabor (os 2, se estava repetido)
+    _sel[id]=sel.filter(x=>x!==sab);
   }else{
     if(sel.length>=2) sel.shift(); // terceiro toque troca o primeiro
     sel.push(sab);
   }
   comboAtualiza(id);
 }
+// ✕ no quadro do sabor: remove só aquele sabor
+function comboRemover(id,i){ const sel=_sel[id]||[]; sel.splice(i,1); _sel[id]=sel; comboAtualiza(id); }
+// broto: "2 do mesmo sabor" com 1 clique
+function comboRepetir(id){ const sel=_sel[id]||[]; if(sel.length===1){ sel.push(sel[0]); comboAtualiza(id); } }
 function comboAtualiza(id){
   const cfg=_comboCfg(id), sel=_sel[id]||[]; if(!cfg)return;
   [0,1].forEach(i=>{
     const el=document.getElementById(`slot-${id}-${i}`); if(!el)return;
     el.className='combo-slot-box'+(sel[i]?' cheio':'');
-    el.innerHTML=`<i>${i+1}º sabor</i><b>${sel[i]||'Toque num sabor'}</b>`;
+    el.innerHTML=`<i>${i+1}º sabor</i><b>${sel[i]||'Toque num sabor'}</b>`+(sel[i]?`<button type="button" class="combo-x" onclick="comboRemover('${id}',${i})" aria-label="Remover ${sel[i].replace(/"/g,'')}">✕</button>`:'');
   });
   document.querySelectorAll(`#chips-${id} .combo-chip`).forEach(b=>{
     const n=sel.filter(x=>x===b.dataset.sab).length;
     b.classList.toggle('on',n>0);
     b.dataset.n=n>1?'×2':'';
   });
+  const rep=document.getElementById('rep-'+id);
+  if(rep) rep.style.display=(cfg.repete&&sel.length===1)?'':'none';
   const btn=document.getElementById('add-'+id);
   if(btn){
     const pronto=sel.length===2;

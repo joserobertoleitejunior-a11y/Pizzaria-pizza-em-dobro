@@ -417,69 +417,54 @@
     </div>
   </div>
 
-  <!-- ÁREA EXPANDIDA -->
+  <!-- ÁREA EXPANDIDA — enxuta: itens, como receber, dados, pagamento, enviar -->
   <div id="cart-body" style="display:none;">
 
-    <!-- RESUMO DOS ITENS -->
+    <div class="cart-sec-titulo">Seu pedido</div>
     <div id="order-summary"></div>
 
-    <!-- SEÇÃO: MODO DE ENTREGA -->
-    <div class="cart-section-label">📍 COMO DESEJA RECEBER?</div>
-    <div class="cart-tip">Use o botão acima para alternar entre Entrega e Retirada no local.</div>
+    <div class="cart-modo" role="group" aria-label="Como receber o pedido">
+      <button type="button" id="modo-entrega" class="on" onclick="definirModoEntrega(false)">🛵 Entrega</button>
+      <button type="button" id="modo-retirada" onclick="definirModoEntrega(true)">🏠 Retirada</button>
+    </div>
 
-    <!-- CTA GOOGLE -->
+    <!-- Google: uma linha só (some quando já está logado) -->
     <div id="cart-google-cta">
-      <div class="cta-title">🔐 Entre com o Google</div>
-      <div class="cta-desc">Seus dados ficam salvos. Próximo pedido é em segundos.</div>
-      <div class="cta-benefits">
-        <div class="cta-benefit"><span>✓</span> Histórico de pedidos</div>
-        <div class="cta-benefit"><span>✓</span> Dados preenchidos</div>
-        <div class="cta-benefit"><span>✓</span> Avaliações verificadas</div>
-      </div>
-      <button class="ggl-login-btn" style="margin:0 auto;max-width:260px;" onclick="loginGoogleCart()">
+      <button class="ggl-login-btn" onclick="loginGoogleCart()">
         <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        Entrar com Google
+        <span>Entrar com Google <small>· salva seus dados</small></span>
       </button>
     </div>
 
-    <!-- SEÇÃO: SEUS DADOS -->
-    <div class="cart-section-label">👤 SEUS DADOS</div>
-    <input type="text" id="u-name" class="c-input" placeholder="Seu nome completo..." oninput="this.style.borderColor='';autoSaveClient()">
-    <input type="tel" id="u-tel" class="c-input" placeholder="Seu telefone/WhatsApp..." inputmode="tel" oninput="this.style.borderColor='';autoSaveClient()">
+    <div class="cart-sec-titulo">Seus dados</div>
+    <input type="text" id="u-name" class="c-input" placeholder="Seu nome" autocomplete="name" oninput="this.style.borderColor='';autoSaveClient()">
+    <input type="tel" id="u-tel" class="c-input" placeholder="Telefone / WhatsApp" inputmode="tel" autocomplete="tel" oninput="this.style.borderColor='';autoSaveClient()">
     <div id="addr-fields">
-      <div style="font-size:.68rem;color:var(--pr);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">🔍 Endereço (rua, bairro)</div>
-      <div style="display:flex;gap:8px;align-items:stretch;position:relative;">
-        <input type="text" id="u-end" class="c-input" style="flex:1;margin-bottom:0;" placeholder="Digite e escolha na lista..." autocomplete="off" oninput="this.style.borderColor='';autoSaveClient();_buscarSugestoesEndereco(this.value)" onfocus="if(this.value.trim().length>=4)_buscarSugestoesEndereco(this.value)">
-        <button id="btn-usar-local" type="button" onclick="usarLocalizacaoAtual(this)" title="Usar minha localização atual" style="background:rgba(255,159,28,.12);color:var(--pr);border:1px solid rgba(255,159,28,.3);border-radius:10px;padding:0 14px;font-size:1.1rem;cursor:pointer;white-space:nowrap;">📍</button>
+      <button id="btn-usar-local" type="button" class="btn-local" onclick="usarLocalizacaoAtual(this)">📍 Usar minha localização atual</button>
+      <div class="addr-wrap">
+        <input type="text" id="u-end" class="c-input" placeholder="Rua e bairro (digite e escolha na lista)" autocomplete="off" oninput="this.style.borderColor='';autoSaveClient();_buscarSugestoesEndereco(this.value)" onfocus="if(this.value.trim().length>=4)_buscarSugestoesEndereco(this.value)">
+        <div id="addr-suggestions" style="display:none;position:fixed;z-index:10000;background:#151515;border:1px solid rgba(255,159,28,.25);border-radius:10px;overflow:hidden;max-height:240px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5);"></div>
       </div>
-      <div id="addr-suggestions" style="display:none;position:fixed;z-index:10000;background:#151515;border:1px solid rgba(255,159,28,.25);border-radius:10px;overflow:hidden;max-height:240px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5);"></div>
-      <input type="text" id="u-num" class="c-input" placeholder="Número da casa..." oninput="this.style.borderColor='';autoSaveClient()">
+      <input type="text" id="u-num" class="c-input" placeholder="Número da casa" inputmode="numeric" oninput="this.style.borderColor='';autoSaveClient()">
     </div>
 
-    <!-- SEÇÃO: PAGAMENTO -->
-    <div class="cart-section-label">💳 PAGAMENTO</div>
-    <select id="u-pay" class="c-select" onchange="this.style.borderColor='';handlePaymentChange()">
+    <div class="cart-sec-titulo">Pagamento</div>
+    <div class="pay-chips" id="pay-chips" role="group" aria-label="Forma de pagamento">
+      <button type="button" data-pay="Pix" onclick="escolherPagamento('Pix')">📱 Pix</button>
+      <button type="button" data-pay="Cartão" onclick="escolherPagamento('Cartão')">💳 Cartão</button>
+      <button type="button" data-pay="Dinheiro" onclick="escolherPagamento('Dinheiro')">💵 Dinheiro</button>
+    </div>
+    <select id="u-pay" style="display:none" aria-hidden="true" tabindex="-1">
       <option value="" disabled selected>Escolha a forma de pagamento...</option>
-      <option value="Dinheiro">💵 Dinheiro</option>
-      <option value="Pix">📱 Pix</option>
-      <option value="Cartão">💳 Cartão</option>
+      <option value="Dinheiro">Dinheiro</option>
+      <option value="Pix">Pix</option>
+      <option value="Cartão">Cartão</option>
     </select>
-    <input type="number" id="u-change" class="c-input" placeholder="Troco para quanto? (ex: 100)" style="display:none;" min="0">
+    <input type="number" id="u-change" class="c-input" placeholder="Troco para quanto? (ex: 100)" style="display:none;" min="0" inputmode="decimal">
 
-    <!-- PRAZO -->
-    <div id="del-time">
-      ⏱️ <b id="time-title">Prazo de entrega:</b><br>
-      <span id="time-desc">Seu pedido pode levar até 50 minutos.</span><br>
-      Preparando tudo com carinho 🍕🔥 Obrigado pela preferência ❤️
-    </div>
+    <div id="del-time">⏱️ <b id="time-title">Prazo de entrega:</b> <span id="time-desc">Seu pedido pode levar até 50 minutos.</span></div>
 
-    <!-- BOTÃO ENVIAR -->
     <button class="send-btn" id="btn-enviar-pedido" onclick="finalizar()">📲 ENVIAR PEDIDO PELO WHATSAPP</button>
-
-    <!-- APÓS PEDIDO: pede avaliação -->
-    <div style="text-align:center;margin-top:10px;">
-      <button class="fb-btn" style="display:inline-block;font-size:.7rem;padding:7px 16px;" onclick="closeCartAndFeedback()">⭐ Já pediu? Deixe sua avaliação</button>
-    </div>
   </div>
 </div>
 
@@ -502,8 +487,8 @@
   <div class="modal-box center">
     <div class="m-close" onclick="closeModal('modal-musica')">✕</div>
     <div class="modal-title">🎵 PLAYLIST DO SITE</div>
-    <p style="font-size:.72rem;color:#666;margin-bottom:4px;line-height:1.5;">Fontes recomendadas: <b style="color:var(--pr)">Dropbox</b> (troque ?dl=0 por ?raw=1), <b style="color:var(--pr)">GitHub</b> (use link raw) ou URL direta de .mp3/.ogg.</p>
-    <p style="font-size:.68rem;color:#444;margin-bottom:12px;line-height:1.5;">Adicione múltiplas faixas para criar uma playlist. O player toca em sequência e repete.</p>
+    <p style="font-size:.82rem;color:#666;margin-bottom:4px;line-height:1.5;">Fontes recomendadas: <b style="color:var(--pr)">Dropbox</b> (troque ?dl=0 por ?raw=1), <b style="color:var(--pr)">GitHub</b> (use link raw) ou URL direta de .mp3/.ogg.</p>
+    <p style="font-size:.78rem;color:#444;margin-bottom:12px;line-height:1.5;">Adicione múltiplas faixas para criar uma playlist. O player toca em sequência e repete.</p>
     <div id="playlist-tracks"></div>
     <button class="m-btn-sec" style="margin-bottom:10px;" onclick="addPlaylistTrack()">+ Adicionar Faixa</button>
     <button class="m-btn" onclick="saveMusic()">ATIVAR PLAYLIST</button>
@@ -532,7 +517,7 @@
     <div id="comentar-photo-preview" style="display:none;text-align:center;margin-bottom:8px;">
       <img id="comentar-photo-img" style="width:100%;max-height:140px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,159,28,.25);" src="" alt="">
     </div>
-    <label style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:#666;cursor:pointer;margin-bottom:10px;">
+    <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;color:#666;cursor:pointer;margin-bottom:10px;">
       <input type="file" id="comentar-pizza-file" accept="image/*" style="display:none;" onchange="handleCommentPhoto(this)">
       <span style="background:rgba(255,159,28,.08);border:1px dashed rgba(255,159,28,.3);padding:6px 12px;border-radius:8px;color:var(--pr);">📷 Adicionar foto da pizza</span>
     </label>
@@ -559,7 +544,7 @@
   <div id="conv-body">
 
     <!-- INSTRUÇÃO SIMPLES -->
-    <div style="background:rgba(255,159,28,.07);border:1px solid rgba(255,159,28,.2);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:.78rem;color:#ccc;line-height:1.7;">
+    <div style="background:rgba(255,159,28,.07);border:1px solid rgba(255,159,28,.2);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:.86rem;color:#ccc;line-height:1.7;">
       <b style="color:var(--pr);display:block;margin-bottom:4px;">📱 Como usar:</b>
       1. Copie a mensagem do WhatsApp do cliente<br>
       2. Cole no campo abaixo<br>
@@ -569,21 +554,21 @@
 
     <textarea id="conv-input" placeholder="Cole aqui a mensagem do cliente...&#10;&#10;Exemplo:&#10;Boa noite! Sou a Ana&#10;Quero uma calabresa com borda de cheddar&#10;Rua das Flores, 123&#10;Pix"></textarea>
 
-    <button class="m-btn" id="conv-btn" onclick="converterPedido()" style="margin-top:10px;font-size:.9rem;letter-spacing:1px;">
+    <button class="m-btn" id="conv-btn" onclick="converterPedido()" style="margin-top:10px;font-size:.98rem;letter-spacing:1px;">
       🤖 CONVERTER PEDIDO
     </button>
 
     <div id="conv-spinner">⏳ CONVERTENDO...</div>
     <div id="conv-result"></div>
-    <div id="conv-taxa-gps" style="display:none;background:rgba(255,159,28,.08);border:1px solid rgba(255,159,28,.2);border-radius:8px;padding:10px 14px;margin-top:8px;font-size:.78rem;color:#ccc;"></div>
-    <textarea id="conv-result-edit" style="display:none;width:100%;box-sizing:border-box;background:rgba(0,0,0,.4);border:1px solid rgba(255,159,28,.4);border-radius:10px;padding:14px;font-size:.82rem;line-height:1.9;color:#e8e8e8;white-space:pre-wrap;word-break:break-word;font-family:'Courier New',monospace;resize:vertical;min-height:200px;outline:none;" oninput="_ct=this.value"></textarea>
-    <button id="conv-edit-btn" style="display:none;background:rgba(255,159,28,.12);color:var(--pr);border:1px solid rgba(255,159,28,.3);border-radius:8px;padding:8px 16px;font-size:.75rem;cursor:pointer;margin-top:6px;width:100%;" onclick="toggleEditConversor()">✏️ EDITAR</button>
+    <div id="conv-taxa-gps" style="display:none;background:rgba(255,159,28,.08);border:1px solid rgba(255,159,28,.2);border-radius:8px;padding:10px 14px;margin-top:8px;font-size:.86rem;color:#ccc;"></div>
+    <textarea id="conv-result-edit" style="display:none;width:100%;box-sizing:border-box;background:rgba(0,0,0,.4);border:1px solid rgba(255,159,28,.4);border-radius:10px;padding:14px;font-size:.9rem;line-height:1.9;color:#e8e8e8;white-space:pre-wrap;word-break:break-word;font-family:'Courier New',monospace;resize:vertical;min-height:200px;outline:none;" oninput="_ct=this.value"></textarea>
+    <button id="conv-edit-btn" style="display:none;background:rgba(255,159,28,.12);color:var(--pr);border:1px solid rgba(255,159,28,.3);border-radius:8px;padding:8px 16px;font-size:.86rem;cursor:pointer;margin-top:6px;width:100%;" onclick="toggleEditConversor()">✏️ EDITAR</button>
 
     <div class="conv-row">
       <button class="conv-copy" id="conv-copy" onclick="copiarPedido()">📋 COPIAR</button>
       <button class="conv-print" id="conv-print" onclick="abrirCaixaParaFinalizar()">🧾 ABRIR NO CAIXA</button>
     </div>
-    <div id="conv-print-status" style="display:none;font-size:.75rem;font-weight:600;margin-top:8px;text-align:center;"></div>
+    <div id="conv-print-status" style="display:none;font-size:.86rem;font-weight:600;margin-top:8px;text-align:center;"></div>
     <button class="m-btn-sec" style="margin-top:8px;" onclick="resetConversor()">↩ NOVO PEDIDO</button>
   </div>
 </div>
@@ -595,7 +580,7 @@
     <div class="m-close" onclick="closeModal('modal-conv-orders')">✕</div>
     <div class="modal-title">✅ PEDIDOS CONVERTIDOS</div>
     <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px;margin:0 0 14px;">
-      <div style="font-size:.65rem;color:#555;letter-spacing:2px;margin-bottom:8px;">ESTATÍSTICAS</div>
+      <div style="font-size:.78rem;color:#555;letter-spacing:2px;margin-bottom:8px;">ESTATÍSTICAS</div>
       <div class="dash-period" style="margin-bottom:10px;">
         <button class="dash-period-btn conv-period-btn" id="conv-period-7" onclick="setConvStatsPeriod(7)">7 dias</button>
         <button class="dash-period-btn conv-period-btn" id="conv-period-15" onclick="setConvStatsPeriod(15)">15 dias</button>
@@ -612,7 +597,7 @@
     <div class="modal-handle"></div>
     <div class="m-close" onclick="closeModal('modal-conv-detail')">✕</div>
     <div class="modal-title">📋 PEDIDO</div>
-    <pre id="conv-detail-text" style="white-space:pre-wrap;font-family:monospace;font-size:.78rem;line-height:1.7;padding:0 0 16px;color:var(--tx);"></pre>
+    <pre id="conv-detail-text" style="white-space:pre-wrap;font-family:monospace;font-size:.86rem;line-height:1.7;padding:0 0 16px;color:var(--tx);"></pre>
   </div>
 </div>
 
@@ -647,17 +632,17 @@
     <div class="modal-handle"></div>
     <div class="m-close" onclick="closeModal('modal-item-edit')">✕</div>
     <div class="modal-title" id="item-edit-title">EDITAR ITEM</div>
-    <p style="font-size:.7rem;color:#555;text-align:center;margin-bottom:8px;">📷 Toque na área abaixo para escolher foto do celular</p>
+    <p style="font-size:.82rem;color:#555;text-align:center;margin-bottom:8px;">📷 Toque na área abaixo para escolher foto do celular</p>
     <label class="img-upload-lbl" for="adm-img-file" id="img-upload-lbl">
       <span id="img-ph">📷 Adicionar foto do celular</span>
     </label>
     <input type="file" id="adm-img-file" style="display:none;" accept="image/*" onchange="handleImgFile(this)">
-    <label style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:var(--sub);margin:-4px 0 10px;cursor:pointer;">
+    <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--sub);margin:-4px 0 10px;cursor:pointer;">
       <input type="checkbox" id="adm-remover-fundo" checked style="width:16px;height:16px;">
       ✨ Remover fundo da foto automaticamente e colocar no fundo padrão
     </label>
-    <div id="adm-fundo-status" style="display:none;font-size:.72rem;color:var(--pr);text-align:center;margin:-4px 0 10px;">⏳ Processando imagem (pode levar até 20s na primeira vez)...</div>
-    <button id="adm-rm-img-btn" onclick="removeItemImg()" style="display:none;width:100%;background:transparent;border:1px solid rgba(231,29,54,.3);color:var(--se);padding:7px;border-radius:8px;font-size:.75rem;cursor:pointer;margin-bottom:8px;">🗑 Remover foto</button>
+    <div id="adm-fundo-status" style="display:none;font-size:.82rem;color:var(--pr);text-align:center;margin:-4px 0 10px;">⏳ Processando imagem (pode levar até 20s na primeira vez)...</div>
+    <button id="adm-rm-img-btn" onclick="removeItemImg()" style="display:none;width:100%;background:transparent;border:1px solid rgba(231,29,54,.3);color:var(--se);padding:7px;border-radius:8px;font-size:.86rem;cursor:pointer;margin-bottom:8px;">🗑 Remover foto</button>
     <input type="text" class="m-input" id="item-name" placeholder="Nome do item">
     <textarea class="m-input" id="item-desc" placeholder="Ingredientes / descrição" rows="2" style="resize:none;"></textarea>
     <input type="number" class="m-input" id="item-price" placeholder="Preço (ex: 33.99)" step="0.01" min="0">
@@ -686,7 +671,7 @@
       <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
       Entrar com Google
     </button>
-    <div style="text-align:center;font-size:.68rem;color:#444;margin-bottom:10px;">— ou preencha manualmente —</div>
+    <div style="text-align:center;font-size:.78rem;color:#444;margin-bottom:10px;">— ou preencha manualmente —</div>
     <input type="text" class="m-input" id="fb-name" placeholder="Seu nome">
     <div id="fb-photo-preview" style="display:none;text-align:center;margin-bottom:10px;">
       <img id="fb-photo-img" style="width:48px;height:48px;border-radius:50%;border:2px solid var(--pr);" src="" alt="">
@@ -701,7 +686,7 @@
       <div id="fb-pizza-preview" style="display:none;margin-bottom:6px;">
         <img id="fb-pizza-img" style="width:100%;max-height:140px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,159,28,.25);" src="" alt="">
       </div>
-      <label style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:#666;cursor:pointer;">
+      <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;color:#666;cursor:pointer;">
         <input type="file" id="fb-pizza-file" accept="image/*" style="display:none;" onchange="handleFbPizzaPhoto(this)">
         <span style="background:rgba(255,159,28,.08);border:1px dashed rgba(255,159,28,.3);padding:6px 12px;border-radius:8px;color:var(--pr);">📷 Adicionar foto da pizza</span>
       </label>
@@ -737,14 +722,14 @@
     <div class="modal-handle"></div>
     <div class="m-close" onclick="closeModal('modal-config')">✕</div>
     <div class="modal-title">⚙ CONFIGURAÇÕES</div>
-    <div style="font-size:.68rem;color:#555;letter-spacing:2px;margin-bottom:6px;">WHATSAPP</div>
+    <div style="font-size:.78rem;color:#555;letter-spacing:2px;margin-bottom:6px;">WHATSAPP</div>
     <input type="text" class="m-input" id="cfg-wpp" placeholder="Ex: 5515997058390">
-    <div style="font-size:.68rem;color:#555;letter-spacing:2px;margin-bottom:6px;">ENDEREÇO DA LOJA (para o mapa)</div>
+    <div style="font-size:.78rem;color:#555;letter-spacing:2px;margin-bottom:6px;">ENDEREÇO DA LOJA (para o mapa)</div>
     <input type="text" class="m-input" id="cfg-end" placeholder="Ex: Rua XV de Novembro, 123, Itapetininga">
-    <div style="font-size:.68rem;color:var(--tx-5);letter-spacing:2px;margin-bottom:10px;line-height:1.5;">A senha da equipe não muda mais por aqui — é a mesma do Caixa/Relatórios, configurada direto no Netlify (STAFF_PASSWORD).</div>
+    <div style="font-size:.78rem;color:var(--tx-5);letter-spacing:2px;margin-bottom:10px;line-height:1.5;">A senha da equipe não muda mais por aqui — é a mesma do Caixa/Relatórios, configurada direto no Netlify (STAFF_PASSWORD).</div>
     <button class="m-btn" onclick="saveConfig()">SALVAR CONFIGURAÇÕES</button>
     <button class="m-btn-sec" style="color:var(--se);border-color:rgba(231,29,54,.2);margin-top:4px;" onclick="resetConfig('all')">↩ RESETAR TUDO AO PADRÃO</button>
-    <div id="cfg-msg" style="text-align:center;font-size:.78rem;margin-top:4px;display:none;"></div>
+    <div id="cfg-msg" style="text-align:center;font-size:.86rem;margin-top:4px;display:none;"></div>
   </div>
 </div>
 

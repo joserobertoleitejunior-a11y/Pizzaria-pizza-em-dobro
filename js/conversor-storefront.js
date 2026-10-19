@@ -800,7 +800,7 @@ function _renderConvStats(list){
   el.innerHTML=
     '<div class="dash-grid">'
     +'<div class="dash-card"><div class="dash-num">'+totalHoje+'</div><div class="dash-lbl">Convertidos hoje</div></div>'
-    +'<div class="dash-card"><div class="dash-num">'+totalPeriodo+'</div><div class="dash-lbl">No período<br><span style="font-size:.58rem;color:var(--tx-5);">'+periodLbl+'</span></div></div>'
+    +'<div class="dash-card"><div class="dash-num">'+totalPeriodo+'</div><div class="dash-lbl">No período<br><span style="font-size:.72rem;color:var(--tx-5);">'+periodLbl+'</span></div></div>'
     +'</div>'
     +'<div class="dash-card" style="margin-bottom:10px;text-align:center;"><div class="dash-num" style="font-size:1.4rem;">'+totalGeral+'</div><div class="dash-lbl">Total geral de convertidos</div></div>'
     +'<div class="dash-card" style="text-align:center;"><div class="dash-num" style="font-size:1rem;color:#4285F4;">'+pagLabel+'</div><div class="dash-lbl">Pagamento mais usado — '+periodLbl+'</div></div>';
@@ -846,7 +846,7 @@ async function openPedidosConvertidos(){
   if(!list.length) list=DB.get('conv_orders')||[];
   _renderConvStats(list);
   if(!list.length){
-    el.innerHTML='<p style="text-align:center;color:var(--tx-5);padding:32px 0;">Nenhum pedido convertido ainda.<br><span style="font-size:.75rem;">Os pedidos aparecem aqui após você copiar ou imprimir pelo conversor.</span></p>';
+    el.innerHTML='<p style="text-align:center;color:var(--tx-5);padding:32px 0;">Nenhum pedido convertido ainda.<br><span style="font-size:.86rem;">Os pedidos aparecem aqui após você copiar ou imprimir pelo conversor.</span></p>';
     return;
   }
   el.innerHTML=list.map((r,i)=>{
@@ -855,11 +855,11 @@ async function openPedidosConvertidos(){
     const hora=dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
     return `<div onclick="verPedidoConvertido(${i})" style="border:1px solid var(--card-bd);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;background:rgba(20,20,20,.03);">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <span style="font-size:.85rem;font-weight:700;color:var(--text);">${r.nome}</span>
-        <span style="font-size:.65rem;color:var(--tx-5);">${data} ${hora}</span>
+        <span style="font-size:.93rem;font-weight:700;color:var(--text);">${r.nome}</span>
+        <span style="font-size:.78rem;color:var(--tx-5);">${data} ${hora}</span>
       </div>
-      <div style="font-size:.72rem;color:var(--tx-4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.end}</div>
-      <div style="font-size:.7rem;color:var(--pr);margin-top:3px;">💳 ${r.pag}</div>
+      <div style="font-size:.82rem;color:var(--tx-4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.end}</div>
+      <div style="font-size:.82rem;color:var(--pr);margin-top:3px;">💳 ${r.pag}</div>
     </div>`;
   }).join('');
 }
@@ -885,7 +885,7 @@ window._acDebounce=null;
 window.gm_authFailure=function(){
   console.error('[Google Maps] Falha de autenticação da API — verifique no Google Cloud Console se a "Places API (New)" e a "Maps JavaScript API" estão ativadas para esta chave, e se não há restrição de domínio bloqueando o site.');
   const dd=document.getElementById('addr-suggestions');
-  if(dd){dd.style.display='block';dd.innerHTML='<div style="padding:10px 14px;color:#e71d36;font-size:.78rem;">Erro de configuração do Maps. Avise o suporte.</div>';}
+  if(dd){dd.style.display='block';dd.innerHTML='<div style="padding:10px 14px;color:#e71d36;font-size:.86rem;">Erro de configuração do Maps. Avise o suporte.</div>';}
 };
 async function initGmapsAutocomplete(){
   try{
@@ -929,7 +929,7 @@ async function _buscarSugestoesEndereco(valor){
   if(texto.length<4){dd.style.display='none';dd.innerHTML='';return;}
   if(!window.google||!google.maps||!google.maps.places){
     dd.style.display='block';
-    dd.innerHTML='<div style="padding:10px 14px;color:var(--muted);font-size:.78rem;">Carregando busca do Maps...</div>';
+    dd.innerHTML='<div style="padding:10px 14px;color:var(--muted);font-size:.86rem;">Carregando busca do Maps...</div>';
     _posicionarSugestoesEndereco();
     return;
   }
@@ -945,11 +945,11 @@ async function _buscarSugestoesEndereco(valor){
       const{suggestions}=await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(req);
       window._acSuggestions=suggestions||[];
       if(!window._acSuggestions.length){
-        dd.innerHTML='<div style="padding:10px 14px;color:var(--muted);font-size:.78rem;">Nenhum endereço encontrado. Tente digitar de outro jeito.</div>';
+        dd.innerHTML='<div style="padding:10px 14px;color:var(--muted);font-size:.86rem;">Nenhum endereço encontrado. Tente digitar de outro jeito.</div>';
       }else{
         dd.innerHTML=window._acSuggestions.map((s,i)=>{
           const texto=(s.placePrediction&&s.placePrediction.text&&s.placePrediction.text.text)||'';
-          return`<div onclick="_selecionarSugestaoEndereco(${i})" style="padding:10px 14px;border-top:1px solid rgba(20,20,20,.06);cursor:pointer;font-size:.8rem;color:var(--tx-2);">📍 ${texto.replace(/</g,'&lt;')}</div>`;
+          return`<div onclick="_selecionarSugestaoEndereco(${i})" style="padding:10px 14px;border-top:1px solid rgba(20,20,20,.06);cursor:pointer;font-size:.88rem;color:var(--tx-2);">📍 ${texto.replace(/</g,'&lt;')}</div>`;
         }).join('');
       }
       dd.style.display='block';
@@ -961,7 +961,7 @@ async function _buscarSugestoesEndereco(valor){
       }else{
         console.warn('Erro ao buscar endereço:',e);
       }
-      dd.innerHTML='<div style="padding:10px 14px;color:var(--muted);font-size:.78rem;">Não conseguimos buscar sugestões agora. Digite seu endereço completo ou use o botão 📍.</div>';
+      dd.innerHTML='<div style="padding:10px 14px;color:var(--muted);font-size:.86rem;">Não conseguimos buscar sugestões agora. Digite seu endereço completo ou use o botão 📍.</div>';
       dd.style.display='block';
       _posicionarSugestoesEndereco();
     }

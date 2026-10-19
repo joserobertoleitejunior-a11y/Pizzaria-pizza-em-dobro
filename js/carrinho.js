@@ -92,19 +92,19 @@ function renderBordas(id){
     // label da metade para o pizzaiolo (ex: "½ MARGHERITA  +  ½ CALABRESA")
     const meiaLabel=isMeia
       ?`<div style="background:rgba(255,159,28,.08);border:1px solid rgba(255,159,28,.2);border-radius:8px;padding:8px 10px;margin-bottom:10px;">
-          <div style="font-size:.55rem;color:var(--muted);letter-spacing:2px;margin-bottom:6px;">🍕 MEIA A MEIA</div>
+          <div style="font-size:.72rem;color:var(--muted);letter-spacing:2px;margin-bottom:6px;">🍕 MEIA A MEIA</div>
           <div style="display:flex;align-items:center;gap:6px;">
             <div style="flex:1;background:rgba(255,159,28,.1);border-radius:6px;padding:6px 8px;text-align:center;">
-              <div style="font-size:.5rem;color:var(--muted);letter-spacing:1.5px;margin-bottom:2px;">1ª METADE</div>
-              <div style="font-size:.78rem;font-weight:700;color:var(--pr);">½ ${it.halves[0].n}</div>
+              <div style="font-size:.72rem;color:var(--muted);letter-spacing:1.5px;margin-bottom:2px;">1ª METADE</div>
+              <div style="font-size:.86rem;font-weight:700;color:var(--pr);">½ ${it.halves[0].n}</div>
             </div>
-            <div style="font-size:.9rem;color:var(--tx-5);">+</div>
+            <div style="font-size:.98rem;color:var(--tx-5);">+</div>
             <div style="flex:1;background:rgba(255,159,28,.1);border-radius:6px;padding:6px 8px;text-align:center;">
-              <div style="font-size:.5rem;color:var(--muted);letter-spacing:1.5px;margin-bottom:2px;">2ª METADE</div>
-              <div style="font-size:.78rem;font-weight:700;color:var(--pr);">½ ${it.halves[1].n}</div>
+              <div style="font-size:.72rem;color:var(--muted);letter-spacing:1.5px;margin-bottom:2px;">2ª METADE</div>
+              <div style="font-size:.86rem;font-weight:700;color:var(--pr);">½ ${it.halves[1].n}</div>
             </div>
           </div>
-          <div style="font-size:.55rem;color:var(--tx-4);margin-top:6px;text-align:center;">As opções abaixo se aplicam à pizza inteira (borda e acréscimos) ou a cada metade (remover ingrediente)</div>
+          <div style="font-size:.72rem;color:var(--tx-4);margin-top:6px;text-align:center;">As opções abaixo se aplicam à pizza inteira (borda e acréscimos) ou a cada metade (remover ingrediente)</div>
         </div>`
       :'';
     const acrSel=it.addedIngredients||[];
@@ -115,18 +115,18 @@ function renderBordas(id){
 
       <!-- BORDA toggle -->
       <div class="opt-toggle-hdr" onclick="toggleOpts('borda-${id}-${i}','borda-arrow-${id}-${i}')">
-        <span style="font-size:.65rem;font-weight:700;letter-spacing:1.5px;color:var(--pr);">
+        <span style="font-size:.78rem;font-weight:700;letter-spacing:1.5px;color:var(--pr);">
           🥖 BORDA
           ${it.selectedBorda&&it.selectedBorda.price>0?`<span style="background:rgba(255,159,28,.2);border-radius:10px;padding:1px 8px;margin-left:4px;">${it.selectedBorda.name}</span>`:''}
         </span>
-        <span id="borda-arrow-${id}-${i}" style="font-size:.7rem;color:var(--tx-5);">▼</span>
+        <span id="borda-arrow-${id}-${i}" style="font-size:.82rem;color:var(--tx-5);">▼</span>
       </div>
       <div id="borda-${id}-${i}" style="display:none;padding-top:6px;">
         <div class="borda-pills">
           ${BORDAS.map((o,oi)=>`
             <div class="borda-pill${it.selectedBorda&&it.selectedBorda.name===o.name?' sel':''}"
               onclick="setBorda(${id},${i},${oi})" id="bp-${id}-${i}-${oi}">
-              ${o.name}${o.price>0?`<span style="font-size:.62rem;opacity:.75;"> +R$${fmtPrice(o.price)}</span>`:''}
+              ${o.name}${o.price>0?`<span style="font-size:.74rem;opacity:.75;"> +R$${fmtPrice(o.price)}</span>`:''}
             </div>`).join('')}
         </div>
       </div>
@@ -146,13 +146,13 @@ function renderBordas(id){
 
       return `
       <div style="border:1px solid rgba(231,29,54,.12);border-radius:10px;padding:10px;margin-top:6px;background:rgba(20,20,20,.02);">
-        ${label?`<div style="font-size:.65rem;font-weight:700;color:var(--se);letter-spacing:1px;margin-bottom:8px;opacity:.8;">${label}</div>`:''}
+        ${label?`<div style="font-size:.78rem;font-weight:700;color:var(--se);letter-spacing:1px;margin-bottom:8px;opacity:.8;">${label}</div>`:''}
         <div class="opt-toggle-hdr" style="border-color:rgba(231,29,54,.15);" onclick="toggleOpts('rm-${id}-${i}','rm-arrow-${id}-${i}')">
-          <span style="font-size:.65rem;font-weight:700;letter-spacing:1.5px;color:var(--se);">
+          <span style="font-size:.78rem;font-weight:700;letter-spacing:1.5px;color:var(--se);">
             🚫 REMOVER INGREDIENTE
-            ${remSel.length>0?`<span style="background:rgba(231,29,54,.2);border-radius:10px;padding:1px 8px;margin-left:4px;">${remSel.length} removido${remSel.length>1?'s':''}</span>`:'<span style="font-size:.6rem;color:var(--tx-5);font-weight:400;margin-left:4px;">(opcional)</span>'}
+            ${remSel.length>0?`<span style="background:rgba(231,29,54,.2);border-radius:10px;padding:1px 8px;margin-left:4px;">${remSel.length} removido${remSel.length>1?'s':''}</span>`:'<span style="font-size:.74rem;color:var(--tx-5);font-weight:400;margin-left:4px;">(opcional)</span>'}
           </span>
-          <span id="rm-arrow-${id}-${i}" style="font-size:.7rem;color:var(--tx-5);">▼</span>
+          <span id="rm-arrow-${id}-${i}" style="font-size:.82rem;color:var(--tx-5);">▼</span>
         </div>
         <div id="rm-${id}-${i}" style="display:none;padding-top:6px;">
           <div class="rm-pills">
@@ -271,12 +271,15 @@ function updateUI(){
     const precoLinha=g.unitPrice*g.qty;
 
     sumHTML+=`<div class="sum-item">
-      <div class="sum-controls">
-        <span class="sum-x" onclick="removeFromSum(${idxRef})" title="Diminuir">−</span>
-        <span style="min-width:20px;text-align:center;font-weight:700;color:#FFFFFF;">${g.qty}x</span>
-        <span class="sum-x" onclick="duplicarItemCarrinho(${idxRef})" title="Adicionar mais um igual" style="color:var(--pr);">+</span>
+      <div class="sum-nome">${nomeHTML}${ext}</div>
+      <div class="sum-lado">
+        <div class="sum-controls">
+          <span class="sum-x" onclick="removeFromSum(${idxRef})" title="Diminuir" role="button" aria-label="Diminuir">−</span>
+          <span class="sum-qty">${g.qty}</span>
+          <span class="sum-x mais" onclick="duplicarItemCarrinho(${idxRef})" title="Adicionar mais um igual" role="button" aria-label="Adicionar mais um">+</span>
+        </div>
+        <span class="sum-price">R$ ${fmtPrice(precoLinha)}</span>
       </div>
-      ${nomeHTML} — <span class="sum-price">R$ ${fmtPrice(precoLinha)}</span>${ext}
     </div>`;
   });
 
@@ -284,22 +287,21 @@ function updateUI(){
   const desc=calcDesconto(cart);
   if(desc>0){
     const p=getPromoAtiva();
-    sumHTML+=`<div class="sum-item" style="color:#2ecc71">
-      <b>🔥 ${p.nome}</b>
-      <span class="sum-desc">− R$ ${fmtPrice(desc)}</span>
-    </div>`;
+    sumHTML+=`<div class="sum-linha ok"><span>🔥 ${p.nome}</span><span>− R$ ${fmtPrice(desc)}</span></div>`;
     total-=desc;
     if(total<0)total=0;
   }
 
   const isRet=document.getElementById('delivery-method').checked;
+  const bE=document.getElementById('modo-entrega'),bR=document.getElementById('modo-retirada');
+  if(bE&&bR){ bE.classList.toggle('on',!isRet); bR.classList.toggle('on',isRet); }
   let fee=0;
   if(isRet){
     document.getElementById('del-lbl-txt').innerText='RETIRADA';
     document.getElementById('addr-fields').style.display='none';
     document.getElementById('time-title').innerText='Prazo de Retirada:';
     document.getElementById('time-desc').innerText='Pronto em até 20 minutos.';
-    sumHTML+=`<div class="sum-item" style="color:#2ecc71"><b>Retirada no Local</b> — GRÁTIS</div>`;
+    sumHTML+=`<div class="sum-linha ok"><span>Retirada no local</span><span>Grátis</span></div>`;
     document.getElementById('delivery-msg').innerHTML=`<span style="color:#2ecc71">🏠 Retirada em mãos</span>`;
   } else {
     document.getElementById('del-lbl-txt').innerText='ENTREGA';
@@ -307,12 +309,13 @@ function updateUI(){
     document.getElementById('time-title').innerText='Prazo de Entrega:';
     document.getElementById('time-desc').innerText='Seu pedido pode levar até 50 minutos.';
     fee=8;
-    sumHTML+=`<div class="sum-item" style="color:var(--se)"><b>Taxa de Entrega</b> + R$ 8,00</div>`;
+    sumHTML+=`<div class="sum-linha"><span>Taxa de entrega</span><span>R$ 8,00</span></div>`;
     document.getElementById('delivery-msg').innerHTML=`Taxa de entrega: R$ 8,00 (para toda a cidade)`;
   }
 
-  document.getElementById('order-summary').innerHTML=sumHTML;
   const totalFinal=total+fee;
+  sumHTML+=`<div class="sum-linha total"><span>Total</span><span>R$ ${fmtPrice(totalFinal)}</span></div>`;
+  document.getElementById('order-summary').innerHTML=sumHTML;
   document.getElementById('total-val').innerText=`R$ ${fmtPrice(totalFinal)}`;
 
   // CTA Google — mostra se não logado
@@ -354,6 +357,18 @@ function autofillClient(){
 // ══════════════════════════════════
 //  CART TOGGLE
 // ══════════════════════════════════
+// "Entrega | Retirada": liga/desliga o mesmo controle de sempre (checkbox escondido), tudo continua igual por baixo
+function definirModoEntrega(retirada){
+  const c=document.getElementById('delivery-method'); if(!c)return;
+  c.checked=!!retirada; updateUI();
+}
+// Pagamento por toque: preenche o campo de sempre (select escondido) e mostra/oculta o troco
+function escolherPagamento(v){
+  const sel=document.getElementById('u-pay'); if(!sel)return;
+  sel.value=v; sel.style.borderColor=''; handlePaymentChange();
+  document.querySelectorAll('#pay-chips button').forEach(b=>b.classList.toggle('on',b.dataset.pay===v));
+  const box=document.getElementById('pay-chips'); if(box) box.classList.remove('erro');
+}
 function toggleCart(e){
   const body=document.getElementById('cart-body');
   const hint=document.getElementById('cart-hint');

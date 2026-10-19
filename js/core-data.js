@@ -178,7 +178,7 @@ function openPromos(){
       <div class="promo-row-name">${p.nome}</div>
       <div class="promo-row-desc">${p.desc}</div>
       <div class="promo-toggle">
-        <span style="font-size:.68rem;color:var(--tx-5);">${p.dias.map(d=>dias[d]).join(', ')}</span>
+        <span style="font-size:.78rem;color:var(--tx-5);">${p.dias.map(d=>dias[d]).join(', ')}</span>
         <label class="ptog"><input type="checkbox" id="ptog-${p.id}"${p.ativo?' checked':''}><span class="ptog-sl"></span></label>
       </div>
     </div>`).join('');

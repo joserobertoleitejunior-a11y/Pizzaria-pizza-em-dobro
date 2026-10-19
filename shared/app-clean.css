@@ -174,3 +174,4 @@ button:not([class]):not([id^="gate"]){color:#fff;}
 input:not([type]),input[type=text],input[type=number],input[type=password],input[type=email],input[type=tel],input[type=search],textarea{-webkit-appearance:none;appearance:none;}
 /* PDV no computador: grade de produtos em várias colunas */
 @media (min-width:900px){.prod-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))!important;}}
+.mode-btn{width:auto!important;min-width:60px;padding:6px 8px!important;}

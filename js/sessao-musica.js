@@ -197,11 +197,11 @@ function addPlaylistTrack(){
   const idx=wrap.children.length;
   const div=document.createElement('div');
   div.style.cssText='background:rgba(20,20,20,.03);border:1px solid rgba(20,20,20,.07);border-radius:10px;padding:10px;margin-bottom:8px;position:relative;';
-  div.innerHTML=`<div style="font-size:.65rem;color:var(--pr);letter-spacing:1px;margin-bottom:6px;">FAIXA ${idx+1}</div>
+  div.innerHTML=`<div style="font-size:.78rem;color:var(--pr);letter-spacing:1px;margin-bottom:6px;">FAIXA ${idx+1}</div>
     <input type="text" class="m-input" placeholder="URL do áudio (.mp3 / .ogg)" data-type="url" style="margin-bottom:6px;">
     <input type="text" class="m-input" placeholder="Título da música" data-type="title" style="margin-bottom:6px;">
     <input type="text" class="m-input" placeholder="Artista (opcional)" data-type="artist" style="margin-bottom:0;">
-    <button onclick="this.parentNode.remove();renumberTracks();" style="position:absolute;top:8px;right:8px;background:rgba(231,29,54,.15);border:none;color:var(--se);border-radius:6px;padding:3px 8px;font-size:.7rem;cursor:pointer;">✕</button>`;
+    <button onclick="this.parentNode.remove();renumberTracks();" style="position:absolute;top:8px;right:8px;background:rgba(231,29,54,.15);border:none;color:var(--se);border-radius:6px;padding:3px 8px;font-size:.82rem;cursor:pointer;">✕</button>`;
   wrap.appendChild(div);
 }
 

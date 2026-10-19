@@ -40,7 +40,7 @@ body{
 .nav-logo{font-family:var(--font-display);font-size:1.3rem;color:var(--pr);letter-spacing:.5px;
   display:flex;align-items:center;gap:8px;}
 .nav-links{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
-.nav-links a{font-family:var(--font-eyebrow);font-size:.62rem;letter-spacing:.6px;text-transform:uppercase;
+.nav-links a{font-family:var(--font-eyebrow);font-size:.74rem;letter-spacing:.6px;text-transform:uppercase;
   color:var(--sub);text-decoration:none;padding:6px 10px;border-radius:8px;
   border-top:2px solid transparent;transition:.2s;}
 .nav-links a:hover{color:#000;background:var(--pr);border-top-color:transparent;}
@@ -53,21 +53,21 @@ body{
    Os balões de chat/notificação que ficavam soltos flutuando por cima do cardápio
    também moraram pra cá, como ícones — nada fica mais flutuando sobre o conteúdo. ---- */
 .status-rail{flex:none;background:rgba(0,0,0,.24);border-bottom:1px solid var(--card-bd);}
-.status-line{display:flex;align-items:center;gap:8px 12px;padding:7px 16px;flex-wrap:wrap;font-size:.72rem;}
+.status-line{display:flex;align-items:center;gap:8px 12px;padding:7px 16px;flex-wrap:wrap;font-size:.82rem;}
 .status-line+.status-line{border-top:1px solid rgba(255,255,255,.05);}
-.status-line.linha-equipe{color:var(--sub);font-family:var(--font-eyebrow);letter-spacing:.8px;text-transform:uppercase;font-size:.66rem;}
+.status-line.linha-equipe{color:var(--sub);font-family:var(--font-eyebrow);letter-spacing:.8px;text-transform:uppercase;font-size:.78rem;}
 .status-line.linha-aberto{background:rgba(46,204,113,.1);color:#5ee89b;}
 .status-line.linha-alerta{background:rgba(231,29,54,.16);color:#ff9d90;animation:pulseAlert 1.6s ease-in-out infinite;}
 @keyframes pulseAlert{0%,100%{background-color:rgba(231,29,54,.16);}50%{background-color:rgba(231,29,54,.3);}}
 .status-line .txt{flex:1;min-width:0;}
 .status-line .txt b{color:var(--tx);}
 .status-line.linha-aberto .txt b{color:#fff;}
-.status-btn{border:none;border-radius:7px;padding:6px 11px;font-size:.68rem;font-weight:700;cursor:pointer;
+.status-btn{border:none;border-radius:7px;padding:6px 11px;font-size:.78rem;font-weight:700;cursor:pointer;
   letter-spacing:.3px;text-transform:none;font-family:var(--font-eyebrow);white-space:nowrap;flex-shrink:0;transition:transform .1s;}
 .status-btn:active{transform:scale(.95);}
 .status-btn.fechar{background:rgba(255,255,255,.18);color:#fff;}
 .status-btn.reconectar{background:#fff;color:#c0152a;}
-.printer-btn{border:none;border-radius:7px;padding:5px 8px;font-size:.66rem;font-weight:700;cursor:pointer;
+.printer-btn{border:none;border-radius:7px;padding:5px 8px;font-size:.78rem;font-weight:700;cursor:pointer;
   letter-spacing:.3px;text-transform:none;font-family:var(--font-eyebrow);}
 .printer-btn.bt{background:rgba(29,161,242,.16);color:#1da1f2;}
 .printer-btn.usb{background:rgba(46,204,113,.16);color:#2ecc71;}
@@ -76,18 +76,18 @@ body{
    cardápio e dos modais; agora vivem dentro do console de status, à direita */
 .icon-actions{display:flex;align-items:center;gap:6px;margin-left:auto;}
 .header-icon-btn{position:relative;width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,.14);
-  background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:.85rem;
+  background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:.93rem;
   cursor:pointer;flex-shrink:0;transition:background .18s,border-color .18s;}
 .header-icon-btn:active{transform:scale(.93);}
 .header-icon-btn.chat{color:#1da1f2;border-color:rgba(29,161,242,.3);background:rgba(29,161,242,.1);}
-#notif-bubble-badge{position:absolute;top:-6px;right:-6px;background:#fff;color:var(--se);font-size:.62rem;
+#notif-bubble-badge{position:absolute;top:-6px;right:-6px;background:#fff;color:var(--se);font-size:.74rem;
   font-weight:700;min-width:16px;height:16px;border-radius:8px;display:none;align-items:center;justify-content:center;
   padding:0 3px;font-family:var(--font-eyebrow);box-shadow:0 0 0 2px #07060a;}
 #notif-bubble.show #notif-bubble-badge{display:flex;}
 
 /* ---- TABS ---- */
 .tabs{display:flex;gap:8px;padding:10px 12px;flex:none;}
-.tab{flex:1;text-align:center;padding:11px 0;border-radius:12px;font-family:var(--font-eyebrow);font-size:.88rem;
+.tab{flex:1;text-align:center;padding:11px 0;border-radius:12px;font-family:var(--font-eyebrow);font-size:.96rem;
   letter-spacing:.4px;text-transform:uppercase;font-weight:600;color:var(--sub);background:rgba(255,255,255,.08);
   border:1px solid rgba(255,255,255,.14);cursor:pointer;transition:background .22s cubic-bezier(.4,0,.2,1),color .22s cubic-bezier(.4,0,.2,1),border-color .22s cubic-bezier(.4,0,.2,1),box-shadow .22s;}
 .tab.active{color:#000;background:linear-gradient(135deg,var(--pr),var(--pr2));border-color:var(--pr);font-weight:700;
@@ -111,7 +111,7 @@ body{
 
 .mode-btn{flex:none;width:68px;padding:6px 4px;text-align:center;border-radius:12px;background:rgba(255,255,255,.1);
   border:1px solid rgba(255,255,255,.16);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  font-family:var(--font-eyebrow);font-size:.6rem;text-transform:uppercase;letter-spacing:.2px;color:var(--tx);cursor:pointer;font-weight:600;
+  font-family:var(--font-eyebrow);font-size:.74rem;text-transform:uppercase;letter-spacing:.2px;color:var(--tx);cursor:pointer;font-weight:600;
   transition:background .22s cubic-bezier(.4,0,.2,1),border-color .22s cubic-bezier(.4,0,.2,1),box-shadow .22s,transform .1s;}
 .mode-btn .ic{font-size:1.05rem;line-height:1;}
 .mode-btn:active{transform:scale(.94);}
@@ -120,7 +120,7 @@ body{
 
 .cats{display:flex;gap:7px;padding:10px 12px 6px;overflow-x:auto;flex:none;}
 .cat-chip{flex:none;padding:8px 16px;border-radius:20px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);
-  font-family:var(--font-eyebrow);font-size:.82rem;letter-spacing:.3px;text-transform:uppercase;color:var(--tx);cursor:pointer;font-weight:600;
+  font-family:var(--font-eyebrow);font-size:.9rem;letter-spacing:.3px;text-transform:uppercase;color:var(--tx);cursor:pointer;font-weight:600;
   transition:background .22s cubic-bezier(.4,0,.2,1),color .22s cubic-bezier(.4,0,.2,1),border-color .22s cubic-bezier(.4,0,.2,1),box-shadow .22s;}
 .cat-chip.active{color:#000;background:linear-gradient(135deg,var(--pr),var(--pr2));border-color:var(--pr);font-weight:700;
   box-shadow:0 3px 10px rgba(255,122,26,.3);}
@@ -134,9 +134,9 @@ body{
 .prod-card:active{transform:translateY(2px);border-bottom-width:2px;box-shadow:0 1px 4px rgba(0,0,0,.28);}
 .prod-card.meia-sel{border-color:var(--se);border-bottom-color:var(--se);background:linear-gradient(160deg,rgba(231,29,54,.22),rgba(231,29,54,.1));
   box-shadow:0 3px 12px rgba(231,29,54,.25);}
-.prod-nome{font-size:.94rem;font-weight:700;margin-bottom:4px;line-height:1.25;color:var(--tx-dark);}
+.prod-nome{font-size:1.02rem;font-weight:700;margin-bottom:4px;line-height:1.25;color:var(--tx-dark);}
 .prod-preco{font-family:var(--font-display);font-size:1.25rem;color:var(--pr);}
-.empty{text-align:center;color:var(--sub);padding:30px 16px;font-size:.9rem;grid-column:1/-1;}
+.empty{text-align:center;color:var(--sub);padding:30px 16px;font-size:.98rem;grid-column:1/-1;}
 
 /* ---- BARRA DO CARRINHO — painel tipo visor digital de caixa ---- */
 /* sticky: o total e o botão "Ver e finalizar" nunca podem sumir rolando a lista de produtos —
@@ -145,13 +145,13 @@ body{
   box-shadow:0 -8px 20px rgba(0,0,0,.4);
   padding:11px 12px;padding-bottom:calc(11px + env(safe-area-inset-bottom));}
 .cart-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;}
-.cart-bar-info{font-family:var(--font-eyebrow);font-size:.8rem;color:var(--sub);text-transform:uppercase;font-weight:600;}
+.cart-bar-info{font-family:var(--font-eyebrow);font-size:.88rem;color:var(--sub);text-transform:uppercase;font-weight:600;}
 .cart-bar-total{font-family:var(--font-display);font-size:1.6rem;color:var(--pr2);text-shadow:0 0 12px rgba(255,122,61,.4);}
 .cart-bar-actions{display:flex;gap:8px;}
 .btn-cancelar-venda{flex:none;width:84px;background:rgba(192,57,43,.2);color:#ff8a7a;border:1px solid rgba(192,57,43,.5);
-  border-radius:12px;font-family:var(--font-eyebrow);font-size:.72rem;text-transform:uppercase;cursor:pointer;font-weight:600;}
+  border-radius:12px;font-family:var(--font-eyebrow);font-size:.82rem;text-transform:uppercase;cursor:pointer;font-weight:600;}
 .btn-finalizar{flex:1;background:linear-gradient(135deg,var(--pr),var(--pr2));color:#fff;border:none;border-bottom:4px solid #a83a12;border-radius:12px;padding:14px 0;
-  font-family:var(--font-eyebrow);font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;
+  font-family:var(--font-eyebrow);font-weight:700;font-size:.98rem;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;
   box-shadow:0 4px 14px rgba(255,106,26,.3);transition:transform .12s cubic-bezier(.4,0,.2,1),border-bottom-width .12s,box-shadow .2s;}
 .btn-finalizar:active{border-bottom-width:1px;transform:translateY(3px);box-shadow:0 2px 6px rgba(255,106,26,.25);}
 .btn-finalizar:disabled{opacity:.35;box-shadow:none;}
@@ -168,25 +168,25 @@ body{
 #modal-cart.minimizado .modal{pointer-events:auto;max-height:64px;overflow:hidden;border-radius:16px 16px 0 0;
   cursor:pointer;box-shadow:0 -4px 20px rgba(0,0,0,.5);}
 #modal-cart.minimizado .modal > *:not(h3){display:none;}
-#modal-cart.minimizado h3{margin:0;padding:18px 16px;font-size:.95rem;}
+#modal-cart.minimizado h3{margin:0;padding:18px 16px;font-size:1.03rem;}
 .modal{background:linear-gradient(160deg,#1c1712,var(--card));color:var(--tx-dark);border-radius:22px 22px 0 0;width:100%;max-width:480px;
   max-height:88vh;overflow-y:auto;padding:20px;box-shadow:0 -12px 40px rgba(0,0,0,.5);border-top:1px solid rgba(255,159,28,.15);}
 .modal h3{font-family:var(--font-display);font-size:1.4rem;color:var(--pr);margin-bottom:14px;}
 .modal-close{float:right;color:var(--sub-dark);font-size:1.4rem;cursor:pointer;}
-.opt-lbl{font-family:var(--font-eyebrow);font-size:.72rem;color:var(--sub-dark);text-transform:uppercase;margin:14px 0 6px;letter-spacing:.5px;font-weight:600;}
-.opt-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--card-bd);font-size:.92rem;}
+.opt-lbl{font-family:var(--font-eyebrow);font-size:.82rem;color:var(--sub-dark);text-transform:uppercase;margin:14px 0 6px;letter-spacing:.5px;font-weight:600;}
+.opt-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--card-bd);font-size:1rem;}
 .opt-row input{width:21px;height:21px;accent-color:var(--pr);}
 .ing-chip{display:inline-flex;align-items:center;gap:6px;background:#26201a;border:1.5px solid var(--card-bd);
-  border-radius:20px;padding:7px 13px;margin:3px 4px 3px 0;font-size:.84rem;cursor:pointer;font-weight:600;color:var(--tx-dark);}
+  border-radius:20px;padding:7px 13px;margin:3px 4px 3px 0;font-size:.92rem;cursor:pointer;font-weight:600;color:var(--tx-dark);}
 .ing-chip.removido{border-color:var(--se);color:#ff8a7a;text-decoration:line-through;background:rgba(231,29,54,.15);}
 .acr-chip{display:inline-flex;align-items:center;gap:6px;background:#26201a;border:1.5px solid var(--card-bd);
-  border-radius:20px;padding:7px 13px;margin:3px 4px 3px 0;font-size:.84rem;cursor:pointer;font-weight:600;color:var(--tx-dark);}
+  border-radius:20px;padding:7px 13px;margin:3px 4px 3px 0;font-size:.92rem;cursor:pointer;font-weight:600;color:var(--tx-dark);}
 .acr-chip.sel{border-color:var(--ok);color:#5ee89b;background:rgba(46,204,113,.15);}
 .field{margin-bottom:14px;}
-.field label{display:block;font-family:var(--font-eyebrow);font-size:.72rem;color:var(--sub-dark);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
-.field input,.field select{width:100%;background:#1c1712;border:2px solid var(--card-bd);border-radius:11px;padding:12px;color:var(--tx-dark);font-size:.95rem;}
+.field label{display:block;font-family:var(--font-eyebrow);font-size:.82rem;color:var(--sub-dark);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+.field input,.field select{width:100%;background:#1c1712;border:2px solid var(--card-bd);border-radius:11px;padding:12px;color:var(--tx-dark);font-size:1.03rem;}
 .btn{display:block;width:100%;padding:15px;border-radius:12px;border:none;font-family:var(--font-eyebrow);font-weight:700;
-  font-size:.9rem;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;margin-top:9px;}
+  font-size:.98rem;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;margin-top:9px;}
 .btn-primary{background:linear-gradient(135deg,var(--pr),var(--pr2));color:#fff;border-bottom:4px solid #a83a12;
   box-shadow:0 4px 14px rgba(255,106,26,.3);transition:transform .12s cubic-bezier(.4,0,.2,1),border-bottom-width .12s;}
 .btn-primary:active{border-bottom-width:1px;transform:translateY(3px);}
@@ -195,46 +195,46 @@ body{
 .btn-danger{background:rgba(231,29,54,.15);color:#ff8a7a;border:1px solid rgba(231,29,54,.4);}
 
 /* ---- MODAL CARRINHO ---- */
-.cart-item{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--card-bd);font-size:.92rem;}
+.cart-item{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--card-bd);font-size:1rem;}
 .cart-item-info{flex:1;min-width:0;}
 .cart-item-info div{word-break:break-word;font-weight:600;}
-.cart-item-sub{font-size:.75rem;color:var(--sub-dark);margin-top:3px;font-weight:400;}
+.cart-item-sub{font-size:.86rem;color:var(--sub-dark);margin-top:3px;font-weight:400;}
 .qty-ctrl{display:flex;align-items:center;gap:10px;margin-top:8px;}
 .qty-btn{width:28px;height:28px;border-radius:8px;background:#2a231b;border:1px solid var(--card-bd);color:var(--tx-dark);
   font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;font-weight:700;}
 .qty-val{font-weight:700;min-width:18px;text-align:center;font-size:1rem;}
 .cart-item-price{text-align:right;font-family:var(--font-display);font-size:1.15rem;color:var(--pr);white-space:nowrap;padding-left:8px;}
-.totais-box{background:linear-gradient(160deg,#211a13,#1c1712);border:1px solid var(--card-bd);border-radius:14px;padding:15px;margin:14px 0;font-size:.92rem;
+.totais-box{background:linear-gradient(160deg,#211a13,#1c1712);border:1px solid var(--card-bd);border-radius:14px;padding:15px;margin:14px 0;font-size:1rem;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.04);}
 .totais-row{display:flex;justify-content:space-between;padding:4px 0;}
 .totais-row.final{font-weight:700;font-size:1.3rem;font-family:var(--font-display);color:var(--pr);
   border-top:2px dashed var(--card-bd);margin-top:6px;padding-top:9px;}
 .pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-.pay-chip{padding:13px 8px;text-align:center;border-radius:12px;background:#1c1712;border:2px solid var(--card-bd);font-size:.85rem;font-weight:700;cursor:pointer;color:var(--tx-dark);
+.pay-chip{padding:13px 8px;text-align:center;border-radius:12px;background:#1c1712;border:2px solid var(--card-bd);font-size:.93rem;font-weight:700;cursor:pointer;color:var(--tx-dark);
   transition:background .2s cubic-bezier(.4,0,.2,1),border-color .2s,box-shadow .2s;}
 .pay-chip.active{background:linear-gradient(135deg,var(--pr),var(--pr2));color:#000;border-color:var(--pr);box-shadow:0 3px 10px rgba(255,122,26,.3);}
 .misto-linha{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
-.misto-linha select{flex:1;background:#1c1712;border:1.5px solid var(--card-bd);border-radius:9px;padding:9px;color:var(--tx-dark);font-size:.8rem;}
-.misto-linha input{width:96px;background:#1c1712;border:1.5px solid var(--card-bd);border-radius:9px;padding:9px;color:var(--pr);font-size:.85rem;font-weight:700;}
-.misto-linha .rm{color:var(--se);font-size:.85rem;cursor:pointer;padding:4px;flex:none;}
+.misto-linha select{flex:1;background:#1c1712;border:1.5px solid var(--card-bd);border-radius:9px;padding:9px;color:var(--tx-dark);font-size:.88rem;}
+.misto-linha input{width:96px;background:#1c1712;border:1.5px solid var(--card-bd);border-radius:9px;padding:9px;color:var(--pr);font-size:.93rem;font-weight:700;}
+.misto-linha .rm{color:var(--se);font-size:.93rem;cursor:pointer;padding:4px;flex:none;}
 
 /* ---- VENDAS DE HOJE ---- */
 .orders-scroll{flex:1;min-height:0;overflow-y:auto;padding:10px 12px;}
 .order-card{background:#181410;border:1px solid var(--card-bd);border-radius:14px;padding:13px 15px;margin-bottom:10px;}
 .order-card.novo{border-color:var(--pr);border-width:2px;}
 .order-card.cancelado{opacity:.45;}
-.order-top{display:flex;justify-content:space-between;font-size:.94rem;font-weight:700;gap:8px;color:var(--tx-dark);}
+.order-top{display:flex;justify-content:space-between;font-size:1.02rem;font-weight:700;gap:8px;color:var(--tx-dark);}
 .order-top span:first-child{word-break:break-word;}
-.order-meta{font-size:.75rem;color:var(--sub-dark);margin-top:5px;word-break:break-word;}
+.order-meta{font-size:.86rem;color:var(--sub-dark);margin-top:5px;word-break:break-word;}
 .order-total{font-family:var(--font-display);color:var(--pr);font-size:1.15rem;margin-top:6px;}
-.badge{font-family:var(--font-eyebrow);font-size:.65rem;padding:3px 9px;border-radius:10px;background:#fbe4d3;color:var(--pr);text-transform:uppercase;flex:none;font-weight:700;}
+.badge{font-family:var(--font-eyebrow);font-size:.78rem;padding:3px 9px;border-radius:10px;background:#fbe4d3;color:var(--pr);text-transform:uppercase;flex:none;font-weight:700;}
 .order-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
-.order-actions select{flex:1;min-width:120px;background:#1c1712;border:1.5px solid var(--card-bd);border-radius:9px;padding:8px;color:var(--tx-dark);font-size:.8rem;}
-.btn-mini{padding:8px 11px;border-radius:9px;border:1.5px solid var(--card-bd);background:#1c1712;color:var(--tx-dark);font-size:.78rem;cursor:pointer;font-weight:600;}
+.order-actions select{flex:1;min-width:120px;background:#1c1712;border:1.5px solid var(--card-bd);border-radius:9px;padding:8px;color:var(--tx-dark);font-size:.88rem;}
+.btn-mini{padding:8px 11px;border-radius:9px;border:1.5px solid var(--card-bd);background:#1c1712;color:var(--tx-dark);font-size:.86rem;cursor:pointer;font-weight:600;}
 .btn-mini.danger{color:var(--se);border-color:#f3c6bf;}
 
 .toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:var(--ok);color:#fff;padding:12px 24px;
-  border-radius:12px;font-weight:700;font-size:.88rem;z-index:900;display:none;}
+  border-radius:12px;font-weight:700;font-size:.96rem;z-index:900;display:none;}
 
 /* ---- BALÕES DE CHAT/NOTIFICAÇÃO — antes flutuavam soltos por cima do cardápio e dos
    modais (precisou de uma regra à parte só pra sumir quando um modal abria); agora moram
@@ -247,27 +247,27 @@ body{
   display:none;flex-direction:column;overflow:hidden;}
 #mini-messenger.show{display:flex;}
 .mm-header{background:linear-gradient(135deg,var(--pr),var(--se));color:#fff;padding:10px 14px;
-  display:flex;align-items:center;justify-content:space-between;font-family:var(--font-eyebrow);font-size:.85rem;font-weight:700;}
+  display:flex;align-items:center;justify-content:space-between;font-family:var(--font-eyebrow);font-size:.93rem;font-weight:700;}
 .mm-close{cursor:pointer;padding:2px 6px;}
 .mm-body{flex:1;overflow-y:auto;padding:10px;}
 .mm-conv-item{background:rgba(255,255,255,.04);border-radius:10px;padding:10px;margin-bottom:6px;cursor:pointer;}
-.mm-conv-item .tel{font-family:var(--font-eyebrow);color:var(--pr);font-size:.8rem;}
-.mm-conv-item .est{font-size:.68rem;color:var(--sub);text-transform:uppercase;}
-.mm-msg{max-width:80%;padding:6px 10px;border-radius:10px;margin-bottom:6px;font-size:.8rem;line-height:1.3;}
+.mm-conv-item .tel{font-family:var(--font-eyebrow);color:var(--pr);font-size:.88rem;}
+.mm-conv-item .est{font-size:.78rem;color:var(--sub);text-transform:uppercase;}
+.mm-msg{max-width:80%;padding:6px 10px;border-radius:10px;margin-bottom:6px;font-size:.88rem;line-height:1.3;}
 .mm-msg.cliente{background:rgba(255,255,255,.06);margin-right:auto;}
 .mm-msg.bot{background:linear-gradient(135deg,var(--pr),var(--se));color:#1a0e00;margin-left:auto;}
 .mm-msg.atendente{background:#1c3d2e;border:1px solid #2f6b4c;margin-left:auto;}
 #mm-thread-acoes{padding:8px 10px;border-top:1px solid var(--card-bd);display:none;}
 #mm-btn-bot,#mm-btn-reiniciar{width:100%;background:rgba(255,255,255,.06);color:var(--tx);border:1px solid var(--card-bd);
-  border-radius:8px;padding:7px;font-size:.72rem;cursor:pointer;margin-bottom:6px;}
+  border-radius:8px;padding:7px;font-size:.82rem;cursor:pointer;margin-bottom:6px;}
 .mm-send{display:flex;gap:6px;}
 .mm-send input{flex:1;background:var(--soft,#F9FAFB);border:1px solid var(--card-bd);border-radius:8px;padding:8px 10px;
-  color:var(--tx);font-size:.82rem;}
+  color:var(--tx);font-size:.9rem;}
 .mm-send button{background:var(--pr);color:#1a1200;border:none;border-radius:8px;padding:0 14px;cursor:pointer;font-weight:700;}
-#mm-voltar{cursor:pointer;color:var(--sub);font-size:.75rem;}
+#mm-voltar{cursor:pointer;color:var(--sub);font-size:.86rem;}
 @keyframes notifPulse{0%,100%{box-shadow:0 4px 16px rgba(0,0,0,.4),0 0 0 0 rgba(231,29,54,.5);}50%{box-shadow:0 4px 16px rgba(0,0,0,.4),0 0 0 10px rgba(231,29,54,0);}}
 #notif-caixa .btn-cancelar-notif{background:rgba(255,255,255,.18);color:#fff;border:none;border-radius:10px;padding:10px 14px;
-  font-family:var(--font-eyebrow);font-size:.72rem;text-transform:uppercase;letter-spacing:.4px;}
+  font-family:var(--font-eyebrow);font-size:.82rem;text-transform:uppercase;letter-spacing:.4px;}
 #notif-caixa{position:fixed;top:0;left:0;right:0;z-index:9998;background:linear-gradient(135deg,var(--pr),var(--se));
   border-radius:0 0 18px 18px;padding:14px 16px 16px;box-shadow:0 8px 24px rgba(0,0,0,.4);
   transform:translateY(-130%);transition:transform .35s cubic-bezier(.34,1.56,.64,1);touch-action:pan-y;}
@@ -276,15 +276,15 @@ body{
 #notif-caixa .conteudo{display:flex;align-items:center;gap:12px;}
 #notif-caixa .icone{font-size:1.8rem;flex:none;}
 #notif-caixa .corpo{flex:1;min-width:0;}
-#notif-caixa .titulo{font-family:var(--font-eyebrow);font-weight:700;font-size:.9rem;color:#fff;}
-#notif-caixa .sub{font-size:.78rem;color:rgba(255,255,255,.85);word-break:break-word;}
+#notif-caixa .titulo{font-family:var(--font-eyebrow);font-weight:700;font-size:.98rem;color:#fff;}
+#notif-caixa .sub{font-size:.86rem;color:rgba(255,255,255,.85);word-break:break-word;}
 #notif-caixa .total{font-family:var(--font-display);font-size:1.2rem;color:#fff;flex:none;}
 #notif-caixa .acoes{display:flex;gap:8px;margin-top:12px;}
 #notif-caixa .btn-confirmar-notif{flex:1;background:#fff;color:var(--se);border:none;border-radius:10px;padding:10px;
-  font-family:var(--font-eyebrow);font-weight:700;font-size:.8rem;text-transform:uppercase;cursor:pointer;}
+  font-family:var(--font-eyebrow);font-weight:700;font-size:.88rem;text-transform:uppercase;cursor:pointer;}
 #notif-caixa .btn-dispensar-notif{background:rgba(255,255,255,.18);color:#fff;border:none;border-radius:10px;padding:10px 14px;
-  font-size:.8rem;cursor:pointer;}
-#notif-caixa .dica{text-align:center;font-size:.62rem;color:rgba(255,255,255,.65);margin-top:8px;}
+  font-size:.88rem;cursor:pointer;}
+#notif-caixa .dica{text-align:center;font-size:.74rem;color:rgba(255,255,255,.65);margin-top:8px;}
 
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}
@@ -315,9 +315,9 @@ body{
   <div style="background:#fff;border:1px solid rgba(255,159,28,.25);border-radius:20px;padding:32px 24px;max-width:340px;width:100%;text-align:center;">
     <div style="font-size:2.6rem;margin-bottom:10px;">🔒</div>
     <div style="font-family:var(--font-display);font-size:1.4rem;color:#fff;margin-bottom:10px;">Caixa fechado</div>
-    <div style="font-size:.82rem;color:var(--sub);margin-bottom:20px;line-height:1.5;">Informe o valor inicial (troco) para abrir o caixa e começar a vender.</div>
+    <div style="font-size:.9rem;color:var(--sub);margin-bottom:20px;line-height:1.5;">Informe o valor inicial (troco) para abrir o caixa e começar a vender.</div>
     <input id="caixa-valor-abertura" type="number" step="0.01" min="0" placeholder="R$ 0,00" style="width:100%;padding:12px;border-radius:10px;border:1px solid #E5E7EB;background:var(--soft,#F9FAFB);color:#111827;font-size:1rem;text-align:center;margin-bottom:16px;">
-    <button onclick="abrirCaixa()" style="width:100%;padding:13px;border:none;border-radius:12px;background:#D62828;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;">Abrir Caixa</button>
+    <button onclick="abrirCaixa()" style="width:100%;padding:13px;border:none;border-radius:12px;background:#D62828;color:#fff;font-weight:800;font-size:1.03rem;cursor:pointer;">Abrir Caixa</button>
   </div>
 </div>
 
@@ -496,8 +496,8 @@ body{
 
       <div id="misto-box" style="display:none;background:rgba(255,159,28,.06);border:1px solid var(--card-bd);border-radius:12px;padding:12px;margin-top:10px;">
         <div id="misto-linhas"></div>
-        <div style="text-align:center;color:var(--pr);font-size:.78rem;cursor:pointer;padding:6px 0;" onclick="adicionarLinhaMisto()">+ adicionar outra forma</div>
-        <div id="misto-aviso" style="display:none;color:var(--se);font-size:.75rem;margin-top:4px;">A soma precisa bater com o total da venda.</div>
+        <div style="text-align:center;color:var(--pr);font-size:.86rem;cursor:pointer;padding:6px 0;" onclick="adicionarLinhaMisto()">+ adicionar outra forma</div>
+        <div id="misto-aviso" style="display:none;color:var(--se);font-size:.86rem;margin-top:4px;">A soma precisa bater com o total da venda.</div>
       </div>
     </div>
 
@@ -529,10 +529,10 @@ body{
     <span class="modal-close" onclick="closeModal('modal-colar')">✕</span>
     <h3>📋 Conversor de pedido</h3>
     <div class="opt-lbl" style="margin-top:0;">Cole a mensagem do cliente aqui embaixo</div>
-    <textarea id="colar-texto" rows="7" placeholder="Cole aqui a mensagem completa do WhatsApp..." style="width:100%;background:var(--soft,#F9FAFB);border:1px solid var(--card-bd);border-radius:10px;padding:10px;color:var(--tx);font-size:.85rem;resize:vertical;"></textarea>
+    <textarea id="colar-texto" rows="7" placeholder="Cole aqui a mensagem completa do WhatsApp..." style="width:100%;background:var(--soft,#F9FAFB);border:1px solid var(--card-bd);border-radius:10px;padding:10px;color:var(--tx);font-size:.93rem;resize:vertical;"></textarea>
     <div class="opt-lbl">Telefone do cliente (o WhatsApp não copia isso junto do texto — digite aqui)</div>
-    <input id="colar-tel" placeholder="(15) 9...." style="width:100%;box-sizing:border-box;background:var(--soft,#F9FAFB);border:1px solid var(--card-bd);border-radius:10px;padding:10px;color:var(--tx);font-size:.9rem;">
-    <div id="colar-status" style="font-size:.75rem;color:var(--sub);margin-top:8px;min-height:18px;"></div>
+    <input id="colar-tel" placeholder="(15) 9...." style="width:100%;box-sizing:border-box;background:var(--soft,#F9FAFB);border:1px solid var(--card-bd);border-radius:10px;padding:10px;color:var(--tx);font-size:.98rem;">
+    <div id="colar-status" style="font-size:.86rem;color:var(--sub);margin-top:8px;min-height:18px;"></div>
     <button class="btn btn-primary" id="colar-btn" onclick="interpretarPedidoColado()">🤖 Interpretar e montar no caixa</button>
   </div>
 </div>
@@ -542,10 +542,10 @@ body{
   <div class="modal">
     <span class="modal-close" onclick="closeModal('modal-perfil')">✕</span>
     <h3 id="perfil-nome-caixa">Cliente</h3>
-    <div style="font-size:.8rem;color:var(--sub);margin-bottom:4px;">📞 <b id="perfil-tel-caixa" style="color:var(--tx);">—</b></div>
-    <div style="font-size:.8rem;color:var(--sub);margin-bottom:14px;">🧾 <b id="perfil-qtd-caixa" style="color:var(--tx);">0</b> pedido(s) hoje · Total: <b id="perfil-total-caixa" style="color:var(--pr);">R$ 0,00</b></div>
+    <div style="font-size:.88rem;color:var(--sub);margin-bottom:4px;">📞 <b id="perfil-tel-caixa" style="color:var(--tx);">—</b></div>
+    <div style="font-size:.88rem;color:var(--sub);margin-bottom:14px;">🧾 <b id="perfil-qtd-caixa" style="color:var(--tx);">0</b> pedido(s) hoje · Total: <b id="perfil-total-caixa" style="color:var(--pr);">R$ 0,00</b></div>
     <a id="perfil-whatsapp-caixa" href="#" target="_blank" style="display:none;align-items:center;gap:8px;background:#25D366;color:#fff;
-      text-decoration:none;padding:11px 16px;border-radius:11px;font-weight:700;font-size:.8rem;">
+      text-decoration:none;padding:11px 16px;border-radius:11px;font-weight:700;font-size:.88rem;">
       <svg width="18" height="18" viewBox="0 0 32 32" fill="#fff"><path d="M16.001 3C9.107 3 3.5 8.607 3.5 15.5c0 2.316.63 4.484 1.726 6.35L3 29l7.35-2.188A12.44 12.44 0 0016 28c6.894 0 12.5-5.607 12.5-12.5S22.895 3 16.001 3zm0 22.7c-1.99 0-3.86-.55-5.46-1.51l-.39-.23-4.36 1.3 1.32-4.25-.25-.4a10.16 10.16 0 01-1.56-5.41c0-5.63 4.58-10.2 10.2-10.2 5.63 0 10.2 4.58 10.2 10.2 0 5.63-4.58 10.51-9.7 10.51zm5.6-7.63c-.31-.15-1.82-.9-2.1-1-.28-.1-.49-.15-.69.15-.2.31-.79 1-.97 1.2-.18.2-.36.23-.67.08-.31-.15-1.3-.48-2.47-1.53-.91-.81-1.53-1.82-1.71-2.13-.18-.31-.02-.47.13-.63.14-.14.31-.36.46-.54.15-.18.2-.31.31-.51.1-.2.05-.38-.02-.54-.08-.15-.69-1.67-.95-2.29-.25-.6-.5-.52-.69-.53h-.59c-.2 0-.54.08-.82.38-.28.31-1.08 1.05-1.08 2.57 0 1.51 1.1 2.97 1.26 3.18.15.2 2.17 3.31 5.25 4.65.73.32 1.31.5 1.75.64.74.24 1.41.2 1.94.12.59-.09 1.82-.74 2.08-1.46.26-.71.26-1.32.18-1.45-.07-.13-.28-.2-.59-.36z"/></svg>
       Chamar no WhatsApp
     </a>

@@ -15,7 +15,7 @@ async function openHistorico(){
   const ct=document.getElementById('historico-content');
   if(!fbUser&&!currentUser?.name){
     ct.innerHTML=`
-      <p style="color:var(--tx-3);font-size:.82rem;text-align:center;margin-bottom:14px;">Entre com o Google para ver seu histórico de pedidos.</p>
+      <p style="color:var(--tx-3);font-size:.9rem;text-align:center;margin-bottom:14px;">Entre com o Google para ver seu histórico de pedidos.</p>
       <button class="ggl-login-btn" onclick="loginGoogleClient()">${G_SVG} Entrar com Google</button>`;
     return;
   }
@@ -31,7 +31,7 @@ async function openHistorico(){
     if(local.length) rows=local;
   }
   if(!rows||!rows.length){
-    ct.innerHTML=`<p style="color:var(--tx-6);font-size:.82rem;text-align:center;padding:20px;">Nenhum pedido encontrado ainda. Faça seu primeiro pedido! 🍕</p>`;
+    ct.innerHTML=`<p style="color:var(--tx-6);font-size:.9rem;text-align:center;padding:20px;">Nenhum pedido encontrado ainda. Faça seu primeiro pedido! 🍕</p>`;
     return;
   }
   ct.innerHTML=rows.map((r,idx)=>{
@@ -221,16 +221,16 @@ async function renderFeedbacks(){
     const comments=allComments.filter(c=>c.feedback_id==f.id);
 
     const adminFbDel=isAdmin
-      ?`<button onclick="adminDeleteFb(${f.id})" style="background:none;border:none;color:var(--se);font-size:.75rem;cursor:pointer;padding:2px 6px;border-radius:6px;opacity:.7;margin-left:auto;" title="Apagar avaliação">✕</button>`
+      ?`<button onclick="adminDeleteFb(${f.id})" style="background:none;border:none;color:var(--se);font-size:.86rem;cursor:pointer;padding:2px 6px;border-radius:6px;opacity:.7;margin-left:auto;" title="Apagar avaliação">✕</button>`
       :'';
 
     const commentsHTML=comments.map(c=>{
       const isMine=myName&&(c.author===myName);
       const editBtn=isMine
-        ?`<button onclick="editOwnComment(${c.id},'${(c.comment||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')" style="background:none;border:none;color:var(--tx-5);font-size:.65rem;cursor:pointer;padding:0 3px;">✏️</button>`
+        ?`<button onclick="editOwnComment(${c.id},'${(c.comment||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')" style="background:none;border:none;color:var(--tx-5);font-size:.78rem;cursor:pointer;padding:0 3px;">✏️</button>`
         :'';
       const delBtn=(isMine||isAdmin)
-        ?`<button onclick="${isMine&&!isAdmin?'deleteOwnComment':'adminDeleteComment'}(${c.id})" style="background:none;border:none;color:var(--se);font-size:.65rem;cursor:pointer;padding:0 3px;">✕</button>`
+        ?`<button onclick="${isMine&&!isAdmin?'deleteOwnComment':'adminDeleteComment'}(${c.id})" style="background:none;border:none;color:var(--se);font-size:.78rem;cursor:pointer;padding:0 3px;">✕</button>`
         :'';
       const cmPhotoHTML=c.pizza_photo
         ?`<div style="margin:4px 0;"><img src="${c.pizza_photo}" style="width:100%;max-height:120px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,159,28,.15);" onerror="this.style.display='none'"></div>`
@@ -239,7 +239,7 @@ async function renderFeedbacks(){
         <div class="fb-comment-author" style="display:flex;align-items:center;gap:4px;">
           ${c.photo?`<img src="${c.photo}" style="width:18px;height:18px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">`:''}
           <span>${c.author}</span>
-          ${c.tagged_user?`<span style="color:#4285F4;font-size:.63rem;">@${c.tagged_user}</span>`:''}
+          ${c.tagged_user?`<span style="color:#4285F4;font-size:.74rem;">@${c.tagged_user}</span>`:''}
           ${editBtn}${delBtn}
         </div>
         <div class="fb-comment-txt" id="fc-txt-${c.id}">${c.comment}</div>
