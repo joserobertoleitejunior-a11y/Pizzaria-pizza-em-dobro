@@ -152,6 +152,8 @@ ${menuCompleto.map(m => `- [${m.active ? 'ativo' : 'INATIVO'}] ${m.name} (catego
 
 ═══ COMBOS "2 POR X" (promoção fixa do cardápio, sempre 2 sabores diferentes) ═══
 ${COMBOS_DEFAULT.map(c => `- ${c.titulo} (R$ ${c.preco.toFixed(2)}): escolha 2 sabores diferentes entre ${c.sabores.join(', ')}`).join('\n')}
+- 2 Broto por R$ 50,00: 2 pizzas broto, qualquer sabor de pizza (pode repetir)
+- ESFIHAS: R$ 5,00 cada (Carne, Frango Catupiry, Mussarela, Calabresa, Bacon, Mista); 10 = R$ 50, 20 = R$ 90, 30 = R$ 130
 
 ═══ OPÇÕES DE BORDA RECHEADA ═══
 ${BORDAS_DEFAULT.map(b => `- ${b.name}${b.price > 0 ? ': +R$ ' + b.price.toFixed(2) : ' (sem custo extra)'}`).join('\n')}

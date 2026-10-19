@@ -23,6 +23,7 @@
   --sombra-2:0 2px 6px rgba(0,0,0,.35),0 16px 36px rgba(0,0,0,.45);
   --sombra-3:0 6px 16px rgba(0,0,0,.40),0 28px 60px rgba(0,0,0,.55);
   --vidro:rgba(18,18,18,.82);--vidro-borda:rgba(255,255,255,.10);
+  --transicao-suave:cubic-bezier(0.16,1,0.3,1);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation;width:100%;overflow-x:hidden;}
@@ -206,7 +207,7 @@ header{position:relative;min-height:74vh;display:flex;flex-direction:column;just
   box-shadow:0 8px 20px rgba(20,20,20,.10);scrollbar-width:none;}
 .nav-bar::-webkit-scrollbar{display:none;}
 /* ao tocar numa categoria, o título para logo abaixo do topo + barra fixa (não escondido atrás) */
-#cat-p,#cat-s,#cat-co,#cat-dw,#cat-cz,#cat-d{scroll-margin-top:120px;}
+#cat-p,#cat-s,#cat-co,#cat-es,#cat-dw,#cat-cz,#cat-d{scroll-margin-top:120px;}
 .nav-pill{white-space:nowrap;background:var(--painel);border:1px solid rgba(255,255,255,.10);color:var(--text);padding:8px 15px;border-radius:999px;font-size:.7rem;font-weight:700;
   letter-spacing:.5px;text-decoration:none;text-transform:uppercase;box-shadow:var(--sombra-1);transition:background .15s,color .15s,transform .12s;}
 .nav-pill:hover,.nav-pill:active{background:var(--amarelo);color:#1A1A1A;transform:translateY(-1px);}
@@ -313,6 +314,25 @@ body.sel-mode .item-card.savory .sel-trigger{display:block;}
 .combo-add-btn span{font-size:1.1rem;line-height:1;}
 @media (min-width:700px){.combo-lista{grid-template-columns:1fr 1fr;}.combo-vitrine{height:190px;}}
 @media (max-width:340px){.combo-price{font-size:1.9rem;}.combo-select-row{flex-direction:column;align-items:stretch;}.combo-plus{align-self:center;margin:0;}}
+
+/* ESFIHAS — R$ 5 cada, o cliente monta o combo */
+.esf-box{background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02) 45%),var(--painel);border:1px solid rgba(255,255,255,.08);
+  border-top:4px solid #F5A300;border-radius:var(--raio);padding:16px;margin-bottom:12px;box-shadow:var(--sombra-1);}
+.esf-topo{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.esf-preco{font-family:var(--font-display);font-size:2.2rem;line-height:1;color:var(--amarelo);letter-spacing:-1px;white-space:nowrap;}
+.esf-preco small{display:block;font-family:'Work Sans',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+.esf-preco sup{font-size:.95rem;letter-spacing:0;vertical-align:.7em;}
+.esf-dica{font-size:.74rem;color:var(--muted);text-align:right;line-height:1.4;}.esf-dica b{color:var(--tx-2);}
+.esf-lista{display:grid;grid-template-columns:1fr;gap:8px;}
+.esf-linha{display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 10px 8px 14px;}
+.esf-nome{font-weight:700;font-size:.92rem;}
+.esf-resumo{margin:12px 0 10px;font-size:.88rem;color:var(--tx-2);min-height:1.4em;}
+.esf-total{color:var(--amarelo);font-size:1.1rem;}.esf-eco{color:#5BE08D;font-weight:700;font-size:.78rem;}
+.esf-prox{margin-top:4px;color:var(--amarelo);font-size:.76rem;font-weight:700;}
+.esf-atalhos{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.esf-add{width:100%;background:#F5A300;color:#1A1A1A;}
+.esf-add:disabled{opacity:.4;cursor:not-allowed;}
+@media (min-width:700px){.esf-lista{grid-template-columns:1fr 1fr;}}
 
 /* ITEM IMAGE — miniatura arredondada ao lado do nome, nunca em cima */
 .item-row{display:flex;gap:14px;align-items:center;}
@@ -722,7 +742,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   .hero-faixa-trilho span{font-size:1.1rem;padding:14px 0;}
   .nav-bar{top:64px;justify-content:center;gap:12px;padding:12px var(--lado);}
   .nav-pill{font-size:.78rem;padding:10px 22px;}
-  #cat-p,#cat-s,#cat-co,#cat-dw,#cat-cz,#cat-d{scroll-margin-top:150px;}
+  #cat-p,#cat-s,#cat-co,#cat-es,#cat-dw,#cat-cz,#cat-d{scroll-margin-top:150px;}
   #destaques,.promo-card,#last-order-banner,#stats-publico{max-width:760px;}
   #destaques{margin-top:40px;gap:18px;}
   .destaque-card{padding:22px 20px;transition:transform .15s,box-shadow .15s;}
@@ -770,3 +790,57 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   .combo-select-row{flex-direction:column;align-items:stretch;}.combo-plus{align-self:center;margin:0;}
   .combo-footer{flex-direction:column;align-items:stretch;}
 }
+
+/* ═══ FAIXA DE ÍCONES DE CONTATO (componente do José; cor de destaque = amarelo da loja) ═══ */
+  /* ---------- Faixa de ícones (o componente em si) ---------- */
+  .faixa-contatos {
+    position: absolute;
+    top: 80px; /* logo abaixo da linha logo+Instagram do hero */
+    left: 0;
+    right: 0;
+    z-index: 2;
+    overflow: hidden;
+    /* máscara nas bordas: os ícones "somem" suavemente ao entrar/sair,
+       em vez de cortar feio na lateral do contêiner */
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 10%, #000 90%, transparent 100%);
+  }
+  .faixa-trilha {
+    display: flex;
+    align-items: center;
+    gap: 34px;
+    width: max-content;
+    padding: 4px 0;
+    touch-action: pan-y;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .faixa-trilha.arrastando { cursor: grabbing; }
+  .faixa-icone {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.65));
+    transition: transform .2s var(--transicao-suave), color .2s var(--transicao-suave);
+  }
+  .faixa-icone svg { width: 26px; height: 26px; pointer-events: none; }
+  button.faixa-icone { padding: 0; font: inherit; }
+  .faixa-icone:hover,
+  .faixa-icone:focus-visible {
+    color: var(--amarelo);
+    transform: translateY(-3px) scale(1.15);
+  }
+  @media (min-width: 1024px) { .faixa-contatos { top: 112px; } }
+  @media (min-width: 900px) {
+    .faixa-trilha { gap: 64px; padding: 6px 0; }
+    .faixa-icone { width: 34px; height: 34px; }
+    .faixa-icone svg { width: 28px; height: 28px; }
+  }

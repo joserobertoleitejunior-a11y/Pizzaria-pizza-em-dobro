@@ -66,8 +66,8 @@ const ACRESCIMOS_DEFAULT=[
   {name:'Alho Frito',price:3},{name:'Parmesão',price:4},
   {name:'Peperone',price:6},{name:'Presunto Extra',price:5}
 ];
-const CATS_ORDER=['p','s','co','dw','cz','d'];
-const CATLABELS={p:'Tradicionais',s:'Especiais',co:'Combos',dw:'Doces',cz:'Calzones',d:'Bebidas'};
+const CATS_ORDER=['p','s','co','es','dw','cz','d'];
+const CATLABELS={p:'Tradicionais',s:'Especiais',co:'Combos',es:'Esfihas',dw:'Doces',cz:'Calzones',d:'Bebidas'};
 function itemAceitaOpcoes(cat){ return cat==='p'||cat==='s'; }
 // fmt() agora vem de shared/utils.js
 function getIngredientes(desc){

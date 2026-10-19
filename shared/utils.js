@@ -78,6 +78,32 @@ const COMBOS_DEFAULT=[
   {id:'combo85', preco:85.00, titulo:'2 Por R$ 85,00', sabores:['Brócolis com Bacon','Peperone','Franqueijo Piry','Toscana Piry','Bacon','Atum','Lombo','Peito de Peru']}
 ];
 
+// ── Combo BROTO: 2 pizzas broto por R$ 50,00, QUALQUER sabor (tradicional ou especial), pode repetir ──
+const COMBO_BROTO={id:'broto50', preco:50.00, titulo:'2 Broto por R$ 50,00'};
+
+// ── ESFIHAS: R$ 5,00 cada, 6 sabores. O cliente monta o próprio combo: 10 por R$ 50, 20 por R$ 90,
+// 30 por R$ 130 (o de 10 custa igual a 10 avulsas). Qualquer quantidade é cobrada pelo MENOR preço
+// combinando pacotes de 20/30 + avulsas (ex.: 25 = 20 por 90 + 5 avulsas = R$ 115).
+const ESFIHA_SABORES=['Carne','Frango Catupiry','Mussarela','Calabresa','Bacon','Mista'];
+const ESFIHA_PRECO_UN=5.00;
+const ESFIHA_PACOTES=[{qtd:10,preco:50.00},{qtd:20,preco:90.00},{qtd:30,preco:130.00}];
+function precoEsfihas(n){
+  n=Math.max(0,Math.floor(Number(n)||0));
+  const f=[0];
+  for(let i=1;i<=n;i++){
+    let m=f[i-1]+ESFIHA_PRECO_UN*100;
+    ESFIHA_PACOTES.forEach(pk=>{ if(i>=pk.qtd) m=Math.min(m,f[i-pk.qtd]+pk.preco*100); });
+    f[i]=m;
+  }
+  return f[n]/100;
+}
+// contagens: {Carne:4, Mista:6} → "Esfihas (10) — 4 Carne + 6 Mista"
+function nomeEsfihas(contagens){
+  const partes=ESFIHA_SABORES.filter(sab=>(contagens[sab]||0)>0).map(sab=>`${contagens[sab]} ${sab}`);
+  const total=ESFIHA_SABORES.reduce((t,sab)=>t+(contagens[sab]||0),0);
+  return `Esfihas (${total}) — ${partes.join(' + ')}`;
+}
+
 // Resolve a faixa de combo certa a partir dos 2 sabores (usado pelo Colar Pedido — ver caixa/js/colar-pedido.js).
 // Nunca adivinha: se uma faixa explícita foi informada e bate com os 2 sabores, usa ela; senão só
 // resolve sozinho quando os 2 sabores pertencem a UMA ÚNICA faixa (alguns sabores existem em mais
@@ -103,8 +129,10 @@ function decomporSaboresItem(nome){
   if(!n) return [];
   let m=n.match(/^Meio a Meio:\s*(.+?)\s*\/\s*(.+)$/);
   if(m) return [m[1].trim(), m[2].trim()];
-  m=n.match(/^2 Por R\$\s*[\d.,]+\s*—\s*(.+?)\s*\+\s*(.+)$/);
+  m=n.match(/^2 (?:Por|Broto por) R\$\s*[\d.,]+\s*—\s*(.+?)\s*\+\s*(.+)$/i);
   if(m) return [m[1].trim(), m[2].trim()];
+  m=n.match(/^Esfihas \(\d+\)\s*—\s*(.+)$/);
+  if(m) return m[1].split('+').map(x=>'Esfiha '+x.trim().replace(/^\d+\s*/,''));
   return [n];
 }
 
@@ -113,7 +141,9 @@ function decomporSaboresItem(nome){
 // ao meio — ambos "decompõem" em 2 sabores, mas só o combo decompõe em 2 pizzas de verdade).
 // Usado no total "pizzas vendidas no período" do Dashboard.
 function pizzasFisicasPorItem(nome){
-  return /^2 Por R\$\s*[\d.,]+\s*—/.test((nome||'').trim()) ? 2 : 1;
+  const n=(nome||'').trim();
+  if(/^Esfihas \(/.test(n)) return 0; // esfiha não é pizza
+  return /^2 (?:Por|Broto por) R\$\s*[\d.,]+\s*—/i.test(n) ? 2 : 1;
 }
 
 // Converte um dia de Brasília (AAAA-MM-DD) num limite comparável com created_at.
@@ -132,5 +162,5 @@ function limiteDiaBrasilia(diaISO, fimDoDia){
 }
 
 if(typeof module!=='undefined' && module.exports){
-  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia };
+  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia };
 }

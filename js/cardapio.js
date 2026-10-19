@@ -60,7 +60,7 @@ function renderCombos(){
       <div class="combo-vitrine-txt"><b>2 PIZZAS</b><span>1 preço só</span></div>
     </div>`+
     `<p class="combo-intro reveal">Escolha 2 sabores, pague menos que as duas separadas. 🍕+🍕</p>`+
-    `<div class="combo-lista">`+
+    `<div class="combo-lista">`+ _cardBroto()+
     ordenados.map(c=>{
       const optsS1=c.sabores.map((s,i)=>`<option value="${s}"${i===0?' selected':''}>${s}</option>`).join('');
       const optsS2=c.sabores.map((s,i)=>`<option value="${s}"${i===1?' selected':''}>${s}</option>`).join('');
@@ -123,6 +123,106 @@ function addComboToCart(comboTierId){
   alert('Combo adicionado ao carrinho! 🍕🍕');
 }
 
+
+// ── COMBO BROTO: 2 pizzas broto por R$ 50, qualquer sabor do cardápio (pode repetir) ──
+function _saboresBroto(){
+  return (typeof menu!=='undefined'?menu:[]).filter(m=>m.cat==='p'||m.cat==='s').map(m=>m.n).sort((a,b)=>a.localeCompare(b,'pt-BR'));
+}
+function _cardBroto(){
+  const sab=_saboresBroto();
+  if(sab.length<1)return '';
+  const opts=(sel)=>sab.map((s,i)=>`<option value="${s}"${i===sel?' selected':''}>${s}</option>`).join('');
+  const c=COMBO_BROTO;
+  return `<div class="combo-card combo-broto" id="combo-card-${c.id}" style="--combo-cor:#F5A300;">
+    <div class="combo-topo">
+      <span class="combo-ribbon" style="color:#1A1A1A;">2 BROTO</span>
+      <span class="combo-price"><small>R$</small>50<sup>,00</sup></span>
+    </div>
+    <div class="combo-eco" style="display:flex"><b>Qualquer sabor do cardápio</b></div>
+    <div class="combo-select-row">
+      <label class="combo-slot"><i>🍕 1ª broto</i><select id="${c.id}-s1" class="combo-select">${opts(0)}</select></label>
+      <span class="combo-plus">+</span>
+      <label class="combo-slot"><i>🍕 2ª broto</i><select id="${c.id}-s2" class="combo-select">${opts(Math.min(1,sab.length-1))}</select></label>
+    </div>
+    <div class="combo-footer">
+      <button class="combo-sorte" type="button" onclick="brotoSurpresa()" aria-label="Sortear sabores">🎲 Surpreenda-me</button>
+      <button class="combo-add-btn" style="color:#1A1A1A;" onclick="addBrotoToCart()">Adicionar<span>+</span></button>
+    </div>
+  </div>`;
+}
+function brotoSurpresa(){
+  const sab=_saboresBroto(); if(!sab.length)return;
+  document.getElementById('broto50-s1').value=sab[Math.floor(Math.random()*sab.length)];
+  document.getElementById('broto50-s2').value=sab[Math.floor(Math.random()*sab.length)];
+}
+function addBrotoToCart(){
+  const s1=document.getElementById('broto50-s1')?.value, s2=document.getElementById('broto50-s2')?.value;
+  if(!s1||!s2)return;
+  cart.push({
+    id:'combo-'+Date.now()+Math.floor(Math.random()*1000),
+    n:`${COMBO_BROTO.titulo} — ${s1} + ${s2}`, d:`Combo broto: ${s1} e ${s2}`, p:COMBO_BROTO.preco, cat:'co', img:null,
+    cartId:Date.now()+Math.random(), selectedBorda:BORDAS[0], removedIngredients:[], addedIngredients:[]
+  });
+  updateUI();
+  alert('Combo broto adicionado ao carrinho! 🍕🍕');
+}
+
+// ── ESFIHAS: R$ 5,00 cada; o cliente monta o próprio combo (10 = R$ 50, 20 = R$ 90, 30 = R$ 130) ──
+const _esf={}; // contagem por sabor
+function renderEsfihas(){
+  const el=document.getElementById('cat-es');
+  if(!el||typeof ESFIHA_SABORES==='undefined')return;
+  el.innerHTML=`<h2 class="cat-title reveal" id="anc-es">Esfihas</h2>`+
+    `<div class="esf-box">
+      <div class="esf-topo"><span class="esf-preco"><small>apenas</small> R$ 5<sup>,00</sup></span>
+        <span class="esf-dica">Monte o seu combo:<br><b>10 = R$ 50 · 20 = R$ 90 · 30 = R$ 130</b></span></div>
+      <div class="esf-lista">`+
+      ESFIHA_SABORES.map((sab,i)=>`<div class="esf-linha"><span class="esf-nome">${sab}</span>
+        <div class="controls"><button class="btn-action btn-minus" onclick="esfMudar(${i},-1)" aria-label="menos ${sab}">−</button>
+        <span class="qty-val" id="esf-q-${i}">0</span>
+        <button class="btn-action btn-plus" onclick="esfMudar(${i},1)" aria-label="mais ${sab}">+</button></div></div>`).join('')+
+      `</div>
+      <div class="esf-resumo" id="esf-resumo">Escolha os sabores e as quantidades.</div>
+      <div class="esf-atalhos">`+ESFIHA_PACOTES.map(pk=>`<button type="button" class="combo-sorte" onclick="esfSugerir(${pk.qtd})">${pk.qtd} · R$ ${fmtPrice(pk.preco)}</button>`).join('')+`</div>
+      <button class="combo-add-btn esf-add" id="esf-add" onclick="addEsfihasToCart()" disabled>Adicionar<span>+</span></button>
+    </div>`;
+  esfAtualizar();
+}
+function _esfTotal(){ return ESFIHA_SABORES.reduce((t,s)=>t+(_esf[s]||0),0); }
+function esfMudar(i,d){
+  const s=ESFIHA_SABORES[i]; _esf[s]=Math.max(0,Math.min(60,(_esf[s]||0)+d)); esfAtualizar();
+}
+// atalho: já deixa o total do pacote, distribuindo igualmente (o cliente depois ajusta)
+function esfSugerir(qtd){
+  ESFIHA_SABORES.forEach(s=>_esf[s]=0);
+  for(let k=0;k<qtd;k++){ const s=ESFIHA_SABORES[k%ESFIHA_SABORES.length]; _esf[s]++; }
+  esfAtualizar();
+}
+function esfAtualizar(){
+  ESFIHA_SABORES.forEach((s,i)=>{ const e=document.getElementById('esf-q-'+i); if(e)e.textContent=_esf[s]||0; });
+  const n=_esfTotal(), r=document.getElementById('esf-resumo'), b=document.getElementById('esf-add');
+  if(!r||!b)return;
+  if(!n){ r.innerHTML='Escolha os sabores e as quantidades.'; b.disabled=true; return; }
+  const total=precoEsfihas(n), avulso=n*ESFIHA_PRECO_UN, eco=avulso-total;
+  const prox=ESFIHA_PACOTES.map(p=>p.qtd).find(q=>q>n);
+  r.innerHTML=`<b>${n} esfiha${n>1?'s':''}</b> = <b class="esf-total">R$ ${fmtPrice(total)}</b>`+
+    (eco>0.005?` <span class="esf-eco">economia de R$ ${fmtPrice(eco)}</span>`:'')+
+    (prox&&prox-n<=5?`<div class="esf-prox">Faltam ${prox-n} pro combo de ${prox}!</div>`:'');
+  b.disabled=false;
+}
+function addEsfihasToCart(){
+  const n=_esfTotal(); if(!n)return;
+  const nome=nomeEsfihas(_esf);
+  cart.push({
+    id:'esf-'+Date.now()+Math.floor(Math.random()*1000),
+    n:nome, d:nome, p:precoEsfihas(n), cat:'es', img:null,
+    cartId:Date.now()+Math.random(), selectedBorda:BORDAS[0], removedIngredients:[], addedIngredients:[]
+  });
+  ESFIHA_SABORES.forEach(s=>_esf[s]=0); esfAtualizar();
+  updateUI();
+  alert('Esfihas adicionadas ao carrinho! 🥟');
+}
+
 function renderMenu(){
   Object.keys(CATS).forEach(cat=>{
     if(cat==='co')return; // combos têm renderização própria (renderCombos), não a genérica por item
@@ -166,6 +266,7 @@ function renderMenu(){
       }).join('');
   });
   renderCombos();
+  renderEsfihas();
 }
 
 // ══════════════════════════════════

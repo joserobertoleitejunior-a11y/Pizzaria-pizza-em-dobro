@@ -106,3 +106,20 @@ test('limiteDiaBrasilia: fim do dia inclui até 23:59:59.999 de Brasília', () =
   assert.equal(pedido2359 <= fimDoDia, true);
   assert.equal(pedidoProximoDia <= fimDoDia, false);
 });
+
+test('esfihas: preço pelo menor combo de pacotes', () => {
+  const { precoEsfihas, nomeEsfihas } = require('../shared/utils.js');
+  assert.equal(precoEsfihas(1), 5);
+  assert.equal(precoEsfihas(10), 50);
+  assert.equal(precoEsfihas(20), 90);
+  assert.equal(precoEsfihas(25), 115);
+  assert.equal(precoEsfihas(30), 130);
+  assert.equal(precoEsfihas(40), 180);
+  assert.equal(nomeEsfihas({ Carne: 4, Mista: 6 }), 'Esfihas (10) — 4 Carne + 6 Mista');
+});
+
+test('combo broto e esfihas entram nos relatórios (sabores e pizzas físicas)', () => {
+  assert.deepEqual(decomporSaboresItem('2 Broto por R$ 50,00 — Calabresa + Toscana'), ['Calabresa', 'Toscana']);
+  assert.equal(pizzasFisicasPorItem('2 Broto por R$ 50,00 — Calabresa + Toscana'), 2);
+  assert.equal(pizzasFisicasPorItem('Esfihas (10) — 4 Carne + 6 Mista'), 0);
+});
