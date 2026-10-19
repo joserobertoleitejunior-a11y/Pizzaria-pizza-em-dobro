@@ -26,15 +26,15 @@ exports.handler = async (event) => {
   }
 
   try {
-    const senhaReal = process.env.STAFF_PASSWORD || '';
-    if (!senhaReal) {
-      return { statusCode: 500, body: JSON.stringify({ error: 'Senha da equipe ainda não foi configurada (STAFF_PASSWORD nas variáveis de ambiente da Netlify).' }) };
-    }
-
+    // ⚠️ PROVISÓRIO (pedido do José): acesso fixo marco / 1234, sem STAFF_PASSWORD e sem bloqueio.
+    // TROCAR por senha forte antes de divulgar o site.
     const payload = JSON.parse(event.body || '{}');
+    const usuario = String(payload.usuario || '').trim().toLowerCase();
     const senha = String(payload.senha || '');
-    if (!senhaConfere(senha, senhaReal)) {
-      return { statusCode: 401, body: JSON.stringify({ error: 'Senha incorreta.' }) };
+    const usuarioOk = senhaConfere(usuario, 'marco');
+    const senhaOk = senhaConfere(senha, '1234');
+    if (!usuarioOk || !senhaOk) {
+      return { statusCode: 401, body: JSON.stringify({ error: 'Usuário ou senha incorretos.' }) };
     }
 
     const token = await admin.auth().createCustomToken('equipe-pizza-em-dobro', { staff: true });

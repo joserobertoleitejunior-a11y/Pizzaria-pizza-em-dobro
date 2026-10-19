@@ -38,22 +38,25 @@ function iniciarGateEquipe(){
       <div style="width:100%;max-width:320px;text-align:center;">
         <div style="font-size:2.4rem;margin-bottom:8px;">🍕🔒</div>
         <div style="color:#FF9F1C;font-size:1rem;font-weight:700;letter-spacing:1px;margin-bottom:18px;">ÁREA DA EQUIPE</div>
+        <input type="text" id="gate-usuario" placeholder="Usuário" autocomplete="username" autocapitalize="none"
+          style="width:100%;box-sizing:border-box;background:#171016;border:1px solid rgba(255,159,28,.3);border-radius:8px;color:#f3ece2;padding:12px 14px;font-size:1rem;text-align:center;margin-bottom:10px;">
         <input type="password" id="gate-senha" placeholder="Senha da equipe" autocomplete="current-password"
           style="width:100%;box-sizing:border-box;background:#171016;border:1px solid rgba(255,159,28,.3);border-radius:8px;color:#f3ece2;padding:12px 14px;font-size:1rem;text-align:center;margin-bottom:10px;">
         <button id="gate-btn" style="width:100%;background:#FF9F1C;color:#000;border:none;border-radius:8px;padding:12px;font-weight:700;font-size:.9rem;cursor:pointer;">ENTRAR</button>
         <div id="gate-status" style="color:#e71d36;font-size:.78rem;margin-top:10px;min-height:1.2em;"></div>
       </div>`;
-    document.getElementById('gate-senha').focus();
+    document.getElementById('gate-usuario').focus();
 
     async function tentarEntrar(){
+      const usuario=document.getElementById('gate-usuario').value;
       const senha=document.getElementById('gate-senha').value;
       const btn=document.getElementById('gate-btn');
       const status=document.getElementById('gate-status');
-      if(!senha){ status.textContent='Digite a senha.'; return; }
+      if(!usuario||!senha){ status.textContent='Digite usuário e senha.'; return; }
       btn.disabled=true; btn.textContent='ENTRANDO...'; status.textContent='';
       try{
         const r=await fetch('/.netlify/functions/staff-login',{
-          method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({senha})
+          method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({usuario,senha})
         });
         const d=await r.json();
         if(!r.ok||d.error) throw new Error(d.error||'Não foi possível entrar.');
@@ -65,7 +68,7 @@ function iniciarGateEquipe(){
       }
     }
     document.getElementById('gate-btn').onclick=tentarEntrar;
-    document.getElementById('gate-senha').addEventListener('keydown',e=>{ if(e.key==='Enter') tentarEntrar(); });
+    ['gate-usuario','gate-senha'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') tentarEntrar(); }));
   }
 
   return new Promise(resolve=>{
