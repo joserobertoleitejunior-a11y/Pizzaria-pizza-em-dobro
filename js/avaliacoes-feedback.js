@@ -13,25 +13,11 @@ function closeCartAndFeedback(){
 async function openHistorico(){
   openModal('modal-historico');
   const ct=document.getElementById('historico-content');
-  if(!fbUser&&!currentUser?.name){
-    ct.innerHTML=`
-      <p style="color:var(--tx-3);font-size:.9rem;text-align:center;margin-bottom:14px;">Entre com o Google para ver seu histórico de pedidos.</p>
-      <button class="ggl-login-btn" onclick="loginGoogleClient()">${G_SVG} Entrar com Google</button>`;
-    return;
-  }
-  ct.innerHTML=`<div style="text-align:center;padding:20px;color:var(--tx-5);">⏳ Carregando...</div>`;
-  const email=fbUser?.email||currentUser?.email||'';
-  let rows=null;
-  if(email){rows=await sg('orders',{where:[['client_email','==',email]],limit:30});if(rows)rows.sort((a,b)=>dataStr(b.created_at).localeCompare(dataStr(a.created_at)));}
-  // (busca por NOME removida: mostraria pedidos de outra pessoa com o mesmo nome — o banco
-  // agora só entrega ao cliente os pedidos do e-mail Google verificado dele)
-  // fallback: pedidos salvos localmente
-  if(!rows||!rows.length){
-    const local=DB.get('local_orders')||[];
-    if(local.length) rows=local;
-  }
-  if(!rows||!rows.length){
-    ct.innerHTML=`<p style="color:var(--tx-6);font-size:.9rem;text-align:center;padding:20px;">Nenhum pedido encontrado ainda. Faça seu primeiro pedido! 🍕</p>`;
+  // histórico fica neste aparelho (pedidos feitos por aqui); não mostramos pedidos de outras pessoas
+  let rows=DB.get('local_orders')||[];
+  if(!rows.length){
+    ct.innerHTML=`<p style="color:var(--tx-6);font-size:.9rem;text-align:center;padding:20px;">Nenhum pedido encontrado neste aparelho ainda. Faça seu primeiro pedido! 🍕</p>`+
+      (clienteLogado()?'':`<button class="m-btn" onclick="closeModal('modal-historico');abrirEntrar()">ENTRAR COM NOME E WHATSAPP</button>`);
     return;
   }
   ct.innerHTML=rows.map((r,idx)=>{
@@ -70,9 +56,8 @@ function toggleLike(fbId,btn){
 let _commentPhotoB64=null;
 
 function abrirComentar(fbId){
-  if(!fbUser&&!currentUser?.name){
-    alert('Entre com o Google para comentar.');
-    loginGoogleFeedback();
+  if(!clienteLogado()){
+    abrirEntrar(()=>abrirComentar(fbId));
     return;
   }
   document.getElementById('comentar-fb-id').value=fbId;
@@ -99,12 +84,12 @@ async function enviarComentario(){
   const fbId=document.getElementById('comentar-fb-id').value;
   const txt=document.getElementById('comentar-txt').value.trim();
   const tag=document.getElementById('comentar-tag').value.trim();
-  const autor=fbUser?.name||currentUser?.name||'Anônimo';
+  const autor=currentUser?.name||'Anônimo';
   if(!txt)return;
   // feedback_id vai como texto (id do Firestore); author_uid deixa o autor logado editar depois.
   // _semHtml/limites: as regras do banco recusam < > e texto longo — limpar aqui evita falha muda
   const payload={feedback_id:String(fbId),author:_semHtml(autor,60)||'Anônimo',author_uid:AUTH?.currentUser?.uid||null,
-    comment:_semHtml(txt,600),photo:fbUser?.photo||null};
+    comment:_semHtml(txt,600)};
   if(tag) payload.tagged_user=_semHtml(tag,60);
   if(_commentPhotoB64) payload.pizza_photo=_commentPhotoB64;
   await sp('feedback_comments',payload);
@@ -146,28 +131,17 @@ function handleFbPizzaPhoto(input){
 
 function openFeedbackModal(){
   selStars=0;_fbPizzaB64=null;
-  // preserva sessão Google — não zera fbUser
-  const savedFbUser=fbUser||null;
-  document.getElementById('fb-name').value=savedFbUser?.name||currentUser?.name||'';
+  document.getElementById('fb-name').value=currentUser?.name||'';
   document.getElementById('fb-text').value='';
-  document.getElementById('fb-photo-preview').style.display='none';
   document.getElementById('fb-pizza-preview').style.display='none';
   document.getElementById('fb-pizza-file').value='';
-  // mostra upload de pizza se já logado com Google
+  // foto da pizza liberada pra quem entrou com nome + WhatsApp
   const pizzaWrap=document.getElementById('fb-pizza-wrap');
-  if(pizzaWrap) pizzaWrap.style.display=(savedFbUser||currentUser?.via_facebook)?'block':'none';
-  // atualiza botão login
+  if(pizzaWrap) pizzaWrap.style.display=clienteLogado()?'block':'none';
   const btn=document.getElementById('fb-login-btn');
-  if(savedFbUser){
-    btn.className='ggl-login-btn connected';
-    btn.innerHTML=`${G_SVG} ✓ ${savedFbUser.name.split(' ')[0]}`;
-    // mostra foto de perfil
-    const prev=document.getElementById('fb-photo-preview');
-    const img=document.getElementById('fb-photo-img');
-    if(prev&&img&&savedFbUser.photo){img.src=savedFbUser.photo;prev.style.display='block';}
-  } else {
-    btn.className='ggl-login-btn';
-    btn.innerHTML=`${G_SVG} Entrar com Google`;
+  if(btn){
+    if(clienteLogado()){ btn.className='ggl-login-btn connected'; btn.innerHTML='✓ '+currentUser.name.split(' ')[0]; }
+    else { btn.className='ggl-login-btn'; btn.innerHTML='📲 Entrar com nome e WhatsApp'; }
   }
   document.querySelectorAll('#star-row span').forEach(el=>el.classList.remove('lit'));
   openModal('modal-feedback');
@@ -178,7 +152,6 @@ async function submitFeedback(){
   const text=document.getElementById('fb-text').value.trim();
   if(!name||!text||!selStars)return alert('Preencha nome, estrelas e comentário.');
   const payload={name:_semHtml(name,60),stars:selStars,comment:_semHtml(text,1000),
-    fb_photo:fbUser?.photo||null,via_facebook:!!fbUser,
     pizza_photo:_fbPizzaB64||null};
   const fb={...payload,date:new Date().toLocaleString('pt-BR')};
   const fbs=DB.get('feedbacks')||[];fbs.push(fb);DB.set('feedbacks',fbs);
@@ -199,7 +172,7 @@ async function renderFeedbacks(){
       .map(r=>({
         id:r.id,name:r.name,stars:r.stars,text:r.comment||'',
         date:new Date(dataStr(r.created_at)).toLocaleString('pt-BR'),
-        fb_photo:r.fb_photo||null,via_facebook:r.via_facebook||false,
+        
         likes:r.likes||0,pizza_photo:r.pizza_photo||null
       }));
     DB.set('feedbacks',fbs);
@@ -213,7 +186,7 @@ async function renderFeedbacks(){
   let allComments=await sg('feedback_comments',{orderBy:'created_at',orderDir:'asc'})||[];
   allComments=allComments.filter(c=>!_deletedCmIds.has(c.id));
 
-  const myName=fbUser?.name||currentUser?.name||'';
+  const myName=currentUser?.name||'';
   const isAdmin=checkAdminSession();
 
   document.getElementById('feedback-list').innerHTML=fbs.map(f=>{
@@ -253,9 +226,7 @@ async function renderFeedbacks(){
 
     return`<div class="fb-card" id="fb-card-${f.id}">
       <div class="fb-author" style="display:flex;align-items:center;gap:6px;">
-        ${f.fb_photo?`<img src="${f.fb_photo}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">`:''}
         <span>${f.name}</span>
-        ${f.via_facebook?`<span class="fb-badge-fb">${G_SVG} Google</span>`:''}
         ${adminFbDel}
       </div>
       <div class="fb-stars">${'★'.repeat(f.stars)}${'☆'.repeat(5-f.stars)}</div>

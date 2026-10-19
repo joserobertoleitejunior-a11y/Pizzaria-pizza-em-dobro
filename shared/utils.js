@@ -161,6 +161,17 @@ function limiteDiaBrasilia(diaISO, fimDoDia){
   return new Date(diaISO+'T'+hora+'-03:00').toISOString();
 }
 
+// Venda de balcão (cliente sem nome/telefone no Caixa): não é "cliente" de verdade e não pode
+// entrar em ranking de mais vendido/clientes. Pedidos novos trazem balcao:true; os antigos
+// são reconhecidos pelo nome padrão "Cliente Balcão" quando não há telefone.
+function ehClienteBalcao(p){
+  if(!p) return false;
+  if(p.balcao===true) return true;
+  if(String(p.client_phone||p.telefone||'').replace(/\D+/g,'').length>=8) return false; // tem telefone = cliente identificado
+  const n=String(p.client_name||p.nome||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  return /^(cliente\s+)?balcao$/.test(n);
+}
+
 if(typeof module!=='undefined' && module.exports){
-  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia };
+  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao };
 }

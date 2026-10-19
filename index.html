@@ -50,8 +50,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
 <script src="js/dispositivo.js"></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<meta name="google-signin-client_id" content="734644330198-h4oikt300ofvshi4o4mrcckb56111q1s.apps.googleusercontent.com">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
@@ -180,33 +178,22 @@
 
 <!-- DRAWER MENU -->
 <div id="drawer">
-  <!-- Perfil Google -->
+  <!-- Perfil do cliente (nome + WhatsApp) -->
   <div id="drawer-profile">
     <div class="dp-row">
-      <img class="dp-foto" id="dp-foto-img" src="" alt="">
+      <div class="dp-foto dp-avatar" aria-hidden="true">👤</div>
       <div class="dp-info">
-        <div class="dp-nome" id="dp-nome-txt"></div>
+        <div class="dp-nome" id="dp-nome-txt">Visitante</div>
         <div class="dp-email" id="dp-email-txt"></div>
-        <div class="dp-badge">
-          <svg width="9" height="9" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-          Google
-        </div>
       </div>
+      <button type="button" class="dp-entrar" id="dp-btn" onclick="closeDrawer();openClientModal()">Entrar</button>
     </div>
   </div>
   <div id="client-name-drawer" style="display:none;"></div>
 
-  <!-- Meu Perfil: logo Google oficial -->
+  <!-- Meu Perfil / Entrar -->
   <div class="drawer-item" onclick="closeDrawer();openClientModal()">
-    <span class="di">
-      <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-        <path fill="none" d="M0 0h48v48H0z"/>
-      </svg>
-    </span>Meu Perfil
+    <span class="di"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></span>Meu Perfil / Entrar
   </div>
 
   <!-- Histórico de Pedidos -->
@@ -428,11 +415,10 @@
       <button type="button" id="modo-retirada" onclick="definirModoEntrega(true)">🏠 Retirada</button>
     </div>
 
-    <!-- Google: uma linha só (some quando já está logado) -->
+    <!-- Entrar: nome + WhatsApp (some quando já está logado) -->
     <div id="cart-google-cta">
-      <button class="ggl-login-btn" onclick="loginGoogleCart()">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        <span>Entrar com Google <small>· salva seus dados</small></span>
+      <button class="ggl-login-btn" onclick="abrirEntrar()">
+        <span>📲 Entrar com WhatsApp <small>· salva seus dados</small></span>
       </button>
     </div>
 
@@ -660,28 +646,35 @@
   </div>
 </div>
 
+<!-- ENTRAR (nome + WhatsApp) -->
+<div class="modal" id="modal-entrar">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="m-close" onclick="closeModal('modal-entrar')">✕</div>
+    <div class="modal-title">📲 ENTRAR</div>
+    <p style="color:var(--tx-3);font-size:.95rem;margin-bottom:14px;text-align:center;">Só seu nome e WhatsApp. Sem senha, sem cadastro chato — seus dados ficam salvos pros próximos pedidos.</p>
+    <input type="text" class="m-input" id="ent-nome" placeholder="Seu nome" autocomplete="name" maxlength="60">
+    <input type="tel" class="m-input" id="ent-tel" placeholder="WhatsApp com DDD" autocomplete="tel" inputmode="tel" maxlength="16" oninput="this.value=_mascaraTel(this.value)" onkeydown="if(event.key==='Enter')confirmarEntrar()">
+    <div id="ent-erro" style="color:#d62828;font-size:.88rem;min-height:1.2em;margin-bottom:8px;text-align:center;"></div>
+    <button class="m-btn" id="ent-btn" onclick="confirmarEntrar()">ENTRAR</button>
+  </div>
+</div>
+
 <!-- FEEDBACK -->
 <div class="modal" id="modal-feedback">
   <div class="modal-box">
     <div class="modal-handle"></div>
     <div class="m-close" onclick="closeModal('modal-feedback')">✕</div>
     <div class="modal-title">⭐ AVALIAÇÃO</div>
-    <!-- CIRURGIA: botão Google Login -->
-    <button class="ggl-login-btn" id="fb-login-btn" onclick="loginGoogleFeedback()">
-      <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-      Entrar com Google
-    </button>
-    <div style="text-align:center;font-size:.78rem;color:#444;margin-bottom:10px;">— ou preencha manualmente —</div>
+    <button class="ggl-login-btn" id="fb-login-btn" onclick="abrirEntrar(()=>openFeedbackModal())">📲 Entrar com nome e WhatsApp</button>
+    <div style="text-align:center;font-size:.78rem;color:#444;margin-bottom:10px;">— ou só escreva seu nome —</div>
     <input type="text" class="m-input" id="fb-name" placeholder="Seu nome">
-    <div id="fb-photo-preview" style="display:none;text-align:center;margin-bottom:10px;">
-      <img id="fb-photo-img" style="width:48px;height:48px;border-radius:50%;border:2px solid var(--pr);" src="" alt="">
-    </div>
     <div class="star-row" id="star-row">
       <span onclick="setStar(1)">★</span><span onclick="setStar(2)">★</span>
       <span onclick="setStar(3)">★</span><span onclick="setStar(4)">★</span><span onclick="setStar(5)">★</span>
     </div>
     <textarea class="m-input" id="fb-text" placeholder="Sua opinião..." rows="3" style="resize:none;"></textarea>
-    <!-- foto da pizza - só aparece pra usuários Google -->
+    <!-- foto da pizza - só aparece pra quem entrou com WhatsApp -->
     <div id="fb-pizza-wrap" style="display:none;margin-bottom:10px;">
       <div id="fb-pizza-preview" style="display:none;margin-bottom:6px;">
         <img id="fb-pizza-img" style="width:100%;max-height:140px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,159,28,.25);" src="" alt="">

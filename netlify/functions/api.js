@@ -5,6 +5,7 @@ const rotas = {
   'admin-api': require('../../server/admin-api').handler,
   'criar-pedido': require('../../server/criar-pedido').handler,
   'pedido-publico': require('../../server/pedido-publico').handler,
+  'cliente': require('../../server/cliente').handler,
   'registrar-visita': require('../../server/registrar-visita').handler,
   'staff-login': require('../../server/staff-login').handler,
   'send-whatsapp': require('../../server/send-whatsapp').handler,

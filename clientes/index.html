@@ -93,6 +93,8 @@ body{
 
 <div class="summary" id="summary"></div>
 
+<div style="padding:0 16px 8px;text-align:right;"><button type="button" onclick="limparDadosGoogle()" style="background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:8px 12px;font-size:.78rem;color:#6B7280;cursor:pointer;">🧹 Apagar dados do login Google antigo</button></div>
+
 <div class="search-box">
   <input id="busca" placeholder="Buscar por nome ou telefone..." oninput="renderLista()">
   <div id="aviso-periodo" style="font-size:.78rem;color:var(--sub);margin-top:6px;">Mostrando clientes dos últimos 3 dias — busque por nome ou telefone para ver mais antigos</div>
@@ -127,6 +129,7 @@ body{
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="../shared/firebase-config.js"></script>
+<script src="../shared/admin-api.js"></script>
 <script src="../shared/staff-auth.js"></script>
 <script>iniciarGateEquipe();</script>
 <script src="../shared/utils.js"></script>

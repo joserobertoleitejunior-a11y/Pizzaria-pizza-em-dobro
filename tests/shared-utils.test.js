@@ -123,3 +123,12 @@ test('combo broto e esfihas entram nos relatórios (sabores e pizzas físicas)',
   assert.equal(pizzasFisicasPorItem('2 Broto por R$ 50,00 — Calabresa + Toscana'), 2);
   assert.equal(pizzasFisicasPorItem('Esfihas (10) — 4 Carne + 6 Mista'), 0);
 });
+
+test('ehClienteBalcao: venda de balcão anônima não conta como cliente', () => {
+  const { ehClienteBalcao } = require('../shared/utils.js');
+  assert.equal(ehClienteBalcao({ balcao: true, client_name: 'x' }), true);
+  assert.equal(ehClienteBalcao({ client_name: 'Cliente Balcão' }), true);
+  assert.equal(ehClienteBalcao({ client_name: 'cliente balcao' }), true);
+  assert.equal(ehClienteBalcao({ client_name: 'Cliente Balcão', client_phone: '15997058390' }), false);
+  assert.equal(ehClienteBalcao({ client_name: 'Ana' }), false);
+});

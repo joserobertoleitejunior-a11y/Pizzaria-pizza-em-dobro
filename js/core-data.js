@@ -271,5 +271,4 @@ const CATLABELS={p:'Tradicionais',s:'Especiais',co:'Combos',dw:'Doces',cz:'Calzo
 let menu=[], cart=[], firstHalf=null, currentUser=null, selStars=0, editId=null, adminImg=null;
 let autoSaveTimer=null;
 // CIRURGIA: Facebook session
-let fbUser=null;
 

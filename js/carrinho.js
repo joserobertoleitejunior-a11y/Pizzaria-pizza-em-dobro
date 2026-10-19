@@ -318,9 +318,9 @@ function updateUI(){
   document.getElementById('order-summary').innerHTML=sumHTML;
   document.getElementById('total-val').innerText=`R$ ${fmtPrice(totalFinal)}`;
 
-  // CTA Google — mostra se não logado
+  // CTA "Entrar" — mostra se não logado
   const cta=document.getElementById('cart-google-cta');
-  if(cta) cta.style.display=(!fbUser&&!currentUser?.via_facebook&&cart.length>0)?'block':'none';
+  if(cta) cta.style.display=(!clienteLogado()&&cart.length>0)?'block':'none';
 
   autofillClient();
 }
@@ -336,7 +336,8 @@ function autoSaveClient(){
     const address=document.getElementById('u-end')?.value?.trim()||'';
     const houseNum=document.getElementById('u-num')?.value?.trim()||'';
     const phone=document.getElementById('u-tel')?.value?.trim()||'';
-    currentUser={name,address,houseNum,phone};
+    const manteve=clienteLogado()&&_telDigitos(phone)===_telDigitos(currentUser.phone);
+    currentUser={name,address,houseNum,phone,logado:manteve};
     DB.set('client',currentUser);
     loadClientBadge();
   },600);
@@ -351,7 +352,7 @@ function autofillClient(){
   if(n&&!n.value&&currentUser.name) n.value=currentUser.name;
   if(e&&!e.value&&currentUser.address) e.value=currentUser.address;
   if(h&&!h.value&&currentUser.houseNum) h.value=currentUser.houseNum;
-  if(t&&!t.value&&currentUser.phone) t.value=currentUser.phone;
+  if(t&&!t.value&&currentUser.phone) t.value=_mascaraTel(currentUser.phone);
 }
 
 // ══════════════════════════════════

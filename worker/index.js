@@ -9,6 +9,7 @@
 import adminApi from '../server/admin-api.js';
 import criarPedido from '../server/criar-pedido.js';
 import pedidoPublico from '../server/pedido-publico.js';
+import cliente from '../server/cliente.js';
 import registrarVisita from '../server/registrar-visita.js';
 import staffLogin from '../server/staff-login.js';
 import sendWhatsapp from '../server/send-whatsapp.js';
@@ -24,6 +25,7 @@ const ROTAS = {
   'admin-api': adminApi.handler,
   'criar-pedido': criarPedido.handler,
   'pedido-publico': pedidoPublico.handler,
+  'cliente': cliente.handler,
   'registrar-visita': registrarVisita.handler,
   'staff-login': staffLogin.handler,
   'send-whatsapp': sendWhatsapp.handler,

@@ -10,7 +10,7 @@ const { admin, db } = require('./lib/firebase');
 const { getSecrets } = require('./lib/secrets');
 const { reportError } = require('./lib/sentry');
 const { exigirEquipe } = require('./lib/equipe');
-const { decomporSaboresItem } = require('../shared/utils.js');
+const { decomporSaboresItem, ehClienteBalcao } = require('../shared/utils.js');
 
 
 function categoriaPagamento(raw) {
@@ -117,6 +117,7 @@ async function montarContextoVendas() {
   // ── RANKING DE CLIENTES (por telefone, já que nome pode se repetir/variar) ──
   const porCliente = {};
   pedidosValidos.forEach(p => {
+    if (ehClienteBalcao(p)) return; // venda de balcão anônima não entra no ranking
     const chave = (p.client_phone || p.client_name || 'desconhecido').trim();
     if (!porCliente[chave]) porCliente[chave] = { nome: p.client_name || 'não informado', telefone: p.client_phone || '—', totalGasto: 0, qtdPedidos: 0, qtdItensTotal: 0 };
     porCliente[chave].totalGasto += Number(p.total || 0);

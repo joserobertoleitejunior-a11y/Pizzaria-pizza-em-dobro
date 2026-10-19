@@ -154,7 +154,7 @@ function renderKpis(){
   let pizzas=0, esfihas=0;
   pedidosPeriodo.forEach(p=>(p.items_json||[]).forEach(it=>{ const a=analisarItem(it); pizzas+=a.pizzas; esfihas+=a.esfihas; }));
   const cli={};
-  pedidosPeriodo.forEach(p=>{ const k=(p.client_phone||p.client_name||'').toString().replace(/\D+/g,'')||(p.client_name||'').toLowerCase(); if(k) cli[k]=(cli[k]||0)+1; });
+  pedidosPeriodo.forEach(p=>{ if(ehClienteBalcao(p)) return; const k=(p.client_phone||p.client_name||'').toString().replace(/\D+/g,'')||(p.client_name||'').toLowerCase(); if(k) cli[k]=(cli[k]||0)+1; });
   const clientes=Object.keys(cli).length, voltaram=Object.values(cli).filter(q=>q>1).length;
   const cancelados=pedidosPeriodoTodos.length-qtd;
   document.getElementById('kpis').innerHTML=`
@@ -477,7 +477,7 @@ async function exportarPdf(){
   const cont={}; pedidosPeriodo.forEach(p=>(p.items_json||[]).forEach(it=>analisarItem(it).sabores.forEach(([s,q])=>{ cont[s]=(cont[s]||0)+q; })));
   doc.autoTable({startY:doc.lastAutoTable.finalY+16,head:[['Sabor mais pedido','Vezes']],body:Object.entries(cont).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([s,q])=>[s,String(q)]),theme:'striped',headStyles:{fillColor:[214,40,40]},styles:{fontSize:10},margin:{left:40,right:40}});
   const cli={};
-  pedidosPeriodo.forEach(p=>{ const k=(p.client_phone||p.client_name||'-').toLowerCase(); if(!cli[k]) cli[k]={nome:p.client_name||'-',tel:p.client_phone||'-',qtd:0,total:0}; cli[k].qtd++; cli[k].total+=Number(p.total||0); if(p.client_name) cli[k].nome=p.client_name; });
+  pedidosPeriodo.forEach(p=>{ if(ehClienteBalcao(p)) return; const k=(p.client_phone||p.client_name||'-').toLowerCase(); if(!cli[k]) cli[k]={nome:p.client_name||'-',tel:p.client_phone||'-',qtd:0,total:0}; cli[k].qtd++; cli[k].total+=Number(p.total||0); if(p.client_name) cli[k].nome=p.client_name; });
   doc.addPage();
   doc.setFontSize(14); doc.setFont('helvetica','bold'); doc.setTextColor(214,40,40); doc.text('Clientes',40,40);
   doc.autoTable({startY:54,head:[['Cliente','Telefone','Pedidos','Total gasto']],body:Object.values(cli).sort((a,b)=>b.total-a.total).map(c=>[c.nome,c.tel,String(c.qtd),fmt(c.total)]),theme:'striped',headStyles:{fillColor:[214,40,40]},styles:{fontSize:9},margin:{left:40,right:40}});

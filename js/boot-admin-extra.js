@@ -49,8 +49,9 @@ async function init(){
   renderFeedbacks();
   loadMusic();
   DB.set('promos',[]); // sem promos
-  if(typeof google!=='undefined') initGoogleLogin();
-  else document.querySelector('script[src*="gsi"]')?.addEventListener('load',initGoogleLogin);
+  // login Google dos clientes foi removido: limpa o que ficou salvo no aparelho
+  try{ DB.set('google_user',null); if(currentUser&&currentUser.via_facebook){ delete currentUser.via_facebook; delete currentUser.fb_photo; delete currentUser.email; DB.set('client',currentUser); } }catch(e){}
+  aplicarSessaoCliente();
 }
 
 // ══════════════════════════════════
@@ -177,7 +178,7 @@ async function openClientesAdmin(){
   const rows=await sg('clients',{orderBy:'last_visit',orderDir:'desc',limit:100})||[];
   const orders=await sg('orders',{limit:500})||[];
   if(!rows.length){
-    ct.innerHTML=`<p style="color:var(--tx-6);font-size:.9rem;text-align:center;padding:20px;">Nenhum cliente cadastrado ainda.<br>Aparecem aqui quando fazem login com Google.</p>`;
+    ct.innerHTML=`<p style="color:var(--tx-6);font-size:.9rem;text-align:center;padding:20px;">Nenhum cliente cadastrado ainda.<br>Aparecem aqui quando entram com nome e WhatsApp.</p>`;
     return;
   }
   const totalPorEmail={};const pedidosPorEmail={};

@@ -67,6 +67,7 @@ async function carregarClientes(){
 function agregarClientes(pedidos){
   const map={};
   pedidos.forEach(p=>{
+    if(ehClienteBalcao(p)) return; // venda de balcão anônima não é cliente
     const chave=(p.client_phone||p.client_email||p.client_name||'—').toString().trim().toLowerCase();
     if(!map[chave]){
       map[chave]={
@@ -175,3 +176,13 @@ function abrirHist(idx){
 function fecharHist(){ document.getElementById('modal-hist').classList.remove('open'); }
 
 if(iniciarFirebase()){ carregarClientes(); }
+
+// Apaga do banco e-mail/foto/uid que vieram do antigo login Google (pedidos, nomes e telefones ficam)
+async function limparDadosGoogle(){
+  if(!confirm('Apagar do banco os dados do login Google dos clientes (e-mail, foto)? Pedidos, nomes e telefones continuam. Não dá pra desfazer.')) return;
+  try{
+    const r=await chamarAdminApi('clientes.limparGoogle');
+    alert('Pronto! Limpos: '+r.clientes+' clientes, '+r.pedidos+' pedidos, '+r.avaliacoes+' avaliações, '+r.comentarios+' comentários.');
+    carregarClientes();
+  }catch(e){ alert('Não foi possível limpar: '+(e.message||e)); }
+}

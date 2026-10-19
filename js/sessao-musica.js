@@ -1,132 +1,73 @@
 // ══════════════════════════════════
-//  GOOGLE LOGIN — SESSION UNIFICADA
+//  ENTRAR — só nome + WhatsApp (sem senha, sem Google)
+//  O cadastro vai pro servidor (/api/cliente) e a sessão fica salva no aparelho.
 // ══════════════════════════════════
-const GOOGLE_CLIENT_ID='734644330198-h4oikt300ofvshi4o4mrcckb56111q1s.apps.googleusercontent.com';
-const G_SVG=`<svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>`;
+const G_SVG=''; // legado (selo "via Google" removido)
+let _entrarDepois=null;
 
-function initGoogleLogin(){
-  if(typeof google==='undefined')return;
-  google.accounts.id.initialize({
-    client_id:GOOGLE_CLIENT_ID,
-    callback:handleGoogleCredential,
-    auto_select:false,
-    cancel_on_tap_outside:true
-  });
-  // auto login se já logou antes
-  const saved=DB.get('google_user');
-  if(saved){fbUser=saved;applyGoogleSession();}
+function clienteLogado(){ return !!(currentUser&&currentUser.name&&currentUser.phone&&currentUser.logado); }
+function _telDigitos(v){ let d=String(v||'').replace(/\D+/g,''); if(d.length>=12&&d.startsWith('55'))d=d.slice(2); return d; }
+function _mascaraTel(v){
+  const d=_telDigitos(v).slice(0,11);
+  if(d.length<=2) return d;
+  if(d.length<=6) return '('+d.slice(0,2)+') '+d.slice(2);
+  if(d.length<=10) return '('+d.slice(0,2)+') '+d.slice(2,6)+'-'+d.slice(6);
+  return '('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7);
 }
 
-function parseJwt(token){
-  try{const b=token.split('.')[1];return JSON.parse(atob(b.replace(/-/g,'+').replace(/_/g,'/')));}catch{return null;}
+// depois: função opcional executada quando o cliente concluir a entrada
+function abrirEntrar(depois){
+  _entrarDepois=typeof depois==='function'?depois:null;
+  const n=document.getElementById('ent-nome'), t=document.getElementById('ent-tel'), e=document.getElementById('ent-erro');
+  if(n) n.value=currentUser?.name||''; if(t) t.value=currentUser?.phone?_mascaraTel(currentUser.phone):''; if(e) e.textContent='';
+  openModal('modal-entrar');
+  setTimeout(()=>{ (n&&!n.value?n:t)?.focus(); },250);
 }
 
-let _gCtx='';
-function handleGoogleCredential(response){
-  // remove botão temporário se existir
-  const gBtn=document.getElementById('_g_btn_wrap');
-  if(gBtn) gBtn.remove();
-
-  const payload=parseJwt(response.credential);
-  if(!payload)return;
-  fbUser={name:payload.name||'',photo:payload.picture||'',email:payload.email||''};
-  DB.set('google_user',fbUser);
-  _initFB();
-  if(AUTH){const gc=firebase.auth.GoogleAuthProvider.credential(response.credential);AUTH.signInWithCredential(gc).catch(()=>{});}
-  applyGoogleSession();
-
-  if(_gCtx==='feedback'){
-    const nameEl=document.getElementById('fb-name');
-    if(nameEl) nameEl.value=fbUser.name;
-    const prev=document.getElementById('fb-photo-preview');
-    const img=document.getElementById('fb-photo-img');
-    if(prev&&img&&fbUser.photo){img.src=fbUser.photo;prev.style.display='block';}
-    const btn=document.getElementById('fb-login-btn');
-    if(btn){btn.classList.add('connected');btn.innerHTML=`${G_SVG} ✓ ${fbUser.name.split(' ')[0]}`;}
-    // mostra upload de foto da pizza
-    const pizzaWrap=document.getElementById('fb-pizza-wrap');
-    if(pizzaWrap) pizzaWrap.style.display='block';
-  } else if(_gCtx==='client'||_gCtx==='cart'){
-    // fecha qualquer modal aberto e reabre o perfil
-    document.querySelectorAll('.modal.open').forEach(m=>m.classList.remove('open'));
-    setTimeout(()=>openClientModal(),200);
-  }
-  _gCtx='';
+async function confirmarEntrar(){
+  const nome=(document.getElementById('ent-nome').value||'').replace(/[<>"`\\]/g,'').trim();
+  const tel=_telDigitos(document.getElementById('ent-tel').value);
+  const erro=document.getElementById('ent-erro'), btn=document.getElementById('ent-btn');
+  if(nome.length<2){ erro.textContent='Digite seu nome.'; return; }
+  if(!/^[1-9][1-9](9\d{8}|[2-5]\d{7})$/.test(tel)){ erro.textContent='Digite o WhatsApp com DDD. Ex.: (15) 99705-8390'; return; }
+  erro.textContent=''; btn.disabled=true; const txt=btn.textContent; btn.textContent='⏳ Entrando...';
+  try{
+    // se o servidor estiver fora do ar, entra mesmo assim: o cadastro é só pra equipe saber quem é
+    fetch('/api/cliente',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome,telefone:tel})}).catch(()=>{});
+  }catch(e){}
+  currentUser={...(currentUser||{}),name:nome,phone:tel,logado:true};
+  DB.set('client',currentUser);
+  btn.disabled=false; btn.textContent=txt;
+  closeModal('modal-entrar');
+  aplicarSessaoCliente();
+  if(typeof updateUI==='function') try{updateUI();}catch(e){}
+  const f=_entrarDepois; _entrarDepois=null; if(f) setTimeout(f,150);
 }
 
-// aplica session em todo o site após login
-function applyGoogleSession(){
-  if(!fbUser)return;
-  // atualiza currentUser
-  if(!currentUser||!currentUser.name){
-    currentUser={name:fbUser.name,address:currentUser?.address||'',houseNum:currentUser?.houseNum||'',phone:currentUser?.phone||'',fb_photo:fbUser.photo,via_facebook:true,email:fbUser.email};
-    DB.set('client',currentUser);
-  } else {
-    currentUser.fb_photo=fbUser.photo;
-    currentUser.via_facebook=true;
-    currentUser.email=fbUser.email;
-    DB.set('client',currentUser);
-  }
-  // drawer profile
+// aplica a sessão em todo o site (menu, carrinho, avaliação)
+function aplicarSessaoCliente(){
+  loadClientBadge();
+  const logado=clienteLogado();
   const dp=document.getElementById('drawer-profile');
   if(dp){
     dp.style.display='block';
-    document.getElementById('dp-foto-img').src=fbUser.photo||'';
-    document.getElementById('dp-nome-txt').innerText=fbUser.name;
-    document.getElementById('dp-email-txt').innerText=fbUser.email;
+    document.getElementById('dp-nome-txt').innerText=logado?currentUser.name:'Visitante';
+    document.getElementById('dp-email-txt').innerText=logado?_mascaraTel(currentUser.phone):'Toque em Entrar e salve seus dados';
+    const b=document.getElementById('dp-btn'); if(b){ b.textContent=logado?'Meu perfil':'Entrar'; }
   }
-  // CTA carrinho: esconde
   const cta=document.getElementById('cart-google-cta');
-  if(cta) cta.style.display='none';
-  // preenche nome no cart
-  const uname=document.getElementById('u-name');
-  if(uname&&!uname.value) uname.value=fbUser.name;
-  loadClientBadge();
-  salvarPerfilGoogle();
-}
-
-// Grava o perfil só DEPOIS que o Firebase Auth confirmar o login Google com o mesmo e-mail:
-// as regras do banco só deixam o cliente escrever em clients/<o e-mail verificado dele>.
-function salvarPerfilGoogle(){
-  _initFB();
-  if(!FS||!AUTH||!fbUser||!fbUser.email) return;
-  const unsub=AUTH.onAuthStateChanged(u=>{
-    if(!u||u.email!==fbUser.email) return;
-    unsub();
-    FS.collection('clients').doc(fbUser.email).set({
-      uid:u.uid,name:String(fbUser.name||'').replace(/[<>]/g,'').slice(0,80),email:fbUser.email,
-      photo:fbUser.photo||null,via_google:true,last_visit:new Date().toISOString()
-    },{merge:true}).catch(()=>{});
-  });
-}
-
-function loginGoogleFeedback(){_gCtx='feedback';promptGoogle();}
-function loginGoogleClient(){_gCtx='client';promptGoogle();}
-function loginGoogleCart(){_gCtx='cart';promptGoogle();}
-
-function promptGoogle(){
-  if(typeof google==='undefined'){
-    // tenta carregar o script e aguarda
-    const btn=document.querySelector('.ggl-login-btn');
-    if(btn){const orig=btn.innerHTML;btn.innerHTML='⏳ Carregando...';setTimeout(()=>{btn.innerHTML=orig;},2000);}
-    return;
+  if(cta) cta.style.display=(!logado&&cart.length>0)?'block':'none';
+  if(logado){
+    const un=document.getElementById('u-name'); if(un&&!un.value) un.value=currentUser.name;
+    const ut=document.getElementById('u-tel'); if(ut&&!ut.value) ut.value=_mascaraTel(currentUser.phone);
   }
-  // cria div temporário para renderizar o botão Google
-  let gBtn=document.getElementById('_g_btn_wrap');
-  if(!gBtn){
-    gBtn=document.createElement('div');
-    gBtn.id='_g_btn_wrap';
-    gBtn.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;';
-    document.body.appendChild(gBtn);
-  }
-  gBtn.innerHTML='';
-  google.accounts.id.renderButton(gBtn,{
-    theme:'outline',size:'large',text:'signin_with',
-    locale:'pt-BR',width:260
-  });
-  // também tenta o One Tap
-  google.accounts.id.prompt();
 }
+
+// compatibilidade com chamadas antigas
+function loginGoogleFeedback(){ abrirEntrar(()=>{ const n=document.getElementById('fb-name'); if(n) n.value=currentUser?.name||''; }); }
+function loginGoogleClient(){ abrirEntrar(); }
+function loginGoogleCart(){ abrirEntrar(); }
+function initGoogleLogin(){ aplicarSessaoCliente(); }
 
 // ══════════════════════════════════
 //  MÚSICA — PLAYLIST

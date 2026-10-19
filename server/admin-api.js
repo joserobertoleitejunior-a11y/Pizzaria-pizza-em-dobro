@@ -12,6 +12,7 @@ const { admin, db } = require('./lib/firebase');
 const { json, lerCorpo, texto, numero, hojeBrasilia } = require('./lib/http');
 const { exigirEquipe } = require('./lib/equipe');
 const { reportError } = require('./lib/sentry');
+const { ehClienteBalcao } = require('../shared/utils');
 
 const CATEGORIAS = ['p', 's', 'co', 'dw', 'cz', 'd'];
 const STATUS = ['novo', 'confirmado', 'pronto', 'finalizado', 'cancelado'];
@@ -135,8 +136,9 @@ const acoes = {
     const mapa = {};
     pedidos.docs.forEach(doc => {
       const p = doc.data();
-      if (p.status === 'cancelado') return;
-      const chave = p.client_phone || p.client_email || (p.client_name || '').toLowerCase();
+      if (p.status === 'cancelado' || ehClienteBalcao(p)) return;
+      const digitos = String(p.client_phone || '').replace(/\D+/g, '');
+      const chave = digitos.length >= 8 ? digitos.replace(/^55(?=\d{10,11}$)/, '') : ((p.client_name || '').toLowerCase());
       if (!chave) return;
       const c = mapa[chave] || (mapa[chave] = { chave, nome: p.client_name || null, telefone: p.client_phone || null, email: p.client_email || null, pedidos: 0, gasto: 0, ultimo: null, endereco: p.address || null });
       c.pedidos += 1;
@@ -146,8 +148,49 @@ const acoes = {
     const notas = {};
     perfis.docs.forEach(doc => { notas[doc.id] = doc.data(); });
     return Object.values(mapa)
-      .map(c => ({ ...c, gasto: Math.round(c.gasto * 100) / 100, notas: (notas[c.email] || notas[c.telefone] || {}).admin_obs || null }))
+      .map(c => ({ ...c, gasto: Math.round(c.gasto * 100) / 100, notas: (notas[c.chave] || {}).admin_obs || null }))
       .sort((a, b) => b.pedidos - a.pedidos);
+  },
+  // Remove do banco tudo que veio do login Google dos clientes (e-mail, foto, uid). Mantém
+  // pedidos, nome, telefone e anotações da equipe.
+  async 'clientes.limparGoogle'(d, u) {
+    const r = { clientes: 0, pedidos: 0, avaliacoes: 0, comentarios: 0 };
+    const apagar = admin.firestore.FieldValue.delete();
+    const [cl, pe, fb, cm] = await Promise.all([
+      db.collection('clients').limit(2000).get(),
+      db.collection('orders').orderBy('created_at', 'desc').limit(3000).get(),
+      db.collection('feedbacks').limit(1000).get(),
+      db.collection('feedback_comments').limit(1000).get()
+    ]);
+    const tarefas = [];
+    cl.docs.forEach(doc => {
+      const c = doc.data();
+      if (!(c.via_google || c.email || c.photo || c.uid)) return;
+      r.clientes++;
+      if (c.via_google && !c.admin_obs && !c.phone) tarefas.push(() => doc.ref.delete());
+      else tarefas.push(() => doc.ref.set({ email: apagar, photo: apagar, uid: apagar, via_google: apagar }, { merge: true }));
+    });
+    pe.docs.forEach(doc => {
+      const o = doc.data();
+      if (!(o.client_email || o.client_uid)) return;
+      r.pedidos++;
+      tarefas.push(() => doc.ref.set({ client_email: apagar, client_uid: apagar }, { merge: true }));
+    });
+    fb.docs.forEach(doc => {
+      const f = doc.data();
+      if (!(f.fb_photo || f.via_facebook)) return;
+      r.avaliacoes++;
+      tarefas.push(() => doc.ref.set({ fb_photo: apagar, via_facebook: apagar }, { merge: true }));
+    });
+    cm.docs.forEach(doc => {
+      const c = doc.data();
+      if (!(c.photo || c.author_uid)) return;
+      r.comentarios++;
+      tarefas.push(() => doc.ref.set({ photo: apagar, author_uid: apagar }, { merge: true }));
+    });
+    for (let i = 0; i < tarefas.length; i += 20) await Promise.all(tarefas.slice(i, i + 20).map(f => f()));
+    await auditar(u, 'clientes.limparGoogle', r);
+    return r;
   },
   async 'clientes.salvarNotas'(d, u) {
     const id = idSeguro(d.chave);

@@ -47,7 +47,7 @@ async function finalizar(){
 
   try{
 
-  currentUser={name,address:end,houseNum:num,phone:tel};
+  currentUser={...(currentUser||{}),name,address:end,houseNum:num,phone:tel};
   DB.set('client',currentUser);loadClientBadge();
 
   let total=0;
@@ -118,10 +118,7 @@ function loadClientBadge(){
   const nd=document.getElementById('client-name-drawer');
   if(currentUser?.name){
     nd.style.display='block';
-    const fotoMini=currentUser.fb_photo
-      ?`<img src="${currentUser.fb_photo}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;border:1px solid var(--pr);vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'">`
-      :'';
-    nd.innerHTML=fotoMini+currentUser.name.split(' ')[0].toUpperCase();
+    nd.innerHTML=currentUser.name.split(' ')[0].toUpperCase();
     const last=DB.get('last_order');
     const banner=document.getElementById('last-order-banner');
     if(last){banner.style.display='block';document.getElementById('lo-text').innerText=`${last.text} — ${last.date}`;}
@@ -131,56 +128,33 @@ function loadClientBadge(){
 }
 
 function openClientModal(){
+  if(!clienteLogado()){ abrirEntrar(); return; }
   const flavors=DB.get('flavors')||[];
   const uniq=[...new Set(flavors)].slice(0,6);
   const ct=document.getElementById('client-content');
-  if(currentUser?.name){
-    const fotoHTML=currentUser.fb_photo
-      ?`<div style="text-align:center;margin-bottom:14px;">
-          <img src="${currentUser.fb_photo}" style="width:64px;height:64px;border-radius:50%;border:2px solid var(--pr);object-fit:cover;" onerror="this.style.display='none'">
-          ${currentUser.via_facebook?`<div style="margin-top:6px;"><span class="fb-badge-fb">${G_SVG} via Google</span></div>`:''}
-        </div>`:'';
-    ct.innerHTML=`
-      ${fotoHTML}
-      <p style="color:var(--tx-3);font-size:.9rem;margin-bottom:14px;text-align:center;">Olá, <b style="color:var(--pr)">${currentUser.name.split(' ')[0]}</b>! Seus dados estão salvos.</p>
-      ${uniq.length?`<div style="margin-bottom:14px;"><div style="font-size:.78rem;color:var(--tx-4);letter-spacing:2px;margin-bottom:6px;">ÚLTIMOS SABORES</div>${uniq.map(f=>`<span class="fl-tag">${f}</span>`).join('')}</div>`:''}
-      <input type="text" class="m-input" id="cl-name" value="${currentUser.name}" placeholder="Nome">
-      <input type="tel" class="m-input" id="cl-tel" value="${currentUser.phone||''}" placeholder="Telefone/WhatsApp">
-      <input type="text" class="m-input" id="cl-addr" value="${currentUser.address||''}" placeholder="Endereço">
-      <input type="text" class="m-input" id="cl-num" value="${currentUser.houseNum||''}" placeholder="Número">
-      <button class="m-btn" onclick="saveClientData()">SALVAR</button>
-      <button class="m-btn-sec" style="margin-top:4px;" onclick="openHistorico();closeModal('modal-client')">🕒 Ver Histórico de Pedidos</button>
-      <button class="m-btn-sec" onclick="logoutClient()" style="margin-top:4px;">Sair da conta</button>`;
-  } else {
-    ct.innerHTML=`
-      <p style="color:var(--tx-3);font-size:.9rem;margin-bottom:14px;text-align:center;">Entre com o Google para salvar seus dados e ter histórico de pedidos!</p>
-      <button class="ggl-login-btn" id="cl-fb-btn" onclick="loginGoogleClient()">
-        <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        Entrar com Google
-      </button>
-      <div style="text-align:center;font-size:.78rem;color:var(--tx-6);margin:8px 0;">— ou preencha manualmente —</div>
-      <input type="text" class="m-input" id="cl-name" placeholder="Nome completo">
-      <input type="tel" class="m-input" id="cl-tel" placeholder="Telefone/WhatsApp">
-      <input type="text" class="m-input" id="cl-addr" placeholder="Endereço de entrega">
-      <input type="text" class="m-input" id="cl-num" placeholder="Número da casa">
-      <button class="m-btn" onclick="saveClientData()">SALVAR E ENTRAR</button>`;
-  }
+  ct.innerHTML=`
+    <p style="color:var(--tx-3);font-size:.9rem;margin-bottom:14px;text-align:center;">Olá, <b style="color:var(--pr)">${currentUser.name.split(' ')[0]}</b>! Seus dados estão salvos neste aparelho.</p>
+    ${uniq.length?`<div style="margin-bottom:14px;"><div style="font-size:.78rem;color:var(--tx-4);letter-spacing:2px;margin-bottom:6px;">ÚLTIMOS SABORES</div>${uniq.map(f=>`<span class="fl-tag">${f}</span>`).join('')}</div>`:''}
+    <input type="text" class="m-input" id="cl-name" value="${currentUser.name}" placeholder="Nome">
+    <input type="tel" class="m-input" id="cl-tel" value="${_mascaraTel(currentUser.phone||'')}" placeholder="WhatsApp com DDD" inputmode="tel">
+    <input type="text" class="m-input" id="cl-addr" value="${currentUser.address||''}" placeholder="Endereço">
+    <input type="text" class="m-input" id="cl-num" value="${currentUser.houseNum||''}" placeholder="Número">
+    <button class="m-btn" onclick="saveClientData()">SALVAR</button>
+    <button class="m-btn-sec" style="margin-top:4px;" onclick="openHistorico();closeModal('modal-client')">🕒 Ver Histórico de Pedidos</button>
+    <button class="m-btn-sec" onclick="logoutClient()" style="margin-top:4px;">Sair da conta</button>`;
   openModal('modal-client');
 }
 function saveClientData(){
   const name=document.getElementById('cl-name')?.value?.trim();
   if(!name)return alert('Informe seu nome.');
-  currentUser={name,address:document.getElementById('cl-addr')?.value||'',houseNum:document.getElementById('cl-num')?.value||'',phone:document.getElementById('cl-tel')?.value||''};
-  DB.set('client',currentUser);closeModal('modal-client');loadClientBadge();updateUI();
+  const tel=_telDigitos(document.getElementById('cl-tel')?.value);
+  if(!/^[1-9][1-9](9\d{8}|[2-5]\d{7})$/.test(tel))return alert('Digite o WhatsApp com DDD. Ex.: (15) 99705-8390');
+  currentUser={name,address:document.getElementById('cl-addr')?.value||'',houseNum:document.getElementById('cl-num')?.value||'',phone:tel,logado:true};
+  DB.set('client',currentUser);closeModal('modal-client');aplicarSessaoCliente();updateUI();
+  fetch('/api/cliente',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:name,telefone:tel})}).catch(()=>{});
 }
 function logoutClient(){
-  currentUser=null;fbUser=null;
+  currentUser=null;
   DB.set('client',null);DB.set('google_user',null);
-  // esconde drawer profile
-  const dp=document.getElementById('drawer-profile');
-  if(dp) dp.style.display='none';
-  if(typeof google!=='undefined') google.accounts.id.disableAutoSelect();
-  _initFB();if(AUTH)AUTH.signOut().catch(()=>{});
-  closeModal('modal-client');loadClientBadge();
+  closeModal('modal-client');aplicarSessaoCliente();
 }
-

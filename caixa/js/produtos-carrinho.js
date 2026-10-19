@@ -436,8 +436,10 @@ async function finalizarVenda(){
     alert('⚠️ A soma das formas de pagamento precisa bater com o total da venda.');
     return;
   }
-  const nome=document.getElementById('f-nome').value.trim()||'Cliente Balcão';
+  const nomeDigitado=document.getElementById('f-nome').value.trim();
   const tel=document.getElementById('f-tel').value.trim()||null;
+  const balcao=!nomeDigitado&&!tel; // venda de balcão anônima: fora de ranking/lista de clientes
+  const nome=nomeDigitado||(tel?'Cliente':'Cliente Balcão');
   const tipo=document.getElementById('f-tipo').value;
   const entregador=document.getElementById('f-entregador')?.value||null;
   const total=totalCarrinho();
@@ -450,7 +452,7 @@ async function finalizarVenda(){
 // obterProximoNumeroSequencial(FS) agora vem de shared/utils.js
 
   const pedido={
-    client_name:nome, client_phone:tel,
+    client_name:nome, client_phone:tel, balcao:balcao,
     address: tipo==='entrega' ? (document.getElementById('f-endereco-colado').value.trim()||'A confirmar por telefone') : null,
     payment:paymentLabel,
     payment_breakdown: pagamentoMisto ? linhasMisto.filter(l=>l.valor>0) : null,

@@ -1079,3 +1079,11 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   .cat-title{font-size:1.5rem;}
   .hero-cta-btn{font-size:.86rem;}
 }
+
+/* ── ENTRAR (nome + WhatsApp) — substitui o login Google ── */
+.dp-avatar{display:flex;align-items:center;justify-content:center;font-size:1.25rem;background:rgba(214,40,40,.08);}
+.dp-entrar{background:var(--pr);color:#fff;border:0;border-radius:var(--raio-p);padding:9px 14px;font-weight:700;font-size:.9rem;cursor:pointer;flex-shrink:0;}
+#cart-google-cta .ggl-login-btn{background:#25D366;color:#fff;border-color:#25D366;}
+#cart-google-cta .ggl-login-btn small{color:rgba(255,255,255,.9);}
+#fb-login-btn{background:#25D366;color:#fff;border-color:#25D366;}
+#fb-login-btn.connected{background:#e8f5e9;border-color:#34a853;color:#1e7e34;}
