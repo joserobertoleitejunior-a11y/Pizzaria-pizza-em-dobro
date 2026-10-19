@@ -5,137 +5,123 @@
 <link rel="manifest" href="/manifest-painel.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Painel PED">
-<meta name="theme-color" content="#C1623B">
+<meta name="theme-color" content="#F4F5F7">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>🍕 Painel — Pizza em Dobro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{overflow-x:hidden;max-width:100%;}
 :root{
-  --bg:#07060a; --card:rgba(24,19,16,.55); --card-bd:rgba(193,98,59,.18);
-  --pr:#C1623B; --se:#A8432F; --ok:#2ecc71; --tx:#f3ece2; --sub:#9c8f83;
-  --font-display:'Archivo Black',sans-serif; --font-eyebrow:'Work Sans',sans-serif; --font-body:'Public Sans',system-ui,sans-serif;
+  --bg:#F4F5F7; --card:#fff; --card-bd:#E5E7EB; --soft:#F9FAFB;
+  --pr:#D62828; --se:#B91C1C; --ok:#16A34A; --tx:#111827; --sub:#6B7280;
+  --sombra:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.06);
+  --font-display:'Archivo Black',system-ui,sans-serif; --font-eyebrow:'Work Sans',system-ui,sans-serif; --font-body:'Work Sans',system-ui,sans-serif;
 }
-body{
-  background:var(--bg);color:var(--tx);font-family:var(--font-body);min-height:100vh;
-  background-image:radial-gradient(circle at 15% -10%, rgba(255,159,28,.12) 0%, transparent 55%),
-                    radial-gradient(circle at 100% 10%, rgba(231,29,54,.07) 0%, transparent 45%);
-  background-attachment:fixed;
-  word-break:break-word;overflow-wrap:break-word;
-}
+body{background:var(--bg);color:var(--tx);font-family:var(--font-body);min-height:100vh;font-size:16px;word-break:break-word;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;}
+::placeholder{color:#9CA3AF;}
+input,select,textarea{color:var(--tx);}
 
-/* ---- NAV (padrão único do site — mesma cor/ordem em todo lugar) ---- */
-.nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
-  padding:12px 18px;background:rgba(7,6,10,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--card-bd);
-  flex-wrap:wrap;gap:8px;}
-.nav-logo{font-family:var(--font-display);font-size:1.3rem;color:var(--pr);letter-spacing:.5px;
-  display:flex;align-items:center;gap:8px;}
+/* ---- NAV (igual Caixa/Dashboard) ---- */
+.nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:#fff;border-bottom:1px solid var(--card-bd);flex-wrap:wrap;gap:8px;}
+.nav-logo{font-family:var(--font-display);font-size:1.3rem;color:var(--tx);display:flex;align-items:center;gap:8px;}
 .nav-links{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
-.nav-links a{font-family:var(--font-eyebrow);font-size:.62rem;letter-spacing:.6px;text-transform:uppercase;
-  color:var(--sub);text-decoration:none;padding:6px 10px;border-radius:8px;
-  border-top:2px solid transparent;transition:.2s;}
-.nav-links a:hover{color:#000;background:var(--pr);border-top-color:transparent;}
-.nav-links a.on{color:var(--tx);border-top:2px solid #fff;}
-
-.header-status{display:flex;align-items:center;gap:6px;font-family:var(--font-eyebrow);font-size:.6rem;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;margin-left:10px;padding-left:10px;border-left:1px solid var(--card-bd);}
-.dot{width:8px;height:8px;border-radius:50%;background:#555;}
+.nav-links a{font-size:.78rem;letter-spacing:.5px;text-transform:uppercase;color:var(--sub);text-decoration:none;padding:8px 12px;border-radius:999px;font-weight:700;}
+.nav-links a:hover{background:rgba(214,40,40,.08);color:var(--pr);}
+.nav-links a.on{background:var(--pr);color:#fff;}
+.header-status{display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;margin-left:10px;padding-left:10px;border-left:1px solid var(--card-bd);}
+.dot{width:10px;height:10px;border-radius:50%;background:#9CA3AF;}
 .dot.online{background:var(--ok);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 
-/* STATS BAR */
-.stats-bar{display:flex;gap:0;border-bottom:1px solid var(--card-bd);}
-.stat-item{flex:1;text-align:center;padding:12px 0;border-right:1px solid rgba(255,255,255,.05);}
-.stat-item:last-child{border-right:none;}
-.stat-num{font-family:var(--font-display);font-size:1.7rem;color:var(--pr);}
-.stat-lbl{font-family:var(--font-eyebrow);font-size:.6rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+/* ---- NÚMEROS DO DIA ---- */
+.stats-bar{display:flex;gap:10px;padding:12px 12px 4px;}
+.stat-item{flex:1;text-align:center;padding:12px 4px;background:#fff;border:1px solid var(--card-bd);border-radius:16px;box-shadow:var(--sombra);}
+.stat-num{font-family:var(--font-display);font-size:1.8rem;color:var(--tx);line-height:1.1;}
+.stat-lbl{font-size:.78rem;color:var(--sub);font-weight:700;margin-top:3px;}
 
-/* TABS */
-.tabs{display:flex;background:transparent;border-bottom:1px solid var(--card-bd);}
-.tab{flex:1;padding:12px 0;text-align:center;font-family:var(--font-eyebrow);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;font-weight:600;color:var(--sub);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;}
-.tab.active{color:var(--pr);border-bottom-color:var(--pr);}
+/* ---- ABAS ---- */
+.tabs{display:flex;gap:8px;padding:10px 12px 4px;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex:1 0 auto;padding:13px 16px;white-space:nowrap;text-align:center;font-size:.95rem;text-transform:uppercase;letter-spacing:.4px;font-weight:800;color:var(--sub);cursor:pointer;background:#fff;border:1px solid var(--card-bd);border-radius:14px;}
+.tab.active{color:#fff;background:var(--pr);border-color:var(--pr);box-shadow:0 6px 14px rgba(214,40,40,.25);}
 
-/* LISTA DE PEDIDOS */
-.orders-list{padding:12px;}
-.empty{text-align:center;color:#444;padding:60px 20px;font-size:.85rem;}
-.empty span{display:block;font-size:2rem;margin-bottom:12px;}
+/* ---- LISTA DE PEDIDOS ---- */
+.orders-list{padding:12px;max-width:980px;margin:0 auto;}
+@media (min-width:900px){.orders-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;}.orders-list .empty{grid-column:1/-1;}}
+.empty{text-align:center;color:#9CA3AF;padding:60px 20px;font-size:1rem;}
+.empty span{display:block;font-size:2.4rem;margin-bottom:12px;}
 
-/* CARD DE PEDIDO */
-.order-card{background:var(--card);backdrop-filter:blur(10px);border-radius:16px;margin-bottom:10px;border:1px solid var(--card-bd);overflow:hidden;transition:.2s;}
-.order-card.novo{border-color:rgba(255,159,28,.45);animation:newOrder .6s ease;}
-.order-card.confirmado{border-color:rgba(46,204,113,.25);}
-.order-card.pronto{border-color:rgba(100,100,100,.2);opacity:.5;}
+/* ---- CARD DE PEDIDO ---- */
+.order-card{background:#fff;border-radius:18px;margin-bottom:10px;border:1px solid var(--card-bd);border-left:6px solid #9CA3AF;overflow:hidden;box-shadow:var(--sombra);}
+.order-card.novo{border-left-color:var(--pr);animation:newOrder .5s ease;}
+.order-card.confirmado{border-left-color:var(--ok);}
+.order-card.pronto{border-left-color:#9CA3AF;opacity:.6;}
 @keyframes newOrder{0%{transform:scale(.97);opacity:0;}100%{transform:scale(1);opacity:1;}}
-
-.card-header{padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;cursor:pointer;}
-.card-nome{font-size:1.15rem;font-weight:700;word-break:break-word;}
+.card-header{padding:14px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;cursor:pointer;}
+.card-nome{font-size:1.2rem;font-weight:800;word-break:break-word;}
 .card-body.open{user-select:text;-webkit-user-select:text;}
 .card-body.open *{user-select:text;-webkit-user-select:text;}
-.card-hora{font-family:var(--font-eyebrow);font-size:.84rem;color:var(--sub);white-space:nowrap;}
-.card-badge{font-family:var(--font-eyebrow);font-size:.8rem;font-weight:600;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;flex:none;}
-.badge-novo{background:rgba(255,159,28,.15);color:var(--pr);}
-.badge-confirmado{background:rgba(46,204,113,.12);color:var(--ok);}
-.badge-pronto{background:rgba(100,100,100,.1);color:#555;}
-
+.card-hora{font-size:.92rem;color:var(--sub);white-space:nowrap;font-weight:600;}
+.card-badge{font-size:.82rem;font-weight:800;padding:4px 11px;border-radius:999px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;flex:none;}
+.badge-novo{background:rgba(214,40,40,.1);color:var(--pr);}
+.badge-confirmado{background:#DCFCE7;color:#15803D;}
+.badge-pronto{background:#F3F4F6;color:var(--sub);}
 .card-body{padding:0 14px 14px;display:none;}
 .card-body.open{display:block;}
-
-.card-info{font-size:.92rem;color:var(--sub);margin-bottom:10px;line-height:1.8;word-break:break-word;}
+.card-info{font-size:1rem;color:var(--sub);margin-bottom:10px;line-height:1.7;word-break:break-word;}
 .card-info b{color:var(--tx);}
-
-.card-items{background:rgba(255,255,255,.03);border-radius:8px;padding:10px;margin-bottom:10px;}
-.item-row{font-size:.95rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.6;word-break:break-word;}
+.card-items{background:var(--soft);border:1px solid #F3F4F6;border-radius:12px;padding:10px 12px;margin-bottom:10px;}
+.item-row{font-size:1.02rem;padding:7px 0;border-bottom:1px solid #F0F1F3;line-height:1.5;word-break:break-word;}
 .item-row:last-child{border-bottom:none;}
-.item-price{color:var(--pr);float:right;}
-.item-detail{font-size:.8rem;color:var(--sub);display:block;}
-
-.card-total{display:flex;justify-content:space-between;font-family:var(--font-display);font-size:1rem;padding:8px 0;border-top:1px solid rgba(255,255,255,.06);margin-top:4px;}
+.item-price{color:var(--tx);font-weight:800;float:right;}
+.item-detail{font-size:.88rem;color:var(--sub);display:block;}
+.card-total{display:flex;justify-content:space-between;font-family:var(--font-display);font-size:1.15rem;padding:10px 0 4px;border-top:2px solid #F0F1F3;margin-top:4px;}
 .card-total span:last-child{color:var(--pr);}
+.card-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.btn-confirmar{flex:1;min-width:140px;background:var(--ok);color:#fff;border:none;padding:15px;border-radius:14px;font-size:.92rem;text-transform:uppercase;letter-spacing:.4px;font-weight:800;cursor:pointer;box-shadow:0 8px 18px rgba(22,163,74,.25);}
+.btn-imprimir{background:#fff;color:var(--tx);border:1px solid var(--card-bd);padding:15px 18px;border-radius:14px;font-size:.9rem;font-weight:700;cursor:pointer;}
+.btn-pronto{flex:1;min-width:140px;background:var(--tx);color:#fff;border:none;padding:15px;border-radius:14px;font-size:.92rem;text-transform:uppercase;letter-spacing:.4px;font-weight:800;cursor:pointer;}
+.btn-cancelar{background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA;padding:15px 16px;border-radius:14px;font-size:.9rem;font-weight:700;cursor:pointer;}
 
-.card-actions{display:flex;gap:8px;margin-top:10px;}
-.btn-confirmar{flex:1;background:var(--ok);color:#000;border:none;padding:12px;border-radius:10px;font-family:var(--font-eyebrow);font-size:.78rem;text-transform:uppercase;letter-spacing:.4px;font-weight:600;cursor:pointer;}
-.btn-imprimir{background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:12px 16px;border-radius:10px;font-size:.8rem;cursor:pointer;}
-.btn-pronto{flex:1;background:rgba(100,100,100,.15);color:#888;border:1px solid rgba(100,100,100,.2);padding:12px;border-radius:10px;font-family:var(--font-eyebrow);font-size:.78rem;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;}
-.btn-cancelar{background:rgba(231,29,54,.1);color:var(--se);border:1px solid rgba(231,29,54,.2);padding:12px 14px;border-radius:10px;font-size:.8rem;cursor:pointer;}
-
-/* BLUETOOTH */
-.bt-bar{background:rgba(7,6,10,.7);backdrop-filter:blur(8px);border-bottom:1px solid var(--card-bd);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;font-size:.84rem;}
+/* ---- IMPRESSORA ---- */
+.bt-bar{background:#fff;border-bottom:1px solid var(--card-bd);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;font-size:.92rem;gap:10px;}
 .bt-info{color:var(--sub);}
 .bt-info b{color:var(--tx);}
-.btn-bt{background:rgba(29,161,242,.12);color:#1da1f2;border:1px solid rgba(29,161,242,.25);padding:6px 12px;border-radius:8px;font-size:.8rem;cursor:pointer;}
+.btn-bt{background:#E0F2FE;color:#0369A1;border:1px solid #BAE6FD;padding:9px 14px;border-radius:999px;font-size:.88rem;font-weight:700;cursor:pointer;}
 
-/* SOM */
-/* MODAL MOTOBOYS */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:16px;}
+/* ---- JANELAS ---- */
+.modal-overlay{position:fixed;inset:0;background:rgba(17,24,39,.5);z-index:500;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:16px;}
 .modal-overlay.open{display:flex;}
-.modal-box{background:#0d0b0e;border:1px solid var(--card-bd);border-radius:18px;width:100%;max-width:480px;padding:16px;margin:auto;}
-.modal-box h2{font-family:var(--font-display);font-size:1.1rem;color:var(--pr);margin-bottom:14px;}
-.mb-card{background:var(--card);backdrop-filter:blur(8px);border:1px solid var(--card-bd);border-radius:12px;padding:12px;margin-bottom:8px;}
-.mb-name{font-size:.85rem;font-weight:700;color:#fff;}
-.mb-stats{font-family:var(--font-eyebrow);font-size:.8rem;color:var(--sub);margin-top:4px;}
-.mb-taxa{font-size:.75rem;color:var(--pr);margin-top:2px;}
+.modal-box{background:#fff;border:0;border-radius:24px;width:100%;max-width:480px;padding:18px;margin:auto;box-shadow:0 24px 70px rgba(16,24,40,.3);}
+.modal-box h2{font-family:var(--font-display);font-size:1.2rem;color:var(--tx);margin-bottom:14px;}
+.mb-card{background:#fff;border:1px solid var(--card-bd);border-radius:14px;padding:12px;margin-bottom:8px;}
+.mb-name{font-size:1rem;font-weight:800;color:var(--tx);}
+.mb-stats{font-size:.9rem;color:var(--sub);margin-top:4px;}
+.mb-taxa{font-size:.88rem;color:var(--pr);margin-top:2px;font-weight:700;}
 .mb-actions{display:flex;gap:6px;margin-top:10px;}
-.btn-mb-edit{flex:1;background:rgba(255,159,28,.12);color:var(--pr);border:1px solid rgba(255,159,28,.25);padding:8px;border-radius:9px;font-size:.84rem;cursor:pointer;}
-.btn-mb-del{background:rgba(231,29,54,.1);color:var(--se);border:1px solid rgba(231,29,54,.2);padding:8px 10px;border-radius:9px;font-size:.84rem;cursor:pointer;}
-.mb-form{background:rgba(255,255,255,.03);border:1px solid var(--card-bd);border-radius:12px;padding:12px;margin-top:12px;}
-.mb-input{width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:9px 12px;color:#fff;font-size:.82rem;outline:none;margin-bottom:8px;}
-.mb-input:focus{border-color:rgba(255,159,28,.5);}
-.btn-mb-save{width:100%;background:var(--pr);color:#000;border:none;padding:10px;border-radius:10px;font-family:var(--font-eyebrow);font-size:.82rem;text-transform:uppercase;letter-spacing:.4px;font-weight:600;cursor:pointer;}
-/* FAIXAS GPS */
-.faixa-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:.78rem;color:#888;}
-.faixa-input{width:72px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 10px;color:var(--pr);font-size:.82rem;text-align:right;outline:none;}
-/* PWA INSTALL BANNER */
-#pwa-banner{position:fixed;bottom:0;left:0;right:0;background:rgba(13,11,14,.95);backdrop-filter:blur(12px);border-top:1px solid var(--card-bd);padding:14px 16px;display:flex;align-items:center;gap:12px;z-index:9999;transform:translateY(100%);transition:transform .35s ease;}
+.btn-mb-edit{flex:1;background:#fff;color:var(--tx);border:1px solid var(--card-bd);padding:10px;border-radius:12px;font-size:.9rem;font-weight:700;cursor:pointer;}
+.btn-mb-del{background:#FEF2F2;color:#B91C1C;border:1px solid #FECACA;padding:10px 12px;border-radius:12px;font-size:.9rem;font-weight:700;cursor:pointer;}
+.mb-form{background:var(--soft);border:1px solid var(--card-bd);border-radius:14px;padding:12px;margin-top:12px;}
+.mb-input{width:100%;box-sizing:border-box;background:#fff;border:1px solid var(--card-bd);border-radius:12px;padding:12px;color:var(--tx);font-size:1rem;outline:none;margin-bottom:8px;}
+.mb-input:focus{border-color:var(--pr);box-shadow:0 0 0 3px rgba(214,40,40,.12);}
+.btn-mb-save{width:100%;background:var(--pr);color:#fff;border:none;padding:14px;border-radius:14px;font-size:.92rem;text-transform:uppercase;letter-spacing:.4px;font-weight:800;cursor:pointer;}
+.faixa-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:.9rem;color:var(--sub);}
+.faixa-input{width:84px;background:#fff;border:1px solid var(--card-bd);border-radius:10px;padding:9px 10px;color:var(--tx);font-size:.95rem;text-align:right;outline:none;}
+
+/* ---- INSTALAR APP ---- */
+#pwa-banner{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--card-bd);padding:14px 16px;display:flex;align-items:center;gap:12px;z-index:9999;transform:translateY(100%);transition:transform .35s ease;box-shadow:0 -8px 24px rgba(16,24,40,.12);}
 #pwa-banner.show{transform:translateY(0);}
 #pwa-banner-icon{font-size:2rem;flex-shrink:0;}
 #pwa-banner-txt{flex:1;}
-#pwa-banner-txt b{display:block;font-size:.85rem;color:#fff;margin-bottom:2px;}
-#pwa-banner-txt span{font-size:.82rem;color:#888;}
-#pwa-banner-btn{background:var(--pr);color:#000;border:none;padding:10px 16px;border-radius:10px;font-family:var(--font-eyebrow);font-size:.78rem;text-transform:uppercase;letter-spacing:.4px;font-weight:600;cursor:pointer;white-space:nowrap;}
-#pwa-banner-close{background:none;border:none;color:#555;font-size:1.2rem;cursor:pointer;padding:4px;}
+#pwa-banner-txt b{display:block;font-size:.95rem;color:var(--tx);margin-bottom:2px;}
+#pwa-banner-txt span{font-size:.86rem;color:var(--sub);}
+#pwa-banner-btn{background:var(--pr);color:#fff;border:none;padding:12px 18px;border-radius:12px;font-size:.88rem;text-transform:uppercase;font-weight:800;cursor:pointer;white-space:nowrap;}
+#pwa-banner-close{background:none;border:none;color:#9CA3AF;font-size:1.3rem;cursor:pointer;padding:4px;}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important;}}
 </style>
 </head>
 <body>
@@ -170,17 +156,17 @@ body{
   <div class="tab active" onclick="setTab('novos')">NOVOS</div>
   <div class="tab" onclick="setTab('confirmados')">CONFIRMADOS</div>
   <div class="tab" onclick="setTab('todos')">TODOS</div>
-  <div class="tab" onclick="abrirMotoboys()" style="color:#9b59b6;flex:none;padding:12px 10px;font-size:.8rem;">MOTOBOYS</div>
-  <div class="tab" onclick="limparPedidos()" style="color:#e71d36;flex:none;padding:12px 10px;font-size:.8rem;">LIMPAR</div>
+  <div class="tab" onclick="abrirMotoboys()" style="color:#9b59b6;flex:none;padding:12px 10px;font-size:.88rem;">MOTOBOYS</div>
+  <div class="tab" onclick="limparPedidos()" style="color:#e71d36;flex:none;padding:12px 10px;font-size:.88rem;">LIMPAR</div>
 </div>
 
-<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.06);">
-  <span style="font-size:.8rem;color:#888;white-space:nowrap;">📅 Ver dia:</span>
-  <input type="date" id="filtro-data" onchange="mudarFiltroData(this.value)" style="flex:1;background:#151515;border:1px solid rgba(255,255,255,.12);color:#eee;border-radius:7px;padding:6px 8px;font-size:.75rem;">
-  <button id="filtro-hoje-btn" onclick="voltarParaHoje()" style="display:none;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:6px 12px;border-radius:7px;font-size:.82rem;cursor:pointer;white-space:nowrap;">Hoje</button>
+<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#F9FAFB;border-bottom:1px solid #E5E7EB;">
+  <span style="font-size:.88rem;color:#6B7280;white-space:nowrap;">📅 Ver dia:</span>
+  <input type="date" id="filtro-data" onchange="mudarFiltroData(this.value)" style="flex:1;background:#fff;border:1px solid #E5E7EB;color:#111827;border-radius:7px;padding:6px 8px;font-size:.86rem;">
+  <button id="filtro-hoje-btn" onclick="voltarParaHoje()" style="display:none;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:6px 12px;border-radius:7px;font-size:.9rem;cursor:pointer;white-space:nowrap;">Hoje</button>
 </div>
-<div style="padding:8px 12px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--card-bd);">
-  <input type="text" id="filtro-busca" placeholder="🔍 Buscar por nome ou telefone (qualquer data)..." oninput="renderOrders()" style="width:100%;background:#151515;border:1px solid rgba(255,255,255,.12);color:#eee;border-radius:9px;padding:9px 12px;font-size:.8rem;">
+<div style="padding:8px 12px;background:#F9FAFB;border-bottom:1px solid var(--card-bd);">
+  <input type="text" id="filtro-busca" placeholder="🔍 Buscar por nome ou telefone (qualquer data)..." oninput="renderOrders()" style="width:100%;background:#fff;border:1px solid #E5E7EB;color:#111827;border-radius:9px;padding:9px 12px;font-size:.88rem;">
 </div>
 
 <div class="orders-list" id="orders-list">
@@ -193,16 +179,16 @@ body{
   <div class="modal-box">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <div style="font-size:1rem;font-weight:700;color:var(--pr);" id="perfil-nome">Cliente</div>
-      <button onclick="document.getElementById('modal-perfil-cliente').classList.remove('open')" style="background:none;border:none;color:#888;font-size:1.3rem;cursor:pointer;">✕</button>
+      <button onclick="document.getElementById('modal-perfil-cliente').classList.remove('open')" style="background:none;border:none;color:#6B7280;font-size:1.3rem;cursor:pointer;">✕</button>
     </div>
-    <div style="font-size:.78rem;color:#aaa;margin-bottom:4px;">📞 <b id="perfil-tel" style="color:#fff;">—</b></div>
-    <div style="font-size:.78rem;color:#aaa;margin-bottom:12px;">🧾 <b id="perfil-qtd" style="color:#fff;">0</b> pedido(s) · Total: <b id="perfil-total" style="color:var(--pr);">R$ 0,00</b></div>
+    <div style="font-size:.86rem;color:#6B7280;margin-bottom:4px;">📞 <b id="perfil-tel" style="color:#111827;">—</b></div>
+    <div style="font-size:.86rem;color:#6B7280;margin-bottom:12px;">🧾 <b id="perfil-qtd" style="color:#111827;">0</b> pedido(s) · Total: <b id="perfil-total" style="color:var(--pr);">R$ 0,00</b></div>
     <a id="perfil-whatsapp" href="#" target="_blank" style="display:none;align-items:center;gap:8px;background:#25D366;color:#fff;
-      text-decoration:none;padding:10px 16px;border-radius:10px;font-weight:700;font-size:.8rem;margin-bottom:12px;">
+      text-decoration:none;padding:10px 16px;border-radius:10px;font-weight:700;font-size:.88rem;margin-bottom:12px;">
       <svg width="18" height="18" viewBox="0 0 32 32" fill="#fff"><path d="M16.001 3C9.107 3 3.5 8.607 3.5 15.5c0 2.316.63 4.484 1.726 6.35L3 29l7.35-2.188A12.44 12.44 0 0016 28c6.894 0 12.5-5.607 12.5-12.5S22.895 3 16.001 3zm0 22.7c-1.99 0-3.86-.55-5.46-1.51l-.39-.23-4.36 1.3 1.32-4.25-.25-.4a10.16 10.16 0 01-1.56-5.41c0-5.63 4.58-10.2 10.2-10.2 5.63 0 10.2 4.58 10.2 10.2 0 5.63-4.58 10.51-9.7 10.51zm5.6-7.63c-.31-.15-1.82-.9-2.1-1-.28-.1-.49-.15-.69.15-.2.31-.79 1-.97 1.2-.18.2-.36.23-.67.08-.31-.15-1.3-.48-2.47-1.53-.91-.81-1.53-1.82-1.71-2.13-.18-.31-.02-.47.13-.63.14-.14.31-.36.46-.54.15-.18.2-.31.31-.51.1-.2.05-.38-.02-.54-.08-.15-.69-1.67-.95-2.29-.25-.6-.5-.52-.69-.53h-.59c-.2 0-.54.08-.82.38-.28.31-1.08 1.05-1.08 2.57 0 1.51 1.1 2.97 1.26 3.18.15.2 2.17 3.31 5.25 4.65.73.32 1.31.5 1.75.64.74.24 1.41.2 1.94.12.59-.09 1.82-.74 2.08-1.46.26-.71.26-1.32.18-1.45-.07-.13-.28-.2-.59-.36z"/></svg>
       Chamar no WhatsApp
     </a>
-    <div style="font-size:.8rem;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Últimos pedidos</div>
+    <div style="font-size:.88rem;color:#6B7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Últimos pedidos</div>
     <div id="perfil-historico" style="max-height:280px;overflow-y:auto;"></div>
   </div>
 </div>
@@ -211,13 +197,13 @@ body{
   <div class="modal-box">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
       <div style="font-size:1rem;font-weight:700;color:var(--pr);">➕ Adicionar item ao pedido</div>
-      <button onclick="fecharAddItemManual()" style="background:none;border:none;color:#888;font-size:1.3rem;cursor:pointer;line-height:1;">✕</button>
+      <button onclick="fecharAddItemManual()" style="background:none;border:none;color:#6B7280;font-size:1.3rem;cursor:pointer;line-height:1;">✕</button>
     </div>
-    <div style="font-size:.82rem;color:#888;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">Nome do item</div>
-    <input id="add-item-nome" placeholder="Ex: Parmesão avulso" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:#fff;font-size:.85rem;outline:none;margin-bottom:12px;">
-    <div style="font-size:.82rem;color:#888;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">Valor (R$)</div>
-    <input id="add-item-valor" type="number" step="0.01" placeholder="0,00" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;color:var(--pr);font-size:.85rem;outline:none;margin-bottom:16px;">
-    <button onclick="confirmarAddItemManual()" style="width:100%;background:var(--pr);color:#000;border:none;padding:12px;border-radius:10px;font-size:.85rem;font-weight:700;cursor:pointer;">Adicionar e recalcular total</button>
+    <div style="font-size:.9rem;color:#6B7280;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">Nome do item</div>
+    <input id="add-item-nome" placeholder="Ex: Parmesão avulso" style="width:100%;box-sizing:border-box;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:10px 12px;color:#fff;font-size:.93rem;outline:none;margin-bottom:12px;">
+    <div style="font-size:.9rem;color:#6B7280;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">Valor (R$)</div>
+    <input id="add-item-valor" type="number" step="0.01" placeholder="0,00" style="width:100%;box-sizing:border-box;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:10px 12px;color:var(--pr);font-size:.93rem;outline:none;margin-bottom:16px;">
+    <button onclick="confirmarAddItemManual()" style="width:100%;background:var(--pr);color:#fff;border:none;padding:12px;border-radius:10px;font-size:.93rem;font-weight:700;cursor:pointer;">Adicionar e recalcular total</button>
   </div>
 </div>
 
@@ -226,30 +212,30 @@ body{
     <!-- Header -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
       <div style="font-size:1rem;font-weight:700;color:var(--pr);">Gerenciar Entregadores</div>
-      <button onclick="fecharMotoboys()" style="background:none;border:none;color:#888;font-size:1.3rem;cursor:pointer;line-height:1;">✕</button>
+      <button onclick="fecharMotoboys()" style="background:none;border:none;color:#6B7280;font-size:1.3rem;cursor:pointer;line-height:1;">✕</button>
     </div>
 
     <!-- Abas internas -->
-    <div style="display:flex;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:14px;">
-      <button onclick="mbAba('lista')" id="mb-tab-lista" style="flex:1;background:none;border:none;border-bottom:2px solid var(--pr);color:var(--pr);padding:8px 0;font-size:.75rem;font-weight:700;cursor:pointer;">ENTREGADORES</button>
-      <button onclick="mbAba('caixa')" id="mb-tab-caixa" style="flex:1;background:none;border:none;border-bottom:2px solid transparent;color:#555;padding:8px 0;font-size:.75rem;font-weight:700;cursor:pointer;">CAIXA DO DIA</button>
+    <div style="display:flex;border-bottom:1px solid #E5E7EB;margin-bottom:14px;">
+      <button onclick="mbAba('lista')" id="mb-tab-lista" style="flex:1;background:none;border:none;border-bottom:2px solid var(--pr);color:var(--pr);padding:8px 0;font-size:.86rem;font-weight:700;cursor:pointer;">ENTREGADORES</button>
+      <button onclick="mbAba('caixa')" id="mb-tab-caixa" style="flex:1;background:none;border:none;border-bottom:2px solid transparent;color:#6B7280;padding:8px 0;font-size:.86rem;font-weight:700;cursor:pointer;">CAIXA DO DIA</button>
     </div>
 
     <!-- Aba: Entregadores -->
     <div id="mb-aba-lista">
       <div id="mb-lista" style="margin-bottom:12px;"></div>
-      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px;">
-        <div style="font-size:.84rem;color:var(--pr);font-weight:700;margin-bottom:10px;" id="mb-form-titulo">Adicionar entregador</div>
+      <div style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:10px;padding:12px;">
+        <div style="font-size:.92rem;color:var(--pr);font-weight:700;margin-bottom:10px;" id="mb-form-titulo">Adicionar entregador</div>
         <input class="mb-input" id="mb-nome" placeholder="Nome completo" type="text">
         <input class="mb-input" id="mb-tel" placeholder="WhatsApp (com DDD)" type="tel" inputmode="tel">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          <span style="font-size:.75rem;color:#888;white-space:nowrap;">Taxa por entrega: R$</span>
+          <span style="font-size:.86rem;color:#6B7280;white-space:nowrap;">Taxa por entrega: R$</span>
           <input class="mb-input" id="mb-taxa" placeholder="Ex: 5,00" type="number" step="0.50" min="0" style="margin-bottom:0;width:100px;">
         </div>
         <input type="hidden" id="mb-edit-id">
         <div style="display:flex;gap:8px;">
           <button class="btn-mb-save" onclick="salvarMotoboy()" style="flex:1;">Salvar</button>
-          <button onclick="cancelarEdicaoMb()" id="mb-btn-cancelar" style="display:none;flex:none;background:rgba(231,29,54,.1);color:var(--se);border:1px solid rgba(231,29,54,.2);padding:10px 14px;border-radius:8px;font-size:.8rem;cursor:pointer;">Cancelar</button>
+          <button onclick="cancelarEdicaoMb()" id="mb-btn-cancelar" style="display:none;flex:none;background:rgba(231,29,54,.1);color:var(--se);border:1px solid rgba(231,29,54,.2);padding:10px 14px;border-radius:8px;font-size:.88rem;cursor:pointer;">Cancelar</button>
         </div>
       </div>
     </div>
@@ -311,7 +297,7 @@ async function mudarFiltroData(valor){
     renderOrders();
   }catch(e){
     console.error('Erro ao buscar histórico:',e);
-    if(el)el.innerHTML=`<div class="empty"><span>⚠️</span>Erro ao buscar histórico deste dia.<br><span style="font-size:.8rem;color:#e71d36;">${(e.message||'').replace(/</g,'&lt;')}</span></div>`;
+    if(el)el.innerHTML=`<div class="empty"><span>⚠️</span>Erro ao buscar histórico deste dia.<br><span style="font-size:.88rem;color:#e71d36;">${(e.message||'').replace(/</g,'&lt;')}</span></div>`;
   }
 }
 
@@ -582,7 +568,7 @@ function mbAba(aba){
     if(el) el.style.display=a===aba?'block':'none';
     if(tab){
       tab.style.borderBottomColor=a===aba?'var(--pr)':'transparent';
-      tab.style.color=a===aba?'var(--pr)':'#555';
+      tab.style.color=a===aba?'var(--pr)':'#6B7280';
     }
   });
   if(aba==='caixa') gerarFechamento();
@@ -604,7 +590,7 @@ function renderMotoboys(){
   const lista=getMotoboys();
   const el=document.getElementById('mb-lista');
   if(!lista.length){
-    el.innerHTML='<p style="color:#555;font-size:.78rem;text-align:center;padding:16px 0;">Nenhum entregador cadastrado.<br>Use o formulário abaixo para adicionar.</p>';
+    el.innerHTML='<p style="color:#6B7280;font-size:.86rem;text-align:center;padding:16px 0;">Nenhum entregador cadastrado.<br>Use o formulário abaixo para adicionar.</p>';
     return;
   }
   el.innerHTML=lista.map((mb)=>{
@@ -615,15 +601,15 @@ function renderMotoboys(){
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
         <div style="flex:1;">
           <div class="mb-name" style="display:flex;align-items:center;gap:6px;">${mb.nome}${mb.tel?`<a href="${_linkWhatsapp(mb.tel)}" target="_blank" onclick="event.stopPropagation()" title="Chamar no WhatsApp" style="display:flex;align-items:center;">${WA_ICON_SVG}</a>`:''}</div>
-          <div style="margin-top:6px;background:rgba(255,255,255,.03);border-radius:8px;padding:8px 10px;font-size:.74rem;color:#ccc;">
-            <div style="display:flex;justify-content:space-between;padding:2px 0;"><span>Pizzas entregues hoje</span><b style="color:#fff;">${qtdEntregas}</b></div>
-            <div style="display:flex;justify-content:space-between;padding:2px 0;"><span>Valor de cada entrega</span><b style="color:#fff;">R$ ${valorCadaUma.toFixed(2).replace('.',',')}</b></div>
-            <div style="display:flex;justify-content:space-between;padding:4px 0 0;border-top:1px solid rgba(255,255,255,.08);margin-top:4px;"><span style="color:var(--pr);font-weight:700;">Total a pagar hoje</span><b style="color:var(--pr);">R$ ${totalPagar}</b></div>
+          <div style="margin-top:6px;background:#F9FAFB;border-radius:8px;padding:8px 10px;font-size:.86rem;color:#374151;">
+            <div style="display:flex;justify-content:space-between;padding:2px 0;"><span>Pizzas entregues hoje</span><b style="color:#111827;">${qtdEntregas}</b></div>
+            <div style="display:flex;justify-content:space-between;padding:2px 0;"><span>Valor de cada entrega</span><b style="color:#111827;">R$ ${valorCadaUma.toFixed(2).replace('.',',')}</b></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0 0;border-top:1px solid #E5E7EB;margin-top:4px;"><span style="color:var(--pr);font-weight:700;">Total a pagar hoje</span><b style="color:var(--pr);">R$ ${totalPagar}</b></div>
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;">
-          <button onclick="editarMotoboy('${mb.id}')" style="background:rgba(255,159,28,.12);color:var(--pr);border:1px solid rgba(255,159,28,.25);padding:7px 12px;border-radius:7px;font-size:.84rem;cursor:pointer;">Editar</button>
-          <button onclick="excluirMotoboy('${mb.id}')" style="background:rgba(231,29,54,.08);color:var(--se);border:1px solid rgba(231,29,54,.2);padding:7px 12px;border-radius:7px;font-size:.84rem;cursor:pointer;">Excluir</button>
+          <button onclick="editarMotoboy('${mb.id}')" style="background:rgba(255,159,28,.12);color:var(--pr);border:1px solid rgba(255,159,28,.25);padding:7px 12px;border-radius:7px;font-size:.92rem;cursor:pointer;">Editar</button>
+          <button onclick="excluirMotoboy('${mb.id}')" style="background:rgba(231,29,54,.08);color:var(--se);border:1px solid rgba(231,29,54,.2);padding:7px 12px;border-radius:7px;font-size:.92rem;cursor:pointer;">Excluir</button>
         </div>
       </div>
     </div>`;
@@ -719,9 +705,9 @@ function atribuirMotoboy(docId,mbId){
   if(wrap){
     wrap.querySelectorAll('.mb-chip').forEach(c=>{
       const sel=c.getAttribute('data-mbid')===mbId;
-      c.style.background=sel?'rgba(46,204,113,.18)':'rgba(255,255,255,.05)';
-      c.style.borderColor=sel?'#2ecc71':'rgba(255,255,255,.15)';
-      c.style.color=sel?'#2ecc71':'#ccc';
+      c.style.background=sel?'rgba(46,204,113,.18)':'#fff';
+      c.style.borderColor=sel?'#2ecc71':'#E5E7EB';
+      c.style.color=sel?'#15803D':'#374151';
     });
   }
 }
@@ -729,13 +715,13 @@ function atribuirMotoboy(docId,mbId){
 // Seletor de entregador em formato de chips (opcional, sem obrigar escolha)
 function buildMotoboySelect(docId,currentMbId){
   const lista=getMotoboys();
-  if(!lista.length) return'<p style="font-size:.84rem;color:#555;margin:0;">Cadastre entregadores em MOTOBOYS</p>';
+  if(!lista.length) return'<p style="font-size:.92rem;color:#6B7280;margin:0;">Cadastre entregadores em MOTOBOYS</p>';
   const chips=lista.map(m=>{
     const sel=m.id===currentMbId;
-    return`<button type="button" class="mb-chip" data-mbid="${m.id}" onclick="event.stopPropagation();atribuirMotoboy('${docId}','${m.id}')" style="background:${sel?'rgba(46,204,113,.18)':'rgba(255,255,255,.05)'};border:1px solid ${sel?'#2ecc71':'rgba(255,255,255,.15)'};color:${sel?'#2ecc71':'#ccc'};border-radius:20px;padding:6px 12px;font-size:.84rem;cursor:pointer;white-space:nowrap;">${sel?'✓ ':''}${m.nome}</button>`;
+    return`<button type="button" class="mb-chip" data-mbid="${m.id}" onclick="event.stopPropagation();atribuirMotoboy('${docId}','${m.id}')" style="background:${sel?'rgba(46,204,113,.18)':'#fff'};border:1px solid ${sel?'#2ecc71':'#E5E7EB'};color:${sel?'#15803D':'#374151'};border-radius:20px;padding:6px 12px;font-size:.92rem;cursor:pointer;white-space:nowrap;">${sel?'✓ ':''}${m.nome}</button>`;
   }).join('');
-  const clearChip=currentMbId?`<button type="button" onclick="event.stopPropagation();atribuirMotoboy('${docId}','')" style="background:rgba(231,29,54,.08);border:1px solid rgba(231,29,54,.25);color:var(--se);border-radius:20px;padding:6px 12px;font-size:.84rem;cursor:pointer;white-space:nowrap;">✕ Remover</button>`:'';
-  return`<div style="font-size:.65rem;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">🛵 Quem vai entregar? <span style="color:#555;text-transform:none;">(opcional)</span></div>
+  const clearChip=currentMbId?`<button type="button" onclick="event.stopPropagation();atribuirMotoboy('${docId}','')" style="background:rgba(231,29,54,.08);border:1px solid rgba(231,29,54,.25);color:var(--se);border-radius:20px;padding:6px 12px;font-size:.92rem;cursor:pointer;white-space:nowrap;">✕ Remover</button>`:'';
+  return`<div style="font-size:.78rem;color:#6B7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">🛵 Quem vai entregar? <span style="color:#6B7280;text-transform:none;">(opcional)</span></div>
     <div id="mbchip-${docId}" style="display:flex;gap:6px;flex-wrap:wrap;">${chips}${clearChip}</div>`;
 }
 
@@ -748,17 +734,17 @@ function gerarFechamento(){
   const hoje=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
 
   let html=`<div style="background:rgba(255,159,28,.08);border-radius:10px;padding:14px;margin-bottom:12px;">
-    <div style="font-size:.84rem;color:#888;margin-bottom:8px;">${hoje}</div>
-    <div style="display:flex;justify-content:space-between;font-size:.85rem;font-weight:700;margin-bottom:6px;">
-      <span style="color:#ccc;">Total de pedidos</span><span style="color:#fff;">${totalPedidos}</span>
+    <div style="font-size:.92rem;color:#6B7280;margin-bottom:8px;">${hoje}</div>
+    <div style="display:flex;justify-content:space-between;font-size:.93rem;font-weight:700;margin-bottom:6px;">
+      <span style="color:#374151;">Total de pedidos</span><span style="color:#111827;">${totalPedidos}</span>
     </div>
-    <div style="display:flex;justify-content:space-between;font-size:.85rem;font-weight:700;">
-      <span style="color:#ccc;">Receita bruta</span><span style="color:var(--pr);">R$ ${totalReceita.toFixed(2).replace('.',',')}</span>
+    <div style="display:flex;justify-content:space-between;font-size:.93rem;font-weight:700;">
+      <span style="color:#374151;">Receita bruta</span><span style="color:var(--pr);">R$ ${totalReceita.toFixed(2).replace('.',',')}</span>
     </div>
   </div>`;
 
   if(!totalPedidos){
-    html+='<p style="color:#555;font-size:.78rem;text-align:center;padding:8px 0;">Nenhum pedido hoje ainda.</p>';
+    html+='<p style="color:#6B7280;font-size:.86rem;text-align:center;padding:8px 0;">Nenhum pedido hoje ainda.</p>';
     document.getElementById('mb-fechamento-conteudo').innerHTML=html;
     return;
   }
@@ -766,11 +752,11 @@ function gerarFechamento(){
   // Por forma de pagamento
   const porPagto={};
   pedidosHoje.forEach(o=>{const p=o.payment||'Não informado';porPagto[p]=(porPagto[p]||0)+Number(o.total||0);});
-  html+=`<div style="background:rgba(255,255,255,.03);border-radius:10px;padding:12px;margin-bottom:12px;">
-    <div style="font-size:.84rem;color:#888;font-weight:700;margin-bottom:8px;">POR PAGAMENTO</div>`;
+  html+=`<div style="background:#F9FAFB;border-radius:10px;padding:12px;margin-bottom:12px;">
+    <div style="font-size:.92rem;color:#6B7280;font-weight:700;margin-bottom:8px;">POR PAGAMENTO</div>`;
   Object.entries(porPagto).forEach(([p,v])=>{
-    html+=`<div style="display:flex;justify-content:space-between;font-size:.78rem;color:#ccc;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);">
-      <span>${p}</span><span style="color:#fff;">R$ ${v.toFixed(2).replace('.',',')}</span>
+    html+=`<div style="display:flex;justify-content:space-between;font-size:.86rem;color:#374151;padding:5px 0;border-bottom:1px solid #E5E7EB;">
+      <span>${p}</span><span style="color:#111827;">R$ ${v.toFixed(2).replace('.',',')}</span>
     </div>`;
   });
   html+='</div>';
@@ -778,22 +764,22 @@ function gerarFechamento(){
   // Por motoboy
   if(lista.length){
     let totalPagar=0;
-    let mbHtml=`<div style="background:rgba(255,255,255,.03);border-radius:10px;padding:12px;margin-bottom:12px;">
-      <div style="font-size:.84rem;color:#888;font-weight:700;margin-bottom:8px;">ENTREGADORES</div>`;
+    let mbHtml=`<div style="background:#F9FAFB;border-radius:10px;padding:12px;margin-bottom:12px;">
+      <div style="font-size:.92rem;color:#6B7280;font-weight:700;margin-bottom:8px;">ENTREGADORES</div>`;
     lista.forEach(mb=>{
       const entregasMb=pedidosHoje.filter(o=>o.motoboy_id===mb.id&&o.status==='pronto').length;
       const pagar=entregasMb*(mb.taxa||0);
       totalPagar+=pagar;
-      mbHtml+=`<div style="display:flex;justify-content:space-between;align-items:center;font-size:.78rem;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);">
+      mbHtml+=`<div style="display:flex;justify-content:space-between;align-items:center;font-size:.86rem;padding:6px 0;border-bottom:1px solid #E5E7EB;">
         <div>
-          <div style="color:#fff;font-weight:600;">${mb.nome}</div>
-          <div style="color:#888;font-size:.8rem;">${entregasMb} entregas × R$ ${(mb.taxa||0).toFixed(2).replace('.',',')}</div>
+          <div style="color:#111827;font-weight:600;">${mb.nome}</div>
+          <div style="color:#6B7280;font-size:.88rem;">${entregasMb} entregas × R$ ${(mb.taxa||0).toFixed(2).replace('.',',')}</div>
         </div>
         <span style="color:var(--se);font-weight:700;">R$ ${pagar.toFixed(2).replace('.',',')}</span>
       </div>`;
     });
-    mbHtml+=`<div style="display:flex;justify-content:space-between;font-size:.82rem;font-weight:700;padding:8px 0;">
-      <span style="color:#ccc;">Total a pagar</span>
+    mbHtml+=`<div style="display:flex;justify-content:space-between;font-size:.9rem;font-weight:700;padding:8px 0;">
+      <span style="color:#374151;">Total a pagar</span>
       <span style="color:var(--se);">R$ ${totalPagar.toFixed(2).replace('.',',')}</span>
     </div></div>`;
     html+=mbHtml;
@@ -801,9 +787,9 @@ function gerarFechamento(){
     // Lucro líquido
     const lucro=totalReceita-totalPagar;
     html+=`<div style="background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.2);border-radius:10px;padding:14px;text-align:center;">
-      <div style="font-size:.84rem;color:#888;margin-bottom:4px;">LUCRO LÍQUIDO ESTIMADO</div>
+      <div style="font-size:.92rem;color:#6B7280;margin-bottom:4px;">LUCRO LÍQUIDO ESTIMADO</div>
       <div style="font-size:1.4rem;font-weight:700;color:#2ecc71;">R$ ${lucro.toFixed(2).replace('.',',')}</div>
-      <div style="font-size:.65rem;color:#555;margin-top:4px;">(Receita − Entregadores)</div>
+      <div style="font-size:.78rem;color:#6B7280;margin-top:4px;">(Receita − Entregadores)</div>
     </div>`;
   }
 
@@ -915,11 +901,11 @@ function abrirPerfilCliente(telefone,nome){
       let its=o.items_json||[];
       if(typeof its==='string'){ try{its=JSON.parse(its);}catch(e){its=[];} }
       const nomes=(Array.isArray(its)?its:[]).map(i=>i.name).join(', ')||'—';
-      return `<div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:.75rem;">
+      return `<div style="padding:8px 0;border-bottom:1px solid #E5E7EB;font-size:.86rem;">
         <div>${nomes}</div>
-        <div style="color:#888;font-size:.65rem;margin-top:2px;">${new Date(o.created_at).toLocaleDateString('pt-BR')} · R$ ${Number(o.total||0).toFixed(2).replace('.',',')}</div>
+        <div style="color:#6B7280;font-size:.78rem;margin-top:2px;">${new Date(o.created_at).toLocaleDateString('pt-BR')} · R$ ${Number(o.total||0).toFixed(2).replace('.',',')}</div>
       </div>`;
-    }).join('') || '<div style="color:#666;font-size:.75rem;">Nenhum histórico encontrado.</div>';
+    }).join('') || '<div style="color:#6B7280;font-size:.86rem;">Nenhum histórico encontrado.</div>';
 
   document.getElementById('modal-perfil-cliente').classList.add('open');
 }
@@ -933,7 +919,7 @@ async function salvarCampoPedido(el){
   try{
     await FS.collection('orders').doc(docId).update({[campo]:valor});
     el.style.borderColor='rgba(46,204,113,.5)';
-    setTimeout(()=>{el.style.borderColor='rgba(255,255,255,.1)';},1200);
+    setTimeout(()=>{el.style.borderColor='#E5E7EB';},1200);
   }catch(e){
     console.error('Erro ao salvar campo do pedido:',e);
     el.style.borderColor='rgba(231,29,54,.6)';
@@ -981,7 +967,7 @@ function renderOrders(){
     console.error('Erro ao renderizar pedidos:',e);
     const el=document.getElementById('orders-list');
     if(el){
-      el.innerHTML=`<div class="empty"><span>⚠️</span>Erro ao carregar pedidos.<br><span style="font-size:.8rem;color:#e71d36;">${(e.message||'').replace(/</g,'&lt;')}</span><br><button onclick="renderOrders()" style="margin-top:12px;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:8px 16px;border-radius:8px;font-size:.75rem;cursor:pointer;">Tentar novamente</button></div>`;
+      el.innerHTML=`<div class="empty"><span>⚠️</span>Erro ao carregar pedidos.<br><span style="font-size:.88rem;color:#e71d36;">${(e.message||'').replace(/</g,'&lt;')}</span><br><button onclick="renderOrders()" style="margin-top:12px;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:8px 16px;border-radius:8px;font-size:.86rem;cursor:pointer;">Tentar novamente</button></div>`;
     }
   }
 }
@@ -1033,7 +1019,7 @@ function _renderOrdersInner(){
     }catch(e){
       console.error('Pedido com dados inválidos, pulado:',o._id,e);
       return`<div class="order-card" style="border-color:rgba(231,29,54,.3);padding:12px 14px;">
-        <div style="font-size:.75rem;color:var(--se);">⚠️ Pedido ${o._id||''} com erro: <b>${(e.message||'erro desconhecido').replace(/</g,'&lt;')}</b></div>
+        <div style="font-size:.86rem;color:var(--se);">⚠️ Pedido ${o._id||''} com erro: <b>${(e.message||'erro desconhecido').replace(/</g,'&lt;')}</b></div>
       </div>`;
     }
   }).join('');
@@ -1060,7 +1046,7 @@ function _renderOrderCard(o){
       </div>`;
     }).join('');
 
-    const btnExcluir=`<button onclick="excluirPedido('${o._id}')" style="background:rgba(231,29,54,.06);color:var(--se);border:1px solid rgba(231,29,54,.18);padding:8px 12px;border-radius:8px;font-size:.82rem;cursor:pointer;margin-top:8px;width:100%;">🗑️ Excluir pedido</button>`;
+    const btnExcluir=`<button onclick="excluirPedido('${o._id}')" style="background:rgba(231,29,54,.06);color:var(--se);border:1px solid rgba(231,29,54,.18);padding:8px 12px;border-radius:8px;font-size:.9rem;cursor:pointer;margin-top:8px;width:100%;">🗑️ Excluir pedido</button>`;
     const acoes=status==='novo'
       ?`<div style="margin-bottom:8px;">${buildMotoboySelect(o._id,o.motoboy_id||'')}</div>
          <div style="display:flex;gap:8px;">
@@ -1073,7 +1059,7 @@ function _renderOrderCard(o){
          <button class="btn-pronto" onclick="marcarPronto('${o._id}')">MARCAR COMO ENTREGUE</button>
          <button class="btn-imprimir" onclick="location.href='caixa/index.html?reimprimir=${o._id}'">🖨️ REIMPRIMIR</button>
          ${btnExcluir}`
-      :`<div style="margin-bottom:6px;font-size:.82rem;color:#555;">Pedido entregue — entregador:</div>
+      :`<div style="margin-bottom:6px;font-size:.9rem;color:#6B7280;">Pedido entregue — entregador:</div>
          <div>${buildMotoboySelect(o._id,o.motoboy_id||'')}</div>
          ${btnExcluir}`;
 
@@ -1084,31 +1070,31 @@ function _renderOrderCard(o){
     return`<div class="order-card ${status}" id="card-${o._id}">
       <div class="card-header" onclick="toggleCard('${o._id}')">
         <div>
-          <div class="card-nome" onclick="event.stopPropagation();abrirPerfilCliente('${(o.client_phone||'').replace(/'/g,"")}','${(o.client_name||'Cliente').replace(/'/g,"\\'")}')" style="text-decoration:underline dotted;cursor:pointer;">👤 ${o.client_name||'Cliente'}${o.origem==='conversor'?'<span style="font-size:.55rem;background:rgba(155,89,182,.2);color:#9b59b6;border-radius:4px;padding:2px 5px;margin-left:4px;">CONV</span>':''}</div>
+          <div class="card-nome" onclick="event.stopPropagation();abrirPerfilCliente('${(o.client_phone||'').replace(/'/g,"")}','${(o.client_name||'Cliente').replace(/'/g,"\\'")}')" style="text-decoration:underline dotted;cursor:pointer;">👤 ${o.client_name||'Cliente'}${o.origem==='conversor'?'<span style="font-size:.72rem;background:rgba(155,89,182,.2);color:#9b59b6;border-radius:4px;padding:2px 5px;margin-left:4px;">CONV</span>':''}</div>
           <div class="card-hora">${fmtHora(o.created_at)} ${tempo?'· '+tempo:''} · ${o.delivery_type==='retirada'?'RETIRADA':'ENTREGA'}</div>
         </div>
-        <div style="display:flex;align-items:center;gap:6px;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
           ${waLink?`<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" title="Chamar no WhatsApp" style="text-decoration:none;line-height:1;display:flex;align-items:center;">${WA_ICON_SVG}</a>`:''}
-          <span style="font-size:.85rem;font-weight:700;color:var(--pr);">${fmtPreco(o.total)}</span>
+          <span style="font-size:.93rem;font-weight:700;color:var(--pr);">${fmtPreco(o.total)}</span>
           
           <span class="card-badge ${badge}">${label}</span>
         </div>
       </div>
       <div class="card-body" id="body-${o._id}">
         <div class="card-info" onclick="event.stopPropagation()">
-          <div style="margin-bottom:6px;"><b>Endereço:</b> <span style="font-size:.62rem;color:#666;">(toque para editar)</span><br>
-            <div contenteditable="true" data-id="${o._id}" data-field="address" onblur="salvarCampoPedido(this)" onclick="event.stopPropagation()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:6px 10px;margin-top:3px;font-size:.78rem;color:#ccc;min-height:28px;cursor:text;user-select:text;-webkit-user-select:text;">${o.address||'—'}${o.house_number?', '+o.house_number:''}</div>
+          <div style="margin-bottom:6px;"><b>Endereço:</b> <span style="font-size:.74rem;color:#6B7280;">(toque para editar)</span><br>
+            <div contenteditable="true" data-id="${o._id}" data-field="address" onblur="salvarCampoPedido(this)" onclick="event.stopPropagation()" style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;margin-top:3px;font-size:.86rem;color:#374151;min-height:28px;cursor:text;user-select:text;-webkit-user-select:text;">${o.address||'—'}${o.house_number?', '+o.house_number:''}</div>
           </div>
-          <div style="margin-bottom:6px;"><b>Pagamento:</b> <span style="font-size:.62rem;color:#666;">(toque para editar)</span><br>
-            <div contenteditable="true" data-id="${o._id}" data-field="payment" onblur="salvarCampoPedido(this)" onclick="event.stopPropagation()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:6px 10px;margin-top:3px;font-size:.78rem;color:#ccc;min-height:28px;cursor:text;user-select:text;-webkit-user-select:text;">${o.payment||'—'}${o.change_for?' · Troco p/ R$ '+o.change_for:''}</div>
+          <div style="margin-bottom:6px;"><b>Pagamento:</b> <span style="font-size:.74rem;color:#6B7280;">(toque para editar)</span><br>
+            <div contenteditable="true" data-id="${o._id}" data-field="payment" onblur="salvarCampoPedido(this)" onclick="event.stopPropagation()" style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;margin-top:3px;font-size:.86rem;color:#374151;min-height:28px;cursor:text;user-select:text;-webkit-user-select:text;">${o.payment||'—'}${o.change_for?' · Troco p/ R$ '+o.change_for:''}</div>
           </div>
-          <div><b>Telefone / Obs:</b> <span style="font-size:.62rem;color:#666;">(toque para editar)</span><br>
-            <div contenteditable="true" data-id="${o._id}" data-field="client_phone" onblur="salvarCampoPedido(this)" onclick="event.stopPropagation()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:6px 10px;margin-top:3px;font-size:.78rem;color:#ccc;min-height:28px;cursor:text;user-select:text;-webkit-user-select:text;">${tel||o.obs||'—'}</div>
+          <div><b>Telefone / Obs:</b> <span style="font-size:.74rem;color:#6B7280;">(toque para editar)</span><br>
+            <div contenteditable="true" data-id="${o._id}" data-field="client_phone" onblur="salvarCampoPedido(this)" onclick="event.stopPropagation()" style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;margin-top:3px;font-size:.86rem;color:#374151;min-height:28px;cursor:text;user-select:text;-webkit-user-select:text;">${tel||o.obs||'—'}</div>
           </div>
         </div>
         <div class="card-items">${itemsHtml}</div>
         <div class="card-total"><span>Total</span><span id="tot-${o._id}">${fmtPreco(o.total)}</span></div>
-        <button onclick="event.stopPropagation();abrirAddItemManual('${o._id}')" style="width:100%;background:rgba(46,204,113,.1);color:#2ecc71;border:1px dashed rgba(46,204,113,.35);border-radius:8px;padding:9px;font-size:.75rem;cursor:pointer;margin-bottom:8px;">➕ Adicionar item manual (ex: parmesão avulso)</button>
+        <button onclick="event.stopPropagation();abrirAddItemManual('${o._id}')" style="width:100%;background:rgba(46,204,113,.1);color:#2ecc71;border:1px dashed rgba(46,204,113,.35);border-radius:8px;padding:9px;font-size:.86rem;cursor:pointer;margin-bottom:8px;">➕ Adicionar item manual (ex: parmesão avulso)</button>
         <div class="card-actions">${acoes}</div>
       </div>
     </div>`;
@@ -1156,7 +1142,7 @@ if('bluetooth' in navigator){
 const _loadTimeout=setTimeout(()=>{
   if(primeiraLeitura){
     const el=document.getElementById('orders-list');
-    if(el)el.innerHTML='<div class="empty"><span>⚠️</span>Não foi possível carregar os pedidos.<br><span style="font-size:.8rem;">Verifique sua conexão com a internet.</span><br><button onclick="location.reload()" style="margin-top:12px;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:8px 16px;border-radius:8px;font-size:.75rem;cursor:pointer;">Recarregar</button></div>';
+    if(el)el.innerHTML='<div class="empty"><span>⚠️</span>Não foi possível carregar os pedidos.<br><span style="font-size:.88rem;">Verifique sua conexão com a internet.</span><br><button onclick="location.reload()" style="margin-top:12px;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:8px 16px;border-radius:8px;font-size:.86rem;cursor:pointer;">Recarregar</button></div>';
   }
 },12000);
 
@@ -1183,14 +1169,14 @@ FS.collection('orders')
     }catch(e){
       console.error('Erro ao processar pedidos recebidos do Firebase:',e);
       const el=document.getElementById('orders-list');
-      if(el)el.innerHTML=`<div class="empty"><span>⚠️</span>Erro ao processar pedidos.<br><button onclick="location.reload()" style="margin-top:12px;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:8px 16px;border-radius:8px;font-size:.75rem;cursor:pointer;">Recarregar</button></div>`;
+      if(el)el.innerHTML=`<div class="empty"><span>⚠️</span>Erro ao processar pedidos.<br><button onclick="location.reload()" style="margin-top:12px;background:rgba(255,159,28,.15);color:var(--pr);border:1px solid rgba(255,159,28,.3);padding:8px 16px;border-radius:8px;font-size:.86rem;cursor:pointer;">Recarregar</button></div>`;
     }
   },err=>{
     clearTimeout(_loadTimeout);
     setOnline(false);
     console.warn('Firebase listener:',err);
     const el=document.getElementById('orders-list');
-    if(el&&primeiraLeitura)el.innerHTML=`<div class="empty"><span>⚠️</span>Erro de permissão ou conexão com o Firebase.<br><span style="font-size:.8rem;color:#e71d36;">${(err&&err.message||'').replace(/</g,'&lt;')}</span></div>`;
+    if(el&&primeiraLeitura)el.innerHTML=`<div class="empty"><span>⚠️</span>Erro de permissão ou conexão com o Firebase.<br><span style="font-size:.88rem;color:#e71d36;">${(err&&err.message||'').replace(/</g,'&lt;')}</span></div>`;
   });
 </script>
 <div id="pwa-banner">
@@ -1233,19 +1219,19 @@ function fecharBanner(){
      Aditivo e isolado: não interfere na lista de pedidos nem no
      listener do Firestore, só reage a ele.
      ══════════════════════════════════════════════════════════ -->
-<div id="notif-drawer" style="position:fixed;top:0;left:0;right:0;z-index:9998;background:linear-gradient(135deg,#C1623B,#A8432F);
+<div id="notif-drawer" style="position:fixed;top:0;left:0;right:0;z-index:9998;background:#D62828;
   border-radius:0 0 18px 18px;padding:14px 16px 16px;box-shadow:0 8px 24px rgba(0,0,0,.4);
   transform:translateY(-120%);transition:transform .35s cubic-bezier(.34,1.56,.64,1);touch-action:pan-y;">
-  <div style="width:36px;height:4px;background:rgba(0,0,0,.25);border-radius:3px;margin:0 auto 10px;"></div>
+  <div style="width:36px;height:4px;background:rgba(255,255,255,.5);border-radius:3px;margin:0 auto 10px;"></div>
   <div onclick="abrirPedidoDaNotificacao()" style="display:flex;align-items:center;gap:12px;cursor:pointer;">
     <div style="font-size:1.8rem;flex:none;">🍕</div>
     <div style="flex:1;min-width:0;">
-      <div style="font-family:'Work Sans',sans-serif;font-weight:600;font-size:.85rem;color:#000;" id="notif-title">Novo pedido!</div>
-      <div style="font-size:.84rem;color:rgba(0,0,0,.7);word-break:break-word;" id="notif-sub"></div>
+      <div style="font-family:'Work Sans',sans-serif;font-weight:600;font-size:.93rem;color:#fff;" id="notif-title">Novo pedido!</div>
+      <div style="font-size:.92rem;color:rgba(255,255,255,.92);word-break:break-word;" id="notif-sub"></div>
     </div>
-    <div style="font-family:'Archivo Black',sans-serif;font-size:1.1rem;color:#000;flex:none;" id="notif-total"></div>
+    <div style="font-family:'Archivo Black',sans-serif;font-size:1.1rem;color:#fff;flex:none;" id="notif-total"></div>
   </div>
-  <div style="text-align:center;font-size:.6rem;color:rgba(0,0,0,.55);margin-top:8px;">arraste para cima pra dispensar · toque para abrir</div>
+  <div style="text-align:center;font-size:.74rem;color:rgba(255,255,255,.8);margin-top:8px;">arraste para cima pra dispensar · toque para abrir</div>
 </div>
 
 <script>
