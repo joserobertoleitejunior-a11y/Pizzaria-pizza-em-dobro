@@ -993,42 +993,54 @@ async function _selecionarSugestaoEndereco(idx){
 }
 
 // ── USAR LOCALIZAÇÃO ATUAL (GPS do celular + geocodificação reversa) ────────
+// Endereço a partir das coordenadas: tenta o Google; se o Google recusar (chave sem permissão, cobrança
+// desativada, cota), usa o OpenStreetMap (grátis, sem chave) — assim o botão funciona mesmo com o Maps fora do ar.
+async function _enderecoPorCoordenadas(lat,lng){
+  try{
+    const r=await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${_MAPS_KEY_SITE}&language=pt-BR`).then(r=>r.json());
+    if(r.status==='OK'&&r.results&&r.results[0]){
+      const res=r.results[0];
+      const num=(res.address_components||[]).find(c=>(c.types||[]).includes('street_number'));
+      return {texto:res.formatted_address,numero:num?num.long_name:''};
+    }
+    console.warn('[Maps] Google sem resultado (status: '+r.status+') — usando OpenStreetMap.',r.error_message||'');
+  }catch(e){ console.warn('[Maps] Google indisponível — usando OpenStreetMap.',e); }
+  const o=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&zoom=18&lat=${lat}&lon=${lng}&accept-language=pt-BR`).then(r=>r.json());
+  const a=(o&&o.address)||{};
+  const rua=a.road||a.pedestrian||a.residential||'';
+  const bairro=a.suburb||a.neighbourhood||a.city_district||'';
+  const cidade=a.city||a.town||a.village||a.municipality||'';
+  const texto=[rua,bairro,cidade].filter(Boolean).join(', ')||(o&&o.display_name)||'';
+  if(!texto) throw new Error('sem endereço');
+  return {texto,numero:a.house_number||''};
+}
 function usarLocalizacaoAtual(btn){
   if(!navigator.geolocation){
     alert('Seu celular/navegador não suporta localização automática. Digite o endereço manualmente.');
     return;
   }
   const orig=btn?btn.innerHTML:'';
-  if(btn){btn.innerHTML='⏳';btn.disabled=true;}
+  if(btn){btn.innerHTML='⏳ Buscando sua localização...';btn.disabled=true;}
+  const volta=()=>{ if(btn){btn.innerHTML=orig;btn.disabled=false;} };
   navigator.geolocation.getCurrentPosition(async(pos)=>{
     try{
       const{latitude,longitude}=pos.coords;
-      const r=await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${_MAPS_KEY_SITE}&language=pt-BR`).then(r=>r.json());
-      if(r.status==='OK'&&r.results&&r.results[0]){
-        const res=r.results[0];
-        document.getElementById('u-end').value=res.formatted_address;
-        window._enderecoAutocomplete={lat:latitude,lng:longitude,formatted_address:res.formatted_address};
-        const numComp=(res.address_components||[]).find(c=>(c.types||[]).includes('street_number'));
-        if(numComp)document.getElementById('u-num').value=numComp.long_name;
-        const dd=document.getElementById('addr-suggestions');
-        if(dd){dd.style.display='none';dd.innerHTML='';}
-        if(typeof autoSaveClient==='function')autoSaveClient();
-      }else{
-        if(r.status==='REQUEST_DENIED'||r.status==='OVER_QUERY_LIMIT'){
-          console.error('[Maps] Geocodificação reversa negada (status: '+r.status+') — provavelmente falta ativar/confirmar o FATURAMENTO (billing) do projeto no Google Cloud Console.',r.error_message||'');
-        }else{
-          console.warn('[Maps] Geocodificação reversa sem resultado (status: '+r.status+')');
-        }
-        alert('Não foi possível identificar seu endereço automaticamente. Digite manualmente.');
-      }
+      const end=await _enderecoPorCoordenadas(latitude,longitude);
+      document.getElementById('u-end').value=end.texto;
+      window._enderecoAutocomplete={lat:latitude,lng:longitude,formatted_address:end.texto};
+      if(end.numero) document.getElementById('u-num').value=end.numero;
+      const dd=document.getElementById('addr-suggestions');
+      if(dd){dd.style.display='none';dd.innerHTML='';}
+      if(typeof autoSaveClient==='function')autoSaveClient();
+      if(!end.numero){ const n=document.getElementById('u-num'); if(n) n.focus(); }   // falta só o número da casa
     }catch(e){
-      alert('Erro ao buscar sua localização. Digite o endereço manualmente.');
+      alert('Não foi possível identificar seu endereço automaticamente. Digite manualmente.');
     }
-    if(btn){btn.innerHTML=orig;btn.disabled=false;}
+    volta();
   },(err)=>{
-    if(err.code===1) alert('Permissão de localização negada. Você pode digitar o endereço manualmente, ou ativar a localização nas configurações do navegador.');
+    if(err.code===1) alert('Permissão de localização negada. Ative a localização do navegador para este site, ou digite o endereço manualmente.');
     else alert('Não foi possível obter sua localização agora. Digite o endereço manualmente.');
-    if(btn){btn.innerHTML=orig;btn.disabled=false;}
+    volta();
   },{enableHighAccuracy:true,timeout:12000});
 }
 
