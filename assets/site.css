@@ -970,3 +970,40 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .promo-slide{aspect-ratio:auto;display:flex;flex-direction:column;align-items:center;gap:12px;overflow:visible;background:none;border:0;box-shadow:none;border-radius:0;}
 .promo-slide img{width:100%;height:auto;aspect-ratio:2/3;border-radius:20px;border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 34px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.4);object-fit:cover;}
 .promo-chip{position:static;transform:none;flex:none;}
+
+/* ═══ BOTÃO FLUTUANTE DA EQUIPE (arrastável; Caixa / Conversor) ═══ */
+#fab-equipe{position:fixed;left:0;top:0;z-index:99990;width:56px;height:56px;touch-action:none;will-change:transform;}
+#fab-equipe.gruda{transition:transform .25s cubic-bezier(.2,.9,.3,1);}
+.fab-botao{width:56px;height:56px;border-radius:50%;border:0;background:#D62828;color:#fff;display:flex;align-items:center;justify-content:center;cursor:grab;
+  box-shadow:0 10px 24px rgba(214,40,40,.45),0 2px 6px rgba(0,0,0,.35);transition:transform .12s;touch-action:none;-webkit-user-select:none;user-select:none;}
+.fab-botao:active{transform:scale(.94);}
+#fab-equipe.arrastando .fab-botao{cursor:grabbing;transform:scale(1.08);}
+.fab-menu{position:absolute;right:0;bottom:66px;min-width:210px;display:flex;flex-direction:column;gap:6px;padding:8px;background:#fff;border-radius:20px;
+  box-shadow:0 18px 50px rgba(16,24,40,.35);opacity:0;pointer-events:none;transform:translateY(8px) scale(.96);transform-origin:bottom right;transition:opacity .15s,transform .15s;}
+#fab-equipe.esq .fab-menu{right:auto;left:0;transform-origin:bottom left;}
+#fab-equipe.abaixo .fab-menu{bottom:auto;top:66px;transform-origin:top right;transform:translateY(-8px) scale(.96);}
+#fab-equipe.abaixo.esq .fab-menu{transform-origin:top left;}
+#fab-equipe.aberto .fab-menu{opacity:1;pointer-events:auto;transform:none;}
+.fab-menu a{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;align-items:center;text-decoration:none;color:#111827;padding:11px 14px;border-radius:14px;background:#F9FAFB;border:1px solid #E5E7EB;}
+.fab-menu a:active{background:#FEF2F2;border-color:#FCA5A5;}
+.fab-menu a span{grid-row:1/3;font-size:1.5rem;}
+.fab-menu a b{font-family:'Work Sans',sans-serif;font-size:.95rem;line-height:1.1;}
+.fab-menu a small{font-size:.7rem;color:#6B7280;}
+
+/* ═══ CONVERSOR (tela da equipe): mesmo visual claro do Admin/Caixa ═══ */
+#modal-conversor{--bg:#F4F5F7;--text:#111827;--tx-2:#374151;--tx-4:#6B7280;--tx-5:#9CA3AF;--bg2:#111827;--pr:#D62828;background:#F4F5F7;color:#111827;}
+#conv-header{background:#fff;border-bottom:1px solid #E5E7EB;padding-bottom:12px;}
+#conv-title{color:#111827;font-size:1rem;}
+#modal-conversor #conv-body{background:#F4F5F7;}
+#modal-conversor [style*="rgba(255,159,28"]{background:#fff!important;border:1px solid #E5E7EB!important;color:#374151!important;border-radius:16px!important;box-shadow:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.06);}
+#modal-conversor [style*="color:#ccc"]{color:#374151!important;}
+#conv-input{background:#fff;border:1px solid #E5E7EB;color:#111827;border-radius:16px;box-shadow:0 1px 2px rgba(16,24,40,.06);}
+#conv-input:focus{border-color:#D62828;box-shadow:0 0 0 3px rgba(214,40,40,.12);}
+#conv-result{background:#fff;border:1px solid #E5E7EB;color:#111827;border-radius:16px;}
+#conv-result-edit{background:#fff!important;color:#111827!important;border:1px solid #E5E7EB!important;}
+.conv-copy{background:#FEF2F2;border:1px solid #FECACA;color:#B91C1C;}
+.conv-print{background:#D62828;border:0;color:#fff;}
+.conv-nav a{background:#fff;border:1px solid #E5E7EB;color:#6B7280;}
+#modal-conversor .m-btn{background:#D62828;color:#fff;border:0;border-radius:14px;box-shadow:0 8px 18px rgba(214,40,40,.28);}
+#modal-conversor .m-btn-sec{background:#fff;color:#111827;border:1px solid #E5E7EB;border-radius:14px;}
+#conv-edit-btn{background:#fff!important;border:1px solid #E5E7EB!important;color:#111827!important;}

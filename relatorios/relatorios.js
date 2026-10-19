@@ -62,7 +62,7 @@ function rotuloDia(iso){
     return d+'/'+m+'/'+a;
   }catch(e){ return iso; }
 }
-const CORES=['#C1623B','#A8432F','#3ddc84','#4aa8ff','#c084fc','#ffd166','#ff6a1a','#9c8f83'];
+const CORES=['#D62828','#F97316','#16A34A','#2563EB','#9333EA','#F59E0B','#0EA5E9','#6B7280'];
 
 function renderChipsPeriodo(){
   document.getElementById('periodo').innerHTML=PERIODOS.map(p=>
@@ -186,20 +186,20 @@ function renderGraficoFaturamento(dias){
   if(semDados) return;
   const ctx2d=ctx.getContext('2d');
   const gradient=ctx2d.createLinearGradient(0,0,0,220);
-  gradient.addColorStop(0,'rgba(255,159,28,.38)');
-  gradient.addColorStop(1,'rgba(255,159,28,0)');
+  gradient.addColorStop(0,'rgba(214,40,40,.28)');
+  gradient.addColorStop(1,'rgba(214,40,40,0)');
   charts.fat=new Chart(ctx,{
     type:'line',
-    data:{labels:rotulos,datasets:[{label:'Faturamento (R$)',data:valores,borderColor:'#C1623B',borderWidth:2.5,
-      backgroundColor:gradient,fill:true,tension:.4,pointRadius:3,pointHoverRadius:6,pointBackgroundColor:'#C1623B',
-      pointBorderColor:'#07060a',pointBorderWidth:2}]},
+    data:{labels:rotulos,datasets:[{label:'Faturamento (R$)',data:valores,borderColor:'#D62828',borderWidth:2.5,
+      backgroundColor:gradient,fill:true,tension:.4,pointRadius:3,pointHoverRadius:6,pointBackgroundColor:'#D62828',
+      pointBorderColor:'#fff',pointBorderWidth:2}]},
     options:{
       responsive:true,maintainAspectRatio:false,
       interaction:{intersect:false,mode:'index'},
-      plugins:{legend:{display:false},tooltip:{backgroundColor:'#181310',borderColor:'rgba(193,98,59,.4)',borderWidth:1,padding:10,titleColor:'#C1623B',bodyColor:'#f3ece2',callbacks:{label:c=>fmt(c.parsed.y)}}},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#111827',borderColor:'rgba(214,40,40,.5)',borderWidth:1,padding:10,titleColor:'#fff',bodyColor:'#E5E7EB',callbacks:{label:c=>fmt(c.parsed.y)}}},
       scales:{
-        y:{ticks:{color:'#9c8f83',callback:v=>'R$'+v},grid:{color:'rgba(255,255,255,.06)'}},
-        x:{ticks:{color:'#9c8f83'},grid:{display:false}}
+        y:{ticks:{color:'#6B7280',callback:v=>'R$'+v},grid:{color:'rgba(17,24,39,.07)'}},
+        x:{ticks:{color:'#6B7280'},grid:{display:false}}
       }
     }
   });
@@ -223,11 +223,11 @@ function renderGraficoPagamento(){
   ctx.style.display='';
   charts.pag=new Chart(ctx,{
     type:'doughnut',
-    data:{labels,datasets:[{data:valores,backgroundColor:CORES,borderWidth:3,borderColor:'#07060a',hoverOffset:10}]},
+    data:{labels,datasets:[{data:valores,backgroundColor:CORES,borderWidth:3,borderColor:'#fff',hoverOffset:10}]},
     options:{
       responsive:true,maintainAspectRatio:false,cutout:'62%',
-      plugins:{legend:{position:'right',labels:{color:'#f3ece2',font:{size:10},boxWidth:12,padding:12}},
-        tooltip:{backgroundColor:'#181310',borderColor:'rgba(193,98,59,.4)',borderWidth:1,padding:10,titleColor:'#C1623B',bodyColor:'#f3ece2',callbacks:{label:c=>c.label+': '+fmt(c.parsed)}}}
+      plugins:{legend:{position:'right',labels:{color:'#111827',font:{size:10},boxWidth:12,padding:12}},
+        tooltip:{backgroundColor:'#111827',borderColor:'rgba(214,40,40,.5)',borderWidth:1,padding:10,titleColor:'#fff',bodyColor:'#E5E7EB',callbacks:{label:c=>c.label+': '+fmt(c.parsed)}}}
     }
   });
 }
@@ -258,13 +258,13 @@ function renderGraficoSabores(){
   ctx.style.display='';
   charts.sab=new Chart(ctx,{
     type:'bar',
-    data:{labels:ranking.map(r=>r[0]),datasets:[{label:'Vezes pedida',data:ranking.map(r=>r[1]),backgroundColor:'#C1623B',hoverBackgroundColor:'#ffb238',borderRadius:8,barThickness:16}]},
+    data:{labels:ranking.map(r=>r[0]),datasets:[{label:'Vezes pedida',data:ranking.map(r=>r[1]),backgroundColor:'#D62828',hoverBackgroundColor:'#B91C1C',borderRadius:8,barThickness:16}]},
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{backgroundColor:'#181310',borderColor:'rgba(193,98,59,.4)',borderWidth:1,padding:10,titleColor:'#C1623B',bodyColor:'#f3ece2'}},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#111827',borderColor:'rgba(214,40,40,.5)',borderWidth:1,padding:10,titleColor:'#fff',bodyColor:'#E5E7EB'}},
       scales:{
-        x:{ticks:{color:'#9c8f83',precision:0},grid:{color:'rgba(255,255,255,.06)'}},
-        y:{ticks:{color:'#f3ece2',font:{size:10}},grid:{display:false}}
+        x:{ticks:{color:'#6B7280',precision:0},grid:{color:'rgba(17,24,39,.07)'}},
+        y:{ticks:{color:'#111827',font:{size:10}},grid:{display:false}}
       }
     }
   });

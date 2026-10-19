@@ -51,20 +51,45 @@ document.getElementById('abas').addEventListener('click', e => {
 // ── Resumo ──
 async function carregarResumo() {
   carregando('aba-resumo');
-  const r = await api('resumo');
+  const [r, lista] = await Promise.all([api('resumo'), api('pedidos.listar', { de: hoje(), ate: hoje() }).catch(() => [])]);
+  const abertos = lista.filter(p => p.status === 'novo' || p.status === 'confirmado' || p.status === 'pronto');
+  const ticket = r.pedidosHoje ? r.faturamentoHoje / r.pedidosHoje : 0;
   document.getElementById('aba-resumo').innerHTML = `
-    <h2>Hoje</h2>
+    <div class="atalhos">
+      <a class="atalho principal" href="../caixa/"><span>🧾</span><b>Abrir Caixa</b><small>PDV · vender agora</small></a>
+      <a class="atalho" href="../caixa/?colar=1"><span>📋</span><b>Conversor</b><small>colar pedido do WhatsApp</small></a>
+      <a class="atalho" href="../relatorios/"><span>📊</span><b>Dashboard</b><small>vendas e gráficos</small></a>
+      <button class="atalho" onclick="irParaAba('cardapio')"><span>🍕</span><b>Cardápio</b><small>preços e itens</small></button>
+    </div>
+    <h2>Hoje · ${esc(r.dia.split('-').reverse().join('/'))}</h2>
     <div class="numeros">
-      <div class="numero"><b>${r.pedidosHoje}</b><span>Pedidos</span></div>
-      <div class="numero"><b>${esc(reais(r.faturamentoHoje))}</b><span>Faturamento</span></div>
-      <div class="numero ${r.pedidosAbertos ? 'alerta' : ''}"><b>${r.pedidosAbertos}</b><span>Em aberto</span></div>
-      <div class="numero"><b>${r.visitasHoje}</b><span>Visitas no site</span></div>
-      <div class="numero ${r.conferirPreco ? 'alerta' : ''}"><b>${r.conferirPreco}</b><span>Preço a conferir</span></div>
-      <div class="numero"><b>${r.notaMedia == null ? '—' : esc(r.notaMedia)}</b><span>Nota média</span></div>
-      <div class="numero"><b>${r.totalAvaliacoes}</b><span>Avaliações</span></div>
-      <div class="numero"><b>${esc(r.dia.split('-').reverse().join('/'))}</b><span>Data</span></div>
-    </div>`;
+      <div class="numero destaque"><span>Faturamento</span><b>${esc(reais(r.faturamentoHoje))}</b><small>${r.pedidosHoje} pedido${r.pedidosHoje === 1 ? '' : 's'} · ticket ${esc(reais(ticket))}</small></div>
+      <div class="numero ${r.pedidosAbertos ? 'alerta' : ''}"><span>Em aberto</span><b>${r.pedidosAbertos}</b><small>aguardando andamento</small></div>
+      <div class="numero"><span>Visitas no site</span><b>${r.visitasHoje}</b><small>hoje</small></div>
+      <div class="numero"><span>Nota média</span><b>${r.notaMedia == null ? '—' : esc(r.notaMedia)}</b><small>${r.totalAvaliacoes} avaliações</small></div>
+      ${r.conferirPreco ? `<div class="numero alerta"><span>Preço a conferir</span><b>${r.conferirPreco}</b><small>pedidos com divergência</small></div>` : ''}
+    </div>
+    <h2>Pedidos em andamento</h2>
+    ${!abertos.length ? '<div class="vazio">Nenhum pedido em aberto agora. 🎉</div>' : abertos.slice(0, 8).map(p => `
+      <div class="linha">
+        <div class="info">
+          <div class="titulo"><span class="num">#${esc(p.numero_sequencial || '—')}</span>${esc(p.client_name || 'Sem nome')}
+            <span class="selo ${p.status === 'novo' ? 'vermelho' : ''}">${esc(STATUS[p.status] || p.status)}</span></div>
+          <div class="sub">${esc(dataHora(p.created_at))} · ${esc(p.delivery_type || '')} · ${esc(p.payment || '')}</div>
+        </div>
+        <div class="preco">${esc(reais(p.total))}</div>
+        <select data-resumo-status="${esc(p.id)}">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${k === p.status ? 'selected' : ''}>${v}</option>`).join('')}</select>
+      </div>`).join('')}
+    ${abertos.length > 8 ? `<button class="btn btn-contorno" onclick="irParaAba('pedidos')">Ver todos os pedidos</button>` : ''}`;
 }
+function irParaAba(nome) { const b = document.querySelector(`#abas button[data-aba="${nome}"]`); if (b) b.click(); }
+document.getElementById('aba-resumo').addEventListener('change', async e => {
+  const id = e.target.dataset.resumoStatus;
+  if (!id) return;
+  await api('pedidos.status', { id, status: e.target.value });
+  avisar('Status atualizado.');
+  carregarResumo();
+});
 
 // ── Pedidos ──
 async function carregarPedidos() {

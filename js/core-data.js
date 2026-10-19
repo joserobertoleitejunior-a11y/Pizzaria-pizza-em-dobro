@@ -99,17 +99,8 @@ async function restaurarSessaoAdminSilenciosa(){
     return false;
   }catch(e){ console.warn('Checagem silenciosa de sessão admin falhou:',e); return false; }
 }
-function mostrarBotaoAbrirCaixa(){
-  if(document.getElementById('btn-abrir-caixa-admin')) return;
-  const btn=document.createElement('a');
-  btn.id='btn-abrir-caixa-admin';
-  btn.href='caixa/index.html';
-  btn.innerHTML='🧾 Caixa';
-  btn.style.cssText='position:fixed;right:16px;bottom:152px;z-index:99999;background:linear-gradient(135deg,#D62828,#A51D1D);'+
-    'color:#fff;font-family:"Work Sans",sans-serif;font-weight:700;letter-spacing:.4px;font-size:.8rem;text-transform:uppercase;'+
-    'padding:12px 18px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(20,20,20,.3);';
-  document.body.appendChild(btn);
-}
+// botão flutuante da equipe (Caixa / Conversor): js/fab-equipe.js
+function mostrarBotaoAbrirCaixa(){ if(typeof iniciarFabEquipe==='function') iniciarFabEquipe(); }
 
 // ══════════════════════════════════
 //  CIRURGIA: CONFIGURAÇÕES

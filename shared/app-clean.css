@@ -1,0 +1,176 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   APP-CLEAN — um único visual pra TODAS as telas da equipe:
+   Admin · Caixa (PDV) · Conversor · Relatórios (dashboard) · Clientes · login da equipe.
+   Branco, limpo, cantos arredondados, sombras suaves, botões chapados — estilo de app atual.
+   Carregar DEPOIS do CSS de cada tela: troca as cores (variáveis) e reescreve o que era escuro fixo.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root{
+  color-scheme:light;
+  --bg:#F4F5F7; --bg2:#F4F5F7; --card:#FFFFFF; --card-bd:#E5E7EB;
+  --pr:#D62828; --pr2:#B91C1C; --se:#B91C1C; --ok:#16A34A;
+  --tx:#111827; --tx-dark:#111827; --sub:#6B7280; --sub-dark:#6B7280;
+  --soft:#F9FAFB; --tint:rgba(214,40,40,.08); --tint-bd:rgba(214,40,40,.22);
+  --sombra:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.06);
+  --sombra-up:0 -6px 24px rgba(16,24,40,.10);
+  --r:16px;
+}
+html,body{background:var(--bg)!important;}
+body{background-image:none!important;color:var(--tx);-webkit-font-smoothing:antialiased;}
+::placeholder{color:#9CA3AF!important;opacity:1;}
+input,select,textarea{color:var(--tx);}
+select option{background:#fff;color:var(--tx);}
+
+/* ── barra de navegação (Caixa, Relatórios, Clientes) ── */
+.nav{background:rgba(255,255,255,.92)!important;backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--card-bd)!important;box-shadow:0 1px 0 rgba(16,24,40,.02);}
+.nav-logo{color:var(--tx)!important;}
+.nav-links a{color:var(--sub)!important;border-top:0!important;border-radius:999px!important;padding:7px 12px!important;font-weight:700;}
+.nav-links a:hover{background:var(--tint)!important;color:var(--pr)!important;}
+.nav-links a.on{background:var(--pr)!important;color:#fff!important;}
+
+/* ── CAIXA / PDV ── */
+.shell,.view,#topo-colapsavel{background:var(--bg)!important;}
+.status-rail{background:#fff!important;border-bottom:1px solid var(--card-bd)!important;}
+.status-line+.status-line{border-top:1px solid #F3F4F6!important;}
+.status-line.linha-equipe{color:var(--sub);}
+.status-line.linha-aberto{background:#ECFDF3!important;color:#15803D!important;}
+.status-line.linha-aberto .txt b{color:#166534!important;}
+.status-line.linha-alerta{background:#FEF2F2!important;color:#B91C1C!important;animation:none!important;}
+.status-line .txt b{color:var(--tx);}
+.status-btn.fechar{background:#fff!important;color:var(--tx)!important;border:1px solid var(--card-bd)!important;}
+.status-btn.reconectar{background:var(--pr)!important;color:#fff!important;}
+.printer-btn.bt{background:#E0F2FE!important;color:#0369A1!important;}
+.printer-btn.usb{background:#DCFCE7!important;color:#15803D!important;}
+.header-icon-btn{background:#fff!important;border:1px solid var(--card-bd)!important;box-shadow:var(--sombra);}
+.header-icon-btn.chat{background:#E0F2FE!important;border-color:#BAE6FD!important;color:#0369A1!important;}
+#notif-bubble-badge{background:var(--pr)!important;color:#fff!important;box-shadow:0 0 0 2px #fff!important;}
+.tabs{padding:10px 14px!important;}
+.tab,.cat-chip,.mode-btn{background:#fff!important;border:1px solid var(--card-bd)!important;color:var(--sub)!important;box-shadow:none;}
+.tab{border-radius:14px!important;}
+.tab.active,.cat-chip.active{background:var(--pr)!important;border-color:var(--pr)!important;color:#fff!important;box-shadow:0 6px 14px rgba(214,40,40,.28)!important;}
+.mode-btn{color:var(--tx)!important;border-radius:14px!important;}
+.mode-btn.active{background:var(--pr)!important;color:#fff!important;border-color:var(--pr)!important;box-shadow:0 6px 14px rgba(214,40,40,.28)!important;}
+.mode-btn.acao{background:var(--tint)!important;color:var(--pr)!important;border-color:var(--tint-bd)!important;}
+.search-box input{background:#fff!important;border:1px solid var(--card-bd)!important;color:var(--tx)!important;box-shadow:var(--sombra);border-radius:16px!important;}
+.search-icon{color:#9CA3AF!important;}
+.prod-card{background:#fff!important;border:1px solid var(--card-bd)!important;border-bottom:1px solid var(--card-bd)!important;border-radius:18px!important;box-shadow:var(--sombra)!important;}
+.prod-card:active{transform:scale(.97)!important;box-shadow:none!important;}
+.prod-card.meia-sel{background:var(--tint)!important;border-color:var(--pr)!important;box-shadow:0 0 0 2px var(--tint-bd)!important;}
+.prod-nome{color:var(--tx)!important;}
+.prod-preco{color:var(--pr)!important;}
+.empty{color:var(--sub)!important;}
+.cart-bar{background:#fff!important;border-top:1px solid var(--card-bd)!important;box-shadow:var(--sombra-up)!important;border-radius:22px 22px 0 0;}
+.cart-bar-info{color:var(--sub)!important;}
+.cart-bar-total{color:var(--tx)!important;text-shadow:none!important;}
+.btn-cancelar-venda{background:#FEF2F2!important;color:#B91C1C!important;border:1px solid #FECACA!important;}
+.btn-finalizar,.btn-primary{background:var(--pr)!important;border:0!important;border-bottom:0!important;color:#fff!important;border-radius:14px!important;box-shadow:0 8px 18px rgba(214,40,40,.28)!important;}
+.btn-finalizar:active,.btn-primary:active{transform:scale(.98)!important;}
+.btn-finalizar:disabled{background:#E5E7EB!important;color:#9CA3AF!important;box-shadow:none!important;opacity:1!important;}
+.modal-bg{background:rgba(17,24,39,.45)!important;}
+.modal{background:#fff!important;color:var(--tx)!important;border-top:0!important;box-shadow:var(--sombra-up)!important;border-radius:26px 26px 0 0!important;}
+.modal h3{color:var(--tx)!important;}
+.modal-close,.modal-min{color:var(--sub)!important;}
+.opt-lbl,.field label{color:var(--sub)!important;}
+.opt-row,.cart-item{border-bottom:1px solid #F3F4F6!important;}
+.ing-chip,.acr-chip{background:var(--soft)!important;border:1px solid var(--card-bd)!important;color:var(--tx)!important;}
+.ing-chip.removido{background:#FEF2F2!important;border-color:#FCA5A5!important;color:#B91C1C!important;}
+.acr-chip.sel{background:#ECFDF3!important;border-color:#86EFAC!important;color:#15803D!important;}
+.field input,.field select,.misto-linha select,.misto-linha input,.order-actions select{background:var(--soft)!important;border:1px solid var(--card-bd)!important;color:var(--tx)!important;border-radius:12px!important;}
+.field input:focus,.field select:focus{border-color:var(--pr)!important;outline:0;box-shadow:0 0 0 3px var(--tint);}
+.btn-secondary{background:#F3F4F6!important;color:var(--tx)!important;}
+.btn-danger{background:#FEF2F2!important;color:#B91C1C!important;border:1px solid #FECACA!important;}
+.btn{border-radius:14px!important;}
+.cart-item-sub,.order-meta{color:var(--sub)!important;}
+.qty-btn{background:#F3F4F6!important;border:1px solid var(--card-bd)!important;color:var(--tx)!important;}
+.cart-item-price,.order-total,.totais-row.final{color:var(--tx)!important;}
+.totais-box{background:var(--soft)!important;border:1px solid var(--card-bd)!important;box-shadow:none!important;}
+.totais-row.final{border-top:2px dashed var(--card-bd)!important;}
+.pay-chip{background:#fff!important;border:1.5px solid var(--card-bd)!important;color:var(--tx)!important;}
+.pay-chip.active{background:var(--tint)!important;border-color:var(--pr)!important;color:var(--pr)!important;box-shadow:none!important;}
+.order-card{background:#fff!important;border:1px solid var(--card-bd)!important;box-shadow:var(--sombra);border-radius:18px!important;}
+.order-card.novo{border:2px solid var(--pr)!important;}
+.order-top{color:var(--tx)!important;}
+.badge{background:var(--tint)!important;color:var(--pr)!important;}
+.btn-mini{background:#fff!important;border:1px solid var(--card-bd)!important;color:var(--tx)!important;}
+.btn-mini.danger{color:#B91C1C!important;border-color:#FECACA!important;}
+#mini-messenger{background:#fff!important;border:1px solid var(--card-bd)!important;box-shadow:0 18px 50px rgba(16,24,40,.18)!important;}
+.mm-header{background:var(--pr)!important;}
+.mm-conv-item{background:var(--soft)!important;border:1px solid var(--card-bd);}
+.mm-msg.cliente{background:#F3F4F6!important;color:var(--tx);}
+.mm-msg.bot{background:var(--tint)!important;color:var(--tx)!important;border:1px solid var(--tint-bd);}
+.mm-msg.atendente{background:#ECFDF3!important;border:1px solid #86EFAC!important;color:#14532D;}
+#mm-btn-bot,#mm-btn-reiniciar{background:#F3F4F6!important;color:var(--tx)!important;}
+.mm-send input{background:#fff!important;color:var(--tx)!important;}
+.mm-send button{color:#fff!important;}
+#notif-caixa{background:var(--pr)!important;}
+/* estilos escritos direto no HTML (aviso de caixa fechado, "colar pedido"...) */
+[style*="#181310"],[style*="#181410"],[style*="#181114"]{background:#fff!important;border-color:var(--card-bd)!important;box-shadow:0 20px 60px rgba(16,24,40,.25);}
+[style*="#0d0b09"],[style*="#1a1512"],[style*="#1c1712"]{background:var(--soft)!important;color:var(--tx)!important;border:1px solid var(--card-bd)!important;}
+#caixa-lock-overlay{background:rgba(17,24,39,.55)!important;}
+#caixa-lock-overlay [style*="color:#fff"]{color:var(--tx)!important;}
+#caixa-lock-overlay button,[style*="#C1623B,#A8432F"]{background:var(--pr)!important;color:#fff!important;}
+.modal [style*="color:var(--sub)"]{color:var(--sub)!important;}
+
+/* ── ADMIN ── */
+.topo{background:rgba(255,255,255,.94)!important;border-bottom:1px solid var(--card-bd)!important;backdrop-filter:blur(12px);}
+.marca{color:var(--tx)!important;}
+.marca em{background:var(--pr)!important;color:#fff!important;}
+.link-topo{color:var(--sub)!important;font-weight:700;border-radius:999px!important;}
+.link-topo:hover{background:var(--tint)!important;color:var(--pr)!important;}
+.btn-sair{background:#fff!important;border:1px solid var(--card-bd)!important;color:var(--tx)!important;}
+.abas{background:rgba(255,255,255,.94)!important;border-bottom:1px solid var(--card-bd)!important;}
+.abas button,.periodo-chip{background:#fff!important;border:1px solid var(--card-bd)!important;color:var(--sub)!important;font-weight:700;}
+.abas button.ativa,.periodo-chip.active{background:var(--pr)!important;border-color:var(--pr)!important;color:#fff!important;box-shadow:0 6px 14px rgba(214,40,40,.25);}
+h2,.section-title{color:var(--sub)!important;border-bottom-color:var(--card-bd)!important;}
+h3{color:var(--tx)!important;}
+.numero,.kpi-card,.summary-item,.cartao,.linha,.pedido,.break-row,.seq-row,.chart-card,.cli-card{background:#fff!important;border:1px solid var(--card-bd)!important;box-shadow:var(--sombra);backdrop-filter:none!important;border-radius:18px!important;}
+.numero b,.kpi-num,.summary-num{color:var(--tx)!important;}
+.numero.alerta{border-color:#FCA5A5!important;background:#FEF2F2!important;}
+.numero.alerta b{color:#B91C1C!important;}
+.linha .titulo,.seq-info b{color:var(--tx)!important;}
+.linha .titulo .num,.linha .preco,.pedido .preco,.break-row b,.seq-total{color:var(--pr)!important;}
+.pedido-itens{color:#374151!important;}
+.selo{background:var(--tint)!important;color:var(--pr)!important;}
+.selo.vermelho{background:var(--pr)!important;color:#fff!important;}
+.selo.cinza{background:#F3F4F6!important;color:var(--sub)!important;}
+.alerta-preco{color:#B91C1C!important;}
+.vazio,.chart-empty{color:#9CA3AF!important;}
+input,select,textarea{background:#fff;border:1px solid var(--card-bd);}
+input:focus,select:focus,textarea:focus{border-color:var(--pr);box-shadow:0 0 0 3px var(--tint);}
+.btn{background:var(--pr);color:#fff;}
+.btn-vermelho{background:var(--pr)!important;}
+.btn-contorno{background:#fff!important;color:var(--tx)!important;border:1px solid var(--card-bd)!important;}
+.btn-perigo{background:#FEF2F2!important;color:#B91C1C!important;border:1px solid #FECACA!important;}
+.modal-caixa{background:#fff!important;border:0!important;box-shadow:0 24px 70px rgba(16,24,40,.3);}
+body > .modal{background:rgba(17,24,39,.45);}
+.aviso{background:#16A34A!important;color:#fff!important;}
+.aviso.erro{background:#DC2626!important;}
+.estrelas{color:#F59E0B;}
+.carregando{color:var(--sub);}
+
+/* ── RELATÓRIOS / CLIENTES ── */
+.ia-msg-bot{background:#fff!important;color:var(--tx)!important;border:1px solid var(--card-bd)!important;}
+.ia-msg-user{background:var(--pr)!important;color:#fff!important;}
+.cal-dia{color:var(--tx)!important;}
+.cal-dia:not(.vazio):not(.cal-futuro):hover{background:var(--tint)!important;}
+.cal-dia.cal-futuro{color:#D1D5DB!important;}
+.cal-dia.cal-sel,.seq-badge{background:var(--pr)!important;color:#fff!important;}
+.cli-avatar{background:var(--pr)!important;color:#fff!important;}
+.cli-badge{background:#DCFCE7!important;color:#15803D!important;}
+.cli-badge.novo{background:var(--tint)!important;color:var(--pr)!important;}
+.search-box{background:var(--bg)!important;}
+
+/* ── botão arrastável (loja, equipe logada) vem de assets/site.css ── */
+
+/* ── Config do Bot / Cupom (campos e botões chapados no mesmo padrão) ── */
+input[type=text],input[type=number],input[type=password],input[type=email],input[type=tel],input[type=time],input[type=date],input[type=search],textarea{background:#fff!important;border:1px solid var(--card-bd)!important;color:var(--tx)!important;border-radius:12px;}
+h1{color:var(--tx)!important;}
+.card h2{color:var(--sub)!important;}
+.card{background:#fff!important;border:1px solid var(--card-bd)!important;box-shadow:var(--sombra);border-radius:18px!important;}
+button:not([class]):not([id^="gate"]){color:#fff;}
+.cupom,.avaliacao{background:#fff!important;border:1px solid var(--card-bd)!important;box-shadow:var(--sombra);}
+.cupom-linha{border-bottom:1px dashed var(--card-bd)!important;}
+.stars span{color:#D1D5DB!important;}.stars span.on{color:#F59E0B!important;}
+.btn{color:#fff;}
+input:not([type]),input[type=text],input[type=number],input[type=password],input[type=email],input[type=tel],input[type=search],textarea{-webkit-appearance:none;appearance:none;}
+/* PDV no computador: grade de produtos em várias colunas */
+@media (min-width:900px){.prod-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))!important;}}

@@ -23,28 +23,28 @@
 function iniciarGateEquipe(){
   const overlay=document.createElement('div');
   overlay.id='gate-equipe';
-  overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:#37473B;display:flex;align-items:center;justify-content:center;padding:20px;font-family:"Work Sans",system-ui,sans-serif;';
-  overlay.innerHTML='<div style="color:rgba(243,236,221,.6);font-size:.85rem;">Carregando…</div>';
+  overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:#F4F5F7;display:flex;align-items:center;justify-content:center;padding:20px;font-family:"Work Sans",system-ui,sans-serif;';
+  overlay.innerHTML='<div style="color:#6B7280;font-size:.85rem;">Carregando…</div>';
   // some ANTES de qualquer verificação — a tela fica bloqueada por padrão (fail-closed);
   // só é liberada explicitamente depois de confirmar login, nunca por omissão/erro.
   (document.body||document.documentElement).appendChild(overlay);
 
   function renderErro(msg){
-    overlay.innerHTML=`<div style="max-width:320px;text-align:center;color:#E89A80;font-size:.85rem;">⚠️ ${msg}</div>`;
+    overlay.innerHTML=`<div style="max-width:320px;text-align:center;color:#B91C1C;font-size:.85rem;">⚠️ ${msg}</div>`;
   }
 
   function renderFormulario(auth){
+    const campo='width:100%;box-sizing:border-box;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:14px;color:#111827;padding:14px 16px;font-size:1rem;margin-bottom:10px;outline:none;';
     overlay.innerHTML=`
-      <div style="width:100%;max-width:320px;text-align:center;">
-        <div style="font-size:2.4rem;margin-bottom:8px;">🍕🔒</div>
-        <div style="color:#E8B088;font-size:1rem;font-family:'Archivo Black',sans-serif;letter-spacing:.3px;margin-bottom:18px;">ÁREA DA EQUIPE</div>
-        <style>#gate-senha::placeholder,#gate-usuario::placeholder{color:rgba(243,236,221,.55);}</style>
-        <input type="text" id="gate-usuario" placeholder="Usuário" autocomplete="username" autocapitalize="none"
-          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(193,98,59,.35);border-radius:8px;color:#F3ECDD;padding:12px 14px;font-size:1rem;text-align:center;margin-bottom:10px;">
-        <input type="password" id="gate-senha" placeholder="Senha da equipe" autocomplete="current-password"
-          style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.08);border:1px solid rgba(193,98,59,.35);border-radius:8px;color:#F3ECDD;padding:12px 14px;font-size:1rem;text-align:center;margin-bottom:10px;">
-        <button id="gate-btn" style="width:100%;background:#C1623B;color:#fff;border:none;border-radius:8px;padding:12px;font-weight:700;font-size:.9rem;cursor:pointer;">ENTRAR</button>
-        <div id="gate-status" style="color:#E89A80;font-size:.78rem;margin-top:10px;min-height:1.2em;"></div>
+      <div style="width:100%;max-width:360px;background:#fff;border:1px solid #E5E7EB;border-radius:24px;padding:32px 24px 26px;text-align:center;box-shadow:0 1px 2px rgba(16,24,40,.06),0 20px 50px rgba(16,24,40,.12);">
+        <img src="/assets/logo.png" alt="" width="64" height="64" style="width:64px;height:64px;border-radius:50%;object-fit:cover;margin-bottom:12px;box-shadow:0 6px 16px rgba(16,24,40,.18);">
+        <div style="color:#111827;font-size:1.2rem;font-family:'Archivo Black',sans-serif;margin-bottom:4px;">Área da equipe</div>
+        <div style="color:#6B7280;font-size:.82rem;margin-bottom:20px;">Entre para abrir o Caixa, o Conversor e o Dashboard</div>
+        <style>#gate-senha::placeholder,#gate-usuario::placeholder{color:#9CA3AF;}#gate-usuario:focus,#gate-senha:focus{border-color:#D62828!important;box-shadow:0 0 0 3px rgba(214,40,40,.12);}</style>
+        <input type="text" id="gate-usuario" placeholder="Usuário" autocomplete="username" autocapitalize="none" style="${campo}">
+        <input type="password" id="gate-senha" placeholder="Senha" autocomplete="current-password" style="${campo}">
+        <button id="gate-btn" style="width:100%;background:#D62828;color:#fff;border:none;border-radius:14px;padding:14px;font-weight:700;font-size:.95rem;cursor:pointer;margin-top:4px;box-shadow:0 8px 18px rgba(214,40,40,.28);">Entrar</button>
+        <div id="gate-status" style="color:#B91C1C;font-size:.8rem;margin-top:12px;min-height:1.2em;"></div>
       </div>`;
     document.getElementById('gate-usuario').focus();
 
@@ -54,7 +54,7 @@ function iniciarGateEquipe(){
       const btn=document.getElementById('gate-btn');
       const status=document.getElementById('gate-status');
       if(!usuario||!senha){ status.textContent='Digite usuário e senha.'; return; }
-      btn.disabled=true; btn.textContent='ENTRANDO...'; status.textContent='';
+      btn.disabled=true; btn.textContent='Entrando...'; status.textContent='';
       try{
         const r=await fetch('/api/staff-login',{
           method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({usuario,senha})
@@ -65,7 +65,7 @@ function iniciarGateEquipe(){
         // overlay some no onAuthStateChanged (abaixo) — mantém uma única fonte da verdade
       }catch(e){
         status.textContent='⚠️ '+e.message;
-        btn.disabled=false; btn.textContent='ENTRAR';
+        btn.disabled=false; btn.textContent='Entrar';
       }
     }
     document.getElementById('gate-btn').onclick=tentarEntrar;

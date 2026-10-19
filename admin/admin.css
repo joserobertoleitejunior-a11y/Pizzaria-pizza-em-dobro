@@ -105,3 +105,21 @@ input[type=checkbox]{accent-color:var(--pr);width:16px;height:16px;}
   .marca{font-size:.95rem;white-space:nowrap;}
   .link-topo{display:none;}
 }
+
+/* resumo: atalhos + números em destaque */
+.atalhos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;}
+@media (min-width:720px){.atalhos{grid-template-columns:repeat(4,1fr);}}
+.atalho{display:flex;flex-direction:column;gap:2px;align-items:flex-start;text-align:left;text-decoration:none;color:var(--tx);background:#fff;border:1px solid var(--card-bd);border-radius:18px;padding:14px;cursor:pointer;box-shadow:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.06);transition:transform .12s;font:inherit;}
+.atalho:active{transform:scale(.97);}
+.atalho span{font-size:1.5rem;line-height:1;margin-bottom:6px;}
+.atalho b{font-size:.92rem;font-family:var(--font-eyebrow);}
+.atalho small{font-size:.7rem;color:var(--sub);}
+.atalho.principal{background:var(--pr);border-color:var(--pr);color:#fff;}
+.atalho.principal small{color:rgba(255,255,255,.85);}
+.numero small{display:block;font-size:.68rem;color:var(--sub);margin-top:3px;}
+.numero span{order:-1;display:block;margin-bottom:4px;}
+.numero.destaque{grid-column:1/-1;background:linear-gradient(135deg,#D62828,#B91C1C)!important;border-color:#B91C1C!important;}
+.numero.destaque b,.numero.destaque span,.numero.destaque small{color:#fff!important;}
+.numero.destaque b{font-size:2rem;}
+@media (min-width:720px){.numero.destaque{grid-column:span 2;}}
+.linha select{padding:7px 10px;font-size:.76rem;flex:none;max-width:130px;}
