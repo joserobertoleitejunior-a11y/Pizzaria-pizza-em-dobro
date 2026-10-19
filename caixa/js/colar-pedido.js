@@ -86,6 +86,9 @@ EXEMPLOS SÓ DE NÚMERO (pra fixar o padrão, endereço completo fora deles pode
 
 11. ESFIHAS (R$ 5,00 cada; sabores fixos: ${JSON.stringify(typeof ESFIHA_SABORES!=='undefined'?ESFIHA_SABORES:[])}): quando o cliente pedir esfihas (ex: "10 esfihas, 5 de carne e 5 de frango catupiry", "combo de 20 esfiha", "3 esfiha de bacon"), use "tipo":"esfihas" em UM ÚNICO item para TODAS as esfihas de UM combo, e preencha "esfihas":[{"sabor":"<nome exato da lista acima>","qtd":N}, ...] com a quantidade de cada sabor que o cliente disse. Preencha também "esfihas_total" com o total de esfihas do combo (ex: "combo de 20" → 20; "10 esfihas" → 10). Se o cliente NÃO citou nenhum sabor ("quero um combo de 10 esfihas"), deixe "esfihas":null e só preencha "esfihas_total" — o sistema usa os sabores padrão do site, NÃO use CONFERIR nem "normal" por falta de sabor. "qtd" do item = quantos combos IGUAIS ele pediu (normalmente 1). NÃO calcule preço — o sistema aplica 10=R$50, 20=R$90, 30=R$130 sozinho. "Esfiha mista" é um sabor da lista (Mista).
 
+CONVERSA INTEIRA: o texto colado pode ser a conversa toda entre ATENDENTE e CLIENTE (as perguntas/ofertas do atendente aparecem junto). Conte só o que o CLIENTE pediu ou CONFIRMOU ("Sim" em resposta a uma pergunta do atendente confirma o que foi perguntado). Mensagens soltas do cliente em momentos diferentes ("E duas cocas", "E a coca", "Então vou querer uma broto") somam ao MESMO pedido — não duplique o que ele só repetiu ou confirmou. Erros de digitação do cliente são normais ("esfilha", "cocas", "brisola").
+BROTO DOCE / BROTO SEM SABOR: o combo broto (R$ 50) só vale para sabores de pizza TRADICIONAL ou ESPECIAL. Se o cliente pediu uma pizza broto DOCE (ou de sabor que não existe nessas categorias), ou pediu "uma broto" sem escolher o sabor, use "tipo":"broto" com "nome_cardapio" = o sabor doce que ele escolheu (ou null se não escolheu) e "nome_cardapio_2":null — o sistema marca para o atendente conferir. NUNCA invente o sabor que o cliente não escolheu.
+
 EXEMPLO (cardápio ilustrativo, não é o real — é só pra você entender o padrão esperado):
 Texto recebido: "oi, meu nome é Ana. quero uma meia Frango meia Calabresa, borda catupiry, sem cebola, bem carregado na azeitona por favor. Pagamento: 20 no pix e o resto na entrega em dinheiro. Rua das Flores 123"
 JSON esperado:
@@ -155,9 +158,10 @@ const _acharAcrescimos=ls=>(Array.isArray(ls)?ls:[]).map(n=>_acharPorNome(n,ACRE
 
 // Junta as pizzas broto de TODO o pedido em combos de 2 (a IA devolve 1 item por broto/sabor).
 // Duas brotos de sabores diferentes = 1 combo com os dois sabores (nunca 2 combos).
-function consolidarBrotos(itens){
+function consolidarBrotos(itens, saborValido){
+  const valido=typeof saborValido==='function'?saborValido:(()=>true);
   const lista=Array.isArray(itens)?itens:[];
-  const unidades=[]; const pares=[]; let primeiro=-1;
+  const unidades=[]; const pares=[]; const outros=[]; let primeiro=-1;
   lista.forEach((it,idx)=>{
     if(!it||it.tipo!=='broto') return;
     if(primeiro<0) primeiro=idx;
@@ -165,21 +169,25 @@ function consolidarBrotos(itens){
     if(it.nome_cardapio_2){
       for(let k=0;k<q;k++) pares.push([it.nome_cardapio,it.nome_cardapio_2]); // a IA já trouxe o par completo
     }else{
-      for(let k=0;k<q;k++) unidades.push(it.nome_cardapio);
+      // broto doce / sabor que não é de pizza salgada / sabor não escolhido: NÃO entra no combo de R$ 50
+      for(let k=0;k<q;k++){
+        if(it.nome_cardapio&&valido(it.nome_cardapio)) unidades.push(it.nome_cardapio);
+        else outros.push({tipo:'normal',nome_cardapio:null,qtd:1,borda:null,remover:[],observacao:'1 pizza BROTO'+(it.nome_cardapio?' ('+it.nome_cardapio+')':' — sabor a confirmar')+(it.observacao?' · '+it.observacao:'')});
+      }
     }
   });
   if(primeiro<0) return lista;
   for(let k=0;k<unidades.length;k+=2) pares.push([unidades[k],unidades[k+1]!==undefined?unidades[k+1]:unidades[k]]);
   const combos=pares.map(p=>({tipo:'broto',nome_cardapio:p[0],nome_cardapio_2:p[1],qtd:1,borda:null,remover:[],observacao:null}));
   const sobra=unidades.length%2===1;
-  const out=[]; lista.forEach((it,idx)=>{ if(idx===primeiro) combos.forEach(c=>out.push(c)); if(!it||it.tipo!=='broto') out.push(it); });
+  const out=[]; lista.forEach((it,idx)=>{ if(idx===primeiro){ combos.forEach(c=>out.push(c)); outros.forEach(c=>out.push(c)); } if(!it||it.tipo!=='broto') out.push(it); });
   if(sobra) out.brotoSobra=true;
   return out;
 }
 
 function montarCaixaComPedidoInterpretado(parsed){
   const itensOrig=parsed.itens;
-  parsed.itens=consolidarBrotos(parsed.itens);
+  parsed.itens=consolidarBrotos(parsed.itens,n=>{ const m=DEFAULT_MENU.find(x=>x.n===n)||_acharItem(n); return !!m&&(m.cat==='p'||m.cat==='s'); });
   const brotoSobra=!!(parsed.itens&&parsed.itens.brotoSobra);
   let naoIdentificados=0;
   let meiaAMeiaDetectada=false;
@@ -231,7 +239,7 @@ function montarCaixaComPedidoInterpretado(parsed){
       const norm=t=>(t||'').toString().trim().toLowerCase();
       let cont={}; let ok=true;
       (it.esfihas||[]).forEach(e=>{
-        const sab=ESFIHA_SABORES.find(x=>norm(x)===norm(e.sabor));
+        const sab=ESFIHA_SABORES.find(x=>norm(x)===norm(e.sabor))||_acharPorNome(e.sabor,ESFIHA_SABORES,x=>x);
         const q=Math.max(0,parseInt(e.qtd)||0);
         if(!sab){ ok=false; return; }
         cont[sab]=(cont[sab]||0)+q;

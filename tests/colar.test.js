@@ -31,3 +31,13 @@ test('esfihas sem sabor usam os sabores padrão do site', () => {
   assert.equal(Object.values(esfDistribuirPadrao(30)).every((v) => v === 5), true);
   assert.equal(esfDistribuirPadrao(10, { Carne: 5 }).Carne, 6); // completa o que faltou
 });
+
+test('broto doce ou sem sabor não entra no combo de R$ 50', () => {
+  const valido = (n) => /calabresa|mussarela/i.test(n);
+  const r = consolidarBrotos([{ tipo: 'broto', nome_cardapio: 'Pizza Doce Brigadeiro', qtd: 1 }, { tipo: 'broto', nome_cardapio: null, qtd: 1 }], valido);
+  assert.equal(r.filter((x) => x.tipo === 'broto').length, 0);
+  assert.equal(r.filter((x) => x.tipo === 'normal').length, 2);
+  assert.match(r[0].observacao, /BROTO/);
+  const r2 = consolidarBrotos([{ tipo: 'broto', nome_cardapio: 'Calabresa', qtd: 1 }, { tipo: 'broto', nome_cardapio: 'Mussarela', qtd: 1 }, { tipo: 'broto', nome_cardapio: 'Doce X', qtd: 1 }], valido);
+  assert.equal(r2.filter((x) => x.tipo === 'broto').length, 1); // calabresa+mussarela = 1 combo
+});
