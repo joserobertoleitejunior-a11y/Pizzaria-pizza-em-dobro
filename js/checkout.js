@@ -57,14 +57,15 @@ async function finalizar(){
   });
   const desc=calcDesconto(cart);
   total=Math.max(0,total-desc);
-  const fee=isRet?0:8;
+  const gratis=!isRet&&entregaGratis(cart);
+  const fee=(isRet||gratis)?0:8;
   const totalFinal=total+fee;
 
   trackOrder(cart,{name,address:end,num,pay,phone:tel,
     change:changeVal?parseFloat(changeVal):null,
-    type:isRet?'retirada':'entrega',total:totalFinal});
+    type:isRet?'retirada':'entrega',total:totalFinal,taxa:fee});
 
-  const frete=isRet?'🏠 *RETIRADA NO LOCAL* (Grátis - 20min)':`🛵 *ENTREGA:* R$ 8,00`;
+  const frete=isRet?'🏠 *RETIRADA NO LOCAL* (Grátis - 20min)':(gratis?`🛵 *ENTREGA GRÁTIS* 🎁 (${COMBOS_ENTREGA_GRATIS}+ combos)`:`🛵 *ENTREGA:* R$ 8,00`);
 
   let troco='';
   if(pay==='Dinheiro')troco=changeVal?`%0A💵 *Troco para:* R$ ${fmtPrice(parseFloat(changeVal))}`:

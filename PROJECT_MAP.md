@@ -421,3 +421,7 @@ e sem `STAFF_PASSWORD`. É temporário: trocar por senha forte (e reativar o lim
 - Bluetooth: `BT_SERVICOS` (lista ampla de serviços BLE das térmicas) + `acharCaracteristicaEscrita` descobre sozinha onde escrever; usa escrita "sem resposta" quando a impressora aceita. Impressora com Bluetooth só "clássico" não aparece no navegador → usar cabo.
 - USB no Windows com driver instalado dá "Access denied" → `explicarFalhaUSB` oferece ligar o modo AUTO.
 - Dois Caixas abertos (ex.: notebook + celular): `reservarImpressao` (transação em `orders`, campos `impresso_auto/impresso_por/impresso_em`) garante que só um aparelho imprime cada pedido do site.
+
+## Entrega grátis (3+ combos)
+- Regra única em `shared/utils.js` (`COMBOS_ENTREGA_GRATIS=3`, `combosDeEsfiha`: cada 10 esfihas = 1 combo). Loja: `combosNoCarrinho/entregaGratis` (`js/core-data.js`), taxa zerada em `js/carrinho.js` + `js/checkout.js` (mensagem do WhatsApp e `taxa` enviada ao servidor). Caixa: `combosNoCaixa()` zera a taxa e mostra aviso; pedido vindo do site (`_taxaManual`) mantém a taxa que o cliente viu.
+- Destaques: cartão verde "ENTREGA GRÁTIS" (`#entrega-gratis-card`), faixas `.eg-faixa` nas seções Combos e Esfihas, e mensagem de progresso ("faltam N combos") no carrinho.

@@ -139,6 +139,12 @@ function getPromoAtiva(){
   return getPromos().find(p=>p.ativo&&p.dias.includes(dow))||null;
 }
 
+// combos no carrinho da loja: combo de pizza/broto = 1 cada; esfihas = 1 a cada 10
+function combosNoCarrinho(cartItems){
+  return (cartItems||[]).reduce((t,i)=>t+(i.cat==='co'?1:(i.cat==='es'?combosDeEsfiha(i.esfQtd):0)),0);
+}
+function entregaGratis(cartItems){ return combosNoCarrinho(cartItems)>=COMBOS_ENTREGA_GRATIS; }
+
 function calcDesconto(cartItems){
   const p=getPromoAtiva();
   if(!p) return 0;

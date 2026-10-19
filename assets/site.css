@@ -1135,3 +1135,14 @@ a.credito-txt{text-decoration:none;display:block}
 @keyframes sk-brilho{from{background-position:200% 0}to{background-position:-200% 0}}
 @media (prefers-reduced-motion:reduce){.sk{animation:none}}
 @view-transition{navigation:auto}
+
+/* ── ENTREGA GRÁTIS (3+ combos) ── */
+.entrega-gratis-card{display:flex;align-items:center;gap:14px;max-width:480px;margin:14px auto;padding:16px 18px;border-radius:18px;background:linear-gradient(135deg,#16A34A,#15803D);color:#fff;box-shadow:0 10px 26px rgba(22,163,74,.35);border:2px solid #86EFAC;}
+.eg-icone{font-size:2.4rem;line-height:1;flex:none;animation:egPulso 1.8s ease-in-out infinite}
+.eg-txt b{display:block;font-family:'Archivo Black','Work Sans',sans-serif;font-size:1.35rem;letter-spacing:.5px}
+.eg-txt span{display:block;font-size:1rem;line-height:1.4;margin-top:2px}
+.eg-txt strong{color:#FEF08A}
+.eg-faixa{max-width:480px;margin:0 auto 12px;padding:10px 14px;border-radius:12px;background:#ECFDF5;color:#065F46;border:1px solid #6EE7B7;font-size:.98rem;line-height:1.35;text-align:center}
+@keyframes egPulso{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@media (prefers-reduced-motion:reduce){.eg-icone{animation:none}}
+@media (min-width:900px){.entrega-gratis-card,.eg-faixa{max-width:760px}}

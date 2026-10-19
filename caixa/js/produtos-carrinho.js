@@ -74,14 +74,14 @@ function renderCombosCaixa(grid){
 // ── FUNÇÕES ÚNICAS (botões e Colar Pedido): combo broto e esfihas ──
 function adicionarBrotoAoCarrinho(s1, s2, qtd){
   const novo={ _chave:'combo|broto50|'+[s1,s2].slice().sort().join('+'), id:null, name:`${COMBO_BROTO.titulo} — ${s1} + ${s2}`,
-    unitPrice:COMBO_BROTO.preco, qty:qtd||1, borda:null, removedIng:[], addedIng:[], isMeia:false };
+    unitPrice:COMBO_BROTO.preco, qty:qtd||1, borda:null, removedIng:[], addedIng:[], isMeia:false, combos:1 };
   const ex=cart.find(c=>c._chave===novo._chave);
   if(ex) ex.qty+=novo.qty; else cart.push(novo);
 }
 function adicionarEsfihasAoCarrinho(contagens, qtd){
   const n=ESFIHA_SABORES.reduce((t,sab)=>t+(contagens[sab]||0),0); if(!n)return;
   const nome=nomeEsfihas(contagens);
-  const novo={ _chave:'esf|'+nome, id:null, name:nome, unitPrice:precoEsfihas(n), qty:qtd||1, borda:null, removedIng:[], addedIng:[], isMeia:false };
+  const novo={ _chave:'esf|'+nome, id:null, name:nome, unitPrice:precoEsfihas(n), qty:qtd||1, borda:null, removedIng:[], addedIng:[], isMeia:false, combos:combosDeEsfiha(n) };
   const ex=cart.find(c=>c._chave===novo._chave);
   if(ex) ex.qty+=novo.qty; else cart.push(novo);
 }
@@ -132,7 +132,7 @@ function criarItemCombo(combo, s1, s2, qtd){
   return {
     _chave:'combo|'+combo.id+'|'+[s1,s2].slice().sort().join('+'),
     id:null, name:`${combo.titulo} — ${s1} + ${s2}`, unitPrice:combo.preco, qty:qtd||1,
-    borda:null, removedIng:[], addedIng:[], isMeia:false
+    borda:null, removedIng:[], addedIng:[], isMeia:false, combos:1
   };
 }
 function adicionarComboAoCarrinho(combo, s1, s2, qtd){
@@ -249,16 +249,22 @@ function openModal(id){ document.getElementById(id).classList.add('open'); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 
 // ---- CARRINHO ----
+// 3+ combos (pizza, broto, esfihas) = entrega grátis. Pedidos vindos do site (sem marca) contam pelo nome.
+function combosNoCaixa(){
+  return cart.reduce((t,i)=>t+((i.combos!=null?i.combos:(/combo|2 por|2 broto|esfiha/i.test(i.name||'')?1:0))*i.qty),0);
+}
 function totalCarrinho(){
   const itens=cart.reduce((s,i)=>s+i.unitPrice*i.qty,0);
   const tipo=document.getElementById('f-tipo')?.value;
-  const taxa=tipo==='entrega'?(Number(document.getElementById('f-taxa-entrega')?.value)||0):0;
+  const gratis=!window._taxaManual&&combosNoCaixa()>=COMBOS_ENTREGA_GRATIS;
+  const taxa=(tipo==='entrega'&&!gratis)?(Number(document.getElementById('f-taxa-entrega')?.value)||0):0;
   return itens+taxa;
 }
 function qtdCarrinho(){ return cart.reduce((s,i)=>s+i.qty,0); }
 
 function atualizarBarraCarrinho(){
   const vazio=cart.length===0;
+  if(vazio) window._taxaManual=false;
   document.getElementById('cart-count').textContent=vazio?'Caixa vazio':qtdCarrinho()+(qtdCarrinho()===1?' item':' itens');
   document.getElementById('cart-total').textContent=fmt(totalCarrinho());
   document.getElementById('btn-abrir-carrinho').disabled=vazio;
@@ -299,6 +305,13 @@ function renderCartItems(){
   const taxa=total-subtotal;
   document.getElementById('tot-sub').textContent=fmt(subtotal);
   document.getElementById('totais-row-taxa').style.display=taxa>0?'flex':'none';
+  const aviso=document.getElementById('aviso-entrega-gratis');
+  if(aviso){
+    const n=combosNoCaixa(), ent=document.getElementById('f-tipo')?.value==='entrega';
+    if(ent&&!window._taxaManual&&n>=COMBOS_ENTREGA_GRATIS){ aviso.textContent='🎁 ENTREGA GRÁTIS — '+n+' combos no pedido'; aviso.style.display='block'; }
+    else if(ent&&!window._taxaManual&&n>0){ aviso.textContent='🎁 Faltam '+(COMBOS_ENTREGA_GRATIS-n)+' combo(s) para entrega grátis'; aviso.style.display='block'; }
+    else aviso.style.display='none';
+  }
   document.getElementById('tot-taxa').textContent=fmt(taxa);
   document.getElementById('tot-final').textContent=fmt(total);
   calcularTroco();
@@ -461,7 +474,7 @@ async function finalizarVenda(){
     troco: troco,
     delivery_type: tipo,
     entregador: tipo==='entrega' ? (entregador||null) : null,
-    taxa_entrega: tipo==='entrega' ? (Number(document.getElementById('f-taxa-entrega')?.value)||0) : 0,
+    taxa_entrega: (tipo==='entrega'&&!(!window._taxaManual&&combosNoCaixa()>=COMBOS_ENTREGA_GRATIS)) ? (Number(document.getElementById('f-taxa-entrega')?.value)||0) : 0,
     total: Math.round(total*100)/100,
     items_json: cart.map(i=>({id:i.id,name:i.name,price:i.unitPrice,qty:i.qty,borda:bordaReal(i.borda),removed:i.removedIng||[],added:i.addedIng||[],obs:i.obs||null,isMeia:!!i.isMeia})),
     status: 'finalizado',

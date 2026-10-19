@@ -87,6 +87,11 @@ const COMBO_BROTO={id:'broto50', preco:50.00, titulo:'2 Broto por R$ 50,00'};
 const ESFIHA_SABORES=['Carne','Frango Catupiry','Mussarela','Calabresa','Bacon','Mista'];
 const ESFIHA_PRECO_UN=5.00;
 const ESFIHA_PACOTES=[{qtd:10,preco:50.00},{qtd:20,preco:90.00},{qtd:30,preco:130.00}];
+// ── ENTREGA GRÁTIS: 3 ou mais combos no mesmo pedido (combo de pizza "2 por X", combo broto e
+// combos de esfiha — cada 10 esfihas = 1 combo). Muda aqui pra mudar na loja, no Caixa e no WhatsApp.
+const COMBOS_ENTREGA_GRATIS=3;
+function combosDeEsfiha(n){ return Math.floor((Number(n)||0)/10); }
+
 function precoEsfihas(n){
   n=Math.max(0,Math.floor(Number(n)||0));
   const f=[0];
@@ -182,5 +187,5 @@ function bordaReal(b){
 }
 
 if(typeof module!=='undefined' && module.exports){
-  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao, bordaReal };
+  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao, bordaReal, COMBOS_ENTREGA_GRATIS, combosDeEsfiha };
 }

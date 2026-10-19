@@ -108,6 +108,7 @@ function renderCombos(){
   if(!el||typeof COMBOS_DEFAULT==='undefined')return;
   const broto=_comboCfg('broto50');
   el.innerHTML=`<h2 class="cat-title reveal" id="anc-co">Combos</h2>`+
+    `<div class="eg-faixa">🎁 <b>3 ou mais combos = ENTREGA GRÁTIS</b></div>`+
     `<div class="combo-vitrine" id="combo-vitrine">
       <div id="combo-3d" aria-hidden="true"></div>
       <div class="combo-vitrine-txt"><b>2 PIZZAS</b><span>1 preço só</span></div>
@@ -152,6 +153,7 @@ function renderEsfihas(){
   const el=document.getElementById('cat-es');
   if(!el||typeof ESFIHA_SABORES==='undefined')return;
   el.innerHTML=`<h2 class="cat-title reveal" id="anc-es">Esfihas</h2>`+
+    `<div class="eg-faixa">🎁 <b>3 combos = ENTREGA GRÁTIS</b> · cada 10 esfihas conta como 1 combo</div>`+
     `<div class="esf-box">
       <div class="esf-topo"><span class="esf-preco"><small>cada esfiha</small> R$ 5<sup>,00</sup></span>
         <span class="esf-dica"><b>Quanto mais você leva,<br>menos paga em cada uma!</b></span></div>
@@ -225,7 +227,7 @@ function addEsfihasToCart(){
   const nome=nomeEsfihas(_esf);
   cart.push({
     id:'esf-'+Date.now()+Math.floor(Math.random()*1000),
-    n:nome, d:nome, p:precoEsfihas(n), cat:'es', img:null,
+    n:nome, d:nome, p:precoEsfihas(n), cat:'es', esfQtd:n, img:null,
     cartId:Date.now()+Math.random(), selectedBorda:BORDAS[0], removedIngredients:[], addedIngredients:[]
   });
   ESFIHA_SABORES.forEach(s=>_esf[s]=0); esfAtualizar();

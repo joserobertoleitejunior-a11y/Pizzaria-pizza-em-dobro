@@ -256,6 +256,9 @@ function confirmarPedidoNotificacao(){
   document.getElementById('f-endereco-colado').value=p.address||'';
   alternarCampoEntregador();
   pedidoEmEdicaoId=p.id;
+  // pedido do site: vale a taxa que o cliente já viu (grátis ou R$ 8) — o Caixa não recalcula
+  window._taxaManual=true;
+  const campoTaxa=document.getElementById('f-taxa-entrega'); if(campoTaxa) campoTaxa.value=Number(p.taxa_entrega)||0;
 
   atualizarBarraCarrinho();
   dispensarNotifCaixa();

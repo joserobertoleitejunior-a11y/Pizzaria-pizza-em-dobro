@@ -124,7 +124,7 @@ async function trackOrder(items,od){
       const r=await fetch('/api/criar-pedido',{method:'POST',headers,body:JSON.stringify({
         name:od.name,phone:od.phone||null,address:od.address,num:od.num,
         pay:od.pay,change:od.change||null,type:od.type,total:od.total,
-        taxa:od.type==='retirada'?0:8,
+        taxa:od.type==='retirada'?0:(od.taxa!=null?od.taxa:8),
         items:items.map(i=>{
           const acr=i.addedIngredients||[];
           const extra=((i.selectedBorda&&i.selectedBorda.price)||0)+acr.reduce((s,a)=>s+(Number(a.price)||0),0);
