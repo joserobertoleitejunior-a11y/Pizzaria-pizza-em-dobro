@@ -8,12 +8,9 @@ const rotas = {
   'cliente': require('../../server/cliente').handler,
   'registrar-visita': require('../../server/registrar-visita').handler,
   'staff-login': require('../../server/staff-login').handler,
-  'send-whatsapp': require('../../server/send-whatsapp').handler,
   'parse-order': require('../../server/parse-order').handler,
   'dashboard-chat': require('../../server/dashboard-chat').handler,
-  'dashboard-ai': require('../../server/dashboard-ai').handler,
-  'whatsapp-webhook': require('../../server/whatsapp-webhook').handler
-  // bot-followup NÃO entra aqui de propósito: só roda pelo agendamento
+  'dashboard-ai': require('../../server/dashboard-ai').handler
 };
 const { reportError, drenarRelatorios } = require('../../server/lib/sentry');
 const LIMITE_CORPO = 1_500_000;

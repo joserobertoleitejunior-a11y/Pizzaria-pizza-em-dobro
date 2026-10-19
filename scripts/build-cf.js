@@ -8,7 +8,7 @@ const RAIZ = path.join(__dirname, '..');
 const DIST = path.join(RAIZ, 'dist');
 
 const INCLUIR = ['index.html', 'painel.html', 'sw.js', 'manifest.json', 'manifest-painel.json', 'robots.txt', 'sitemap.xml', 'llms.txt',
-  'assets', 'js', 'shared', 'caixa', 'relatorios', 'clientes', 'bot-config', 'cupom', 'dashboard', 'admin'];
+  'assets', 'js', 'shared', 'caixa', 'relatorios', 'clientes', 'cupom', 'dashboard', 'admin'];
 // existem no repositório mas o site não usa mais (fotos licenciadas de antes das artes geradas em código)
 const NAO_PUBLICAR = new Set(['assets/fogo-fundo.mp4', 'assets/pizza-hero.jpg', 'assets/cardapio']);
 
@@ -48,8 +48,6 @@ fs.writeFileSync(path.join(DIST, '_headers'), `/*
 /relatorios/*
   X-Robots-Tag: noindex, nofollow
 /clientes/*
-  X-Robots-Tag: noindex, nofollow
-/bot-config/*
   X-Robots-Tag: noindex, nofollow
 /dashboard/*
   X-Robots-Tag: noindex, nofollow

@@ -489,6 +489,7 @@ async function finalizarVenda(){
     }else{
       await FS.collection('orders').add(pedido);
     }
+    setTimeout(atualizarTotaisHoje,800);
   };
   try{
     try{
@@ -564,6 +565,25 @@ function imprimirRecibo(p){
 // ---- VENDAS DE HOJE (com status, cancelar e entregador) ----
 function _hojeISO(){ return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date()); }
 let pedidosHojeCache=[];
+// Faixa "Hoje" no topo do Caixa: vendas, total, ticket médio e dinheiro na gaveta (sem cancelados)
+function pintarResumoRail(pedidos){
+  const validos=(pedidos||[]).filter(p=>p.status!=='cancelado');
+  const total=validos.reduce((t,p)=>t+Number(p.total||0),0);
+  const dinheiro=validos.reduce((t,p)=>t+(categoriaPagamento(p.payment)==='Dinheiro'?Number(p.total||0):0),0);
+  const set=(id,v)=>{const e=document.getElementById(id); if(e) e.textContent=v;};
+  set('rh-vendas',validos.length); set('rh-total',fmt(total)); set('rh-ticket',fmt(validos.length?total/validos.length:0));
+  const box=document.getElementById('rh-gaveta-box');
+  if(box){ const aberta=typeof sessaoCaixaAtual!=='undefined'&&sessaoCaixaAtual; box.style.display=aberta?'':'none'; if(aberta) set('rh-gaveta',fmt(Number(sessaoCaixaAtual.valor_abertura||0)+dinheiro)); }
+}
+async function atualizarTotaisHoje(){
+  if(!FS) return;
+  try{
+    const snap=await FS.collection('orders').where('created_at','>=',limiteDiaBrasilia(_hojeISO())).orderBy('created_at','desc').limit(300).get();
+    pintarResumoRail(snap.docs.map(d=>d.data()));
+  }catch(e){ console.warn('Resumo do dia indisponível:',e); }
+}
+setTimeout(atualizarTotaisHoje,2500);
+setInterval(()=>{ if(!document.hidden) atualizarTotaisHoje(); },150000);
 const NOME_STATUS={novo:'NOVO',confirmado:'CONFIRMADO',pronto:'PRONTO',finalizado:'FINALIZADO',cancelado:'CANCELADO'};
 async function carregarVendasHoje(){
   const box=document.getElementById('orders-list');
@@ -578,6 +598,7 @@ async function carregarVendasHoje(){
       .get();
     const pedidos=snap.docs.map(d=>({id:d.id,...d.data()}));
     pedidosHojeCache=pedidos;
+    pintarResumoRail(pedidos);
     pedidos.sort((a,b)=>(b.numero_sequencial||0)-(a.numero_sequencial||0)); // mais recente primeiro
     if(pedidos.length===0){ box.innerHTML='<div class="empty">🧾 Nenhuma venda hoje ainda.</div>'; return; }
     // resumo do dia (cancelados ficam fora da conta)

@@ -394,3 +394,9 @@ e sem `STAFF_PASSWORD`. É temporário: trocar por senha forte (e reativar o lim
 - **Venda de balcão**: Caixa grava `balcao:true` quando não há nome nem telefone. `ehClienteBalcao(p)` (`shared/utils.js`) também reconhece pedidos antigos ("Cliente Balcão" sem telefone). Fica fora de `clientes.listar`, Clientes, Dashboard (KPI clientes) e ranking do chat IA.
 - Limpeza dos dados Google antigos: botão "🧹 Apagar dados do login Google antigo" em /clientes → ação `clientes.limparGoogle` (admin-api): apaga e-mail/foto/uid de clients, pedidos, avaliações e comentários.
 - `firestore.rules` ainda tem as regras antigas de e-mail (inofensivas; ninguém mais grava por elas).
+
+## Bot removido + Como chegar / Google / rodapé
+- **Bot do WhatsApp removido**: sem `bot-config/`, `server/whatsapp-webhook.js`, `server/bot-followup.js`, `server/send-whatsapp.js`, mini-mensageiro do Caixa, cron (netlify.toml/wrangler). Ficam: config da loja (`loja fechada`, taxa, horário) no admin e a IA do Conversor/Dashboard (chave Anthropic).
+- Fim da loja (`index.html`): `#local-section` = mapa (carrega só ao chegar perto) + botões **Waze** e **Google Maps** + **Avaliações no Google** (ver / avaliar). Endereço vem de `getEndereco()` (config da loja). Pra abrir direto a janela de avaliar, gravar o Place ID do Google na config `gplace` (`getCfg('gplace')`). Código: `js/ui-shell.js` (`iniciarLocal`).
+- Rodapé `#rodape`: marca, atalhos, contato, crédito "Vibe Coding Process" com cubo 3D CSS (`.cubo`, só transform — leve) e direitos autorais. CSS no fim de `assets/site.css`.
+- Caixa: faixa "Hoje" (vendas/total/ticket/gaveta) em `#resumo-rail` (`pintarResumoRail`, `atualizarTotaisHoje` em `caixa/js/produtos-carrinho.js`); barra do total sempre colada embaixo.

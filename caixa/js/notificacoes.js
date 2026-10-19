@@ -4,7 +4,6 @@
 //  finalizarVenda() ATUALIZA esse mesmo pedido (não cria um segundo).
 // ══════════════════════════════════════════════════════════
 let _idsVistos=null; // null = ainda não fez a primeira leitura
-let _idsVistosAtendente=null;
 let filaNotificacoes=[];
 let notificacaoAtual=null;
 
@@ -78,7 +77,7 @@ function removerDaFilaSeParado(id){
   filaNotificacoes=filaNotificacoes.filter(o=>o.id!==id);
   if(notificacaoAtual && notificacaoAtual.id===id){
     notificacaoAtual=null;
-    document.getElementById('notif-caixa')?.classList.remove('show');
+  document.getElementById('notif-caixa')?.classList.remove('show');
     setTimeout(()=>{ prepararNotificacao(); },50);
   }
   if(filaNotificacoes.length!==antes || (notificacaoAtual===null)) atualizarBadgeBubble();
@@ -115,36 +114,17 @@ function iniciarEscutaNotificacoes(){
       const ehDaLoja = o.origem!=='caixa' && (o.status==='novo'||!o.status);
       if(!ehDaLoja) return;
       // pedido do site ou do bot + impressora conectada aqui no caixa → imprime e finaliza sozinho
-      if((o.origem==='whatsapp_bot'||o.origem==='loja') && (btChar||usbEndpointOut)){
+      if((o.origem==='loja') && (btChar||usbEndpointOut)){
         finalizarPedidoAutomaticoBot(o);
       }else{
         filaNotificacoes.push(o); chegouNovo=true;
-        if((o.origem==='whatsapp_bot'||o.origem==='loja') && !btChar && !usbEndpointOut) mostrarAlertaImpressora();
+        if((o.origem==='loja') && !btChar && !usbEndpointOut) mostrarAlertaImpressora();
       }
     });
     if(chegouNovo) tocarSom();
     if(!notificacaoAtual && filaNotificacoes.length>0) prepararNotificacao();
     else atualizarBadgeBubble();
   },err=>console.warn('Notificação de pedidos indisponível (verifique a conexão).',err));
-
-  // bot pediu pra chamar a atendente (cliente pediu, reclamou, ou caso complicado)
-  FS.collection('bot_conversas').where('estado','==','aguardando_atendente').onSnapshot(snap=>{
-    const atuais=snap.docs.map(d=>({id:d.id,tipo:'atendente',telefone:d.data().telefone||d.id,...d.data()}));
-    if(_idsVistosAtendente===null){
-      _idsVistosAtendente=new Set(atuais.map(o=>o.id));
-      return;
-    }
-    let chegouNovo=false;
-    atuais.forEach(o=>{
-      if(_idsVistosAtendente.has(o.id)) return;
-      _idsVistosAtendente.add(o.id);
-      filaNotificacoes.push(o);
-      chegouNovo=true;
-    });
-    if(chegouNovo) tocarSom();
-    if(!notificacaoAtual && filaNotificacoes.length>0) prepararNotificacao();
-    else atualizarBadgeBubble();
-  },err=>console.warn('Notificação de atendente indisponível (verifique a conexão).',err));
 }
 
 async function finalizarPedidoAutomaticoBot(pedido){
@@ -175,21 +155,12 @@ function prepararNotificacao(){
   if(!notificacaoAtual) notificacaoAtual=filaNotificacoes.shift();
   if(!notificacaoAtual) return;
   const filaTxt = filaNotificacoes.length>0 ? ' (+'+filaNotificacoes.length+' na fila)' : '';
-  if(notificacaoAtual.tipo==='atendente'){
-    document.getElementById('notif-icone').textContent='🙋';
-    document.getElementById('notif-titulo').textContent='Cliente pediu atendente!'+filaTxt;
-    document.getElementById('notif-sub').textContent='WhatsApp: '+(notificacaoAtual.telefone||'—');
-    document.getElementById('notif-total').textContent='';
-    document.getElementById('notif-btn-primario').textContent='💬 Abrir conversa';
-    document.getElementById('notif-btn-secundario').textContent='✔ Já resolvi';
-  }else{
-    document.getElementById('notif-icone').textContent='🍕';
-    document.getElementById('notif-titulo').textContent = (notificacaoAtual.numero_sequencial?'Pedido #'+notificacaoAtual.numero_sequencial+' novo!':'Novo pedido!')+filaTxt;
-    document.getElementById('notif-sub').textContent=(notificacaoAtual.client_name||'Cliente')+' · '+(notificacaoAtual.delivery_type||'—');
-    document.getElementById('notif-total').textContent=fmt(notificacaoAtual.total);
-    document.getElementById('notif-btn-primario').textContent='✔ Confirmar e montar no caixa';
-    document.getElementById('notif-btn-secundario').textContent='✕ Cancelar pedido';
-  }
+  document.getElementById('notif-icone').textContent='🍕';
+  document.getElementById('notif-titulo').textContent = (notificacaoAtual.numero_sequencial?'Pedido #'+notificacaoAtual.numero_sequencial+' novo!':'Novo pedido!')+filaTxt;
+  document.getElementById('notif-sub').textContent=(notificacaoAtual.client_name||'Cliente')+' · '+(notificacaoAtual.delivery_type||'—');
+  document.getElementById('notif-total').textContent=fmt(notificacaoAtual.total);
+  document.getElementById('notif-btn-primario').textContent='✔ Confirmar e montar no caixa';
+  document.getElementById('notif-btn-secundario').textContent='✕ Cancelar pedido';
   atualizarBadgeBubble();
 }
 function abrirNotifCaixa(){
@@ -208,23 +179,11 @@ function dispensarNotifCaixa(){
 }
 function acaoPrimariaNotif(){
   if(!notificacaoAtual) return;
-  if(notificacaoAtual.tipo==='atendente') abrirConversaAtendente();
-  else confirmarPedidoNotificacao();
+  confirmarPedidoNotificacao();
 }
 function acaoSecundariaNotif(){
   if(!notificacaoAtual) return;
-  if(notificacaoAtual.tipo==='atendente') marcarAtendenteResolvido();
-  else cancelarPedidoNotificacao();
-}
-function abrirConversaAtendente(){
-  if(!notificacaoAtual) return;
-  window.location.href='bot-config/conversas/index.html';
-}
-async function marcarAtendenteResolvido(){
-  if(!notificacaoAtual || !FS) return;
-  try{ await FS.collection('bot_conversas').doc(notificacaoAtual.id).update({estado:'assumido_humano'}); }
-  catch(e){ console.warn('Erro ao marcar como resolvido:',e); }
-  dispensarNotifCaixa();
+  cancelarPedidoNotificacao();
 }
 function cancelarPedidoNotificacao(){
   if(!notificacaoAtual) return;

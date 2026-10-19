@@ -12,10 +12,6 @@
 [functions]
   node_bundler = "esbuild"
 
-# tarefa agendada do bot (lembra/encerra conversas paradas) — a cada 5 minutos
-[functions."bot-followup"]
-  schedule = "*/5 * * * *"
-
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api"

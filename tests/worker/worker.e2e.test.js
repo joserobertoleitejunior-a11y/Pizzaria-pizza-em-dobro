@@ -109,15 +109,3 @@ test('admin-api pelo Worker: salvar item do cardápio e ler de volta (e auditori
   const aud = (await (await post('admin-api', { acao: 'auditoria.listar' }, h)).json()).resultado;
   assert.equal(aud[0].acao, 'cardapio.salvar');
 });
-
-test('webhook do WhatsApp: sem token ou com token errado é recusado; com token passa', async () => {
-  assert.equal((await post('whatsapp-webhook', {})).status, 401);
-  assert.equal((await fetch(`${BASE}/api/whatsapp-webhook?token=errado`, { method: 'POST', body: '{}' })).status, 401);
-  const ok = await fetch(`${BASE}/api/whatsapp-webhook?token=segredo-do-webhook`, { method: 'POST', body: '{}' });
-  assert.equal(ok.status, 200); // payload sem mensagem → "ignorado"
-});
-
-test('tarefa agendada (bot-followup) roda sem erro', async () => {
-  const r = await fetch(`${BASE}/cdn-cgi/handler/scheduled`);
-  assert.equal(r.status, 200);
-});

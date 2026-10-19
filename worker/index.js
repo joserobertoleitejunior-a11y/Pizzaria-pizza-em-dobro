@@ -2,7 +2,6 @@
 //  WORKER DO CLOUDFLARE — Pizza em Dobro
 //  • /api/<função>  → as funções de servidor (server/*.js), adaptadas do formato
 //                     { httpMethod, headers, body, queryStringParameters } que elas já usam
-//  • tarefa agendada (a cada 5 min) → bot-followup (lembra/encerra conversas paradas do bot)
 //  • todo o resto   → arquivos estáticos (wrangler.jsonc: assets, servidos direto pela
 //                     Cloudflare sem passar por aqui — "run_worker_first" só pra /api/*)
 // ══════════════════════════════════════════════════════════
@@ -12,15 +11,11 @@ import pedidoPublico from '../server/pedido-publico.js';
 import cliente from '../server/cliente.js';
 import registrarVisita from '../server/registrar-visita.js';
 import staffLogin from '../server/staff-login.js';
-import sendWhatsapp from '../server/send-whatsapp.js';
 import parseOrder from '../server/parse-order.js';
 import dashboardChat from '../server/dashboard-chat.js';
 import dashboardAi from '../server/dashboard-ai.js';
-import whatsappWebhook from '../server/whatsapp-webhook.js';
-import botFollowup from '../server/bot-followup.js';
 import sentry from '../server/lib/sentry.js';
 
-// bot-followup fica de fora de propósito: só roda pelo agendamento, nunca por HTTP público
 const ROTAS = {
   'admin-api': adminApi.handler,
   'criar-pedido': criarPedido.handler,
@@ -28,11 +23,9 @@ const ROTAS = {
   'cliente': cliente.handler,
   'registrar-visita': registrarVisita.handler,
   'staff-login': staffLogin.handler,
-  'send-whatsapp': sendWhatsapp.handler,
   'parse-order': parseOrder.handler,
   'dashboard-chat': dashboardChat.handler,
-  'dashboard-ai': dashboardAi.handler,
-  'whatsapp-webhook': whatsappWebhook.handler
+  'dashboard-ai': dashboardAi.handler
 };
 
 const LIMITE_CORPO = 1_500_000; // pedido/admin são pequenos; maior que isso é abuso
@@ -86,18 +79,5 @@ export default {
     } finally {
       ctx.waitUntil(sentry.drenarRelatorios());
     }
-  },
-
-  async scheduled(_controle, env, ctx) {
-    popularEnv(env);
-    ctx.waitUntil((async () => {
-      try {
-        const r = await botFollowup.handler({ httpMethod: 'POST', headers: {}, body: '', queryStringParameters: {} });
-        if (r && r.statusCode >= 400) console.error('bot-followup respondeu', r.statusCode, r.body);
-      } catch (err) {
-        sentry.reportError(err, 'cron:bot-followup');
-      }
-      await sentry.drenarRelatorios();
-    })());
   }
 };

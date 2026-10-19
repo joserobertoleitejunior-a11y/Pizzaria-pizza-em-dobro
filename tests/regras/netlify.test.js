@@ -1,4 +1,4 @@
-// O adaptador do Netlify (netlify/functions/api.js) roteia certo e não expõe o bot-followup.
+// O adaptador do Netlify (netlify/functions/api.js) roteia certo e não expõe rotas que não existem.
 process.env.GCLOUD_PROJECT = 'demo-pizza';
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
@@ -9,7 +9,7 @@ const chama = (rota, corpo, metodo = 'POST') => handler({
   body: corpo == null ? null : (typeof corpo === 'string' ? corpo : JSON.stringify(corpo)), queryStringParameters: {}
 });
 
-test('rota inexistente e bot-followup por HTTP → 404', async () => {
+test('rota inexistente e bot-followup (removido) → 404', async () => {
   assert.equal((await chama('nao-existe', {})).statusCode, 404);
   assert.equal((await chama('bot-followup', {})).statusCode, 404);
   assert.equal((await chama('constructor', {})).statusCode, 404);

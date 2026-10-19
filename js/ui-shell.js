@@ -19,7 +19,7 @@ function closeDrawer(){
 //  CIRURGIA: SCROLL TO FEEDBACKS
 // ══════════════════════════════════
 function scrollToFeedbacks(){
-  const el=document.getElementById('feedback-section');
+  const el=document.getElementById('local-section');
   if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
@@ -170,3 +170,37 @@ function carregarGoogleMaps(){
   document.head.appendChild(s);
 }
 document.addEventListener('focusin',e=>{ if(e.target&&e.target.id==='u-end') carregarGoogleMaps(); });
+
+// ══════════════════════════════════
+//  COMO CHEGAR + AVALIAÇÕES DO GOOGLE (fim do site)
+//  Opcional: cfg "gplace" = Place ID do Google (abre direto a janela de avaliar)
+// ══════════════════════════════════
+function _linksLocal(){
+  const end=getEndereco();
+  const q=encodeURIComponent('Pizza em Dobro, '+end);
+  const place=(getCfg('gplace','')||'').trim();
+  return {
+    end,
+    mapa:'https://www.google.com/maps?q='+q+'&output=embed',
+    waze:'https://waze.com/ul?q='+q+'&navigate=yes',
+    maps:'https://www.google.com/maps/search/?api=1&query='+q,
+    ver:'https://www.google.com/search?q='+encodeURIComponent('Pizza em Dobro Itapetininga avaliações'),
+    avaliar:place?'https://search.google.com/local/writereview?placeid='+encodeURIComponent(place):'https://www.google.com/search?q='+encodeURIComponent('Pizza em Dobro Itapetininga')+'#lkt=LocalPoiReviews'
+  };
+}
+function abrirAvaliarGoogle(){ window.open(_linksLocal().avaliar,'_blank','noopener'); }
+function iniciarLocal(){
+  const L=_linksLocal();
+  const set=(id,k,v)=>{const e=document.getElementById(id); if(e) e[k]=v;};
+  set('local-end-txt','textContent','📍 '+L.end);
+  set('btn-waze','href',L.waze); set('btn-maps','href',L.maps);
+  set('btn-g-ver','href',L.ver); set('btn-g-avaliar','href',L.avaliar);
+  set('rodape-ano','textContent',new Date().getFullYear());
+  // o mapa só carrega quando chega perto (não pesa na abertura do site)
+  const sec=document.getElementById('local-section'), fr=document.getElementById('local-mapa-frame');
+  if(!sec||!fr) return;
+  const carregar=()=>{ if(fr.src==='about:blank'||!fr.src) fr.src=L.mapa; };
+  if('IntersectionObserver' in window){ const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){carregar();io.disconnect();} },{rootMargin:'400px'}); io.observe(sec); }
+  else carregar();
+}
+document.addEventListener('DOMContentLoaded',()=>setTimeout(iniciarLocal,300));

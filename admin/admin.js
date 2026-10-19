@@ -9,14 +9,11 @@
 const CATEGORIAS = { p: 'Tradicionais', s: 'Especiais', co: 'Combos', dw: 'Doces', cz: 'Calzones doces', d: 'Bebidas' };
 const STATUS = { novo: 'Novo', confirmado: 'Confirmado', pronto: 'Pronto', finalizado: 'Finalizado', cancelado: 'Cancelado' };
 const CAMPOS_CONFIG = [
-  ['numeroWhatsapp', 'WhatsApp da loja'], ['enderecoLoja', 'Endereço da loja'], ['taxaEntrega', 'Taxa de entrega (bot)', 'number'],
+  ['numeroWhatsapp', 'WhatsApp da loja'], ['enderecoLoja', 'Endereço da loja'], ['taxaEntrega', 'Taxa de entrega', 'number'],
   ['tempoEntrega', 'Tempo de entrega'], ['formasPagamento', 'Formas de pagamento'], ['horarioInicio', 'Abre às', 'time'],
-  ['horarioFim', 'Fecha às', 'time'], ['mensagemFechado', 'Mensagem de loja fechada'], ['observacoesLoja', 'Observações'],
-  ['evolutionUrl', 'URL da Evolution API'], ['instanceName', 'Instância (Evolution)'], ['minutosLembrete', 'Lembrete após (min)', 'number'],
-  ['minutosEncerrar', 'Encerrar conversa após (min)', 'number'], ['delayMinMs', 'Atraso mínimo (ms)', 'number'],
-  ['delayMaxMs', 'Atraso máximo (ms)', 'number'], ['limiteMsgsPorHora', 'Limite de mensagens/hora', 'number']
+  ['horarioFim', 'Fecha às', 'time'], ['mensagemFechado', 'Mensagem de loja fechada'], ['observacoesLoja', 'Observações']
 ];
-const SEGREDOS = [['anthropicKey', 'Anthropic (IA do bot)'], ['evolutionKey', 'Evolution API (WhatsApp)'], ['geminiKey', 'Gemini (reserva)']];
+const SEGREDOS = [['anthropicKey', 'Anthropic (IA do Conversor e do Dashboard)']];
 
 const estado = { cardapio: [], clientes: [] };
 
@@ -200,7 +197,7 @@ async function salvarItem(e) {
   if (!_itemEditando && estado.cardapio.some(i => Number(i.slug_id) === dados.slug_id)) { avisar('Já existe um item com esse número.', true); return; }
   await api('cardapio.salvar', dados);
   fecharItem();
-  avisar('Item salvo — já aparece na loja, no Caixa e no bot.');
+  avisar('Item salvo — já aparece na loja e no Caixa.');
   carregarCardapio();
 }
 
@@ -305,14 +302,13 @@ document.getElementById('seg-campos').innerHTML = SEGREDOS.map(([k, rotulo]) =>
 async function carregarConfig() {
   const [cfg, seg] = await Promise.all([api('config.ler'), api('segredos.status')]);
   CAMPOS_CONFIG.forEach(([k]) => { const v = cfg.bot[k]; document.getElementById('cfg-' + k).value = v == null ? '' : v; });
-  document.getElementById('cfg-ativo').checked = !!cfg.bot.ativo;
   document.getElementById('cfg-lojaFechada').checked = !!cfg.bot.lojaFechada;
   document.getElementById('cfg-loja-taxa').value = cfg.loja.taxaEntrega == null ? '' : cfg.loja.taxaEntrega;
   SEGREDOS.forEach(([k]) => { document.getElementById('seg-st-' + k).textContent = seg[k] ? '✓ configurada' : '— não configurada'; });
 }
 async function salvarConfig(e) {
   e.preventDefault();
-  const bot = { ativo: document.getElementById('cfg-ativo').checked, lojaFechada: document.getElementById('cfg-lojaFechada').checked };
+  const bot = { lojaFechada: document.getElementById('cfg-lojaFechada').checked };
   CAMPOS_CONFIG.forEach(([k, , tipo]) => {
     const v = document.getElementById('cfg-' + k).value.trim();
     if (v !== '') bot[k] = tipo === 'number' ? Number(v) : v;
