@@ -24,7 +24,12 @@ function iniciarGateEquipe(){
   const overlay=document.createElement('div');
   overlay.id='gate-equipe';
   overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:#F4F5F7;display:flex;align-items:center;justify-content:center;padding:20px;font-family:"Work Sans",system-ui,sans-serif;';
-  overlay.innerHTML='<div style="color:#6B7280;font-size:.85rem;">Carregando…</div>';
+  overlay.innerHTML='';
+  // aparelho que já entrou antes: mostra a tela na hora (sem camada, sem "Carregando…"); a
+  // confirmação do login continua rodando e, se falhar, a camada de senha aparece por cima.
+  // Os dados são protegidos pelas regras do banco/servidor, não por esta camada.
+  let conhecido=false; try{ conhecido=localStorage.getItem('staff_ok')==='1'; }catch(e){}
+  if(conhecido) overlay.style.display='none';
   // some ANTES de qualquer verificação — a tela fica bloqueada por padrão (fail-closed);
   // só é liberada explicitamente depois de confirmar login, nunca por omissão/erro.
   (document.body||document.documentElement).appendChild(overlay);
@@ -83,9 +88,11 @@ function iniciarGateEquipe(){
           if(user){
             try{
               const t=await user.getIdTokenResult();
-              if(t.claims && t.claims.staff===true){ overlay.remove(); resolve(user); return; }
+              if(t.claims && t.claims.staff===true){ try{localStorage.setItem('staff_ok','1');}catch(e){} overlay.remove(); resolve(user); return; }
             }catch(e){ /* cai pro formulário */ }
           }
+          try{localStorage.removeItem('staff_ok');}catch(e){}
+          overlay.style.display='flex';
           renderFormulario(auth);
         },
         ()=>renderErro('Não foi possível verificar o login. Recarregue a página.')
@@ -98,5 +105,7 @@ function iniciarGateEquipe(){
 
 // Botão "Sair" — qualquer página pode chamar isso (ex: num link no rodapé/menu)
 function sairDaEquipe(){
+  if(typeof limparCacheVisual==='function') limparCacheVisual();
+  try{localStorage.removeItem('staff_ok');}catch(e){}
   firebase.auth().signOut().then(()=>location.reload());
 }

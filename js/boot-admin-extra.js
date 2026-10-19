@@ -174,7 +174,7 @@ function restaurarBordasPadrao(){
 async function openClientesAdmin(){
   openModal('modal-clientes-admin');
   const ct=document.getElementById('clientes-admin-content');
-  ct.innerHTML=`<div style="text-align:center;padding:24px;color:var(--tx-5);">⏳ Carregando...</div>`;
+  ct.innerHTML=`<div class="sk-wrap" aria-hidden="true"><i class="sk"></i><i class="sk"></i><i class="sk"></i></div>`;
   const rows=await sg('clients',{orderBy:'last_visit',orderDir:'desc',limit:100})||[];
   const orders=await sg('orders',{limit:500})||[];
   if(!rows.length){
@@ -219,7 +219,7 @@ function filtrarClientes(){
 async function abrirDetalheCliente(email){
   openModal('modal-cliente-detalhe');
   const ct=document.getElementById('cliente-detalhe-content');
-  ct.innerHTML=`<div style="text-align:center;padding:20px;color:var(--tx-5);">⏳ Carregando...</div>`;
+  ct.innerHTML=`<div class="sk-wrap" aria-hidden="true"><i class="sk"></i><i class="sk"></i><i class="sk"></i></div>`;
   const rows=window._clientesRows||[];
   const allOrders=window._clientesOrders||[];
   const c=rows.find(r=>r.email===email);

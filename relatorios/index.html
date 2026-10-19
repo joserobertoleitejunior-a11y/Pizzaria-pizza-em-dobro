@@ -127,7 +127,7 @@ button.linha-barra:hover,.linha-barra.sel{background:rgba(214,40,40,.06);}
   </div>
 </div>
 
-<div class="kpi-grid" id="kpis"><div class="empty" style="grid-column:1/-1">Carregando…</div></div>
+<div class="kpi-grid" id="kpis"><div class="sk-wrap" aria-hidden="true"><i class="sk"></i><i class="sk"></i><i class="sk"></i></div></div>
 
 <div class="secao">
   <h2 id="fat-titulo">Faturamento</h2>
@@ -203,6 +203,8 @@ button.linha-barra:hover,.linha-barra.sel{background:rgba(214,40,40,.06);}
 <script src="../shared/staff-auth.js"></script>
 <script src="../shared/admin-api.js"></script>
 <script>window._gate=iniciarGateEquipe();</script>
+<script src="../shared/cache-visual.js"></script>
+<script>cacheVisual(['kpis','grafico-fat','fat-detalhe','lista-pagamento','lista-tipo','lista-sabores']);</script>
 <script src="../shared/utils.js"></script>
 <script src="relatorios.js"></script>
 </body>

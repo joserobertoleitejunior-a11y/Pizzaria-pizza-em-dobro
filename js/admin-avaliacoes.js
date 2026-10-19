@@ -84,7 +84,7 @@ function resetDash(){
 let _fbSelAll=false;
 async function openGerenciarFb(){
   openModal('modal-gerenciar-fb');
-  document.getElementById('gerenciar-fb-list').innerHTML=`<div style="text-align:center;padding:20px;color:var(--tx-5);">⏳ Carregando...</div>`;
+  document.getElementById('gerenciar-fb-list').innerHTML=`<div class="sk-wrap" aria-hidden="true"><i class="sk"></i><i class="sk"></i><i class="sk"></i></div>`;
   const [fbRows,cmRows]=await Promise.all([
     sg('feedbacks',{orderBy:'created_at',orderDir:'desc',limit:50}),
     sg('feedback_comments',{orderBy:'created_at',orderDir:'desc',limit:100})
@@ -248,7 +248,7 @@ function _renderDashSkeleton(){
       </div>
     </div>
 
-    <div id="dash-body" style="text-align:center;padding:24px;color:var(--tx-5);">⏳ Carregando dados...</div>`;
+    <div id="dash-body"><div class="sk-wrap" aria-hidden="true"><i class="sk"></i><i class="sk"></i><i class="sk"></i></div></div>`;
 }
 
 async function applyDashDates(){

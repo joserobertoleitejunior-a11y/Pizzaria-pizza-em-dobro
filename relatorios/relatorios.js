@@ -129,7 +129,7 @@ async function carregarRelatorio(){
   if(periodoAtivo==='custom'&&dataCustomSelecionada){ diaIni=diaFim=dataCustomSelecionada; }
   else{ const cfg=PERIODOS.find(p=>p.id===periodoAtivo); diaFim=hojeBR(); diaIni=somaDias(diaFim,-(cfg.dias-1)); }
   periodoRotulo=rotuloPeriodoAtual();
-  document.getElementById('kpis').innerHTML='<div class="empty" style="grid-column:1/-1">Carregando…</div>';
+  document.getElementById('kpis').innerHTML='<div class="sk-wrap" aria-hidden="true"><i class="sk"></i><i class="sk"></i><i class="sk"></i></div>';
   try{
     await carregarCardapioMapa();
     const snap=await FS.collection('orders')

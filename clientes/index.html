@@ -99,7 +99,7 @@ body{
   <div id="aviso-periodo" style="font-size:.78rem;color:var(--sub);margin-top:6px;">Mostrando clientes dos últimos 3 dias — busque por nome ou telefone para ver mais antigos</div>
 </div>
 
-<div class="list" id="lista"><div class="empty"><span>⏳</span>Carregando clientes…</div></div>
+<div class="list" id="lista"><div class="sk-wrap" aria-hidden="true"><i class="sk"></i><i class="sk"></i><i class="sk"></i></div></div>
 
 <div class="modal-bg" id="modal-hist">
   <div class="modal">
@@ -131,6 +131,8 @@ body{
 <script src="../shared/admin-api.js"></script>
 <script src="../shared/staff-auth.js"></script>
 <script>iniciarGateEquipe();</script>
+<script src="../shared/cache-visual.js"></script>
+<script>cacheVisual(['summary','lista']);</script>
 <script src="../shared/utils.js"></script>
 <script src="clientes.js"></script>
 </body>

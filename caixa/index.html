@@ -395,7 +395,7 @@ body{
 
   <!-- VIEW VENDAS DE HOJE -->
   <div class="view" id="view-hoje">
-    <div class="orders-scroll" id="orders-list"><div class="empty">⏳ Carregando…</div></div>
+    <div class="orders-scroll" id="orders-list"><div class="sk-wrap" aria-hidden="true"><i class="sk"></i><i class="sk"></i><i class="sk"></i></div></div>
   </div>
 </div>
 
@@ -527,6 +527,8 @@ body{
 <script src="../shared/staff-auth.js"></script>
 <script src="../shared/admin-api.js"></script>
 <script>iniciarGateEquipe();</script>
+<script src="../shared/cache-visual.js"></script>
+<script>cacheVisual(['orders-list']);</script>
 <script src="../shared/utils.js"></script>
 <!-- Observabilidade (Sentry) — desligado até shared/sentry-config.js ter um DSN de verdade -->
 <script src="../shared/sentry-config.js"></script>

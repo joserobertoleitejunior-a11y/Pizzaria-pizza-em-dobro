@@ -588,7 +588,7 @@ const NOME_STATUS={novo:'NOVO',confirmado:'CONFIRMADO',pronto:'PRONTO',finalizad
 async function carregarVendasHoje(){
   const box=document.getElementById('orders-list');
   if(!FS){ box.innerHTML='<div class="empty">⚠️ Sem conexão.</div>'; return; }
-  box.innerHTML='<div class="empty">⏳ Carregando…</div>';
+  box.innerHTML='<div class="sk-wrap" aria-hidden="true"><i class="sk"></i><i class="sk"></i><i class="sk"></i></div>';
   try{
     const hoje=_hojeISO();
     const snap=await FS.collection('orders')

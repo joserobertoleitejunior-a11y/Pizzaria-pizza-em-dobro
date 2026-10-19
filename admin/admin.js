@@ -33,7 +33,7 @@ function avisar(msg, erro) {
 async function api(acao, dados) {
   try { return await chamarAdminApi(acao, dados); } catch (e) { avisar(e.message, true); throw e; }
 }
-function carregando(id) { document.getElementById(id).innerHTML = '<div class="carregando">Carregando…</div>'; }
+function carregando(id) { document.getElementById(id).innerHTML = '<div class="sk-wrap" aria-hidden="true"><i class="sk"></i><i class="sk"></i><i class="sk"></i></div>'; }
 
 // ── Abas ──
 const carregadores = { resumo: carregarResumo, pedidos: carregarPedidos, cardapio: carregarCardapio, clientes: carregarClientes, avaliacoes: carregarAvaliacoes, motoboys: carregarMotoboys, config: carregarConfig, auditoria: carregarAuditoria };

@@ -122,6 +122,13 @@ input,select,textarea{color:var(--tx);}
 #pwa-banner-btn{background:var(--pr);color:#fff;border:none;padding:12px 18px;border-radius:12px;font-size:.88rem;text-transform:uppercase;font-weight:800;cursor:pointer;white-space:nowrap;}
 #pwa-banner-close{background:none;border:none;color:#9CA3AF;font-size:1.3rem;cursor:pointer;padding:4px;}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important;}}
+
+/* ── sem "Carregando…": blocos neutros no lugar do texto, e troca de página sem piscar ── */
+@view-transition{navigation:auto}
+.sk-wrap{display:grid;gap:10px;padding:6px 0;grid-column:1/-1;width:100%}
+.sk{display:block;height:64px;border-radius:14px;background:linear-gradient(90deg,#ECEEF1 0%,#F6F7F9 50%,#ECEEF1 100%);background-size:200% 100%;animation:sk-brilho 1.4s linear infinite}
+@keyframes sk-brilho{from{background-position:200% 0}to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.sk{animation:none}}
 </style>
 </head>
 <body>
@@ -169,7 +176,7 @@ input,select,textarea{color:var(--tx);}
 </div>
 
 <div class="orders-list" id="orders-list">
-  <div class="empty"><span>⏳</span>Carregando pedidos...</div>
+  <div class="sk-wrap" aria-hidden="true"><i class="sk"></i><i class="sk"></i><i class="sk"></i></div>
 </div>
 
 
@@ -283,7 +290,7 @@ async function mudarFiltroData(valor){
   filtroDataAtual=valor;
   if(btnHoje)btnHoje.style.display='inline-block';
   const el=document.getElementById('orders-list');
-  if(el)el.innerHTML='<div class="empty"><span>⏳</span>Carregando histórico...</div>';
+  if(el)el.innerHTML='<div class="sk-wrap" aria-hidden="true"><i class="sk"></i><i class="sk"></i><i class="sk"></i></div>';
   try{
     const inicio=valor+'T00:00:00.000';
     const fim=valor+'T23:59:59.999';

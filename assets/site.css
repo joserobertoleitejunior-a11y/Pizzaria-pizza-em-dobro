@@ -1129,3 +1129,10 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .rodape-direitos p{margin:6px 0;}
 .rodape-direitos p:first-child{color:#e5e7eb;font-weight:600;font-size:.86rem;}
 @media (min-width:900px){#local-section{max-width:760px}}
+
+/* skeleton neutro (substitui textos "Carregando…") */
+.sk-wrap{display:grid;gap:10px;padding:6px 0;width:100%}
+.sk{display:block;height:56px;border-radius:14px;background:linear-gradient(90deg,rgba(255,255,255,.06) 0%,rgba(255,255,255,.14) 50%,rgba(255,255,255,.06) 100%);background-size:200% 100%;animation:sk-brilho 1.4s linear infinite}
+@keyframes sk-brilho{from{background-position:200% 0}to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.sk{animation:none}}
+@view-transition{navigation:auto}

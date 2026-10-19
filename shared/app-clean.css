@@ -186,3 +186,10 @@ input:not([type]),input[type=text],input[type=number],input[type=password],input
 .rd-gaveta{margin-top:10px;background:#ECFDF3;color:#166534;border-radius:12px;padding:9px 12px;font-size:.92rem;}
 .order-itens{font-size:.9rem;color:#374151;margin-top:6px;line-height:1.45;}
 .badge.cinza{background:#F3F4F6!important;color:var(--sub)!important;}
+
+/* ── sem "Carregando…": blocos neutros no lugar do texto, e troca de página sem piscar ── */
+@view-transition{navigation:auto}
+.sk-wrap{display:grid;gap:10px;padding:6px 0;grid-column:1/-1;width:100%}
+.sk{display:block;height:64px;border-radius:14px;background:linear-gradient(90deg,#ECEEF1 0%,#F6F7F9 50%,#ECEEF1 100%);background-size:200% 100%;animation:sk-brilho 1.4s linear infinite}
+@keyframes sk-brilho{from{background-position:200% 0}to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.sk{animation:none}}

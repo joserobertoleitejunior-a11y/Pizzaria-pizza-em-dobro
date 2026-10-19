@@ -814,7 +814,7 @@ function setConvStatsPeriod(p){
 }
 async function openPedidosConvertidos(){
   const el=document.getElementById('conv-orders-list');
-  el.innerHTML='<p style="text-align:center;color:var(--tx-5);padding:24px 0;">Carregando...</p>';
+  el.innerHTML='<div class="sk-wrap" aria-hidden="true"><i class="sk"></i><i class="sk"></i><i class="sk"></i></div>';
   convStatsPeriod=7;
   document.querySelectorAll('.conv-period-btn').forEach(function(b){b.classList.remove('active');});
   const defBtn=document.getElementById('conv-period-7');
@@ -1184,6 +1184,7 @@ let _splashAberta=false;
 function abrirPortaSplash(){
   if(_splashAberta) return;
   _splashAberta=true;
+  try{sessionStorage.setItem('splash_ok','1');}catch(e){}
   clearTimeout(_splashAutoTimer);
   const ws=document.getElementById('ws');
   if(!ws || ws.classList.contains('aberto')) return;
