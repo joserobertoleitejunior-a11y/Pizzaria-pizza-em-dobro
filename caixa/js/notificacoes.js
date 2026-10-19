@@ -114,11 +114,11 @@ function iniciarEscutaNotificacoes(){
       const ehDaLoja = o.origem!=='caixa' && (o.status==='novo'||!o.status);
       if(!ehDaLoja) return;
       // pedido do site ou do bot + impressora conectada aqui no caixa → imprime e finaliza sozinho
-      if((o.origem==='loja') && impressoraPronta()){
+      if((o.origem==='loja') && autoPedidosAtivo() && impressoraPronta()){
         finalizarPedidoAutomaticoBot(o);
       }else{
         filaNotificacoes.push(o); chegouNovo=true;
-        if((o.origem==='loja') && !impressoraPronta()) mostrarAlertaImpressora();
+        if((o.origem==='loja') && autoPedidosAtivo() && !impressoraPronta()) mostrarAlertaImpressora();
       }
     });
     if(chegouNovo) tocarSom();
@@ -126,6 +126,26 @@ function iniciarEscutaNotificacoes(){
     else atualizarBadgeBubble();
   },err=>console.warn('Notificação de pedidos indisponível (verifique a conexão).',err));
 }
+
+// Este aparelho imprime sozinho os pedidos do site? (notebook: sim; celular: não, a menos que ligue)
+// Com dois Caixas abertos, só o(s) aparelho(s) com isto LIGADO disputam o pedido — assim o celular
+// não "rouba" o pedido que deveria sair na impressora do notebook.
+function autoPedidosAtivo(){
+  try{ const v=localStorage.getItem('ped_auto_pedidos'); if(v==='1') return true; if(v==='0') return false; }catch(e){}
+  return !/Android|iPhone|iPad/i.test(navigator.userAgent||'');
+}
+function alternarAutoPedidos(){
+  const novo=!autoPedidosAtivo();
+  try{ localStorage.setItem('ped_auto_pedidos',novo?'1':'0'); }catch(e){}
+  atualizarBotaoAutoPedidos();
+  avisoRapido(novo?'📥 Este aparelho IMPRIME os pedidos do site sozinho':'⏸️ Este aparelho NÃO imprime pedidos do site (só avisa)');
+}
+function atualizarBotaoAutoPedidos(){
+  const b=document.getElementById('btn-auto-pedidos'); if(!b) return;
+  b.classList.toggle('ligado',autoPedidosAtivo());
+  b.textContent=autoPedidosAtivo()?'📥 Pedidos: IMPRIME':'📥 Pedidos: só avisa';
+}
+setTimeout(atualizarBotaoAutoPedidos,300);
 
 // Identidade deste aparelho (pra saber quem imprimiu)
 const ID_APARELHO=(()=>{ try{ let v=localStorage.getItem('ped_aparelho'); if(!v){ v=(/Android|iPhone/i.test(navigator.userAgent)?'celular-':'pc-')+Math.random().toString(36).slice(2,8); localStorage.setItem('ped_aparelho',v); } return v; }catch(e){ return 'aparelho'; } })();

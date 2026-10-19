@@ -52,7 +52,7 @@ test('criar-pedido: grava, numera em sequência e marca origem', async () => {
   assert.equal(doc.origem, 'loja');
   assert.equal(doc.conferir_preco, false);
 });
-test('criar-pedido: bloqueia duplicata (mesmo telefone e total em 10 min)', async () => {
+test('criar-pedido: bloqueia duplicata (mesmo telefone e total em 90 s)', async () => {
   const r1 = corpo(await criarPedido(post(pedidoBase())));
   const r2 = corpo(await criarPedido(post(pedidoBase())));
   assert.equal(r2.duplicado, true);

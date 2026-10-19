@@ -2,7 +2,7 @@
 //  CRIAR PEDIDO (loja) — o navegador do cliente não grava mais em
 //  "orders" direto. Aqui: valida e limpa cada campo, gera o número
 //  sequencial do dia (fuso de São Paulo), bloqueia pedido duplicado
-//  (mesmo telefone + mesmo total em 10 min) e confere os preços com
+//  (mesmo telefone + mesmo total em 90 s) e confere os preços com
 //  o cardápio do banco. Preço divergente NÃO derruba o pedido (o
 //  cliente já mandou pelo WhatsApp) — marca conferir_preco pro Caixa.
 // ══════════════════════════════════════════════════════════
@@ -81,7 +81,7 @@ exports.handler = async (event) => {
 
   try {
     if (pedido.client_phone) {
-      const dezMin = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+      const dezMin = new Date(Date.now() - 90 * 1000).toISOString(); // só barra duplo toque (90 s)
       const recentes = await db.collection('orders').where('client_phone', '==', pedido.client_phone).limit(10).get();
       const dup = recentes.docs.find(d => {
         const o = d.data();

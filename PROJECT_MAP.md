@@ -425,3 +425,5 @@ e sem `STAFF_PASSWORD`. É temporário: trocar por senha forte (e reativar o lim
 ## Entrega grátis (3+ combos)
 - Regra única em `shared/utils.js` (`COMBOS_ENTREGA_GRATIS=3`, `combosDeEsfiha`: cada 10 esfihas = 1 combo). Loja: `combosNoCarrinho/entregaGratis` (`js/core-data.js`), taxa zerada em `js/carrinho.js` + `js/checkout.js` (mensagem do WhatsApp e `taxa` enviada ao servidor). Caixa: `combosNoCaixa()` zera a taxa e mostra aviso; pedido vindo do site (`_taxaManual`) mantém a taxa que o cliente viu.
 - Destaques: cartão verde "ENTREGA GRÁTIS" (`#entrega-gratis-card`), faixas `.eg-faixa` nas seções Combos e Esfihas, e mensagem de progresso ("faltam N combos") no carrinho.
+- Cupom da cozinha (`formatarCupom`): sem preço por item, sabores um por linha (`linhasDoItem`), ESC/POS alinhado à esquerda e em negrito; no modo AUTO (navegador) fonte Arial negrito 13px, largura 46mm (a área imprimível de 58mm é ~48mm).
+- Botão "📥 Pedidos" (`autoPedidosAtivo`): define qual aparelho imprime sozinho os pedidos do site (notebook: sim; celular: só avisa). Duplicata no servidor: mesma pessoa + mesmo total só em 90 s.

@@ -157,7 +157,7 @@ function montarBytesImpressao(texto){
   const cmds=[ESC,0x40]; // inicia
   if(modo==='cp850') cmds.push(ESC,0x74,2);        // tabela PC850 (multilíngue)
   else if(modo==='cp1252') cmds.push(ESC,0x74,16); // tabela WPC1252
-  cmds.push(ESC,0x61,0x01); // centralizado
+  cmds.push(ESC,0x61,0x00,ESC,0x45,0x01); // à esquerda + negrito (mais escuro/legível)
   for(const l of texto.split('\n')){
     for(const b of codificarTexto(l,modo)) cmds.push(b);
     cmds.push(0x0A);
@@ -177,12 +177,16 @@ function impressoraPronta(){ return !!(btChar||usbEndpointOut||autoDriverAtivo()
 function imprimirViaNavegador(texto){
   return new Promise((resolve)=>{
     const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    // linha só de "─" vira um traço de verdade (não estoura a largura do papel)
+    const html=String(texto).split('\n').map(l=>/^[─\-=]{6,}$/.test(l.trim())?'<hr>':'<div>'+(esc(l)||'&nbsp;')+'</div>').join('');
     const ifr=document.createElement('iframe');
     ifr.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0;';
     document.body.appendChild(ifr);
     const d=ifr.contentWindow.document;
     d.open();
-    d.write('<html><head><meta charset="utf-8"><style>@page{size:58mm auto;margin:0}body{margin:0;padding:2mm;width:54mm;font:12px/1.25 "Courier New",monospace;white-space:pre-wrap;word-break:break-word}</style></head><body>'+esc(texto)+'</body></html>');
+    // papel 58mm: a área imprimível é ~48mm — por isso largura fixa menor que o papel (antes cortava a direita).
+    // Fonte em negrito e preta pra sair escura na térmica.
+    d.write('<html><head><meta charset="utf-8"><style>@page{size:58mm auto;margin:0}html,body{margin:0;padding:0;background:#fff}body{width:46mm;padding:1mm 1mm 6mm 2mm;font:700 13px/1.3 Arial,Helvetica,sans-serif;color:#000;overflow-wrap:anywhere}div{white-space:pre-wrap}hr{border:0;border-top:2px dashed #000;margin:4px 0}</style></head><body>'+html+'</body></html>');
     d.close();
     setTimeout(()=>{ try{ ifr.contentWindow.focus(); ifr.contentWindow.print(); }catch(e){ console.warn('Falha ao imprimir pelo navegador:',e); } setTimeout(()=>{ ifr.remove(); resolve(); },1500); },300);
   });
@@ -277,53 +281,48 @@ async function reconectarUSBAuto(){
   }catch(e){ /* silencioso — só tenta de novo depois */ }
 }
 
+// Cupom da COZINHA: sem preço por item, sabores um por linha, o que importa em destaque.
+// Divide o nome do item em título + linhas ("Esfihas (20) — 4 Carne + 3 Mista" vira uma lista).
+function linhasDoItem(nome){
+  const n=String(nome||'—').trim();
+  let m=n.match(/^Esfihas\s*\((\d+)\)\s*[—-]\s*(.+)$/i);
+  if(m) return {titulo:'ESFIHAS ('+m[1]+')',subs:m[2].split(/\s*\+\s*/)};
+  m=n.match(/^Meio a Meio:\s*(.+?)\s*\/\s*(.+)$/i);
+  if(m) return {titulo:'MEIA A MEIA',subs:['1/2 '+m[1],'1/2 '+m[2]]};
+  m=n.match(/^(.+?)\s+[—-]\s+(.+\+.+)$/); // combos: "2 Por R$ 65,00 — A + B"
+  if(m) return {titulo:'COMBO '+m[1].toUpperCase(),subs:m[2].split(/\s*\+\s*/)};
+  return {titulo:n,subs:[]};
+}
 function formatarCupom(o){
   const dt=new Date(dataStr(o.created_at)||Date.now());
-  const data=dt.toLocaleDateString('pt-BR');
+  const data=dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
   const hora=dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   const sep='────────────────────────';
-  let txt='';
-  txt+='    PIZZA EM DOBRO\n';
-  if(o.numero_sequencial) txt+='     >>> PEDIDO Nº '+o.numero_sequencial+' <<<\n';
-  txt+=data+' '+hora+'\n';
-  txt+=sep+'\n';
-  txt+='Cliente: '+(o.client_name||'—')+'\n';
-  if(o.client_phone) txt+='Telefone: '+o.client_phone+'\n';
-  txt+=sep+'\n';
-  txt+='ITENS:\n';
-  const items=o.items_json||[];
-  items.forEach((it,i)=>{
+  const entrega=o.delivery_type==='entrega';
+  let txt='PEDIDO Nº '+(o.numero_sequencial||'—')+'  '+(entrega?'ENTREGA':'RETIRADA')+'\n';
+  txt+=data+' '+hora+'  PIZZA EM DOBRO\n'+sep+'\n';
+  txt+=(o.client_name||'—')+(o.client_phone?'  '+o.client_phone:'')+'\n'+sep+'\n';
+  (o.items_json||[]).forEach(it=>{
     const nome=it.name||(it.halves?it.halves.map(h=>h.n).join(' + '):it.n)||'—';
     const qty=Number(it.qty)||1;
-    const precoUnit=Number(it.price||0);
-    txt+=(i+1)+'. '+(qty>1?qty+'x ':'')+nome+'\n';
-    if(bordaReal(it.borda))txt+='   Borda: '+it.borda+'\n';
-    if(it.added&&it.added.length)txt+='   Acréscimos: '+it.added.join(', ')+'\n';
-    if(it.removed&&it.removed.length)txt+='   Sem: '+it.removed.join(', ')+'\n';
-    if(it.obs)txt+='   Obs: '+it.obs+'\n';
-    if(qty>1){
-      txt+='   R$ '+precoUnit.toFixed(2)+' cada = R$ '+(precoUnit*qty).toFixed(2)+'\n';
-    }else{
-      txt+='   R$ '+precoUnit.toFixed(2)+'\n';
-    }
+    const li=linhasDoItem(nome);
+    txt+=qty+'x '+li.titulo+'\n';
+    li.subs.forEach(x=>{ txt+='   '+x+'\n'; });
+    if(bordaReal(it.borda))txt+='   BORDA: '+it.borda+'\n';
+    if(it.added&&it.added.length)txt+='   + '+it.added.join(', ')+'\n';
+    if(it.removed&&it.removed.length)txt+='   SEM: '+it.removed.join(', ')+'\n';
+    if(it.obs)txt+='   OBS: '+it.obs+'\n';
   });
   txt+=sep+'\n';
-  if(o.delivery_type==='entrega'){
+  if(entrega){
     const numCasa=o.house_number&&!new RegExp('(^|[^0-9])'+String(o.house_number).replace(/[^0-9A-Za-z]/g,'')+'([^0-9]|$)').test(String(o.address||''))?', nº '+o.house_number:'';
-    txt+='Endereço: '+(o.address||'—')+numCasa+'\n';
-    txt+='Tipo: ENTREGA\n';
-    if(o.taxa_entrega) txt+='Taxa de entrega: R$ '+Number(o.taxa_entrega).toFixed(2)+'\n';
-  }else{
-    txt+='Tipo: RETIRADA\n';
+    txt+=(o.address||'—')+numCasa+'\n'+sep+'\n';
   }
-  txt+=sep+'\n';
-  txt+='TOTAL: R$ '+Number(o.total||0).toFixed(2)+'\n';
-  txt+=sep+'\n';
-  txt+='Pagamento: '+(o.payment||'—')+'\n';
-  if(o.troco)txt+='Troco: R$ '+Number(o.troco).toFixed(2)+'\n';
-  else if(o.change_for&&Number(String(o.change_for).replace(',','.'))>0)txt+='Troco para: R$ '+Number(String(o.change_for).replace(',','.')).toFixed(2)+'\n';
-  txt+=sep+'\n\n\n';
-  return txt;
+  txt+='TOTAL R$ '+Number(o.total||0).toFixed(2).replace('.',',')+(entrega?(Number(o.taxa_entrega)>0?'  (entrega R$ '+Number(o.taxa_entrega).toFixed(2).replace('.',',')+')':'  (entrega grátis)'):'')+'\n';
+  txt+='Pagto: '+(o.payment||'—')+'\n';
+  if(o.troco)txt+='Troco: R$ '+Number(o.troco).toFixed(2).replace('.',',')+'\n';
+  else if(o.change_for&&Number(String(o.change_for).replace(',','.'))>0)txt+='Troco p/ R$ '+Number(String(o.change_for).replace(',','.')).toFixed(2).replace('.',',')+'\n';
+  return txt+'\n';
 }
 // ponto único pra tentar reconectar (USB primeiro, depois Bluetooth) — trava contra tentativas
 // simultâneas dos vários gatilhos abaixo (troca de aba, foco da janela, checagem periódica)
