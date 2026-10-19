@@ -1,0 +1,23 @@
+# Netlify: serve a pasta "dist" (só arquivos públicos — ver scripts/build-cf.js) e roda as rotas /api/*
+# pela função netlify/functions/api.js (mesmo código do Cloudflare: server/*.js).
+# O mesmo repositório também publica no Cloudflare Workers (wrangler.jsonc) — escolha um dos dois.
+[build]
+  command = "node scripts/build-cf.js"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[functions]
+  node_bundler = "esbuild"
+
+# tarefa agendada do bot (lembra/encerra conversas paradas) — a cada 5 minutos
+[functions."bot-followup"]
+  schedule = "*/5 * * * *"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api"
+  status = 200
+  force = true
