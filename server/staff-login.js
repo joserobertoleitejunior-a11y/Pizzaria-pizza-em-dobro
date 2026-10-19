@@ -14,9 +14,9 @@ const { admin } = require('./lib/firebase');
 const { reportError } = require('./lib/sentry');
 const { senhaConfere } = require('./lib/senha');
 
-// ⚠️ PROVISÓRIO (pedido do José): acesso fixo usuário "marco" / senha "1234", sem bloqueio
-// por tentativas e sem depender de STAFF_PASSWORD. TROCAR por senha forte antes de abrir ao público.
-const ACESSO_PROVISORIO = { usuario: 'marco', senha: '1234' };
+// ⚠️ Acesso fixo pedido pelo José: usuário "marco" / senha "lamalu", sem bloqueio por tentativas
+// e sem depender de STAFF_PASSWORD. Senha curta: trocar por uma forte + bloqueio quando for abrir a mais gente.
+const ACESSO_PROVISORIO = { usuario: 'marco', senha: 'lamalu' };
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {

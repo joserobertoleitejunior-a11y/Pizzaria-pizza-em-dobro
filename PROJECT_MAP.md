@@ -405,3 +405,16 @@ e sem `STAFF_PASSWORD`. É temporário: trocar por senha forte (e reativar o lim
 - `caixa/js/impressora.js`: USB (WebUSB), Bluetooth LE e **AUTO** (driver do Windows via `window.print()` num iframe, silencioso com Chrome `--kiosk-printing`). `impressoraPronta()` é o teste único usado por Caixa/notificações/fechamento.
 - Acentos: texto convertido pra tabela da impressora (`cp850` padrão, `cp1252` ou `sem` acento). Botão "Teste" imprime uma linha com acentos e troca o modo a cada toque (salvo em `localStorage.ped_acento`).
 - Pedido do site chegando + impressora pronta → imprime e finaliza sozinho (`iniciarEscutaNotificacoes` em `notificacoes.js`). Sem impressora → entra na fila de notificações com som.
+- Celular (Android): o modo AUTO (driver do Windows) fica desligado e escondido — `window.print()` abriria a tela "Todas as impressoras". No celular a térmica é pelo cabo USB (OTG) com o botão "🔌 USB" (WebUSB, reconecta sozinha depois da 1ª vez).
+
+## Versão sempre atualizada
+- `scripts/build-cf.js` gera `dist/version.json` a cada deploy; `shared/atualizar-versao.js` (loja, Caixa, Dashboard, Clientes, Painel) compara com a última vista no aparelho e, se mudou, limpa o cache do app e recarrega 1 vez. `sw.js` busca a rede com `cache:'no-cache'`; `/`, `/index.html`, `/sw.js` e `/version.json` sem cache HTTP.
+
+## Login da equipe
+- `server/staff-login.js`: usuário `marco`, senha `lamalu` (pedido do José). Trocar por senha forte + bloqueio quando abrir a mais gente.
+
+## Conversor (Colar Pedido do Caixa)
+- O "Conversor" da loja abre `caixa/index.html?colar=1` (o antigo de `js/conversor-storefront.js` não é mais usado).
+- IA devolve também `acrescimos`, `entrega` (entrega/retirada), `troco_para`, `observacao_geral`; tenta 2× se o JSON vier quebrado.
+- Nomes casados com tolerância (`_acharPorNome`: sem acento, "contém", palavras em comum, erro de digitação pequeno) — sabor inexistente continua indo como "⚠️ CONFERIR", nunca trocado.
+- Cupom (`formatarCupom`) igual pra pedido do site e convertido: acréscimos, nº da casa (site guarda em `house_number`), troco ("Troco para"), taxa. Pedido do site agora manda preço do item com borda+acréscimos, `added` e `taxa`.

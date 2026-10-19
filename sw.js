@@ -1,4 +1,4 @@
-const CACHE='ped-v39'; // versão bumped: reforma visual completa (cores, splash, imagens geradas por
+const CACHE='ped-v40'; // versão bumped: reforma visual completa (cores, splash, imagens geradas por
 // código) — sem isso o service worker antigo (sem clients.claim()) ficava "preso" controlando
 // as abas já abertas até o cliente fechar TODAS as abas do site manualmente, então toda
 // atualização de verdade parecia "não ter saído do ar" pra quem já tinha visitado antes.
@@ -27,7 +27,7 @@ self.addEventListener('fetch',e=>{
   }
   e.respondWith(
     caches.open(CACHE).then(cache=>
-      fetch(e.request).then(res=>{
+      fetch(e.request,{cache:'no-cache'}).then(res=>{
         if(res.ok)cache.put(e.request,res.clone());
         return res;
       }).catch(()=>caches.match(e.request))

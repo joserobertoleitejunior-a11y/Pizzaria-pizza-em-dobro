@@ -26,7 +26,8 @@ function limparItens(lista) {
       name,
       price,
       borda: /^(sem|nenhuma|n[aã]o)\b/i.test(String(i.borda || '').trim()) ? null : texto(i.borda, 60),
-      removed: Array.isArray(i.removed) ? i.removed.slice(0, 20).map(r => texto(r, 60)).filter(Boolean) : []
+      removed: Array.isArray(i.removed) ? i.removed.slice(0, 20).map(r => texto(r, 60)).filter(Boolean) : [],
+      added: Array.isArray(i.added) ? i.added.slice(0, 20).map(r => texto(r, 60)).filter(Boolean) : []
     });
   }
   return itens;
@@ -70,6 +71,7 @@ exports.handler = async (event) => {
     change_for: texto(b.change, 40),
     delivery_type: TIPOS.includes(b.type) ? b.type : null,
     total: numero(b.total, 0, 5000),
+    taxa_entrega: b.type === 'entrega' ? (numero(b.taxa, 0, 100) || 0) : 0,
     items_json: limparItens(b.items)
   };
   if (!pedido.client_name || !pedido.delivery_type || pedido.total === null || !pedido.items_json) {

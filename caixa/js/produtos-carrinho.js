@@ -144,19 +144,20 @@ function adicionarComboAoCarrinho(combo, s1, s2, qtd){
 
 // ── FUNÇÃO ÚNICA para montar item meia a meia — usada pelo modo manual E pelo Colar Pedido,
 // garantindo que os dois caminhos produzam exatamente o mesmo resultado, sem divergência.
-function criarItemMeiaAMeia(metadeA, metadeB, bordaNome, removidos, qtd){
+function criarItemMeiaAMeia(metadeA, metadeB, bordaNome, removidos, qtd, acrescimos){
   const borda=BORDAS_DEFAULT.find(b=>b.name===bordaNome);
   const precoBorda=(borda&&borda.name!=='Sem Borda Recheada')?borda.price:0;
   const bordaFinal=(borda&&borda.name!=='Sem Borda Recheada')?borda.name:null;
-  const unitPrice=Math.max(metadeA.p,metadeB.p)+precoBorda; // regra oficial: cobra o valor da metade mais cara + borda
+  const acrs=Array.isArray(acrescimos)?acrescimos:[];
+  const unitPrice=Math.max(metadeA.p,metadeB.p)+precoBorda+acrs.reduce((t,a)=>t+a.price,0); // regra oficial: metade mais cara + borda + acréscimos
   return {
-    _chave:'meia|'+[metadeA.id,metadeB.id].sort().join('-')+'|'+bordaFinal+'|'+(removidos||[]).slice().sort().join(','),
+    _chave:'meia|'+[metadeA.id,metadeB.id].sort().join('-')+'|'+bordaFinal+'|'+(removidos||[]).slice().sort().join(',')+'|'+acrs.map(a=>a.name).sort().join(','),
     id:null, name:`Meio a Meio: ${metadeA.n} / ${metadeB.n}`, unitPrice, qty:qtd||1,
-    borda:bordaFinal, removedIng:removidos||[], addedIng:[], isMeia:true
+    borda:bordaFinal, removedIng:removidos||[], addedIng:acrs.map(a=>a.name), isMeia:true
   };
 }
-function adicionarMeiaAMeiaAoCarrinho(metadeA, metadeB, bordaNome, removidos, qtd){
-  const novo=criarItemMeiaAMeia(metadeA, metadeB, bordaNome, removidos, qtd);
+function adicionarMeiaAMeiaAoCarrinho(metadeA, metadeB, bordaNome, removidos, qtd, acrescimos){
+  const novo=criarItemMeiaAMeia(metadeA, metadeB, bordaNome, removidos, qtd, acrescimos);
   const existente=cart.find(c=>c._chave===novo._chave);
   if(existente){ existente.qty+=novo.qty; }
   else{ cart.push(novo); }
@@ -685,6 +686,9 @@ async function reimprimir(id){
     if(impressoraPronta()){
       await imprimirBluetooth(formatarCupom(pedido));
       avisoRapido('🖨️ Enviado pra impressora');
+    }else if(typeof EH_CELULAR!=='undefined'&&EH_CELULAR){
+      // no celular a tela de impressão do sistema não acha a térmica — pede pra conectar pelo cabo
+      alert('🖨️ Impressora não conectada.\n\nCom o cabo USB ligado no celular, toque em "🔌 USB" no topo do Caixa e escolha a impressora. Depois disso ela reconecta sozinha.');
     }else{
       // sem impressora térmica conectada: abre a impressão do navegador (qualquer impressora do notebook)
       if(typeof pedido.items_json==='string'){ try{ pedido.items_json=JSON.parse(pedido.items_json); }catch(e){ pedido.items_json=[]; } }

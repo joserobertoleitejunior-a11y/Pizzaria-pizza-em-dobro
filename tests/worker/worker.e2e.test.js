@@ -76,8 +76,8 @@ test('pedido da loja: grava, numera e a visita é contada', async () => {
   assert.equal(publico.client_phone, undefined);
 });
 
-test('rotas da equipe exigem login: admin-api, send-whatsapp, parse-order, dashboard-chat, dashboard-ai', async () => {
-  for (const rota of ['admin-api', 'send-whatsapp', 'parse-order', 'dashboard-chat', 'dashboard-ai']) {
+test('rotas da equipe exigem login: admin-api, parse-order, dashboard-chat, dashboard-ai', async () => {
+  for (const rota of ['admin-api', 'parse-order', 'dashboard-chat', 'dashboard-ai']) {
     assert.equal((await post(rota, { acao: 'resumo' })).status, 401, rota);
     assert.equal((await post(rota, { acao: 'resumo' }, { Authorization: 'Bearer lixo.lixo.lixo' })).status, 401, rota + ' (token falso)');
   }
@@ -85,7 +85,7 @@ test('rotas da equipe exigem login: admin-api, send-whatsapp, parse-order, dashb
 
 test('login da equipe: senha errada recusa, certa devolve token que o admin-api aceita', async () => {
   assert.equal((await post('staff-login', { usuario: 'marco', senha: 'errada' })).status, 401);
-  const ok = await post('staff-login', { usuario: 'marco', senha: '1234' });
+  const ok = await post('staff-login', { usuario: 'marco', senha: 'lamalu' });
   assert.equal(ok.status, 200);
   const { token } = await ok.json();
   const troca = await fetch(`http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=fake`, {

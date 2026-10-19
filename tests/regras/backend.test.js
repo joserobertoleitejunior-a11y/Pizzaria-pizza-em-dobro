@@ -139,10 +139,10 @@ test('admin-api: chaves de API são gravadas mas nunca devolvidas', async () => 
   assert.ok(!r.body.includes('sk-ant-123'));
 });
 
-test('staff-login PROVISÓRIO: marco/1234 entra; usuário ou senha errados não', async () => {
-  assert.equal((await staffLogin(post({ usuario: 'marco', senha: '1234' }))).statusCode, 200);
-  assert.equal((await staffLogin(post({ usuario: 'Marco ', senha: '1234' }))).statusCode, 200);
+test('staff-login PROVISÓRIO: marco/lamalu entra; usuário ou senha errados não', async () => {
+  assert.equal((await staffLogin(post({ usuario: 'marco', senha: 'lamalu' }))).statusCode, 200);
+  assert.equal((await staffLogin(post({ usuario: 'Marco ', senha: 'lamalu' }))).statusCode, 200);
   assert.equal((await staffLogin(post({ usuario: 'marco', senha: 'errada' }))).statusCode, 401);
-  assert.equal((await staffLogin(post({ usuario: 'outro', senha: '1234' }))).statusCode, 401);
-  assert.equal((await staffLogin(post({ senha: '1234' }))).statusCode, 401);
+  assert.equal((await staffLogin(post({ usuario: 'outro', senha: 'lamalu' }))).statusCode, 401);
+  assert.equal((await staffLogin(post({ senha: 'lamalu' }))).statusCode, 401);
 });

@@ -167,7 +167,10 @@ function montarBytesImpressao(texto){
 // ── Impressão pelo driver do Windows (sem WebUSB): imprime sozinha, sem janela, quando o Chrome
 // do Caixa é aberto com a opção --kiosk-printing (ver instruções no botão "Auto"). Serve pra
 // qualquer impressora instalada no Windows, inclusive a POS-5890U com o driver do fabricante.
-function autoDriverAtivo(){ try{ return localStorage.getItem('ped_auto_driver')==='1'; }catch(e){ return false; } }
+// No celular (Android/iPhone) não existe impressão silenciosa: o window.print() abre a tela de
+// "Todas as impressoras" do sistema. Lá a impressora térmica é sempre pelo cabo USB (OTG) ou BT.
+const EH_CELULAR=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent||'');
+function autoDriverAtivo(){ if(EH_CELULAR) return false; try{ return localStorage.getItem('ped_auto_driver')==='1'; }catch(e){ return false; } }
 function impressoraPronta(){ return !!(btChar||usbEndpointOut||autoDriverAtivo()); }
 function imprimirViaNavegador(texto){
   return new Promise((resolve)=>{
@@ -275,6 +278,7 @@ function formatarCupom(o){
     const precoUnit=Number(it.price||0);
     txt+=(i+1)+'. '+(qty>1?qty+'x ':'')+nome+'\n';
     if(bordaReal(it.borda))txt+='   Borda: '+it.borda+'\n';
+    if(it.added&&it.added.length)txt+='   Acréscimos: '+it.added.join(', ')+'\n';
     if(it.removed&&it.removed.length)txt+='   Sem: '+it.removed.join(', ')+'\n';
     if(it.obs)txt+='   Obs: '+it.obs+'\n';
     if(qty>1){
@@ -285,7 +289,8 @@ function formatarCupom(o){
   });
   txt+=sep+'\n';
   if(o.delivery_type==='entrega'){
-    txt+='Endereço: '+(o.address||'—')+'\n';
+    const numCasa=o.house_number&&!new RegExp('(^|[^0-9])'+String(o.house_number).replace(/[^0-9A-Za-z]/g,'')+'([^0-9]|$)').test(String(o.address||''))?', nº '+o.house_number:'';
+    txt+='Endereço: '+(o.address||'—')+numCasa+'\n';
     txt+='Tipo: ENTREGA\n';
     if(o.taxa_entrega) txt+='Taxa de entrega: R$ '+Number(o.taxa_entrega).toFixed(2)+'\n';
   }else{
@@ -296,6 +301,7 @@ function formatarCupom(o){
   txt+=sep+'\n';
   txt+='Pagamento: '+(o.payment||'—')+'\n';
   if(o.troco)txt+='Troco: R$ '+Number(o.troco).toFixed(2)+'\n';
+  else if(o.change_for&&Number(String(o.change_for).replace(',','.'))>0)txt+='Troco para: R$ '+Number(String(o.change_for).replace(',','.')).toFixed(2)+'\n';
   txt+=sep+'\n\n\n';
   return txt;
 }
@@ -345,6 +351,7 @@ function alternarAutoDriver(){
 }
 function atualizarBotaoAuto(){
   const b=document.getElementById('btn-auto-driver'); if(!b) return;
+  if(EH_CELULAR){ b.style.display='none'; return; }
   b.classList.toggle('ligado',autoDriverAtivo());
   b.textContent=autoDriverAtivo()?'🖨️ AUTO ✓':'🖨️ AUTO';
 }

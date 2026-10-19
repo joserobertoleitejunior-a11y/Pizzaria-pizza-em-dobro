@@ -32,6 +32,9 @@ for (const item of INCLUIR) {
   });
 }
 
+// Número da versão publicada: o site compara com o do aparelho e limpa o cache se mudou
+fs.writeFileSync(path.join(DIST, 'version.json'), JSON.stringify({ v: (process.env.COMMIT_REF || 'local').slice(0, 12) + '-' + Date.now() }));
+
 // Cabeçalhos de segurança/indexação (formato do Cloudflare Workers assets)
 fs.writeFileSync(path.join(DIST, '_headers'), `/*
   X-Content-Type-Options: nosniff
@@ -40,6 +43,15 @@ fs.writeFileSync(path.join(DIST, '_headers'), `/*
 
 /assets/*
   Cache-Control: public, max-age=3600
+
+/version.json
+  Cache-Control: no-store
+/sw.js
+  Cache-Control: no-cache
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
 
 /admin/*
   X-Robots-Tag: noindex, nofollow

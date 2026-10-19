@@ -14,8 +14,8 @@ test('rota inexistente e bot-followup (removido) → 404', async () => {
   assert.equal((await chama('bot-followup', {})).statusCode, 404);
   assert.equal((await chama('constructor', {})).statusCode, 404);
 });
-test('login da equipe pelo adaptador: marco/1234 entra, senha errada não', async () => {
-  const ok = await chama('staff-login', { usuario: 'marco', senha: '1234' });
+test('login da equipe pelo adaptador: marco/lamalu entra, senha errada não', async () => {
+  const ok = await chama('staff-login', { usuario: 'marco', senha: 'lamalu' });
   assert.equal(ok.statusCode, 200);
   assert.ok(JSON.parse(ok.body).token);
   assert.equal((await chama('staff-login', { usuario: 'marco', senha: 'x' })).statusCode, 401);

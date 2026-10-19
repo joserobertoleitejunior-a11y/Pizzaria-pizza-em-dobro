@@ -124,7 +124,12 @@ async function trackOrder(items,od){
       const r=await fetch('/api/criar-pedido',{method:'POST',headers,body:JSON.stringify({
         name:od.name,phone:od.phone||null,address:od.address,num:od.num,
         pay:od.pay,change:od.change||null,type:od.type,total:od.total,
-        items:items.map(i=>({id:i.id,name:i.n,price:i.p,borda:(i.selectedBorda&&i.selectedBorda.price>0)?i.selectedBorda.name:null,removed:i.removedIngredients||[]}))
+        taxa:od.type==='retirada'?0:8,
+        items:items.map(i=>{
+          const acr=i.addedIngredients||[];
+          const extra=((i.selectedBorda&&i.selectedBorda.price)||0)+acr.reduce((s,a)=>s+(Number(a.price)||0),0);
+          return {id:i.id,name:i.n,price:Math.round((Number(i.p)+extra)*100)/100,borda:(i.selectedBorda&&i.selectedBorda.price>0)?i.selectedBorda.name:null,removed:i.removedIngredients||[],added:acr.map(a=>a.name)};
+        })
       })});
       if(!r.ok) console.warn('Pedido não registrado no sistema (já foi pelo WhatsApp):',await r.text());
     }catch(e){ console.warn('Pedido não registrado no sistema (já foi pelo WhatsApp):',e); }

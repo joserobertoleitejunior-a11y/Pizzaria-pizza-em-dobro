@@ -30,6 +30,7 @@ async function interpretarPedidoColado(){
 
   const nomesCardapio=DEFAULT_MENU.map(i=>i.n);
   const nomesBordas=BORDAS_DEFAULT.map(b=>b.name);
+  const nomesAcrescimos=ACRESCIMOS_DEFAULT.map(a=>a.name);
   const faixasCombo=(typeof COMBOS_DEFAULT!=='undefined'?COMBOS_DEFAULT:[]).map(c=>
     `- 2 Por R$ ${c.preco.toFixed(2).replace('.',',')}: escolha 2 sabores DIFERENTES entre ${c.sabores.join(', ')}`
   ).join('\n');
@@ -37,10 +38,14 @@ async function interpretarPedidoColado(){
 
 {"cliente":{"nome":string|null,"telefone":string|null,"endereco":{"rua":string|null,"numero":string|null,"complemento":string|null,"bairro":string|null}},
 "pagamento":{"forma_principal":string|null,"misto":[{"metodo":string,"valor":number|null}]|null},
-"itens":[{"tipo":"normal"|"meia_a_meia"|"combo"|"broto"|"esfihas","nome_cardapio":string|null,"nome_cardapio_2":string|null,"combo_faixa":number|null,"esfihas":[{"sabor":string,"qtd":number}]|null,"qtd":number,"borda":string|null,"remover":[string],"observacao":string|null}]}
+"entrega":"entrega"|"retirada"|null,"troco_para":number|null,"observacao_geral":string|null,
+"itens":[{"tipo":"normal"|"meia_a_meia"|"combo"|"broto"|"esfihas","nome_cardapio":string|null,"nome_cardapio_2":string|null,"combo_faixa":number|null,"esfihas":[{"sabor":string,"qtd":number}]|null,"qtd":number,"borda":string|null,"acrescimos":[string],"remover":[string],"observacao":string|null}]}
 
 CARDÁPIO REAL — "nome_cardapio" e "nome_cardapio_2" DEVEM ser EXATAMENTE um destes nomes (copie a grafia exata), ou null se não tiver certeza absoluta: ${JSON.stringify(nomesCardapio)}
 BORDAS REAIS — "borda" DEVE ser EXATAMENTE um destes nomes, ou null: ${JSON.stringify(nomesBordas)}
+ACRÉSCIMOS REAIS (R$ 7,00 cada) — "acrescimos" só pode ter nomes DESTA lista (ex: "mais bacon", "com catupiry extra", "adicional de cheddar" → o nome correspondente); [] se não pediu: ${JSON.stringify(nomesAcrescimos)}
+ENTREGA/RETIRADA — "entrega": "retirada" se o cliente disser que vai buscar/retirar/pegar no local/"vou aí"; "entrega" se pedir entrega ou passar endereço; null se não ficou claro. "troco_para": valor (número) se o cliente disser que paga em dinheiro e precisa de troco pra tal valor (ex: "troco pra 100" → 100); senão null. "observacao_geral": recado do cliente sobre o PEDIDO todo (ex: "ponto de referência: portão azul", "sem pressa", "tocar o interfone") em uma frase curta, ou null.
+SEJA FLEXÍVEL com a forma de escrever: aceite gírias, abreviações ("calabreza", "mussa", "frango c/ cat"), erros de digitação, mensagens longas, listas com marcadores ou emojis, o formato do pedido do próprio site ("NOVO PEDIDO - SITE OFICIAL"), pedidos de várias pizzas/bebidas/esfihas/doces/calzones numa mensagem só, e informações fora de ordem. Reconheça bebidas e doces do cardápio também (tipo "normal"). Se um sabor não existir no cardápio, use null no nome e explique em "observacao" (nunca troque por outro).
 
 FAIXAS DE COMBO "2 POR X" (promoção fixa — use EXATAMENTE estas faixas e sabores, nunca invente combinação ou preço):
 ${faixasCombo}
@@ -97,16 +102,24 @@ JSON esperado:
 (repare: "Catupiry" aqui é parte do NOME do sabor, nenhum dos dois itens pediu borda, então "borda" fica null nos dois — mesmo a palavra "catupiry" aparecendo no texto. E "205" virou "numero" mesmo sem nome de rua junto — nunca jogue um número solto fora.)`;
 
   try{
-    const r=await fetch('/api/parse-order',{
-      method:'POST',
-      headers:await cabecalhosEquipe(),
-      body:JSON.stringify({systemPrompt, raw:texto})
-    });
-    const d=await r.json();
-    if(d.error) throw new Error(d.error);
-    let raw=d?.texto||'';
-    raw=raw.trim().replace(/^```json\s*|^```\s*|```$/g,'');
-    const parsed=JSON.parse(raw);
+    // 1ª tentativa; se a IA devolver algo que não é JSON (acontece com mensagem muito bagunçada), tenta de novo uma vez
+    let parsed=null, ultimoErro=null;
+    for(let tentativa=0;tentativa<2&&!parsed;tentativa++){
+      try{
+        const r=await fetch('/api/parse-order',{
+          method:'POST',
+          headers:await cabecalhosEquipe(),
+          body:JSON.stringify({systemPrompt, raw:texto})
+        });
+        const d=await r.json();
+        if(d.error) throw new Error(d.error);
+        let raw=(d?.texto||'').trim().replace(/^```json\s*|^```\s*|```$/g,'');
+        const ini=raw.indexOf('{'), fim=raw.lastIndexOf('}');
+        if(ini>=0&&fim>ini) raw=raw.slice(ini,fim+1); // pega só o JSON, mesmo que venha texto antes/depois
+        parsed=JSON.parse(raw);
+      }catch(e){ ultimoErro=e; if(tentativa===0) status.textContent='🤖 Conferindo de novo...'; }
+    }
+    if(!parsed) throw ultimoErro||new Error('sem resposta');
     montarCaixaComPedidoInterpretado(parsed);
     closeModal('modal-colar');
   }catch(e){
@@ -117,6 +130,28 @@ JSON esperado:
     btn.disabled=false; btn.style.opacity='1';
   }
 }
+
+// ── Casamento tolerante com o cardápio: a IA pode errar a grafia ("calabreza", "Frango c/ Catupiry").
+// Primeiro igualdade sem acento/maiúscula, depois "contém", depois palavras em comum.
+function _normNome(t){ return String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\b(pizza|de|da|do|a|o|com|c|e|extra)\b/g,' ').replace(/\s+/g,' ').trim(); }
+function _acharPorNome(nome,lista,getNome){
+  const alvo=_normNome(nome); if(!alvo) return null;
+  const nomes=lista.map(x=>_normNome(getNome(x)));
+  let i=nomes.indexOf(alvo); if(i>=0) return lista[i];
+  const cont=[]; nomes.forEach((n,k)=>{ if(n&&(n.includes(alvo)||alvo.includes(n))) cont.push(k); });
+  if(cont.length===1) return lista[cont[0]];
+  // erro de digitação ("calabreza", "margarita"): distância de edição pequena e sem empate
+  const dist=(a,b)=>{ const d=Array.from({length:a.length+1},(_,i)=>[i]); for(let j=1;j<=b.length;j++) d[0][j]=j; for(let i=1;i<=a.length;i++) for(let j=1;j<=b.length;j++) d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); return d[a.length][b.length]; };
+  const limite=Math.max(1,Math.floor(alvo.length*0.25)); let mk=-1, md=99, mt=false;
+  nomes.forEach((n,k)=>{ if(!n) return; const x=dist(alvo,n); if(x<md){md=x;mk=k;mt=false;} else if(x===md) mt=true; });
+  if(mk>=0&&md<=limite&&!mt) return lista[mk];
+  const pa=new Set(alvo.split(' ')); let melhor=-1, ms=0, empate=false;
+  nomes.forEach((n,k)=>{ if(!n) return; const pn=n.split(' '); const comum=pn.filter(w=>pa.has(w)).length; const sc=comum/Math.max(pn.length,pa.size); if(sc>ms){ms=sc;melhor=k;empate=false;} else if(sc===ms&&sc>0) empate=true; });
+  return (melhor>=0&&ms>=0.6&&!empate)?lista[melhor]:null;
+}
+const _acharItem=n=>_acharPorNome(n,DEFAULT_MENU,m=>m.n);
+const _acharBorda=n=>_acharPorNome(n,BORDAS_DEFAULT,b=>b.name);
+const _acharAcrescimos=ls=>(Array.isArray(ls)?ls:[]).map(n=>_acharPorNome(n,ACRESCIMOS_DEFAULT,a=>a.name)).filter((a,i,arr)=>a&&arr.indexOf(a)===i);
 
 function montarCaixaComPedidoInterpretado(parsed){
   let naoIdentificados=0;
@@ -148,7 +183,8 @@ function montarCaixaComPedidoInterpretado(parsed){
     // ---- COMBO BROTO (2 broto por R$ 50, qualquer sabor p/s, pode repetir) ----
     if(it.tipo==='broto'){
       const sabOk=n=>DEFAULT_MENU.some(m=>(m.cat==='p'||m.cat==='s')&&m.n===n);
-      const s1=it.nome_cardapio, s2=it.nome_cardapio_2||it.nome_cardapio;
+      const acharSab=n=>{ const m=_acharItem(n); return m&&(m.cat==='p'||m.cat==='s')?m.n:n; };
+      const s1=acharSab(it.nome_cardapio), s2=acharSab(it.nome_cardapio_2||it.nome_cardapio);
       if(!s1||!sabOk(s1)||!sabOk(s2)){
         naoIdentificados++;
         cart.push({
@@ -190,8 +226,8 @@ function montarCaixaComPedidoInterpretado(parsed){
 
     // ---- MEIA A MEIA ----
     if(it.tipo==='meia_a_meia'){
-      const metadeA=DEFAULT_MENU.find(m=>m.n===it.nome_cardapio);
-      const metadeB=DEFAULT_MENU.find(m=>m.n===it.nome_cardapio_2);
+      const metadeA=DEFAULT_MENU.find(m=>m.n===it.nome_cardapio)||_acharItem(it.nome_cardapio);
+      const metadeB=DEFAULT_MENU.find(m=>m.n===it.nome_cardapio_2)||_acharItem(it.nome_cardapio_2);
       if(!metadeA||!metadeB){
         naoIdentificados++;
         cart.push({
@@ -202,13 +238,13 @@ function montarCaixaComPedidoInterpretado(parsed){
         return;
       }
       // usa a MESMA função do modo manual — zero divergência de preço/formato entre os dois caminhos
-      adicionarMeiaAMeiaAoCarrinho(metadeA, metadeB, it.borda, Array.isArray(it.remover)?it.remover:[], qtd);
+      adicionarMeiaAMeiaAoCarrinho(metadeA, metadeB, (_acharBorda(it.borda)||{}).name||null, Array.isArray(it.remover)?it.remover:[], qtd, _acharAcrescimos(it.acrescimos));
       meiaAMeiaDetectada=true;
       return;
     }
 
     // ---- ITEM NORMAL ----
-    const menuItem=DEFAULT_MENU.find(m=>m.n===it.nome_cardapio);
+    const menuItem=DEFAULT_MENU.find(m=>m.n===it.nome_cardapio)||_acharItem(it.nome_cardapio);
     if(!menuItem){
       naoIdentificados++;
       cart.push({
@@ -218,17 +254,20 @@ function montarCaixaComPedidoInterpretado(parsed){
       });
       return;
     }
-    const borda=BORDAS_DEFAULT.find(b=>b.name===it.borda);
+    const borda=BORDAS_DEFAULT.find(b=>b.name===it.borda)||_acharBorda(it.borda);
     const precoBorda=(itemAceitaOpcoes(menuItem.cat)&&borda)?borda.price:0;
+    const acrs=itemAceitaOpcoes(menuItem.cat)?_acharAcrescimos(it.acrescimos):[];
+    const precoAcr=acrs.reduce((t,a)=>t+a.price,0);
+    const acrNomes=acrs.map(a=>a.name);
     const bordaNome=(itemAceitaOpcoes(menuItem.cat)&&borda&&borda.name!=='Sem Borda Recheada')?borda.name:null;
     const removidos=Array.isArray(it.remover)?it.remover:[];
     const obsTexto=it.observacao||null;
     // chave determinística (nunca Date.now()/Math.random()) — pizza igual pedida 2x vira "2x" numa linha só, não 2 linhas de "1x"
     const novoItem={
-      id:menuItem.id, name:menuItem.n, unitPrice:menuItem.p+precoBorda, qty:qtd,
-      borda:bordaNome, removedIng:removidos, addedIng:[], obs:obsTexto, isMeia:false
+      id:menuItem.id, name:menuItem.n, unitPrice:menuItem.p+precoBorda+precoAcr, qty:qtd,
+      borda:bordaNome, removedIng:removidos, addedIng:acrNomes, obs:obsTexto, isMeia:false
     };
-    novoItem._chave='colado|'+menuItem.id+'|'+(bordaNome||'')+'|'+removidos.slice().sort().join(',')+'|'+(obsTexto||'');
+    novoItem._chave='colado|'+menuItem.id+'|'+(bordaNome||'')+'|'+removidos.slice().sort().join(',')+'|'+acrNomes.slice().sort().join(',')+'|'+(obsTexto||'');
     const existenteItem=cart.find(c=>c._chave===novoItem._chave);
     if(existenteItem){ existenteItem.qty+=novoItem.qty; }
     else{ cart.push(novoItem); }
@@ -259,6 +298,12 @@ function montarCaixaComPedidoInterpretado(parsed){
     if((end.rua||end.bairro)&&!end.numero) enderecoFaltandoNumero=true;
   }
 
+  // retirada declarada pelo cliente vale mais que "ter endereço"; entrega sem endereço fica como entrega
+  if(parsed.entrega==='retirada'){ document.getElementById('f-tipo').value='retirada'; alternarCampoEntregador(); }
+  else if(parsed.entrega==='entrega'&&document.getElementById('f-tipo').value!=='entrega'){ document.getElementById('f-tipo').value='entrega'; alternarCampoEntregador(); }
+  // recado geral do cliente sobre o pedido: vai como observação no 1º item do carrinho (aparece no cupom)
+  if(parsed.observacao_geral&&cart.length){ const p0=cart[0]; p0.obs=[p0.obs,parsed.observacao_geral].filter(Boolean).join(' | '); }
+
   atualizarBarraCarrinho();
   openCartModal(); // atenção: isso reseta o pagamento, por isso o misto é aplicado DEPOIS, abaixo
 
@@ -283,6 +328,12 @@ function montarCaixaComPedidoInterpretado(parsed){
   } else if(pag.forma_principal){
     const metodo=['Dinheiro','Pix','Cartão de Crédito','Cartão de Débito'].find(m=>pag.forma_principal.toLowerCase().includes(m.toLowerCase().split(' ')[0].toLowerCase()));
     if(metodo) selecionarPagamento(metodo);
+    // "troco pra 100": preenche o valor recebido (o Caixa calcula o troco sozinho)
+    const campoRec=document.getElementById('f-valor-recebido');
+    if(metodo==='Dinheiro'&&campoRec&&Number(parsed.troco_para)>0){
+      campoRec.value=Number(parsed.troco_para);
+      campoRec.dispatchEvent(new Event('input',{bubbles:true}));
+    }
   }
 
   if(meiaAMeiaDetectada){
