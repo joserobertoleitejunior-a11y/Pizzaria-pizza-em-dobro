@@ -84,7 +84,7 @@ EXEMPLOS SÓ DE NÚMERO (pra fixar o padrão, endereço completo fora deles pode
 
 10. COMBO BROTO — "2 pizzas broto por R$ 50" (o cliente diz "combo broto", "2 broto", "duas brotinho", "broto 50", "uma broto de X e uma de Y"): cada pizza broto pedida é UM item com "tipo":"broto", "nome_cardapio" = o sabor (EXATAMENTE como no CARDÁPIO REAL, qualquer tradicional ou especial) e "nome_cardapio_2":null, e "qtd" = QUANTAS pizzas broto desse sabor (NÃO quantos combos). Ex: "2 broto, uma de calabresa e uma de mussarela" → DOIS itens broto (calabresa qtd 1 e mussarela qtd 1); "2 broto de calabresa" → UM item broto calabresa com qtd 2. O sistema junta as brotos de 2 em 2 em combos de R$ 50 sozinho — NUNCA monte o combo você mesmo e NUNCA repita o sabor pra "completar" o par. Se disser "broto" mas não ficar claro que é combo (pizza broto avulsa), ainda use "tipo":"broto" e conte as pizzas; o atendente confere.
 
-11. ESFIHAS (R$ 5,00 cada; sabores fixos: ${JSON.stringify(typeof ESFIHA_SABORES!=='undefined'?ESFIHA_SABORES:[])}): quando o cliente pedir esfihas (ex: "10 esfihas, 5 de carne e 5 de frango catupiry", "combo de 20 esfiha", "3 esfiha de bacon"), use "tipo":"esfihas" em UM ÚNICO item para TODAS as esfihas de UM combo, e preencha "esfihas":[{"sabor":"<nome exato da lista acima>","qtd":N}, ...] com a quantidade de cada sabor que o cliente disse. Preencha também "esfihas_total" com o total de esfihas do combo (ex: "combo de 20" → 20; "10 esfihas" → 10). Se o cliente NÃO citou nenhum sabor ("quero um combo de 10 esfihas"), deixe "esfihas":null e só preencha "esfihas_total" — o sistema usa os sabores padrão do site, NÃO use CONFERIR nem "normal" por falta de sabor. "qtd" do item = quantos combos IGUAIS ele pediu (normalmente 1). NÃO calcule preço — o sistema aplica 10=R$50, 20=R$90, 30=R$130 sozinho. "Esfiha mista" é um sabor da lista (Mista).
+11. ESFIHAS (R$ 5,00 cada; sabores fixos: ${JSON.stringify(typeof ESFIHA_SABORES!=='undefined'?ESFIHA_SABORES:[])}): quando o cliente pedir esfihas (ex: "10 esfihas, 5 de carne e 5 de frango catupiry", "combo de 20 esfiha", "3 esfiha de bacon"), use "tipo":"esfihas" em UM ÚNICO item para TODAS as esfihas de UM combo, e preencha "esfihas":[{"sabor":"<nome exato da lista acima>","qtd":N}, ...] com a quantidade de cada sabor que o cliente disse. Preencha também "esfihas_total" com o total de esfihas do combo (ex: "combo de 20" → 20; "10 esfihas" → 10). Se o cliente NÃO citou nenhum sabor ("quero um combo de 10 esfihas", "combo de esfiha", "20 esfirras"), deixe "esfihas":null e só preencha "esfihas_total" — o sistema usa os sabores padrão do site, NÃO use CONFERIR nem "normal" por falta de sabor. "qtd" do item = quantos combos IGUAIS ele pediu (normalmente 1). NÃO calcule preço — o sistema aplica 10=R$50, 20=R$90, 30=R$130 sozinho. "Esfiha mista" é um sabor da lista (Mista).
 
 CONVERSA INTEIRA: o texto colado pode ser a conversa toda entre ATENDENTE e CLIENTE (as perguntas/ofertas do atendente aparecem junto). Conte só o que o CLIENTE pediu ou CONFIRMOU ("Sim" em resposta a uma pergunta do atendente confirma o que foi perguntado). Mensagens soltas do cliente em momentos diferentes ("E duas cocas", "E a coca", "Então vou querer uma broto") somam ao MESMO pedido — não duplique o que ele só repetiu ou confirmou. Erros de digitação do cliente são normais ("esfilha", "cocas", "brisola").
 BROTO DOCE / BROTO SEM SABOR: o combo broto (R$ 50) só vale para sabores de pizza TRADICIONAL ou ESPECIAL. Se o cliente pediu uma pizza broto DOCE (ou de sabor que não existe nessas categorias), ou pediu "uma broto" sem escolher o sabor, use "tipo":"broto" com "nome_cardapio" = o sabor doce que ele escolheu (ou null se não escolheu) e "nome_cardapio_2":null — o sistema marca para o atendente conferir. NUNCA invente o sabor que o cliente não escolheu.
@@ -123,6 +123,7 @@ JSON esperado:
       }catch(e){ ultimoErro=e; if(tentativa===0) status.textContent='🤖 Conferindo de novo...'; }
     }
     if(!parsed) throw ultimoErro||new Error('sem resposta');
+    completarEsfihas(parsed,texto);
     montarCaixaComPedidoInterpretado(parsed);
     closeModal('modal-colar');
   }catch(e){
@@ -155,6 +156,32 @@ function _acharPorNome(nome,lista,getNome){
 const _acharItem=n=>_acharPorNome(n,DEFAULT_MENU,m=>m.n);
 const _acharBorda=n=>_acharPorNome(n,BORDAS_DEFAULT,b=>b.name);
 const _acharAcrescimos=ls=>(Array.isArray(ls)?ls:[]).map(n=>_acharPorNome(n,ACRESCIMOS_DEFAULT,a=>a.name)).filter((a,i,arr)=>a&&arr.indexOf(a)===i);
+
+// ── Rede de segurança do combo de esfihas: mesmo que a IA erre ou esqueça, o texto manda.
+// "combo com 20 esfilha", "quero esfirra", "combo de esfiha" (sem número = 10) → combo com os sabores padrão.
+const RE_ESFIHA=/\besf[iíy]r?l?h?[ao]s?\b|\besfirra|\besfira|\besfiha/i;
+function completarEsfihas(parsed,texto){
+  const t=String(texto||'');
+  if(!RE_ESFIHA.test(t)) return parsed;
+  // número do combo: "combo de/com 20", "20 esfiha(s)", "combo de esfiha 30"
+  let n=null, m;
+  if((m=t.match(/(\d{1,3})\s*(?:x\s*)?esf[iíy]/i))) n=parseInt(m[1]);
+  else if((m=t.match(/combo\s*(?:de|com|c\/|do)?\s*(\d{1,3})\b/i))) n=parseInt(m[1]);
+  else if((m=t.match(/esf[iíy]\w*\s*(?:de|com)?\s*(\d{1,3})\b/i))) n=parseInt(m[1]);
+  if(!n||n<1||n>120) n=10; // sem número: combo padrão de 10
+  const itens=Array.isArray(parsed.itens)?parsed.itens:(parsed.itens=[]);
+  const existente=itens.find(i=>i&&i.tipo==='esfihas');
+  if(existente){
+    const soma=(existente.esfihas||[]).reduce((a,e)=>a+(parseInt(e&&e.qtd)||0),0);
+    if(!(Number(existente.esfihas_total)>0)) existente.esfihas_total=Math.max(soma,n);
+    if(!Array.isArray(existente.esfihas)||!existente.esfihas.length) existente.esfihas=null;
+    return parsed;
+  }
+  // a IA não montou as esfihas (ou deixou um item "normal" sem nome falando de esfiha): remove o resto e cria o combo padrão
+  parsed.itens=itens.filter(i=>!(i&&i.tipo==='normal'&&!i.nome_cardapio&&RE_ESFIHA.test(String(i.observacao||''))));
+  parsed.itens.push({tipo:'esfihas',esfihas:null,esfihas_total:n,qtd:1,nome_cardapio:null,nome_cardapio_2:null,borda:null,remover:[],observacao:null});
+  return parsed;
+}
 
 // Junta as pizzas broto de TODO o pedido em combos de 2 (a IA devolve 1 item por broto/sabor).
 // Duas brotos de sabores diferentes = 1 combo com os dois sabores (nunca 2 combos).

@@ -436,3 +436,4 @@ e sem `STAFF_PASSWORD`. É temporário: trocar por senha forte (e reativar o lim
 - Carrinho da loja em tema CLARO: bloco "CARRINHO CLARO" no fim de `assets/site.css` (fundo branco, corpo cinza-claro com cartões brancos, títulos com barra vermelha, total em vermelho).
 - Esfihas: 8 sabores (6 salgadas + doces Confete e Brigadeiro, `ESFIHA_SABORES`); o combo sem sabor escolhido usa só as salgadas (`ESFIHA_PADRAO`). Doces aparecem com etiqueta "doce" na loja e no Caixa.
 - Selos de entrega (grátis / taxa única): componente `.eg-selo` (+ `.mini`, `.taxa`) em `assets/site.css`, ícones SVG em `EG_ICONES` (`shared/utils.js`), mensagens do carrinho `.eg-cart` com barra `egProgresso`. Sem emoji nem sinais de teclado nos textos.
+- Conversor: `completarEsfihas(parsed,texto)` (rede de segurança) cria o combo de esfihas padrão a partir do texto ("combo com 20 esfilha", "esfirra", "combo de esfiha" = 10) mesmo se a IA errar/esquecer; não duplica o que a IA já montou.

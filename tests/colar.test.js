@@ -6,6 +6,8 @@ const { esfDistribuirPadrao } = require('../shared/utils.js');
 // extrai só a função pura do arquivo do navegador
 const src = fs.readFileSync(__dirname + '/../caixa/js/colar-pedido.js', 'utf8');
 const trecho = src.slice(src.indexOf('function consolidarBrotos'), src.indexOf('function montarCaixaComPedidoInterpretado'));
+const trechoEsf = src.slice(src.indexOf('const RE_ESFIHA'), src.indexOf('// Junta as pizzas broto'));
+const completarEsfihas = new Function(trechoEsf + '; return completarEsfihas;')();
 const consolidarBrotos = new Function(trecho + '; return consolidarBrotos;')();
 const par = (r) => r.map((x) => x.nome_cardapio + '+' + x.nome_cardapio_2);
 
@@ -40,4 +42,21 @@ test('broto doce ou sem sabor não entra no combo de R$ 50', () => {
   assert.match(r[0].observacao, /BROTO/);
   const r2 = consolidarBrotos([{ tipo: 'broto', nome_cardapio: 'Calabresa', qtd: 1 }, { tipo: 'broto', nome_cardapio: 'Mussarela', qtd: 1 }, { tipo: 'broto', nome_cardapio: 'Doce X', qtd: 1 }], valido);
   assert.equal(r2.filter((x) => x.tipo === 'broto').length, 1); // calabresa+mussarela = 1 combo
+});
+
+test('esfihas sem sabor: o texto manda, mesmo se a IA esquecer', () => {
+  const r = completarEsfihas({ itens: [] }, 'Quero um combo com 20 esfilha');
+  assert.equal(r.itens.length, 1);
+  assert.equal(r.itens[0].tipo, 'esfihas'); assert.equal(r.itens[0].esfihas_total, 20); assert.equal(r.itens[0].esfihas, null);
+  assert.equal(completarEsfihas({ itens: [] }, 'queria um combo de esfiha').itens[0].esfihas_total, 10); // sem número = 10
+  assert.equal(completarEsfihas({ itens: [] }, '30 esfirras por favor').itens[0].esfihas_total, 30);
+});
+test('esfihas: não duplica quando a IA já montou, e completa o total', () => {
+  const r = completarEsfihas({ itens: [{ tipo: 'esfihas', esfihas: [], qtd: 1 }] }, 'combo de 20 esfihas');
+  assert.equal(r.itens.length, 1); assert.equal(r.itens[0].esfihas_total, 20);
+  const r2 = completarEsfihas({ itens: [{ tipo: 'normal', nome_cardapio: null, observacao: 'combo de esfihas sem sabor', qtd: 1 }] }, 'combo de esfihas');
+  assert.equal(r2.itens.length, 1); assert.equal(r2.itens[0].tipo, 'esfihas');
+});
+test('texto sem esfiha não cria esfihas', () => {
+  assert.equal(completarEsfihas({ itens: [] }, 'uma calabresa e uma coca').itens.length, 0);
 });
