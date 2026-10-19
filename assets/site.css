@@ -1117,14 +1117,11 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .credito-txt{text-align:left;font-size:.9rem;color:#d1d5db;}
 .credito-txt b{color:#fff;display:block;font-size:1.02rem;}
 .credito-txt span{font-size:.78rem;color:#9ca3af;}
-.cubo-cena{width:56px;height:56px;perspective:420px;flex:none;}
-.cubo{position:relative;width:56px;height:56px;transform-style:preserve-3d;animation:cubo-gira 9s linear infinite;}
-.cubo-face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;color:#fff;background:linear-gradient(135deg,rgba(214,40,40,.92),rgba(120,16,16,.92));border:1px solid rgba(255,255,255,.35);backface-visibility:visible;}
-.f-frente{transform:translateZ(28px)}.f-tras{transform:rotateY(180deg) translateZ(28px)}
-.f-dir{transform:rotateY(90deg) translateZ(28px)}.f-esq{transform:rotateY(-90deg) translateZ(28px)}
-.f-topo{transform:rotateX(90deg) translateZ(28px)}.f-base{transform:rotateX(-90deg) translateZ(28px)}
-@keyframes cubo-gira{from{transform:rotateX(-22deg) rotateY(0)}to{transform:rotateX(-22deg) rotateY(360deg)}}
-@media (prefers-reduced-motion:reduce){.cubo{animation:none;transform:rotateX(-22deg) rotateY(35deg)}}
+#cuboRodape{display:inline-block;width:58px;height:58px;flex:none}
+#cuboRodape canvas{width:100%;height:100%;display:block}
+@media (prefers-reduced-motion:no-preference){#cuboRodape{animation:cuboEntra .9s cubic-bezier(.34,1.45,.64,1) both}}
+@keyframes cuboEntra{from{opacity:0;transform:scale(.6) rotate(-12deg)}to{opacity:1;transform:none}}
+a.credito-txt{text-decoration:none;display:block}
 .rodape-direitos{max-width:560px;margin:0 auto;font-size:.8rem;line-height:1.6;color:#9ca3af;}
 .rodape-direitos p{margin:6px 0;}
 .rodape-direitos p:first-child{color:#e5e7eb;font-weight:600;font-size:.86rem;}

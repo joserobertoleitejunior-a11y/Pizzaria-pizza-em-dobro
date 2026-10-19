@@ -39,7 +39,7 @@ fs.writeFileSync(path.join(DIST, '_headers'), `/*
   X-Frame-Options: SAMEORIGIN
 
 /assets/*
-  Cache-Control: public, max-age=86400
+  Cache-Control: public, max-age=3600
 
 /admin/*
   X-Robots-Tag: noindex, nofollow

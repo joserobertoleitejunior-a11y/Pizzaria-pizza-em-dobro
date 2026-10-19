@@ -52,7 +52,7 @@
 <script>try{if(sessionStorage.getItem("splash_ok"))document.documentElement.classList.add("sem-splash")}catch(e){}</script>
 <style>.sem-splash #ws{display:none!important}</style>
 <script src="js/dispositivo.js"></script>
-<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/site.css?v=36">
 </head>
 <body>
 <!-- WELCOME — logo com reflexo de vidro, nome completo e a pizza inteira perdendo
@@ -414,12 +414,8 @@
   <div class="rodape-contato">📞 (15) 99705-8390</div>
   <hr class="rodape-linha">
   <div class="rodape-credito">
-    <div class="cubo-cena" aria-hidden="true"><div class="cubo">
-      <div class="cubo-face f-frente">&lt;/&gt;</div><div class="cubo-face f-tras">V</div>
-      <div class="cubo-face f-dir">◆</div><div class="cubo-face f-esq">✦</div>
-      <div class="cubo-face f-topo">{ }</div><div class="cubo-face f-base">★</div>
-    </div></div>
-    <div class="credito-txt">Site feito por <b>Vibe Coding Process</b><span>Tecnologia e design sob medida</span></div>
+    <span id="cuboRodape" aria-hidden="true"></span>
+    <a class="credito-txt" href="https://vibecodingprocess.netlify.app/" target="_blank" rel="noopener">Site feito por <b>Vibe Coding Process</b><span>Tecnologia e design sob medida</span></a>
   </div>
   <div class="rodape-direitos">
     <p>© <span id="rodape-ano">2026</span> Pizza em Dobro. Todos os direitos reservados.</p>
@@ -960,6 +956,71 @@ window._iniciarAnimacoesScroll=function(){
   document.addEventListener('scroll',atualizar,{passive:true});
   atualizar();
 })();
+</script>
+
+<!-- Cubo 3D do rodapé (three.js, só carrega quando o rodapé aparece) -->
+<script type="module">
+  const alvo = document.getElementById('cuboRodape');
+  if (alvo) {
+    const iniciar = async () => {
+      let THREE;
+      try { THREE = await import('https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js'); } catch (e) { return; }
+      const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const canvas = document.createElement('canvas');
+      alvo.appendChild(canvas);
+      const scene = new THREE.Scene();
+      const base = 2.6;
+      const camera = new THREE.OrthographicCamera(-base / 2, base / 2, base / 2, -base / 2, 0.1, 20);
+      camera.position.z = 5;
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+      renderer.setSize(64, 64, false);
+      renderer.setClearColor(0x000000, 0);
+      const arestas = new THREE.EdgesGeometry(new THREE.BoxGeometry(1.15, 1.15, 1.15));
+      const cubo = new THREE.LineSegments(arestas, new THREE.LineBasicMaterial({ color: 0xC9A227 }));
+      cubo.rotation.x = 0.4; cubo.rotation.y = 0.5;
+      scene.add(cubo);
+      const reforco = new THREE.LineSegments(arestas, new THREE.LineBasicMaterial({ color: 0xC9A227, transparent: true, opacity: 0.55 }));
+      reforco.scale.set(1.12, 1.12, 1.12);
+      cubo.add(reforco);
+      const velocidadeIdle = 0.0016;
+      let rapido = false, vel = 0, visivel = true;
+      new IntersectionObserver(es => { visivel = es[0].isIntersecting; }).observe(alvo);
+      (function loop() {
+        requestAnimationFrame(loop);
+        if (!visivel || document.hidden) return; // fora da tela = não gasta bateria
+        if (rapido) {
+          cubo.rotation.y += vel; cubo.rotation.x += vel * 0.6; vel *= 0.94;
+          if (vel < 0.002) rapido = false;
+        } else if (!reduz) {
+          cubo.rotation.y += velocidadeIdle; cubo.rotation.x += velocidadeIdle * 0.6;
+        }
+        renderer.render(scene, camera);
+      })();
+      function esticar(p) {
+        const y = 1 + p * 2.0;
+        cubo.scale.set(1 - p * 0.22, y, 1 - p * 0.22);
+        const m = (base / 2) * (1 + Math.max(0, y - 1) * 0.8);
+        camera.top = m; camera.bottom = -m;
+        camera.updateProjectionMatrix();
+      }
+      alvo.style.cursor = 'pointer';
+      alvo.addEventListener('click', () => {
+        if (rapido) return;
+        const ini = performance.now();
+        (function passo() {
+          const p = Math.min(1, (performance.now() - ini) / 600);
+          esticar(1 - Math.pow(1 - p, 2));
+          if (p < 1) return requestAnimationFrame(passo);
+          setTimeout(() => { esticar(0); rapido = true; vel = 0.48; }, 150);
+        })();
+      });
+    };
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); iniciar(); } }, { rootMargin: '300px' });
+      io.observe(alvo);
+    } else iniciar();
+  }
 </script>
 </body>
 </html>

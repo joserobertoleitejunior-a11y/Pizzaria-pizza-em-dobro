@@ -164,6 +164,8 @@ const _deletedFbIds=new Set();
 const _deletedCmIds=new Set();
 
 async function renderFeedbacks(){
+  // a loja agora mostra as avaliações do Google (fim da página); a lista antiga não existe mais
+  if(!document.getElementById('feedback-section')) return;
   let fbs=[];
   const rows=await sg('feedbacks',{orderBy:'created_at',orderDir:'desc',limit:20});
   if(rows&&rows.length){
