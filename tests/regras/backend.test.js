@@ -139,10 +139,10 @@ test('admin-api: chaves de API são gravadas mas nunca devolvidas', async () => 
   assert.ok(!r.body.includes('sk-ant-123'));
 });
 
-test('staff-login: senha certa entra; 8 erradas bloqueiam por 15 min', async () => {
-  const ip = { 'x-nf-client-connection-ip': '10.0.0.' + Math.floor(Math.random() * 200) };
-  const certo = await staffLogin(post({ senha: 'senha-de-teste-123' }, null, ip));
-  assert.equal(certo.statusCode, 200);
-  for (let i = 0; i < 8; i++) assert.equal((await staffLogin(post({ senha: 'errada' }, null, ip))).statusCode, 401);
-  assert.equal((await staffLogin(post({ senha: 'senha-de-teste-123' }, null, ip))).statusCode, 429);
+test('staff-login PROVISÓRIO: marco/1234 entra; usuário ou senha errados não', async () => {
+  assert.equal((await staffLogin(post({ usuario: 'marco', senha: '1234' }))).statusCode, 200);
+  assert.equal((await staffLogin(post({ usuario: 'Marco ', senha: '1234' }))).statusCode, 200);
+  assert.equal((await staffLogin(post({ usuario: 'marco', senha: 'errada' }))).statusCode, 401);
+  assert.equal((await staffLogin(post({ usuario: 'outro', senha: '1234' }))).statusCode, 401);
+  assert.equal((await staffLogin(post({ senha: '1234' }))).statusCode, 401);
 });

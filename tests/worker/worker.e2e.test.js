@@ -84,8 +84,8 @@ test('rotas da equipe exigem login: admin-api, send-whatsapp, parse-order, dashb
 });
 
 test('login da equipe: senha errada recusa, certa devolve token que o admin-api aceita', async () => {
-  assert.equal((await post('staff-login', { senha: 'errada' })).status, 401);
-  const ok = await post('staff-login', { senha: 'senha-de-teste-123' });
+  assert.equal((await post('staff-login', { usuario: 'marco', senha: 'errada' })).status, 401);
+  const ok = await post('staff-login', { usuario: 'marco', senha: '1234' });
   assert.equal(ok.status, 200);
   const { token } = await ok.json();
   const troca = await fetch(`http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=fake`, {
@@ -115,16 +115,6 @@ test('webhook do WhatsApp: sem token ou com token errado é recusado; com token 
   assert.equal((await fetch(`${BASE}/api/whatsapp-webhook?token=errado`, { method: 'POST', body: '{}' })).status, 401);
   const ok = await fetch(`${BASE}/api/whatsapp-webhook?token=segredo-do-webhook`, { method: 'POST', body: '{}' });
   assert.equal(ok.status, 200); // payload sem mensagem → "ignorado"
-});
-
-test('bloqueio de senha por IP não é furado forjando cabeçalhos de IP', async () => {
-  let ultimo;
-  for (let i = 0; i < 10; i++) {
-    ultimo = await post('staff-login', { senha: 'chute' + i }, { 'x-forwarded-for': `10.0.0.${i}`, 'x-nf-client-connection-ip': `10.9.9.${i}` });
-  }
-  assert.equal(ultimo.status, 429);
-  const certaMasBloqueada = await post('staff-login', { senha: 'senha-de-teste-123' }, { 'x-forwarded-for': '1.2.3.4' });
-  assert.equal(certaMasBloqueada.status, 429);
 });
 
 test('tarefa agendada (bot-followup) roda sem erro', async () => {

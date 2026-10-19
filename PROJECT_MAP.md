@@ -13,7 +13,7 @@ como banco de dados (acessado por REST + WebCrypto, sem firebase-admin). O servi
 (`server/*.js`) cuida do bot do WhatsApp, chat da IA do dashboard, pedidos, admin-api.
 `npm run build` copia só os arquivos públicos para `dist/` (código do servidor, regras, docs e testes NUNCA são publicados).
 Cron do bot (follow-up) = `scheduled()` do Worker a cada 5 min. Segredos no painel do Cloudflare:
-`FIREBASE_SERVICE_ACCOUNT`, `STAFF_PASSWORD`, opcionais `SENTRY_DSN` e `WEBHOOK_SECRET`
+`FIREBASE_SERVICE_ACCOUNT`, opcionais `SENTRY_DSN` e `WEBHOOK_SECRET`
 (webhook da Evolution: `https://<site>/api/whatsapp-webhook?token=<WEBHOOK_SECRET>`).
 Rotas da equipe (`admin-api`, `send-whatsapp`, `parse-order`, `dashboard-chat`, `dashboard-ai`) exigem ID token com claim `staff`.
 Testes: `npm test`, `npm run test:regras` (emulador), `npm run test:worker` (workerd real). Deploy: `npm run deploy`. Sem framework — HTML + JS puro em
@@ -366,3 +366,7 @@ Caixa/Relatórios/Clientes/bot-config/painel, leia aquilo primeiro.
   qualquer mudança em `shared/utils.js` ou nas Netlify Functions.
 - `npm run lint` (Biome) existe mas não é gate de build ainda — código legado
   tem dívida de estilo pendente de limpeza dedicada.
+
+## ⚠️ Acesso provisório da equipe
+Por pedido do José, `server/staff-login.js` aceita o login fixo **usuário `marco` / senha `1234`**, sem bloqueio por tentativas
+e sem `STAFF_PASSWORD`. É temporário: trocar por senha forte (e reativar o limite de tentativas) antes do lançamento público.
