@@ -41,30 +41,37 @@ async function reconectarImpressoraAuto(){
   }
 }
 
+// Serviços BLE usados pelas térmicas baratas (cada fabricante usa um). Precisam estar listados
+// pro Chrome deixar o site acessar; a característica de escrita é descoberta sozinha.
+const BT_SERVICOS=[
+  '000018f0-0000-1000-8000-00805f9b34fb','0000ff00-0000-1000-8000-00805f9b34fb',
+  '0000ffe0-0000-1000-8000-00805f9b34fb','0000fff0-0000-1000-8000-00805f9b34fb',
+  '0000fee7-0000-1000-8000-00805f9b34fb','0000ae30-0000-1000-8000-00805f9b34fb',
+  '0000ae3a-0000-1000-8000-00805f9b34fb','0000ff12-0000-1000-8000-00805f9b34fb',
+  '49535343-fe7d-4ae5-8fa9-9fafd205e455','e7810a71-73ae-499d-8c15-faa9aef0c3f2',
+  '0000ffe5-0000-1000-8000-00805f9b34fb'
+];
+let btSemResposta=false; // característica aceita escrita "sem resposta" (bem mais rápido)
+async function acharCaracteristicaEscrita(server){
+  let servicos=[];
+  try{ servicos=await server.getPrimaryServices(); }catch(e){}
+  if(!servicos.length){
+    for(const uuid of BT_SERVICOS){ try{ servicos.push(await server.getPrimaryService(uuid)); }catch(e){} }
+  }
+  for(const sv of servicos){
+    let cs=[]; try{ cs=await sv.getCharacteristics(); }catch(e){ continue; }
+    const c=cs.find(x=>x.properties&&(x.properties.writeWithoutResponse||x.properties.write));
+    if(c){ btSemResposta=!!c.properties.writeWithoutResponse; return c; }
+  }
+  return null;
+}
+
 async function conectarDispositivo(device){
-  const SERVICES=[
-    '000018f0-0000-1000-8000-00805f9b34fb',
-    '0000ff00-0000-1000-8000-00805f9b34fb',
-    '0000ffe0-0000-1000-8000-00805f9b34fb',
-    '00001101-0000-1000-8000-00805f9b34fb',
-  ];
-  const CHARS=[
-    '00002af1-0000-1000-8000-00805f9b34fb',
-    '0000ff02-0000-1000-8000-00805f9b34fb',
-    '0000ffe1-0000-1000-8000-00805f9b34fb',
-  ];
   try{
     const server=await device.gatt.connect();
-    let service=null;
-    for(const uuid of SERVICES){
-      try{service=await server.getPrimaryService(uuid);break;}catch(e){}
-    }
-    if(!service)return false;
-    let found=false;
-    for(const cuuid of CHARS){
-      try{btChar=await service.getCharacteristic(cuuid);found=true;break;}catch(e){}
-    }
-    if(!found)return false;
+    const c=await acharCaracteristicaEscrita(server);
+    if(!c){ try{ device.gatt.disconnect(); }catch(e){} return false; }
+    btChar=c;
     const nome=device.name||'Impressora';
     const el=document.getElementById('bt-name');
     if(el)el.innerText=nome+' ✅';
@@ -89,15 +96,10 @@ async function conectarDispositivo(device){
 
 async function conectarBluetooth(){
   if(!navigator.bluetooth){
-    alert('Este navegador não suporta Bluetooth. Use o Google Chrome no Android.');
+    alert('Este navegador não tem Bluetooth pelo site. Use o Google Chrome (Android ou Windows) ou conecte pelo cabo USB.');
     return;
   }
-  const SERVICES=[
-    '000018f0-0000-1000-8000-00805f9b34fb',
-    '0000ff00-0000-1000-8000-00805f9b34fb',
-    '0000ffe0-0000-1000-8000-00805f9b34fb',
-    '00001101-0000-1000-8000-00805f9b34fb',
-  ];
+  const SERVICES=BT_SERVICOS;
   const btnEl=event?event.target:null;
   const origTxt=btnEl?btnEl.innerText:'';
   if(btnEl){btnEl.innerText='Buscando...';btnEl.disabled=true;}
@@ -112,7 +114,7 @@ async function conectarBluetooth(){
     const ok=await conectarDispositivo(btDevice);
     if(!ok){
       if(nameEl)nameEl.innerText='Não conectada';
-      alert('Impressora encontrada mas não respondeu como esperado. Tente desligar e ligar a impressora, depois toque em "Conectar Impressora" de novo.');
+      alert('A impressora apareceu, mas não aceitou a conexão. Desligue e ligue a impressora, confira se ela não está conectada em outro aparelho e toque em "BT" de novo. Se continuar, use o cabo USB.');
     }
   }catch(e){
     if(nameEl)nameEl.innerText='Não conectada';
@@ -121,7 +123,7 @@ async function conectarBluetooth(){
     }else if(e.name==='SecurityError'){
       alert('Bluetooth bloqueado por segurança. Verifique se o site está aberto com HTTPS.');
     }else{
-      alert('Não foi possível conectar: '+e.message+'\n\nDicas: ative o Bluetooth do celular, aproxime a impressora, e confira se ela está ligada.');
+      alert('Não foi possível conectar: '+e.message+'\n\nDicas:\n• A impressora só aceita UM aparelho por vez no Bluetooth: desconecte do outro celular/notebook (ou desligue e ligue a impressora).\n• Ative o Bluetooth e a Localização do celular.\n• Se ela não aparecer na lista, o Bluetooth dela é do tipo antigo (que o navegador não enxerga): use o cabo USB.');
     }
   }
   if(btnEl){btnEl.innerText=origTxt||'Conectar Impressora';btnEl.disabled=false;}
@@ -198,7 +200,9 @@ async function imprimirBluetooth(texto){
   }else{
     // impressora Bluetooth — envia em pedacinhos (limite do BLE)
     for(let i=0;i<arr.length;i+=20){
-      await btChar.writeValue(arr.slice(i,i+20));
+      const pedaco=arr.slice(i,i+20);
+      if(btSemResposta&&btChar.writeValueWithoutResponse){ await btChar.writeValueWithoutResponse(pedaco); await new Promise(r=>setTimeout(r,8)); }
+      else await btChar.writeValue(pedaco);
     }
   }
 }
@@ -211,10 +215,26 @@ async function conectarUSB(){
   try{
     const device=await navigator.usb.requestDevice({filters:[]});
     const ok=await conectarDispositivoUSB(device);
-    if(!ok) alert('Impressora USB encontrada mas não respondeu como esperado. Verifique se é uma impressora térmica compatível.');
+    if(!ok) explicarFalhaUSB(_ultimoErroUSB);
   }catch(e){
-    if(e.name!=='NotFoundError') alert('Não foi possível conectar via USB: '+e.message);
+    if(e.name!=='NotFoundError') explicarFalhaUSB(e);
   }
+}
+
+let _ultimoErroUSB=null;
+// No Windows, quando o driver da impressora está instalado, o próprio Windows "segura" o USB e o
+// navegador recebe "Access denied". Nesse caso o caminho certo é o modo AUTO (imprime pelo driver).
+function explicarFalhaUSB(e){
+  const msg=String((e&&e.message)||e||'');
+  if(!EH_CELULAR&&/access denied|acesso negado|SecurityError|Unable to claim|claim/i.test(msg+(e&&e.name||''))){
+    if(confirm('O Windows está usando esta impressora pelo driver dele, então o site não consegue falar direto pelo cabo USB.\n\nOK = ligar o modo AUTO (imprime pelo driver do Windows — é o jeito certo no notebook).')){
+      try{ localStorage.setItem('ped_auto_driver','1'); }catch(err){}
+      atualizarBotaoAuto();
+      alert('Modo AUTO ligado.\n\n1) No Windows, deixe a POS-5890U como impressora PADRÃO (Configurações > Impressoras).\n2) Pra imprimir sem abrir a janela de impressão: clique direito no atalho do Chrome > Propriedades > no fim do campo Destino acrescente um espaço e --kiosk-printing\n3) Feche TODAS as janelas do Chrome e abra pelo atalho.\n4) Toque em "Teste".');
+    }
+    return;
+  }
+  alert('Não foi possível conectar pelo USB'+(msg?': '+msg:'')+'.\n\nConfira o cabo e se a impressora está ligada.'+(EH_CELULAR?'\nNo celular o cabo precisa ser OTG (USB-C/micro-USB para USB).':'\nNo notebook use o botão AUTO (driver do Windows).'));
 }
 
 async function conectarDispositivoUSB(device){
@@ -246,7 +266,7 @@ async function conectarDispositivoUSB(device){
       mostrarAlertaImpressora();
     });
     return true;
-  }catch(e){ console.warn('Erro ao conectar impressora USB:',e); return false; }
+  }catch(e){ _ultimoErroUSB=e; console.warn('Erro ao conectar impressora USB:',e); return false; }
 }
 
 async function reconectarUSBAuto(){
@@ -354,6 +374,11 @@ function atualizarBotaoAuto(){
   if(EH_CELULAR){ b.style.display='none'; return; }
   b.classList.toggle('ligado',autoDriverAtivo());
   b.textContent=autoDriverAtivo()?'🖨️ AUTO ✓':'🖨️ AUTO';
+  const el=document.getElementById('bt-name');
+  if(autoDriverAtivo()&&!btChar&&!usbEndpointOut){
+    if(el) el.innerText='Windows (AUTO) ✅';
+    if(typeof esconderAlertaImpressora==='function') esconderAlertaImpressora();
+  }else if(!autoDriverAtivo()&&!btChar&&!usbEndpointOut&&el&&/AUTO/.test(el.innerText)) el.innerText='Não conectada';
 }
 setTimeout(atualizarBotaoAuto,300);
 

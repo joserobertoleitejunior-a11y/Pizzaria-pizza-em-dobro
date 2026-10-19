@@ -418,3 +418,6 @@ e sem `STAFF_PASSWORD`. É temporário: trocar por senha forte (e reativar o lim
 - IA devolve também `acrescimos`, `entrega` (entrega/retirada), `troco_para`, `observacao_geral`; tenta 2× se o JSON vier quebrado.
 - Nomes casados com tolerância (`_acharPorNome`: sem acento, "contém", palavras em comum, erro de digitação pequeno) — sabor inexistente continua indo como "⚠️ CONFERIR", nunca trocado.
 - Cupom (`formatarCupom`) igual pra pedido do site e convertido: acréscimos, nº da casa (site guarda em `house_number`), troco ("Troco para"), taxa. Pedido do site agora manda preço do item com borda+acréscimos, `added` e `taxa`.
+- Bluetooth: `BT_SERVICOS` (lista ampla de serviços BLE das térmicas) + `acharCaracteristicaEscrita` descobre sozinha onde escrever; usa escrita "sem resposta" quando a impressora aceita. Impressora com Bluetooth só "clássico" não aparece no navegador → usar cabo.
+- USB no Windows com driver instalado dá "Access denied" → `explicarFalhaUSB` oferece ligar o modo AUTO.
+- Dois Caixas abertos (ex.: notebook + celular): `reservarImpressao` (transação em `orders`, campos `impresso_auto/impresso_por/impresso_em`) garante que só um aparelho imprime cada pedido do site.

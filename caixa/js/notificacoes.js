@@ -127,7 +127,27 @@ function iniciarEscutaNotificacoes(){
   },err=>console.warn('Notificação de pedidos indisponível (verifique a conexão).',err));
 }
 
+// Identidade deste aparelho (pra saber quem imprimiu)
+const ID_APARELHO=(()=>{ try{ let v=localStorage.getItem('ped_aparelho'); if(!v){ v=(/Android|iPhone/i.test(navigator.userAgent)?'celular-':'pc-')+Math.random().toString(36).slice(2,8); localStorage.setItem('ped_aparelho',v); } return v; }catch(e){ return 'aparelho'; } })();
+// Com dois Caixas abertos (ex: notebook + celular), os dois veem o pedido novo ao mesmo tempo.
+// Uma transação no banco garante que só o primeiro imprime; o outro deixa quieto.
+async function reservarImpressao(id){
+  if(!FS||!id) return true;
+  const ref=FS.collection('orders').doc(id);
+  try{
+    return await FS.runTransaction(async t=>{
+      const d=await t.get(ref);
+      if(!d.exists) return false;
+      const x=d.data();
+      if(x.impresso_auto||(x.status&&x.status!=='novo')) return false;
+      t.update(ref,{impresso_auto:true,impresso_por:ID_APARELHO,impresso_em:new Date().toISOString()});
+      return true;
+    });
+  }catch(e){ console.warn('Não deu pra reservar a impressão, imprimindo mesmo assim:',e); return true; }
+}
+
 async function finalizarPedidoAutomaticoBot(pedido){
+  if(!(await reservarImpressao(pedido.id))) return; // outro aparelho já está imprimindo
   try{
     await imprimirBluetooth(formatarCupom(pedido));
     if(FS && pedido.id){
@@ -135,7 +155,8 @@ async function finalizarPedidoAutomaticoBot(pedido){
     }
     tocarSom();
   }catch(e){
-    console.warn('Falha ao finalizar pedido do bot automaticamente, caiu na notificação manual.',e);
+    console.warn('Falha ao imprimir o pedido automaticamente, caiu na notificação manual.',e);
+    if(FS&&pedido.id) FS.collection('orders').doc(pedido.id).update({impresso_auto:false}).catch(()=>{});
     filaNotificacoes.push(pedido);
     atualizarBadgeBubble();
     mostrarAlertaImpressora();
