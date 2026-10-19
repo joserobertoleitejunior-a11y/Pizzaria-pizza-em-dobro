@@ -31,7 +31,6 @@ body{width:100%;max-width:100%;overflow-x:hidden;padding-left:env(safe-area-inse
 img,svg,video,canvas{max-width:100%;}
 input,select,textarea,button{font-size:max(16px,1em);touch-action:manipulation;} /* 16px+ : o iOS não dá zoom automático ao focar */
 @media (min-width:700px){.container{max-width:760px!important;}#destaques{max-width:640px!important;}}
-@media (min-width:1100px){.container{max-width:880px!important;}}
 @media (max-width:340px){#ws-brand{font-size:1.7rem;}}
 @media (max-height:520px) and (orientation:landscape){#ws-pizza,#ws-pizza-wrap{width:110px;height:110px;}#ws-logo{width:72px;height:72px;}#ws-conteudo{gap:8px;}header{min-height:auto;}}
 /* aparelho fraco: tira o que é só enfeite contínuo */
@@ -699,3 +698,75 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .container{background:rgba(12,12,12,.86);width:calc(100% - 20px);margin:22px auto 0;padding:4px 14px 200px;border-radius:26px 26px 0 0;
   box-shadow:0 -12px 40px rgba(0,0,0,.28);}
 #feedback-section{background:rgba(12,12,12,.86);width:calc(100% - 20px);padding:6px 14px 14px;border-radius:var(--raio);box-shadow:var(--sombra-2);}
+
+
+/* ═══════════════ DESKTOP (≥1024px) — o site inteiro remontado pra tela larga ═══════════════
+   Mesma loja, outra montagem: conteúdo numa coluna central de até 1200px, hero grande, menu
+   de categorias centralizado, cardápio em 2 colunas (3 em tela enorme), combos em grade,
+   carrinho como cartão flutuante no canto, janelas (modais) no centro. Fica por último no
+   arquivo de propósito, pra vencer as regras do celular. */
+@media (min-width:1024px){
+  :root{--lado:max(32px,calc((100vw - 1200px)/2));}
+  #topbar{padding:0 var(--lado);height:64px;}
+  .tb-brand{font-size:1.15rem;}
+  header{min-height:min(82vh,820px);padding:28px var(--lado) 56px;}
+  .hero-logo{width:64px;height:64px;}
+  .viva-title{font-size:clamp(5rem,9vw,8.4rem);letter-spacing:-3px;}
+  .hero-kicker{font-size:.75rem;padding:8px 16px;}
+  .viva-sub{font-size:1.15rem;max-width:520px;}
+  .hero-cta-row{max-width:520px;margin-top:30px;}
+  .hero-cta-btn{padding:21px 0;font-size:1rem;}
+  .hero-cta-btn,.hero-cta-block,.nav-pill,.combo-add-btn,.combo-sorte,.btn-action,.btn-half,.destaque-card{cursor:pointer;}
+  .hero-cta-btn:hover{filter:brightness(1.08);transform:translateY(-2px);}
+  .hero-cta-block{width:70px;}
+  .hero-faixa-trilho span{font-size:1.1rem;padding:14px 0;}
+  .nav-bar{top:64px;justify-content:center;gap:12px;padding:12px var(--lado);}
+  .nav-pill{font-size:.78rem;padding:10px 22px;}
+  #cat-p,#cat-s,#cat-co,#cat-dw,#cat-cz,#cat-d{scroll-margin-top:150px;}
+  #destaques,.promo-card,#last-order-banner,#stats-publico{max-width:760px;}
+  #destaques{margin-top:40px;gap:18px;}
+  .destaque-card{padding:22px 20px;transition:transform .15s,box-shadow .15s;}
+  a.destaque-card:hover{transform:translateY(-3px);}
+  .destaque-ttl{font-size:1.05rem;}.destaque-sub{font-size:.82rem;}
+  .promo-card{padding:28px 30px;margin:26px auto;}
+  .promo-card h2{font-size:1.5rem;}.promo-card p{font-size:.98rem;}
+
+  .container{max-width:1200px!important;width:calc(100% - 64px);padding:12px 36px 220px;border-radius:30px 30px 0 0;}
+  #search-wrap{max-width:560px;margin:0 auto;}
+  .cat-title{font-size:2rem;margin:34px 0 16px;}
+  /* cardápio em colunas */
+  #cat-p,#cat-s,#cat-dw,#cat-cz,#cat-d{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px;align-items:start;}
+  #cat-p>.cat-title,#cat-s>.cat-title,#cat-dw>.cat-title,#cat-cz>.cat-title,#cat-d>.cat-title{grid-column:1/-1;}
+  .item-card{margin:0;transition:transform .15s,box-shadow .15s,border-color .15s;}
+  .item-card:hover{transform:translateY(-2px);box-shadow:var(--sombra-2);border-color:rgba(245,197,24,.28);}
+  .item-img-wrap{width:96px;height:96px;}
+  .item-name{font-size:1rem;}.item-desc{font-size:.82rem;}.item-price{font-size:1.1rem;}
+  /* combos */
+  .combo-vitrine{height:240px;margin-bottom:16px;}
+  .combo-vitrine-txt b{font-size:1.6rem;}.combo-vitrine-txt span{font-size:.85rem;}
+  .combo-intro{font-size:1rem;margin-bottom:16px;}
+  .combo-lista{gap:18px;}
+  .combo-card{padding:22px;transition:transform .15s,box-shadow .15s;}
+  .combo-card:hover{transform:translateY(-3px);box-shadow:var(--sombra-2);}
+  .combo-price{font-size:2.8rem;}
+  .combo-select{font-size:15px;}
+  .combo-add-btn:hover{filter:brightness(1.1);}
+  .combo-sorte:hover{background:rgba(255,255,255,.12);}
+  #feedback-section{max-width:760px;}
+  /* carrinho: cartão flutuante no canto (nada de faixa de ponta a ponta) */
+  #cart-bar{left:auto;right:24px;bottom:24px;width:430px;border:1px solid rgba(255,255,255,.12);border-top:3px solid var(--pr);
+    border-radius:20px;max-height:calc(100vh - 110px);box-shadow:var(--sombra-3);}
+  /* janelas no centro, não coladas embaixo */
+  .modal{align-items:center;}
+  .modal-box{border-radius:20px;max-width:540px;max-height:86vh;padding-bottom:28px;}
+  .modal-handle{display:none;}
+  #music-bar{left:auto;right:24px;bottom:24px;width:430px;border-radius:14px;border:1px solid rgba(255,255,255,.12);}
+}
+@media (min-width:1500px){
+  :root{--lado:max(48px,calc((100vw - 1360px)/2));}
+  .container{max-width:1360px!important;}
+  #cat-p,#cat-s,#cat-dw,#cat-cz,#cat-d{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .combo-lista{grid-template-columns:repeat(4,minmax(0,1fr));}
+  .combo-select-row{flex-direction:column;align-items:stretch;}.combo-plus{align-self:center;margin:0;}
+  .combo-footer{flex-direction:column;align-items:stretch;}
+}
