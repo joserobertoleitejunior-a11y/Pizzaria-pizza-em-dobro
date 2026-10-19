@@ -1,4 +1,4 @@
-const CACHE='ped-v14'; // versão bumped: reforma visual completa (cores, splash, imagens geradas por
+const CACHE='ped-v15'; // versão bumped: reforma visual completa (cores, splash, imagens geradas por
 // código) — sem isso o service worker antigo (sem clients.claim()) ficava "preso" controlando
 // as abas já abertas até o cliente fechar TODAS as abas do site manualmente, então toda
 // atualização de verdade parecia "não ter saído do ar" pra quem já tinha visitado antes.
@@ -17,6 +17,14 @@ self.addEventListener('fetch',e=>{
   if(e.request.method!=='GET')return;
   const url=e.request.url;
   if(url.includes('firestore')||url.includes('firebase')||url.includes('anthropic'))return;
+  // estáticos pesados que quase nunca mudam (fotos, logo, fontes, 3D): cache primeiro, atualiza por trás
+  if(/\.(png|jpe?g|webp|svg|woff2?)(\?|$)/.test(url)||url.includes('/assets/vendor/')||url.includes('fonts.gstatic.com')){
+    e.respondWith(caches.open(CACHE).then(cache=>cache.match(e.request).then(hit=>{
+      const rede=fetch(e.request).then(res=>{ if(res.ok)cache.put(e.request,res.clone()); return res; }).catch(()=>hit);
+      return hit||rede;
+    })));
+    return;
+  }
   e.respondWith(
     caches.open(CACHE).then(cache=>
       fetch(e.request).then(res=>{

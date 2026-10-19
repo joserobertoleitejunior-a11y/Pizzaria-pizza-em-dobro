@@ -154,3 +154,19 @@ function repeatLastOrder(){
   document.getElementById('cart-bar').scrollIntoView({behavior:'smooth',block:'end'});
 }
 
+
+// ══════════════════════════════════
+//  GOOGLE MAPS (sob demanda)
+//  Antes carregava junto com a página (centenas de KB) mesmo pra quem só ia olhar o cardápio.
+//  Agora só quando o cliente abre o pedido ou toca no campo de endereço.
+// ══════════════════════════════════
+let _mapsCarregando=false;
+function carregarGoogleMaps(){
+  if(_mapsCarregando||(window.google&&window.google.maps))return;
+  _mapsCarregando=true;
+  const s=document.createElement('script');
+  s.async=true;
+  s.src='https://maps.googleapis.com/maps/api/js?key=AIzaSyBMPjAS03DT3tuGPtJBld2EXuX7C6__1lg&libraries=places&language=pt-BR&region=BR&callback=initGmapsAutocomplete';
+  document.head.appendChild(s);
+}
+document.addEventListener('focusin',e=>{ if(e.target&&e.target.id==='u-end') carregarGoogleMaps(); });

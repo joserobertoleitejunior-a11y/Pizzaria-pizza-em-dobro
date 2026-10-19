@@ -5,15 +5,17 @@
 (function () {
   "use strict";
 
-  function iniciarFaixaArrastavel() {
-    var trilha = document.querySelector(".faixa-trilha");
+  // opcoes: { velocidade: px/ms (negativo = anda pra esquerda, positivo = pra direita) }
+  function iniciarFaixaArrastavel(seletor, opcoes) {
+    var trilha = document.querySelector(typeof seletor === "string" ? seletor : ".faixa-trilha");
     if (!trilha) return;
+    opcoes = opcoes || {};
 
     var reduzMovimento = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    var VELOCIDADE_AUTOMATICA = 0.035; // px por ms
+    var VELOCIDADE_AUTOMATICA = Math.abs(opcoes.velocidade || 0.035); // px por ms
     var ATRITO = 0.94;
     var LIMIAR_CLIQUE = 6; // px — acima disso, não deixa o clique passar pro link
 
@@ -26,6 +28,7 @@
     var arrastando = false;
     var moveuBastante = false;
     var somaMovimento = 0;
+    var idPonteiro = 0;
     var pontoX = 0;
     var pontoT = 0;
     var velocidade = 0;
@@ -59,7 +62,7 @@
 
     function desenhar() {
       normalizar();
-      trilha.style.transform = "translateX(" + posicao + "px)";
+      trilha.style.transform = "translate3d(" + posicao.toFixed(2) + "px,0,0)";
     }
 
     function cancelarQuadro() {
@@ -79,7 +82,7 @@
       var passo = agora - ultimoQuadroAuto;
       ultimoQuadroAuto = agora;
       if (!arrastando && !reduzMovimento) {
-        posicao -= VELOCIDADE_AUTOMATICA * passo;
+        posicao -= VELOCIDADE_AUTOMATICA * passo * (opcoes.velocidade > 0 ? -1 : 1); // padrão: pra esquerda; velocidade positiva: pra direita
         desenhar();
       }
       quadroAtivo = requestAnimationFrame(autoRolar);
@@ -109,12 +112,7 @@
       pontoX = evento.clientX;
       pontoT = performance.now();
       velocidade = 0;
-      trilha.classList.add("arrastando");
-      if (trilha.setPointerCapture) {
-        try {
-          trilha.setPointerCapture(evento.pointerId);
-        } catch (erro) {}
-      }
+      idPonteiro = evento.pointerId;
     }
 
     function aoMover(evento) {
@@ -125,7 +123,15 @@
       posicao += deltaX;
       velocidade = deltaX / deltaT;
       somaMovimento += Math.abs(deltaX);
-      if (somaMovimento > LIMIAR_CLIQUE) moveuBastante = true;
+      if (somaMovimento > LIMIAR_CLIQUE && !moveuBastante) {
+        moveuBastante = true;
+        // só "captura" o ponteiro quando virou arrasto de verdade — capturar já no toque
+        // redirecionava o clique pra faixa e os links dos ícones nunca abriam
+        trilha.classList.add("arrastando");
+        if (trilha.setPointerCapture) {
+          try { trilha.setPointerCapture(idPonteiro); } catch (erro) {}
+        }
+      }
       pontoX = evento.clientX;
       pontoT = agora;
       desenhar();
@@ -145,6 +151,8 @@
       }
     }
 
+    trilha.addEventListener("dragstart", function (e) { e.preventDefault(); }); // arrasto nativo de <a> cancelava o gesto
+    document.addEventListener("visibilitychange", function () { ultimoQuadroAuto = null; ultimoQuadroMomento = null; });
     trilha.addEventListener("pointerdown", aoPressionar);
     trilha.addEventListener("pointermove", aoMover);
     trilha.addEventListener("pointerup", aoSoltar);
@@ -169,7 +177,12 @@
     quadroAtivo = requestAnimationFrame(autoRolar);
   }
 
-  document.addEventListener("DOMContentLoaded", iniciarFaixaArrastavel);
+  function iniciarTodas() {
+    iniciarFaixaArrastavel(".faixa-trilha");                                  // ícones de contato: da direita pra esquerda
+    iniciarFaixaArrastavel(".hero-faixa-trilho", { velocidade: 0.05 });       // faixa vermelha: da esquerda pra direita
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", iniciarTodas);
+  else iniciarTodas();
 
   // Exponha globalmente se quiser chamar manualmente em algum outro ponto
   window.iniciarFaixaArrastavel = iniciarFaixaArrastavel;

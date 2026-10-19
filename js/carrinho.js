@@ -358,6 +358,7 @@ function toggleCart(e){
   const body=document.getElementById('cart-body');
   const hint=document.getElementById('cart-hint');
   if(!body)return;
+  if(typeof carregarGoogleMaps==='function')carregarGoogleMaps();
   const open=body.style.display==='none'||body.style.display==='';
   body.style.display=open?'block':'none';
   hint.innerText=open?'▼ RECOLHER PEDIDO':'▲ VER MEU PEDIDO';

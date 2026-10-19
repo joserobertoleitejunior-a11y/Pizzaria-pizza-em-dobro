@@ -46,23 +46,13 @@
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600;700&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600;700&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
 <script src="js/dispositivo.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <meta name="google-signin-client_id" content="734644330198-h4oikt300ofvshi4o4mrcckb56111q1s.apps.googleusercontent.com">
-<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMPjAS03DT3tuGPtJBld2EXuX7C6__1lg&libraries=places&language=pt-BR&region=BR&callback=initGmapsAutocomplete"></script>
 <link rel="stylesheet" href="assets/site.css">
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="shared/firebase-config.js"></script>
-<script src="shared/utils.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="shared/staff-auth.js"></script>
-<!-- Observabilidade (Sentry) — desligado até shared/sentry-config.js ter um DSN de verdade -->
-<script src="shared/sentry-config.js"></script>
-<script src="https://browser.sentry-cdn.com/7.120.3/bundle.min.js" crossorigin="anonymous"></script>
-<script>if(typeof Sentry!=='undefined'&&SENTRY_DSN){Sentry.init({dsn:SENTRY_DSN,tracesSampleRate:0});}</script>
 </head>
 <body>
 <!-- WELCOME — logo com reflexo de vidro, nome completo e a pizza inteira perdendo
@@ -302,10 +292,6 @@
       <a class="faixa-icone" href="https://wa.me/5515997058390" target="_blank" rel="noopener" aria-label="WhatsApp" ><svg aria-hidden="true"><use href="#fx-wa"/></svg></a><a class="faixa-icone" href="tel:+5515997058390" aria-label="Telefone" ><svg aria-hidden="true"><use href="#fx-tel"/></svg></a><a class="faixa-icone" href="https://www.instagram.com/pizza_dobro_itape" target="_blank" rel="noopener" aria-label="Instagram" ><svg aria-hidden="true"><use href="#fx-ig"/></svg></a><button class="faixa-icone" type="button" onclick="abrirGoogleMaps()" aria-label="Endereço no mapa" ><svg aria-hidden="true"><use href="#fx-pin"/></svg></button>
       <a class="faixa-icone" href="https://wa.me/5515997058390" target="_blank" rel="noopener" aria-label="WhatsApp" ><svg aria-hidden="true"><use href="#fx-wa"/></svg></a><a class="faixa-icone" href="tel:+5515997058390" aria-label="Telefone" ><svg aria-hidden="true"><use href="#fx-tel"/></svg></a><a class="faixa-icone" href="https://www.instagram.com/pizza_dobro_itape" target="_blank" rel="noopener" aria-label="Instagram" ><svg aria-hidden="true"><use href="#fx-ig"/></svg></a><button class="faixa-icone" type="button" onclick="abrirGoogleMaps()" aria-label="Endereço no mapa" ><svg aria-hidden="true"><use href="#fx-pin"/></svg></button>
       <a class="faixa-icone" href="https://wa.me/5515997058390" target="_blank" rel="noopener" aria-label="WhatsApp" ><svg aria-hidden="true"><use href="#fx-wa"/></svg></a><a class="faixa-icone" href="tel:+5515997058390" aria-label="Telefone" ><svg aria-hidden="true"><use href="#fx-tel"/></svg></a><a class="faixa-icone" href="https://www.instagram.com/pizza_dobro_itape" target="_blank" rel="noopener" aria-label="Instagram" ><svg aria-hidden="true"><use href="#fx-ig"/></svg></a><button class="faixa-icone" type="button" onclick="abrirGoogleMaps()" aria-label="Endereço no mapa" ><svg aria-hidden="true"><use href="#fx-pin"/></svg></button>
-      <a class="faixa-icone" href="https://wa.me/5515997058390" target="_blank" rel="noopener" aria-label="WhatsApp" ><svg aria-hidden="true"><use href="#fx-wa"/></svg></a><a class="faixa-icone" href="tel:+5515997058390" aria-label="Telefone" ><svg aria-hidden="true"><use href="#fx-tel"/></svg></a><a class="faixa-icone" href="https://www.instagram.com/pizza_dobro_itape" target="_blank" rel="noopener" aria-label="Instagram" ><svg aria-hidden="true"><use href="#fx-ig"/></svg></a><button class="faixa-icone" type="button" onclick="abrirGoogleMaps()" aria-label="Endereço no mapa" ><svg aria-hidden="true"><use href="#fx-pin"/></svg></button>
-      <a class="faixa-icone" href="https://wa.me/5515997058390" target="_blank" rel="noopener" aria-label="WhatsApp" ><svg aria-hidden="true"><use href="#fx-wa"/></svg></a><a class="faixa-icone" href="tel:+5515997058390" aria-label="Telefone" ><svg aria-hidden="true"><use href="#fx-tel"/></svg></a><a class="faixa-icone" href="https://www.instagram.com/pizza_dobro_itape" target="_blank" rel="noopener" aria-label="Instagram" ><svg aria-hidden="true"><use href="#fx-ig"/></svg></a><button class="faixa-icone" type="button" onclick="abrirGoogleMaps()" aria-label="Endereço no mapa" ><svg aria-hidden="true"><use href="#fx-pin"/></svg></button>
-      <a class="faixa-icone" href="https://wa.me/5515997058390" target="_blank" rel="noopener"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-wa"/></svg></a><a class="faixa-icone" href="tel:+5515997058390"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-tel"/></svg></a><a class="faixa-icone" href="https://www.instagram.com/pizza_dobro_itape" target="_blank" rel="noopener"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-ig"/></svg></a><button class="faixa-icone" type="button" onclick="abrirGoogleMaps()"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-pin"/></svg></button>
-      <a class="faixa-icone" href="https://wa.me/5515997058390" target="_blank" rel="noopener"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-wa"/></svg></a><a class="faixa-icone" href="tel:+5515997058390"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-tel"/></svg></a><a class="faixa-icone" href="https://www.instagram.com/pizza_dobro_itape" target="_blank" rel="noopener"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-ig"/></svg></a><button class="faixa-icone" type="button" onclick="abrirGoogleMaps()"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-pin"/></svg></button>
       <a class="faixa-icone" href="https://wa.me/5515997058390" target="_blank" rel="noopener"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-wa"/></svg></a><a class="faixa-icone" href="tel:+5515997058390"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-tel"/></svg></a><a class="faixa-icone" href="https://www.instagram.com/pizza_dobro_itape" target="_blank" rel="noopener"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-ig"/></svg></a><button class="faixa-icone" type="button" onclick="abrirGoogleMaps()"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-pin"/></svg></button>
       <a class="faixa-icone" href="https://wa.me/5515997058390" target="_blank" rel="noopener"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-wa"/></svg></a><a class="faixa-icone" href="tel:+5515997058390"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-tel"/></svg></a><a class="faixa-icone" href="https://www.instagram.com/pizza_dobro_itape" target="_blank" rel="noopener"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-ig"/></svg></a><button class="faixa-icone" type="button" onclick="abrirGoogleMaps()"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-pin"/></svg></button>
       <a class="faixa-icone" href="https://wa.me/5515997058390" target="_blank" rel="noopener"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-wa"/></svg></a><a class="faixa-icone" href="tel:+5515997058390"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-tel"/></svg></a><a class="faixa-icone" href="https://www.instagram.com/pizza_dobro_itape" target="_blank" rel="noopener"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-ig"/></svg></a><button class="faixa-icone" type="button" onclick="abrirGoogleMaps()"  aria-hidden="true" tabindex="-1"><svg aria-hidden="true"><use href="#fx-pin"/></svg></button>
@@ -344,8 +330,8 @@
 </header>
 
 <!-- FAIXA EDITORIAL (corre sozinha, decorativa) -->
-<div class="hero-faixa" aria-hidden="true">
-  <div class="hero-faixa-trilho"><span>PIZZA EM DOBRO ✦ TRADICIONAIS ✦ ESPECIAIS ✦ COMBOS 2 POR ✦ DOCES ✦ CALZONES ✦ BEBIDAS ✦&nbsp;</span><span>PIZZA EM DOBRO ✦ TRADICIONAIS ✦ ESPECIAIS ✦ COMBOS 2 POR ✦ DOCES ✦ CALZONES ✦ BEBIDAS ✦&nbsp;</span></div>
+<div class="hero-faixa" aria-label="Atalhos do cardápio">
+  <div class="hero-faixa-trilho"><span>PIZZA EM DOBRO</span><i aria-hidden="true">✦</i><a href="#cat-p" draggable="false">TRADICIONAIS</a><i aria-hidden="true">✦</i><a href="#cat-s" draggable="false">ESPECIAIS</a><i aria-hidden="true">✦</i><a href="#cat-co" draggable="false">COMBOS 2 POR</a><i aria-hidden="true">✦</i><a href="#cat-co" draggable="false">BROTO R$ 50</a><i aria-hidden="true">✦</i><a href="#cat-es" draggable="false">ESFIHAS R$ 5</a><i aria-hidden="true">✦</i><a href="#cat-dw" draggable="false">DOCES</a><i aria-hidden="true">✦</i><a href="#cat-cz" draggable="false">CALZONES</a><i aria-hidden="true">✦</i><a href="#cat-d" draggable="false">BEBIDAS</a><i aria-hidden="true">✦</i><span>PIZZA EM DOBRO</span><i aria-hidden="true">✦</i><a href="#cat-p" draggable="false">TRADICIONAIS</a><i aria-hidden="true">✦</i><a href="#cat-s" draggable="false">ESPECIAIS</a><i aria-hidden="true">✦</i><a href="#cat-co" draggable="false">COMBOS 2 POR</a><i aria-hidden="true">✦</i><a href="#cat-co" draggable="false">BROTO R$ 50</a><i aria-hidden="true">✦</i><a href="#cat-es" draggable="false">ESFIHAS R$ 5</a><i aria-hidden="true">✦</i><a href="#cat-dw" draggable="false">DOCES</a><i aria-hidden="true">✦</i><a href="#cat-cz" draggable="false">CALZONES</a><i aria-hidden="true">✦</i><a href="#cat-d" draggable="false">BEBIDAS</a><i aria-hidden="true">✦</i><span aria-hidden="true" tabindex="-1">PIZZA EM DOBRO</span><i aria-hidden="true">✦</i><a href="#cat-p" draggable="false" aria-hidden="true" tabindex="-1">TRADICIONAIS</a><i aria-hidden="true">✦</i><a href="#cat-s" draggable="false" aria-hidden="true" tabindex="-1">ESPECIAIS</a><i aria-hidden="true">✦</i><a href="#cat-co" draggable="false" aria-hidden="true" tabindex="-1">COMBOS 2 POR</a><i aria-hidden="true">✦</i><a href="#cat-co" draggable="false" aria-hidden="true" tabindex="-1">BROTO R$ 50</a><i aria-hidden="true">✦</i><a href="#cat-es" draggable="false" aria-hidden="true" tabindex="-1">ESFIHAS R$ 5</a><i aria-hidden="true">✦</i><a href="#cat-dw" draggable="false" aria-hidden="true" tabindex="-1">DOCES</a><i aria-hidden="true">✦</i><a href="#cat-cz" draggable="false" aria-hidden="true" tabindex="-1">CALZONES</a><i aria-hidden="true">✦</i><a href="#cat-d" draggable="false" aria-hidden="true" tabindex="-1">BEBIDAS</a><i aria-hidden="true">✦</i><span aria-hidden="true" tabindex="-1">PIZZA EM DOBRO</span><i aria-hidden="true">✦</i><a href="#cat-p" draggable="false" aria-hidden="true" tabindex="-1">TRADICIONAIS</a><i aria-hidden="true">✦</i><a href="#cat-s" draggable="false" aria-hidden="true" tabindex="-1">ESPECIAIS</a><i aria-hidden="true">✦</i><a href="#cat-co" draggable="false" aria-hidden="true" tabindex="-1">COMBOS 2 POR</a><i aria-hidden="true">✦</i><a href="#cat-co" draggable="false" aria-hidden="true" tabindex="-1">BROTO R$ 50</a><i aria-hidden="true">✦</i><a href="#cat-es" draggable="false" aria-hidden="true" tabindex="-1">ESFIHAS R$ 5</a><i aria-hidden="true">✦</i><a href="#cat-dw" draggable="false" aria-hidden="true" tabindex="-1">DOCES</a><i aria-hidden="true">✦</i><a href="#cat-cz" draggable="false" aria-hidden="true" tabindex="-1">CALZONES</a><i aria-hidden="true">✦</i><a href="#cat-d" draggable="false" aria-hidden="true" tabindex="-1">BEBIDAS</a><i aria-hidden="true">✦</i></div>
 </div>
 
 <!-- NAV -->
@@ -837,6 +823,15 @@
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="shared/firebase-config.js"></script>
+<script src="shared/utils.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="shared/staff-auth.js"></script>
+<!-- Sentry só é baixado se houver DSN configurado (hoje não há) — antes baixava sempre -->
+<script src="shared/sentry-config.js"></script>
+<script>if(typeof SENTRY_DSN!=='undefined'&&SENTRY_DSN){var _s=document.createElement('script');_s.src='https://browser.sentry-cdn.com/7.120.3/bundle.min.js';_s.crossOrigin='anonymous';_s.onload=function(){Sentry.init({dsn:SENTRY_DSN,tracesSampleRate:0});};document.head.appendChild(_s);}</script>
 <script src="js/core-data.js"></script>
 <script src="js/sabor-imagem.js"></script>
 <script src="js/ui-shell.js"></script>
@@ -891,58 +886,14 @@ function fecharBanner(){
      Se a CDN do GSAP falhar, o site continua 100% funcional,
      só sem esse efeito de revelação suave ao rolar.
      ══════════════════════════════════════════════════════════ -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
-// Exposta em window porque o cardápio/combos nascem depois de um await (Firestore)
-// — quando esse script roda pela primeira vez (no carregamento da página) esses
-// cards ainda não existem no DOM. js/boot-admin-extra.js chama essa mesma função
-// de novo assim que o renderMenu() termina, pra pegar os elementos que faltaram.
-// Marca cada elemento com data-anim-entrada pra nunca animar o mesmo 2x.
+// Entrada ao rolar SEM biblioteca (antes: GSAP + ScrollTrigger, ~110KB de CDN). Os blocos abaixo
+// ganham .reveal e o observador leve (ver _observarReveal) cuida do resto. Chamada de novo por
+// js/boot-admin-extra.js quando o cardápio/combos terminam de renderizar.
 window._iniciarAnimacoesScroll=function(){
-  try{
-    if(typeof gsap==='undefined') return;
-    // respeita "reduzir movimento" do sistema — sem isso, CSS trava a duração da animação
-    // mas o GSAP (JS puro) ainda ia animar opacidade/posição por baixo
-    var reduzMovimento=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if(typeof ScrollTrigger!=='undefined') gsap.registerPlugin(ScrollTrigger);
-    var alvos=document.querySelectorAll('.item-card,.combo-card,.promo-card,#last-order-banner,#stats-publico,.nav-pill');
-    alvos.forEach(function(el){
-      // quem já tem .reveal anima pelo CSS; animar pelos dois faz o GSAP "congelar" o
-      // opacity:0 inicial do .reveal como estado final (o bloco ficava invisível no celular)
-      if(el.dataset.animEntrada || el.classList.contains('reveal')) return;
-      el.dataset.animEntrada='1';
-      gsap.from(el,{
-        opacity:0, y:16, duration: reduzMovimento?0:.5, ease:'power2.out',
-        scrollTrigger: typeof ScrollTrigger!=='undefined' ? {trigger:el,start:'top 94%'} : undefined
-      });
-    });
-    // botões de destaque "pulam" pra dentro da tela em vez de só aparecer — dá mais
-    // vida sem custo (só poucos elementos, não todo botão + de cada item do cardápio)
-    var botoesDestaque=document.querySelectorAll('.hero-cta-btn,.hero-cta-block,.combo-add-btn');
-    botoesDestaque.forEach(function(el){
-      if(el.dataset.animEntrada) return;
-      el.dataset.animEntrada='1';
-      gsap.fromTo(el,{scale:.7,opacity:0},{scale:1,opacity:1,duration: reduzMovimento?0:.45,ease:'back.out(2.5)',
-        scrollTrigger: typeof ScrollTrigger!=='undefined' ? {trigger:el,start:'top 95%'} : undefined});
-    });
-    // parallax + rotação dos ícones de destaque são elementos estáticos (existem desde
-    // o primeiro carregamento) — só precisam ser configurados uma única vez
-    if(!window._animScrollBaseFeita){
-      window._animScrollBaseFeita=true;
-      // rotação sutil dos ícones de "destaque" conforme passam pela tela — dá vida
-      // sem custo (só transform), independente do .reveal genérico
-      var destaqueIcones=document.querySelectorAll('.destaque-ic');
-      destaqueIcones.forEach(function(el){
-        gsap.fromTo(el,{rotate:-8,scale:.85},{rotate:0,scale:1,duration: reduzMovimento?0:.5,ease:'back.out(2)',
-          scrollTrigger: typeof ScrollTrigger!=='undefined' ? {trigger:el,start:'top 92%'} : undefined});
-      });
-    }
-  }catch(e){
-    console.warn('Reforço visual (GSAP) não pôde iniciar — site segue normal.',e);
-  }
+  document.querySelectorAll('.combo-card,.esf-box,.promo-card,#last-order-banner').forEach(function(el){ el.classList.add('reveal'); });
+  if(window._observarReveal) window._observarReveal();
 };
-window._iniciarAnimacoesScroll();
 </script>
 
 <!-- ══════════════════════════════════════════════════════════

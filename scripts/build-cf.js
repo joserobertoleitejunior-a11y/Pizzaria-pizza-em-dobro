@@ -38,6 +38,9 @@ fs.writeFileSync(path.join(DIST, '_headers'), `/*
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
 
+/assets/*
+  Cache-Control: public, max-age=86400
+
 /admin/*
   X-Robots-Tag: noindex, nofollow
 /caixa/*
