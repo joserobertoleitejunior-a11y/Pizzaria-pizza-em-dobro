@@ -281,8 +281,8 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('focus', tentarReconectarImpressoraAgora);
 // checagem periódica de segurança — se cair a conexão por algum caminho que não disparou o
 // backoff automático (ex: impressora USB, ou perda de estado depois de recarregar a página),
-// tenta voltar sozinha em até 8s.
-setInterval(tentarReconectarImpressoraAgora, 8000);
+// tenta voltar sozinha em até 15s.
+setInterval(()=>{ if(!document.hidden) tentarReconectarImpressoraAgora(); }, 15000);
 
 // veio do Painel pedindo reimpressão (?reimprimir=ID) — imprime direto, sem abrir o carrinho
 (function(){

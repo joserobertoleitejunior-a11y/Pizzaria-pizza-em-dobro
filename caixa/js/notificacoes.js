@@ -8,9 +8,18 @@ let _idsVistosAtendente=null;
 let filaNotificacoes=[];
 let notificacaoAtual=null;
 
+let _audioCtx=null;
+function _ctxAudio(){
+  // um só AudioContext pro Caixa inteiro (o navegador limita a ~6; criar um por pedido fazia o som parar de tocar)
+  if(!_audioCtx) _audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(_audioCtx.state==='suspended') _audioCtx.resume();
+  return _audioCtx;
+}
+// destrava o áudio no primeiro toque/clique (regra dos navegadores)
+document.addEventListener('pointerdown',()=>{ try{ _ctxAudio(); }catch(e){} },{once:true});
 function tocarSom(){
   try{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const ctx=_ctxAudio();
     [0,.25,.5].forEach((t,i)=>{
       const o=ctx.createOscillator();
       const g=ctx.createGain();
@@ -41,7 +50,7 @@ function esconderAlertaImpressora(){
 }
 function tocarSomAlerta(){
   try{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const ctx=_ctxAudio();
     [0,.35,.7,1.05].forEach((t)=>{
       const o=ctx.createOscillator();
       const g=ctx.createGain();

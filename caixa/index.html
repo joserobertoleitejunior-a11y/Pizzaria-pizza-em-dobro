@@ -9,8 +9,6 @@
 <meta name="theme-color" content="#C1623B">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <title>🍕 Caixa — Pizza em Dobro</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;scroll-behavior:smooth;background:#07060a;}
@@ -22,7 +20,7 @@ html,body{height:100%;scroll-behavior:smooth;background:#07060a;}
   --tx-dark:#FFF3E4;  /* texto sobre os cards (agora escuros, então também claro) */
   --sub:#c9b8a3;      /* texto secundário sobre escuro */
   --sub-dark:#a9998a;  /* texto secundário sobre card escuro */
-  --font-display:'Archivo Black',sans-serif; --font-eyebrow:'Work Sans',sans-serif; --font-body:'Public Sans',system-ui,sans-serif;
+  --font-display:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif; --font-eyebrow:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif; --font-body:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
 }
 body{
   background:linear-gradient(180deg,var(--bg),var(--bg2)); color:var(--tx); font-family:var(--font-body);
@@ -35,7 +33,7 @@ body{
 
 /* ---- NAV (padrão único do site — mesma cor/ordem em todo lugar) ---- */
 .nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
-  padding:12px 18px;background:rgba(7,6,10,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--card-bd);
+  padding:12px 18px;background:rgba(7,6,10,.82);border-bottom:1px solid var(--card-bd);
   flex-wrap:wrap;gap:8px;}
 .nav-logo{font-family:var(--font-display);font-size:1.3rem;color:var(--pr);letter-spacing:.5px;
   display:flex;align-items:center;gap:8px;}
@@ -157,7 +155,7 @@ body{
 .btn-finalizar:disabled{opacity:.35;box-shadow:none;}
 
 /* ---- MODAL ITEM ---- */
-.modal-bg{position:fixed;inset:0;background:rgba(20,8,3,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+.modal-bg{position:fixed;inset:0;background:rgba(20,8,3,.6);
   z-index:500;display:none;align-items:flex-end;justify-content:center;opacity:0;transition:opacity .2s ease;}
 .modal-bg.open{display:flex;opacity:1;}
 .modal-bg .modal{transform:translateY(16px);transition:transform .25s cubic-bezier(.34,1.56,.64,1);}
@@ -311,7 +309,7 @@ body{
 </head>
 <body>
 
-<div id="caixa-lock-overlay" style="display:none;position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.82);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px;">
+<div id="caixa-lock-overlay" style="display:none;position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.82);align-items:center;justify-content:center;padding:20px;">
   <div style="background:#fff;border:1px solid rgba(255,159,28,.25);border-radius:20px;padding:32px 24px;max-width:340px;width:100%;text-align:center;">
     <div style="font-size:2.6rem;margin-bottom:10px;">🔒</div>
     <div style="font-family:var(--font-display);font-size:1.4rem;color:#fff;margin-bottom:10px;">Caixa fechado</div>
@@ -401,7 +399,7 @@ body{
       <div class="toolbar-row">
         <div class="search-box">
           <span class="search-icon">🔍</span>
-          <input id="busca-produto" placeholder="Buscar pizza..." oninput="renderProdutos()">
+          <input id="busca-produto" placeholder="Buscar pizza..." oninput="buscarComAtraso()" autocomplete="off">
         </div>
         <div class="mode-btn" id="btn-meia" onclick="alternarMeiaAMeia()"><span class="ic">🍕/🍕</span>Meia</div>
         <div class="mode-btn acao" id="btn-colar" onclick="abrirColarPedido()" title="Conversor: cole a mensagem do WhatsApp e o pedido é montado sozinho"><span class="ic">📋</span>Conversor</div>
@@ -518,6 +516,7 @@ body{
   </div>
 </div>
 
+<div id="aviso-offline" style="display:none;position:fixed;top:0;left:0;right:0;z-index:99997;background:#DC2626;color:#fff;text-align:center;padding:10px 12px;font-weight:700;font-size:.95rem;">📡 Sem internet — as vendas podem não ser salvas. Confira o Wi‑Fi.</div>
 <div class="toast" id="toast">✓ Venda registrada!</div>
 
 <!-- RECIBO PARA IMPRESSÃO (fica oculto, só aparece no print) -->

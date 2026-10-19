@@ -4,90 +4,107 @@
 <meta charset="UTF-8">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Relatórios PED">
-<meta name="theme-color" content="#C1623B">
+<meta name="theme-color" content="#F4F5F7">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>🍕 Dashboard — Pizza em Dobro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{overflow-x:hidden;max-width:100%;}
-:root{
-  --bg:#07060a; --card:rgba(24,19,16,.55); --card-bd:rgba(193,98,59,.18);
-  --pr:#C1623B; --se:#A8432F; --ok:#2ecc71; --tx:#f3ece2; --sub:#9c8f83;
-  --font-display:'Archivo Black',sans-serif; --font-eyebrow:'Work Sans',sans-serif; --font-body:'Public Sans',system-ui,sans-serif;
-}
-body{
-  background:var(--bg);color:var(--tx);font-family:var(--font-body);min-height:100vh;padding-bottom:30px;
-  background-image:radial-gradient(circle at 15% -10%, rgba(255,159,28,.12) 0%, transparent 55%),
-                    radial-gradient(circle at 100% 10%, rgba(231,29,54,.07) 0%, transparent 45%);
-  background-attachment:fixed;
-}
-
-.nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;
-  padding:12px 18px;background:rgba(7,6,10,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--card-bd);
-  flex-wrap:wrap;gap:8px;}
-.nav-logo{font-family:var(--font-display);font-size:1.3rem;color:var(--pr);letter-spacing:.5px;
-  display:flex;align-items:center;gap:8px;}
+:root{--bg:#F4F5F7;--card:#fff;--card-bd:#E5E7EB;--pr:#D62828;--se:#B91C1C;--ok:#16A34A;--tx:#111827;--sub:#6B7280;
+  --font-display:'Archivo Black',sans-serif;--font-eyebrow:'Work Sans',sans-serif;--font-body:'Work Sans',system-ui,sans-serif;}
+body{background:var(--bg);color:var(--tx);font-family:var(--font-body);min-height:100vh;padding-bottom:40px;font-size:16px;}
+.pagina{max-width:980px;margin:0 auto;}
+.nav{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:rgba(255,255,255,.94);border-bottom:1px solid var(--card-bd);flex-wrap:wrap;gap:8px;}
+.nav-logo{font-family:var(--font-display);font-size:1.3rem;color:var(--tx);display:flex;align-items:center;gap:8px;}
 .nav-links{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
-.nav-links a{font-family:var(--font-eyebrow);font-size:.74rem;letter-spacing:.6px;text-transform:uppercase;
-  color:var(--sub);text-decoration:none;padding:6px 10px;border-radius:8px;
-  border-top:2px solid transparent;transition:.2s;}
-.nav-links a:hover{color:#000;background:var(--pr);border-top-color:transparent;}
-.nav-links a.on{color:var(--tx);border-top:2px solid #fff;}
-
-.periodo{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;}
-.periodo-chip{flex:none;padding:8px 15px;border-radius:20px;background:var(--card);border:1px solid var(--card-bd);font-family:var(--font-eyebrow);font-size:.78rem;letter-spacing:.4px;text-transform:uppercase;color:var(--sub);cursor:pointer;}
-.periodo-chip.active{color:#000;background:var(--pr);border-color:var(--pr);font-weight:700;}
-.ia-msg{max-width:85%;padding:10px 13px;border-radius:14px;font-size:.9rem;line-height:1.5;}
-.ia-msg-bot{align-self:flex-start;background:var(--card);border:1px solid var(--card-bd);color:#f3ece2;border-bottom-left-radius:4px;}
-.ia-msg-user{align-self:flex-end;background:linear-gradient(135deg,var(--pr),var(--se));color:#000;font-weight:600;border-bottom-right-radius:4px;}
+.nav-links a{font-size:.78rem;letter-spacing:.5px;text-transform:uppercase;color:var(--sub);text-decoration:none;padding:8px 12px;border-radius:999px;font-weight:700;}
+.nav-links a:hover{background:rgba(214,40,40,.08);color:var(--pr);}
+.nav-links a.on{background:var(--pr);color:#fff;}
+.periodo{display:flex;gap:8px;padding:14px 16px 6px;overflow-x:auto;scrollbar-width:none;}
+.periodo::-webkit-scrollbar{display:none;}
+.periodo-chip{flex:none;padding:10px 16px;border-radius:999px;background:#fff;border:1px solid var(--card-bd);font-size:.86rem;font-weight:700;color:var(--sub);cursor:pointer;}
+.periodo-chip.active{background:var(--pr);border-color:var(--pr);color:#fff;box-shadow:0 6px 14px rgba(214,40,40,.25);}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 16px;}
+@media (min-width:720px){.kpi-grid{grid-template-columns:repeat(4,1fr);}.kpi-destaque{grid-column:span 2;}}
+.kpi-card{background:#fff;border:1px solid var(--card-bd);border-radius:18px;padding:14px;box-shadow:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.05);}
+.kpi-destaque{grid-column:1/-1;background:linear-gradient(135deg,#D62828,#B91C1C);border-color:#B91C1C;color:#fff;}
+@media (min-width:720px){.kpi-destaque{grid-column:span 2;}}
+.kpi-lbl{font-size:.8rem;color:var(--sub);font-weight:600;}
+.kpi-num{font-family:var(--font-display);font-size:1.5rem;margin-top:4px;word-break:break-word;}
+.kpi-sub{font-size:.8rem;color:var(--sub);margin-top:4px;}
+.kpi-destaque .kpi-lbl,.kpi-destaque .kpi-sub{color:rgba(255,255,255,.88);}
+.kpi-destaque .kpi-num{font-size:2.1rem;}
+.secao{margin:6px 16px 10px;background:#fff;border:1px solid var(--card-bd);border-radius:20px;padding:14px 14px 12px;box-shadow:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.05);}
+.secao h2{font-size:.82rem;letter-spacing:1px;text-transform:uppercase;color:var(--sub);font-weight:800;margin-bottom:10px;border:0;padding:0;}
+.acc-toggle{cursor:pointer;display:flex;align-items:center;justify-content:space-between;margin-bottom:0!important;}
+.acc-chevron{color:var(--pr);font-size:1rem;}
+.empty{text-align:center;color:#9CA3AF;padding:22px 12px;font-size:.92rem;}
+/* barras de faturamento (HTML/CSS, sem biblioteca) */
+.barras{display:flex;align-items:flex-end;gap:3px;height:170px;padding-top:6px;}
+.barra-col{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;background:none;border:0;padding:0;cursor:pointer;gap:4px;}
+.barra-fill{width:100%;max-width:34px;border-radius:7px 7px 3px 3px;background:#F3B1B1;transition:background .12s;min-height:3px;}
+.barra-col:hover .barra-fill,.barra-col.sel .barra-fill{background:var(--pr);}
+.barra-rot{font-size:.7rem;color:var(--sub);height:14px;white-space:nowrap;}
+#fat-detalhe{margin-top:10px;font-size:.92rem;color:var(--tx);}
+#fat-detalhe .dica{color:#9CA3AF;font-size:.8rem;}
+/* linhas com barra (pagamento, tipo, sabores) */
+.linha-barra{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid #F3F4F6;padding:10px 4px;font:inherit;color:inherit;}
+button.linha-barra{cursor:pointer;border-radius:12px;}
+button.linha-barra:hover,.linha-barra.sel{background:rgba(214,40,40,.06);}
+.linha-barra:last-child{border-bottom:0;}
+.lb-topo{display:flex;justify-content:space-between;gap:10px;font-size:.98rem;}
+.lb-topo b{font-weight:700;}
+.lb-barra{display:block;height:8px;background:#F3F4F6;border-radius:99px;margin:7px 0 4px;overflow:hidden;}
+.lb-barra i{display:block;height:100%;background:var(--pr);border-radius:99px;}
+.lb-sub{font-size:.8rem;color:var(--sub);display:block;}
+/* lista de pedidos */
+.dia-sep{font-size:.82rem;font-weight:700;color:var(--sub);padding:12px 2px 6px;}
+.seq-row{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid #F3F4F6;}
+.seq-badge{font-family:var(--font-display);font-size:.95rem;color:#fff;background:var(--pr);border-radius:9px;padding:3px 9px;flex:none;min-width:38px;text-align:center;}
+.seq-info{flex:1;min-width:0;}
+.seq-info b{font-size:.98rem;}
+.seq-sub{color:var(--sub);font-size:.8rem;margin-top:2px;}
+.seq-total{font-family:var(--font-display);color:var(--tx);font-size:1rem;flex:none;}
+.filtro-ativo{display:flex;align-items:center;gap:10px;background:rgba(214,40,40,.08);border-radius:12px;padding:9px 12px;font-size:.9rem;margin-bottom:6px;}
+.filtro-ativo button{border:0;background:none;color:var(--pr);font-weight:700;cursor:pointer;font-size:.86rem;}
+#controles-sequencia{padding:10px 0 4px;display:none;}
+#ordem-sequencia-toggle{cursor:pointer;color:var(--pr);font-size:.86rem;border:1px solid var(--card-bd);padding:6px 14px;border-radius:999px;display:inline-block;margin-bottom:8px;font-weight:700;}
+/* calendário */
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
 .cal-semana{margin-bottom:4px;}
-.cal-dow{text-align:center;font-family:var(--font-eyebrow);font-size:.74rem;color:var(--sub);padding:4px 0;}
-.cal-dia{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:.93rem;color:#f3ece2;cursor:pointer;transition:.15s;}
-.cal-dia:not(.vazio):not(.cal-futuro):hover{background:rgba(255,159,28,.18);}
+.cal-dow{text-align:center;font-size:.8rem;color:var(--sub);padding:4px 0;font-weight:700;}
+.cal-dia{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:.95rem;color:var(--tx);cursor:pointer;}
+.cal-dia:not(.vazio):not(.cal-futuro):hover{background:rgba(214,40,40,.1);}
 .cal-dia.vazio{cursor:default;}
-.cal-dia.cal-futuro{color:#4a423a;cursor:default;}
+.cal-dia.cal-futuro{color:#D1D5DB;cursor:default;}
 .cal-dia.cal-hoje{border:1.5px solid var(--pr);color:var(--pr);font-weight:700;}
-.cal-dia.cal-sel{background:var(--pr);color:#000;font-weight:800;}
-
-.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 12px;}
-.kpi-card{background:var(--card);backdrop-filter:blur(8px);border:1px solid var(--card-bd);border-radius:16px;padding:14px;}
-.kpi-num{font-family:var(--font-display);font-size:1.4rem;color:var(--pr);word-break:break-word;}
-.kpi-lbl{font-family:var(--font-eyebrow);font-size:.74rem;color:var(--sub);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;}
-
-.section-title{font-family:var(--font-eyebrow);font-size:.78rem;color:var(--sub);text-transform:uppercase;letter-spacing:1.4px;padding:16px 16px 8px;}
-.acc-toggle{cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding-right:16px;-webkit-tap-highlight-color:transparent;}
-.acc-chevron{color:var(--pr);font-size:.98rem;transition:transform .2s;}
-.dia-sep{font-family:var(--font-eyebrow);font-size:.78rem;letter-spacing:.6px;color:var(--sub);padding:10px 2px 6px;border-bottom:1px solid var(--card-bd);margin-bottom:6px;}
-.chart-card{background:var(--card);backdrop-filter:blur(8px);border:1px solid var(--card-bd);border-radius:16px;margin:0 16px;padding:14px;position:relative;height:220px;}
-.chart-card.small{height:200px;}
-.chart-empty{display:flex;align-items:center;justify-content:center;height:100%;color:#5a5049;font-size:.88rem;}
-
-.break-list{padding:0 16px;}
-.break-row{display:flex;justify-content:space-between;background:var(--card);backdrop-filter:blur(8px);border:1px solid var(--card-bd);border-radius:12px;padding:11px 14px;margin-bottom:8px;font-size:.86rem;}
-.break-row b{font-family:var(--font-display);color:var(--pr);}
-.seq-row{display:flex;align-items:center;gap:10px;background:var(--card);backdrop-filter:blur(8px);border:1px solid var(--card-bd);border-radius:12px;padding:10px 14px;margin-bottom:7px;font-size:.86rem;}
-.seq-badge{font-family:var(--font-display);font-size:1rem;color:#000;background:var(--pr);border-radius:8px;padding:2px 9px;flex:none;min-width:34px;text-align:center;}
-.seq-info{flex:1;min-width:0;}
-.seq-info b{color:var(--tx);}
-.seq-info .seq-sub{color:var(--sub);font-size:.78rem;margin-top:2px;}
-.seq-total{font-family:var(--font-display);color:var(--pr);font-size:1.03rem;flex:none;}
-
-.actions{padding:16px;}
-.btn{display:block;width:100%;padding:14px;border-radius:12px;border:none;font-family:var(--font-eyebrow);font-weight:600;font-size:.88rem;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;margin-bottom:8px;background:var(--pr);color:#000;}
-.btn-secondary{background:rgba(255,255,255,.06);color:var(--tx);}
-.empty{text-align:center;color:#5a5049;padding:40px 20px;font-size:.93rem;}
+.cal-dia.cal-sel{background:var(--pr);color:#fff;font-weight:800;}
+/* assistente */
+.ia-msg{max-width:88%;padding:11px 14px;border-radius:16px;font-size:.92rem;line-height:1.5;}
+.ia-msg-bot{align-self:flex-start;background:#F3F4F6;border-bottom-left-radius:4px;}
+.ia-msg-user{align-self:flex-end;background:var(--pr);color:#fff;font-weight:600;border-bottom-right-radius:4px;}
+.m-input{background:#fff;border:1px solid var(--card-bd);border-radius:12px;padding:12px;font-size:1rem;color:var(--tx);}
+.actions{padding:10px 16px;display:grid;gap:8px;}
+@media (min-width:720px){.actions{grid-template-columns:1fr 1fr;}}
+.btn{display:block;width:100%;padding:15px;border-radius:14px;border:none;font-weight:700;font-size:.95rem;cursor:pointer;background:var(--pr);color:#fff;}
+.btn-secondary{background:#fff;color:var(--tx);border:1px solid var(--card-bd);}
 </style>
 <link rel="stylesheet" href="../shared/app-clean.css">
+<style>
+.kpi-card.kpi-destaque{background:linear-gradient(135deg,#D62828,#B91C1C)!important;border-color:#B91C1C!important;}
+.kpi-card.kpi-destaque .kpi-num,.kpi-card.kpi-destaque .kpi-lbl,.kpi-card.kpi-destaque .kpi-sub{color:#fff!important;}
+.kpi-card.kpi-destaque .kpi-lbl,.kpi-card.kpi-destaque .kpi-sub{opacity:.9;}
+</style>
 </head>
 <body>
+<div class="pagina">
 
 <div class="nav">
-  <div class="nav-logo"><img src="../assets/logo.png" alt="Pizza em Dobro" width="26" height="26" style="width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle;flex:none;">Dashboard</div>
+  <div class="nav-logo"><img src="../assets/logo.png" alt="Pizza em Dobro" width="26" height="26" style="width:26px;height:26px;border-radius:50%;object-fit:cover;flex:none;">Dashboard</div>
   <div class="nav-links">
     <a href="../index.html">Loja</a>
     <a href="../relatorios/index.html" class="on">Dashboard</a>
@@ -99,35 +116,67 @@ body{
 
 <div class="periodo" id="periodo"></div>
 
-<div id="calendario-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(10,8,6,.55);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)fecharCalendario()">
-  <div style="background:rgba(24,19,16,.92);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:18px;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5);">
+<div id="calendario-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(17,24,39,.5);align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)fecharCalendario()">
+  <div style="background:#fff;border:1px solid #E5E7EB;border-radius:24px;padding:18px;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(16,24,40,.3);">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <button onclick="mudarMesCalendario(-1)" style="background:rgba(255,159,28,.12);border:none;color:var(--pr);width:32px;height:32px;border-radius:50%;font-size:1rem;cursor:pointer;">‹</button>
-      <div id="cal-titulo" style="font-family:var(--font-display);font-size:1.1rem;color:#fff;letter-spacing:.3px;"></div>
-      <button onclick="mudarMesCalendario(1)" style="background:rgba(255,159,28,.12);border:none;color:var(--pr);width:32px;height:32px;border-radius:50%;font-size:1rem;cursor:pointer;">›</button>
+      <button onclick="mudarMesCalendario(-1)" aria-label="Mês anterior" style="background:#F3F4F6;border:none;color:var(--pr);width:38px;height:38px;border-radius:50%;font-size:1.2rem;cursor:pointer;">‹</button>
+      <div id="cal-titulo" style="font-weight:800;font-size:1.05rem;"></div>
+      <button onclick="mudarMesCalendario(1)" aria-label="Próximo mês" style="background:#F3F4F6;border:none;color:var(--pr);width:38px;height:38px;border-radius:50%;font-size:1.2rem;cursor:pointer;">›</button>
     </div>
     <div id="cal-corpo"></div>
-    <button onclick="fecharCalendario()" style="width:100%;margin-top:14px;padding:11px;border:none;border-radius:14px;background:rgba(255,255,255,.06);color:var(--sub);font-size:.88rem;cursor:pointer;">Cancelar</button>
+    <button onclick="fecharCalendario()" style="width:100%;margin-top:14px;padding:13px;border:none;border-radius:14px;background:#F3F4F6;color:var(--tx);font-size:.95rem;font-weight:700;cursor:pointer;">Cancelar</button>
   </div>
 </div>
 
-<div class="kpi-grid" id="kpis"></div>
+<div class="kpi-grid" id="kpis"><div class="empty" style="grid-column:1/-1">Carregando…</div></div>
 
-<div class="section-title">🤖 Assistente do Gerente <span style="text-transform:none;letter-spacing:0;opacity:.7;">(converse, peça dicas, pergunte sobre as vendas)</span></div>
-<div class="chart-card" style="height:auto;min-height:auto;padding:0;display:flex;flex-direction:column;">
-  <div id="ia-chat-mensagens" style="padding:14px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;">
-    <div class="ia-msg ia-msg-bot">Oi! Sou o assistente da Pizza em Dobro. 🍕 Já sei tudo sobre suas vendas dos últimos 30 dias. Pode perguntar o que quiser — o que está vendendo bem, que promoção fazer, melhor horário pra anúncio, ou só mandar um "me dá um resumo de hoje" pra começar.</div>
+<div class="secao">
+  <h2 id="fat-titulo">Faturamento</h2>
+  <div class="barras" id="grafico-fat"></div>
+  <div id="fat-detalhe"></div>
+</div>
+
+<div class="secao">
+  <h2>💳 Formas de pagamento <span style="text-transform:none;letter-spacing:0;font-weight:500;">· toque numa forma pra ver os pedidos dela</span></h2>
+  <div id="lista-pagamento"></div>
+</div>
+
+<div class="secao">
+  <h2>🚚 Tipo de venda</h2>
+  <div id="lista-tipo"></div>
+</div>
+
+<div class="secao">
+  <h2>🍕 Sabores mais pedidos</h2>
+  <div id="lista-sabores"></div>
+</div>
+
+<div class="secao">
+  <h2 class="acc-toggle" onclick="alternarAccordionSequencia()"><span>📋 Pedidos do período</span><span class="acc-chevron" id="chevron-sequencia">▸</span></h2>
+  <div id="controles-sequencia">
+    <span id="ordem-sequencia-toggle" onclick="alternarOrdemSequencia()">⬇ Mais recente primeiro</span>
+    <button id="btn-corrigir-numeracao" class="btn btn-secondary" style="margin:0;font-size:.8rem;padding:10px;" onclick="corrigirNumeracaoAntiga()">🔧 Corrigir numeração de pedidos antigos (uma vez)</button>
   </div>
-  <div id="ia-chat-digitando" style="display:none;padding:0 14px 8px;font-size:.82rem;color:var(--sub);">⏳ Analisando (pode levar um minuto, ele às vezes pesquisa na internet)...</div>
-  <div style="display:flex;gap:8px;padding:12px;border-top:1px solid var(--card-bd);">
-    <input id="ia-chat-input" class="m-input" style="flex:1;margin:0;" placeholder="Pergunte algo sobre suas vendas..." onkeydown="if(event.key==='Enter')enviarMensagemIA();">
-    <button class="btn" style="margin:0;width:auto;padding:0 18px;" onclick="enviarMensagemIA()">Enviar</button>
+  <div id="lista-sequencia"></div>
+</div>
+
+<div class="secao">
+  <h2 class="acc-toggle" onclick="alternarAssistente()"><span>🤖 Assistente do gerente</span><span class="acc-chevron" id="chevron-ia">▸</span></h2>
+  <div id="ia-caixa" style="display:none;flex-direction:column;margin-top:10px;">
+    <div id="ia-chat-mensagens" style="padding:4px 0 10px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;">
+      <div class="ia-msg ia-msg-bot">Oi! Sou o assistente da Pizza em Dobro. 🍕 Pergunte o que está vendendo bem, que promoção fazer, melhor horário pra anúncio, ou peça "me dá um resumo de hoje".</div>
+    </div>
+    <div id="ia-chat-digitando" style="display:none;padding:0 0 8px;font-size:.88rem;color:var(--sub);">⏳ Analisando (pode levar um minuto)...</div>
+    <div style="display:flex;gap:8px;">
+      <input id="ia-chat-input" class="m-input" style="flex:1;margin:0;" placeholder="Pergunte algo sobre suas vendas..." onkeydown="if(event.key==='Enter')enviarMensagemIA();">
+      <button class="btn" style="margin:0;width:auto;padding:0 20px;" onclick="enviarMensagemIA()">Enviar</button>
+    </div>
   </div>
 </div>
 
-<div id="modal-imagem-item" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(10,8,6,.6);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)fecharModalImagemItem()">
-  <div style="background:rgba(24,19,16,.95);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:20px;max-width:360px;width:100%;">
-    <div style="font-family:var(--font-display);color:#fff;font-size:1.1rem;margin-bottom:4px;" id="img-item-titulo">Foto do item</div>
+<div id="modal-imagem-item" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(17,24,39,.5);align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)fecharModalImagemItem()">
+  <div style="background:#fff;border:1px solid #E5E7EB;border-radius:22px;padding:20px;max-width:360px;width:100%;">
+    <div style="font-family:var(--font-display);color:#111827;font-size:1.1rem;margin-bottom:4px;" id="img-item-titulo">Foto do item</div>
     <div id="img-item-select-wrap" style="display:none;">
       <label style="font-size:.82rem;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;">Qual item?</label>
       <select id="img-item-select" class="m-input" style="width:100%;margin:6px 0 14px;"></select>
@@ -142,56 +191,19 @@ body{
   </div>
 </div>
 
-<div class="section-title">🍕 Pizzas vendidas</div>
-<div class="kpi-grid" id="kpis-pizzas"></div>
-
-<div class="section-title">📈 Faturamento no período — dia a dia</div>
-<div class="chart-card" style="position:relative;"><canvas id="chart-faturamento"></canvas><div class="chart-empty" id="empty-faturamento" style="display:none;position:absolute;inset:0;">Sem vendas no período.</div></div>
-
-<div class="section-title">💳 Como os clientes pagam <span style="text-transform:none;letter-spacing:0;opacity:.7;">(toque numa forma pra filtrar os pedidos abaixo)</span></div>
-<div class="chart-card small" style="position:relative;"><canvas id="chart-pagamento"></canvas><div class="chart-empty" id="empty-pagamento" style="display:none;position:absolute;inset:0;">Sem dados de pagamento no período.</div></div>
-<div class="periodo" id="filtro-pagamento" style="padding-top:0;"></div>
-
-<div class="section-title">🍕 Pizzas mais pedidas</div>
-<div class="chart-card small" style="position:relative;"><canvas id="chart-sabores"></canvas><div class="chart-empty" id="empty-sabores" style="display:none;position:absolute;inset:0;">Sem vendas no período.</div></div>
-
-<div class="section-title">🚚 Tipo de venda (balcão / mesa / entrega)</div>
-<div class="break-list" id="break-tipo"></div>
-
-<div class="section-title acc-toggle" onclick="alternarAccordionLancamentos()">
-  <span>📋 Lançamentos por forma de pagamento</span>
-  <span class="acc-chevron" id="chevron-lancamentos">▸</span>
-</div>
-<div class="break-list" id="lista-lancamentos"></div>
-
-<div class="section-title acc-toggle" onclick="alternarAccordionSequencia()">
-  <span>🔢 Pedidos do período (sequência)</span>
-  <span class="acc-chevron" id="chevron-sequencia">▸</span>
-</div>
-<div id="controles-sequencia" style="display:none;padding:0 16px 10px;">
-  <span id="ordem-sequencia-toggle" onclick="event.stopPropagation();alternarOrdemSequencia()" style="cursor:pointer;color:var(--pr);font-size:.82rem;border:1px solid var(--card-bd);padding:5px 12px;border-radius:20px;display:inline-block;margin-bottom:8px;">⬇ Mais recente primeiro</span>
-  <button id="btn-corrigir-numeracao" class="btn btn-secondary" style="margin:0;" onclick="corrigirNumeracaoAntiga()">🔧 Corrigir numeração de pedidos antigos (uma vez)</button>
-</div>
-<div class="break-list" id="lista-sequencia"></div>
-
-<div class="section-title">👥 Clientes no período</div>
-<div class="kpi-grid" id="kpis-clientes"></div>
-
 <div class="actions">
-  <button class="btn" onclick="exportarPdf()">📄 Baixar Relatório em PDF</button>
-  <button class="btn btn-secondary" onclick="exportarCsv()">⬇️ Baixar planilha CSV (dados brutos)</button>
+  <button class="btn" onclick="exportarPdf()">📄 Baixar relatório em PDF</button>
+  <button class="btn btn-secondary" onclick="exportarCsv()">⬇️ Baixar planilha (Excel/CSV)</button>
 </div>
 
+</div>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="../shared/firebase-config.js"></script>
 <script src="../shared/staff-auth.js"></script>
 <script src="../shared/admin-api.js"></script>
-<script>iniciarGateEquipe();</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<script>window._gate=iniciarGateEquipe();</script>
 <script src="../shared/utils.js"></script>
 <script src="relatorios.js"></script>
 </body>

@@ -185,6 +185,14 @@ async function fecharCaixa(){
     await FS.collection('caixa_sessoes').doc(sessaoCaixaAtual.id).set({
       aberto:false, fechado_em:agora, resumo_fechamento:resumo, total_fechamento:totalGeral
     },{merge:true});
+    // resumo na tela (e na impressora, se estiver conectada) — pra conferir a gaveta
+    const abertura=Number(sessaoCaixaAtual.valor_abertura||0), dinheiro=resumo['Dinheiro']||0;
+    const linhas=Object.entries(resumo).map(([k,v])=>k+': '+fmt(v));
+    const txt='FECHAMENTO DO CAIXA\n'+new Date().toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})+'\n--------------------------------\n'
+      +(linhas.length?linhas.join('\n'):'Sem vendas no turno')+'\n--------------------------------\nTotal vendido: '+fmt(totalGeral)
+      +'\nTroco inicial: '+fmt(abertura)+'\nDinheiro esperado na gaveta: '+fmt(abertura+dinheiro)+'\n\n\n';
+    try{ if(typeof btChar!=='undefined'&&(btChar||usbEndpointOut)) await imprimirBluetooth(txt); }catch(e){ console.warn('Resumo do fechamento não foi impresso:',e); }
+    alert(txt.replace(/\n\n\n$/,''));
     sessaoCaixaAtual=null;
     mostrarCaixaFechado();
   }catch(e){

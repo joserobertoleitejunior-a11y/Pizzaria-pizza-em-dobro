@@ -21,7 +21,7 @@ input,select,textarea{color:var(--tx);}
 select option{background:#fff;color:var(--tx);}
 
 /* ── barra de navegação (Caixa, Relatórios, Clientes) ── */
-.nav{background:rgba(255,255,255,.92)!important;backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--card-bd)!important;box-shadow:0 1px 0 rgba(16,24,40,.02);}
+.nav{background:#fff!important;border-bottom:1px solid var(--card-bd)!important;box-shadow:0 1px 0 rgba(16,24,40,.02);}
 .nav-logo{color:var(--tx)!important;}
 .nav-links a{color:var(--sub)!important;border-top:0!important;border-radius:999px!important;padding:7px 12px!important;font-weight:700;}
 .nav-links a:hover{background:var(--tint)!important;color:var(--pr)!important;}
@@ -111,7 +111,7 @@ select option{background:#fff;color:var(--tx);}
 .modal [style*="color:var(--sub)"]{color:var(--sub)!important;}
 
 /* ── ADMIN ── */
-.topo{background:rgba(255,255,255,.94)!important;border-bottom:1px solid var(--card-bd)!important;backdrop-filter:blur(12px);}
+.topo{background:rgba(255,255,255,.94)!important;border-bottom:1px solid var(--card-bd)!important;}
 .marca{color:var(--tx)!important;}
 .marca em{background:var(--pr)!important;color:#fff!important;}
 .link-topo{color:var(--sub)!important;font-weight:700;border-radius:999px!important;}
@@ -175,3 +175,14 @@ input:not([type]),input[type=text],input[type=number],input[type=password],input
 /* PDV no computador: grade de produtos em várias colunas */
 @media (min-width:900px){.prod-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))!important;}}
 .mode-btn{width:auto!important;min-width:60px;padding:6px 8px!important;}
+
+/* Caixa: resumo do dia nas "Vendas de hoje" */
+.resumo-dia{background:#fff;border:1px solid var(--card-bd);border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:var(--sombra);}
+.rd-topo{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;}
+.rd-topo span{display:block;font-size:.8rem;color:var(--sub);font-weight:600;}
+.rd-topo b{font-size:1.25rem;}
+.rd-formas{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;padding-top:10px;border-top:1px solid #F3F4F6;font-size:.9rem;color:var(--sub);}
+.rd-formas b{color:var(--tx);}
+.rd-gaveta{margin-top:10px;background:#ECFDF3;color:#166534;border-radius:12px;padding:9px 12px;font-size:.92rem;}
+.order-itens{font-size:.9rem;color:#374151;margin-top:6px;line-height:1.45;}
+.badge.cinza{background:#F3F4F6!important;color:var(--sub)!important;}
