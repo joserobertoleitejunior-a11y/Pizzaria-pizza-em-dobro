@@ -45,31 +45,24 @@ function renderProdutos(){
   let itens = termo ? base.filter(i=>i.n.toLowerCase().includes(termo)) : base.filter(i=>i.cat===catAtiva);
   document.getElementById('cats').style.display=(termo||meiaAMeiaAtivo)?'none':'flex';
   if(itens.length===0){ grid.innerHTML='<div class="empty">Nenhum item encontrado.</div>'; return; }
+  if(!termo&&!meiaAMeiaAtivo&&catAtiva==='d'){ // BEBIDAS: toque soma 1; − e + ajustam a quantidade
+    grid.innerHTML=itens.map(i=>{
+      const q=qtdSimples(i.id);
+      return `<div class="prod-card bebida ${q?'tem':''}" onclick="ajustarQtdSimples(${i.id},1)">
+        <div class="prod-nome">${i.n}</div><div class="prod-preco">${fmt(i.p)}</div>
+        <div class="bebida-qtd" onclick="event.stopPropagation()">
+          <button type="button" class="bq-btn" onclick="ajustarQtdSimples(${i.id},-1)" aria-label="menos">−</button>
+          <b class="bq-num">${q}</b>
+          <button type="button" class="bq-btn mais" onclick="ajustarQtdSimples(${i.id},1)" aria-label="mais">+</button>
+        </div></div>`;
+    }).join('');
+    return;
+  }
   grid.innerHTML=itens.map(i=>`
     <div class="prod-card ${meiaPrimeiraMetade&&meiaPrimeiraMetade.id===i.id?'meia-sel':''}" onclick="clicarProduto(${i.id})">
       <div class="prod-nome">${i.n}</div>
       <div class="prod-preco">${fmt(i.p)}</div>
     </div>`).join('');
-}
-function renderCombosCaixa(grid){
-  if(typeof COMBOS_DEFAULT==='undefined'){ grid.innerHTML='<div class="empty">Combos indisponíveis.</div>'; return; }
-  const saboresBroto=(typeof DEFAULT_MENU!=='undefined'?DEFAULT_MENU:[]).filter(i=>i.cat==='p'||i.cat==='s').map(i=>i.n).sort((a,b)=>a.localeCompare(b,'pt-BR'));
-  const optsB=saboresBroto.map(s=>`<option value="${s}">${s}</option>`).join('');
-  const cardBroto=`<div class="prod-card" style="cursor:default;text-align:left;padding:10px;">
-      <div class="prod-nome">🍕🍕 ${COMBO_BROTO.titulo} <small>(qualquer sabor, pode repetir)</small></div>
-      <select id="cx-broto50-s1" class="m-input" style="width:100%;margin:6px 0 4px;">${optsB}</select>
-      <select id="cx-broto50-s2" class="m-input" style="width:100%;margin:0 0 6px;">${optsB}</select>
-      <button class="prod-card" style="width:100%;background:var(--pr);color:#000;font-weight:800;border:none;cursor:pointer;" onclick="adicionarBrotoAoCarrinhoCaixa()">+ Adicionar</button>
-    </div>`;
-  grid.innerHTML=cardBroto+COMBOS_DEFAULT.map(c=>{
-    const opts=c.sabores.map(s=>`<option value="${s}">${s}</option>`).join('');
-    return `<div class="prod-card" style="cursor:default;text-align:left;padding:10px;">
-      <div class="prod-nome">🍕🍕 ${c.titulo}</div>
-      <select id="cx-${c.id}-s1" class="m-input" style="width:100%;margin:6px 0 4px;">${opts}</select>
-      <select id="cx-${c.id}-s2" class="m-input" style="width:100%;margin:0 0 6px;">${opts}</select>
-      <button class="prod-card" style="width:100%;background:var(--pr);color:#000;font-weight:800;border:none;cursor:pointer;" onclick="adicionarComboAoCarrinhoCaixa('${c.id}')">+ Adicionar</button>
-    </div>`;
-  }).join('');
 }
 // ── FUNÇÕES ÚNICAS (botões e Colar Pedido): combo broto e esfihas ──
 function adicionarBrotoAoCarrinho(s1, s2, qtd){
@@ -85,46 +78,84 @@ function adicionarEsfihasAoCarrinho(contagens, qtd){
   const ex=cart.find(c=>c._chave===novo._chave);
   if(ex) ex.qty+=novo.qty; else cart.push(novo);
 }
-function adicionarBrotoAoCarrinhoCaixa(){
-  const s1=document.getElementById('cx-broto50-s1')?.value, s2=document.getElementById('cx-broto50-s2')?.value;
-  if(!s1||!s2)return;
-  adicionarBrotoAoCarrinho(s1,s2,1);
-  atualizarBarraCarrinho();
+
+// Item simples (bebida): quantidade direto no cartão, sem abrir janela
+function qtdSimples(id){ const c=cart.find(x=>x._chave==='simples|'+id); return c?c.qty:0; }
+function ajustarQtdSimples(id,d){
+  const m=DEFAULT_MENU.find(x=>x.id===id); if(!m) return;
+  let c=cart.find(x=>x._chave==='simples|'+id);
+  if(!c){ if(d<0) return; c={_chave:'simples|'+id,id:m.id,name:m.n,unitPrice:m.p,qty:0,borda:null,removedIng:[],addedIng:[],isMeia:false}; cart.push(c); }
+  c.qty+=d;
+  if(c.qty<=0) cart.splice(cart.indexOf(c),1);
+  atualizarBarraCarrinho(); renderProdutos();
 }
-// ── ESFIHAS (R$ 5 cada; 10 = R$ 50, 20 = R$ 90, 30 = R$ 130) — mesma regra e mesmo preço do site
+
+// ── COMBOS: toque nos 2 sabores e já entra no caixa (nada de listas suspensas) ──
+const _cmbSel={}; // {tierId:[sabores escolhidos]}
+function _chipsCombo(tierId,sabores,permiteRepetir){
+  const sel=_cmbSel[tierId]||[];
+  return sabores.map(sab=>{
+    const n=sel.filter(x=>x===sab).length;
+    return `<button type="button" class="chip-sab ${n?'sel':''}" onclick="cmbToque('${tierId}','${sab.replace(/'/g,"\\'")}',${permiteRepetir?1:0})">${sab}${n>1?' ×2':''}</button>`;
+  }).join('');
+}
+function _cardCombo(tierId,titulo,preco,sabores,permiteRepetir,dica){
+  const sel=_cmbSel[tierId]||[];
+  return `<div class="cmb-card" id="cmb-${tierId}">
+    <div class="cmb-topo"><b>🍕🍕 ${titulo}</b><span class="cmb-preco">${fmt(preco)}</span></div>
+    <div class="cmb-dica">${sel.length===0?dica:(sel.length===1?'1º: <b>'+sel[0]+'</b> — escolha o 2º sabor':'')}${sel.length===1&&permiteRepetir?` <button type="button" class="cmb-mesmo" onclick="cmbToque('${tierId}','${sel[0].replace(/'/g,"\\'")}',1)">2 do mesmo ✓</button>`:''}</div>
+    <div class="chips-sab">${_chipsCombo(tierId,sabores,permiteRepetir)}</div>
+  </div>`;
+}
+function cmbToque(tierId,sab,permiteRepetir){
+  let sel=_cmbSel[tierId]=_cmbSel[tierId]||[];
+  if(sel.length===1&&sel[0]===sab&&!permiteRepetir){ _cmbSel[tierId]=[]; renderCombosCaixa(document.getElementById('prod-grid')); return; } // tocar de novo desmarca
+  sel.push(sab);
+  if(sel.length===2){
+    if(tierId==='broto50') adicionarBrotoAoCarrinho(sel[0],sel[1],1);
+    else{ const combo=COMBOS_DEFAULT.find(c=>c.id===tierId); if(combo) adicionarComboAoCarrinho(combo,sel[0],sel[1],1); }
+    _cmbSel[tierId]=[];
+    atualizarBarraCarrinho();
+    avisoRapido('✓ Combo adicionado');
+  }
+  renderCombosCaixa(document.getElementById('prod-grid'));
+}
+function renderCombosCaixa(grid){
+  if(typeof COMBOS_DEFAULT==='undefined'){ grid.innerHTML='<div class="empty">Combos indisponíveis.</div>'; return; }
+  const saboresBroto=DEFAULT_MENU.filter(i=>i.cat==='p'||i.cat==='s').map(i=>i.n).sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  grid.innerHTML='<div class="cmb-lista">'+
+    _cardCombo('broto50',COMBO_BROTO.titulo,COMBO_BROTO.preco,saboresBroto,true,'Toque nos 2 sabores (qualquer pizza, pode repetir)')+
+    COMBOS_DEFAULT.map(c=>_cardCombo(c.id,c.titulo,c.preco,c.sabores,false,'Toque em 2 sabores diferentes')).join('')+'</div>';
+}
+
+// ── ESFIHAS (R$ 5 cada; 10 = R$ 50, 20 = R$ 90, 30 = R$ 130) — mesma regra e mesmo preço do site ──
 const _esfCx={};
 function renderEsfihasCaixa(grid){
-  grid.innerHTML=`<div class="prod-card" style="grid-column:1/-1;cursor:default;text-align:left;padding:10px;">
-    <div class="prod-nome">🥟 Esfihas — R$ 5,00 cada <small>(10 = R$ 50 · 20 = R$ 90 · 30 = R$ 130)</small></div>`+
-    ESFIHA_SABORES.map((s,i)=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0;">
-      <span style="font-weight:700;">${s}</span>
-      <span><button class="prod-card" style="display:inline-block;width:38px;cursor:pointer;" onclick="esfCxMudar(${i},-1)">−</button>
-      <b id="cx-esf-q-${i}" style="display:inline-block;min-width:28px;text-align:center;">${_esfCx[s]||0}</b>
-      <button class="prod-card" style="display:inline-block;width:38px;cursor:pointer;" onclick="esfCxMudar(${i},1)">+</button></span></div>`).join('')+
-    `<div id="cx-esf-resumo" style="margin:8px 0;font-weight:700;"></div>
-    <button class="prod-card" style="width:100%;background:var(--pr);color:#000;font-weight:800;border:none;cursor:pointer;" onclick="adicionarEsfihasCaixa()">+ Adicionar esfihas</button></div>`;
+  grid.innerHTML=`<div class="esf-cx">
+    <div class="esf-cx-titulo">🥟 Esfihas — R$ 5,00 cada</div>
+    <div class="esf-cx-rapido">`+ESFIHA_PACOTES.map(pk=>`<button type="button" class="esf-pk" onclick="esfCxPacote(${pk.qtd})"><b>${pk.qtd}</b><span>esfihas</span><em>${fmt(pk.preco)}</em></button>`).join('')+`</div>
+    <div class="esf-cx-dica">Toque num combo: entra no caixa com os <b>sabores padrão</b>. Quer escolher os sabores? Use + e − abaixo e toque em Adicionar.</div>`+
+    ESFIHA_SABORES.map((s,i)=>`<div class="esf-cx-linha"><span>${s}</span>
+      <span class="esf-cx-ctl"><button type="button" onclick="esfCxMudar(${i},-1)">−</button><b id="cx-esf-q-${i}">${_esfCx[s]||0}</b><button type="button" class="mais" onclick="esfCxMudar(${i},1)">+</button></span></div>`).join('')+
+    `<div id="cx-esf-resumo" class="esf-cx-resumo"></div>
+    <button type="button" class="esf-cx-add" onclick="adicionarEsfihasCaixa()">+ Adicionar esfihas escolhidas</button></div>`;
   esfCxAtualizar();
+}
+function esfCxPacote(qtd){
+  adicionarEsfihasAoCarrinho(esfDistribuirPadrao(qtd),1);
+  atualizarBarraCarrinho(); avisoRapido('✓ Combo de '+qtd+' esfihas adicionado');
 }
 function esfCxMudar(i,d){ const s=ESFIHA_SABORES[i]; _esfCx[s]=Math.max(0,Math.min(120,(_esfCx[s]||0)+d)); esfCxAtualizar(); }
 function esfCxAtualizar(){
   ESFIHA_SABORES.forEach((s,i)=>{ const e=document.getElementById('cx-esf-q-'+i); if(e)e.textContent=_esfCx[s]||0; });
   const n=ESFIHA_SABORES.reduce((t,s)=>t+(_esfCx[s]||0),0), r=document.getElementById('cx-esf-resumo');
-  if(r) r.textContent=n?`${n} esfiha(s) = ${fmt(precoEsfihas(n))}`:'Escolha as quantidades.';
+  if(r) r.textContent=n?`${n} esfiha(s) = ${fmt(precoEsfihas(n))}`:'';
 }
 function adicionarEsfihasCaixa(){
+  if(!ESFIHA_SABORES.some(s=>_esfCx[s]>0)){ avisoRapido('Escolha as quantidades (+) ou toque num combo acima'); return; }
   adicionarEsfihasAoCarrinho(_esfCx,1);
   ESFIHA_SABORES.forEach(s=>_esfCx[s]=0); esfCxAtualizar();
-  atualizarBarraCarrinho();
-}
-function adicionarComboAoCarrinhoCaixa(comboTierId){
-  const combo=COMBOS_DEFAULT.find(c=>c.id===comboTierId);
-  if(!combo)return;
-  const s1=document.getElementById('cx-'+comboTierId+'-s1')?.value;
-  const s2=document.getElementById('cx-'+comboTierId+'-s2')?.value;
-  if(!s1||!s2)return;
-  if(s1===s2){ alert('Escolha 2 sabores diferentes — o combo é uma pizza de cada.'); return; }
-  adicionarComboAoCarrinho(combo, s1, s2, 1);
-  atualizarBarraCarrinho();
+  atualizarBarraCarrinho(); avisoRapido('✓ Esfihas adicionadas');
 }
 // ── FUNÇÃO ÚNICA para montar item de combo — usada pelo botão manual E pelo Colar Pedido,
 // mesma lógica de deduplicação/soma de quantidade do meia a meia (chave determinística, nunca Math.random()).
@@ -269,6 +300,7 @@ function caixaEntregaGratis(){
   return !window._taxaManual&&(combosNoCaixa()>=COMBOS_ENTREGA_GRATIS||pizzasNoCaixa()>=PIZZAS_ENTREGA_GRATIS);
 }
 function totalCarrinho(){
+  if(!cart.length) return 0; // carrinho vazio nunca mostra taxa de entrega
   const itens=cart.reduce((s,i)=>s+i.unitPrice*i.qty,0);
   const tipo=document.getElementById('f-tipo')?.value;
   const gratis=caixaEntregaGratis();

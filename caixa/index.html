@@ -292,6 +292,35 @@ body{
 .rh-item b{font-size:1.02rem;color:#111827;}
 .rh-gaveta b{color:#047857;}
 .cart-bar{margin-top:auto;}
+
+/* ── pedido rápido: combos por toque, esfihas por pacote, bebidas com quantidade ── */
+.cmb-lista{display:grid;gap:12px;grid-column:1/-1}
+.cmb-card{background:#fff;border:1px solid #E5E7EB;border-radius:16px;padding:12px 14px;box-shadow:0 1px 2px rgba(16,24,40,.06)}
+.cmb-topo{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:1.05rem}
+.cmb-preco{font-weight:800;color:#D62828;font-size:1.15rem}
+.cmb-dica{font-size:.86rem;color:#6B7280;margin:4px 0 8px;min-height:1.2em}
+.cmb-mesmo{margin-left:6px;background:#FEF3C7;border:1px solid #F59E0B;color:#92400E;border-radius:8px;padding:3px 8px;font-weight:700;cursor:pointer}
+.chips-sab{display:flex;flex-wrap:wrap;gap:8px}
+.chip-sab{background:#F3F4F6;border:1.5px solid #E5E7EB;border-radius:999px;padding:11px 16px;font-size:1rem;font-weight:600;color:#111827;cursor:pointer;min-height:44px}
+.chip-sab:active{transform:scale(.97)}
+.chip-sab.sel{background:#D62828;border-color:#D62828;color:#fff}
+.esf-cx{grid-column:1/-1;background:#fff;border:1px solid #E5E7EB;border-radius:16px;padding:14px}
+.esf-cx-titulo{font-weight:800;font-size:1.1rem;margin-bottom:10px}
+.esf-cx-rapido{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.esf-pk{display:flex;flex-direction:column;align-items:center;gap:2px;padding:14px 6px;border-radius:14px;border:2px solid #D62828;background:#FEF2F2;color:#111827;cursor:pointer}
+.esf-pk b{font-size:1.8rem;line-height:1;color:#D62828}.esf-pk span{font-size:.8rem;color:#6B7280}.esf-pk em{font-style:normal;font-weight:800;font-size:1.05rem}
+.esf-pk:active{background:#D62828}.esf-pk:active b,.esf-pk:active span,.esf-pk:active em{color:#fff}
+.esf-cx-dica{font-size:.84rem;color:#6B7280;margin:10px 0}
+.esf-cx-linha{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-top:1px solid #F3F4F6;font-weight:600}
+.esf-cx-ctl{display:flex;align-items:center;gap:10px}
+.esf-cx-ctl button,.bq-btn{width:44px;height:44px;border-radius:12px;border:1.5px solid #E5E7EB;background:#F9FAFB;font-size:1.4rem;font-weight:700;cursor:pointer;color:#111827}
+.esf-cx-ctl button.mais,.bq-btn.mais{background:#D62828;border-color:#D62828;color:#fff}
+.esf-cx-ctl b,.bq-num{min-width:32px;text-align:center;font-size:1.15rem}
+.esf-cx-resumo{font-weight:800;margin:8px 0;min-height:1.2em}
+.esf-cx-add{width:100%;background:#D62828;color:#fff;border:0;border-radius:12px;padding:14px;font-weight:800;font-size:1rem;cursor:pointer}
+.prod-card.bebida{display:flex;flex-direction:column;gap:4px}
+.prod-card.bebida.tem{border-color:#D62828;background:#FEF2F2}
+.bebida-qtd{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:6px}
 </style>
 <link rel="stylesheet" href="../shared/app-clean.css">
 </head>
