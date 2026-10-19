@@ -143,7 +143,10 @@ function getPromoAtiva(){
 function combosNoCarrinho(cartItems){
   return (cartItems||[]).reduce((t,i)=>t+(i.cat==='co'?1:(i.cat==='es'?combosDeEsfiha(i.esfQtd):0)),0);
 }
-function entregaGratis(cartItems){ return combosNoCarrinho(cartItems)>=COMBOS_ENTREGA_GRATIS; }
+function pizzasNoCarrinho(cartItems){
+  return (cartItems||[]).reduce((t,i)=>t+((i.cat==='p'||i.cat==='s')?1:(i.cat==='co'?2:0)),0);
+}
+function entregaGratis(cartItems){ return combosNoCarrinho(cartItems)>=COMBOS_ENTREGA_GRATIS||pizzasNoCarrinho(cartItems)>=PIZZAS_ENTREGA_GRATIS; }
 
 function calcDesconto(cartItems){
   const p=getPromoAtiva();

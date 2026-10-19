@@ -90,6 +90,8 @@ const ESFIHA_PACOTES=[{qtd:10,preco:50.00},{qtd:20,preco:90.00},{qtd:30,preco:13
 // ── ENTREGA GRÁTIS: 3 ou mais combos no mesmo pedido (combo de pizza "2 por X", combo broto e
 // combos de esfiha — cada 10 esfihas = 1 combo). Muda aqui pra mudar na loja, no Caixa e no WhatsApp.
 const COMBOS_ENTREGA_GRATIS=3;
+// Também vale: 3 ou mais PIZZAS no pedido (cartaz "entrega grátis a partir de 3 pizzas"). Combo de pizza/broto = 2 pizzas.
+const PIZZAS_ENTREGA_GRATIS=3;
 function combosDeEsfiha(n){ return Math.floor((Number(n)||0)/10); }
 
 // Sabores padrão de um combo de esfihas sem sabor escolhido: divide igualmente na ordem do cardápio
@@ -196,5 +198,5 @@ function bordaReal(b){
 }
 
 if(typeof module!=='undefined' && module.exports){
-  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao, bordaReal, COMBOS_ENTREGA_GRATIS, combosDeEsfiha, esfDistribuirPadrao };
+  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao, bordaReal, COMBOS_ENTREGA_GRATIS, PIZZAS_ENTREGA_GRATIS, combosDeEsfiha, esfDistribuirPadrao };
 }

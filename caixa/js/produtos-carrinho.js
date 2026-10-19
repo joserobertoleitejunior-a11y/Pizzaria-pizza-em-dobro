@@ -253,10 +253,25 @@ function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 function combosNoCaixa(){
   return cart.reduce((t,i)=>t+((i.combos!=null?i.combos:(/combo|2 por|2 broto|esfiha/i.test(i.name||'')?1:0))*i.qty),0);
 }
+// pizzas no pedido: pizza/meia = 1; combo de pizza ou broto = 2 (esfihas e bebidas não contam)
+function pizzasNoCaixa(){
+  return cart.reduce((t,i)=>{
+    const q=i.qty||1;
+    if(/^esfihas/i.test(i.name||'')) return t;
+    if(i.isMeia) return t+q;
+    if(i.combos!=null&&i.combos>0) return t+2*q;
+    const m=i.id!=null?DEFAULT_MENU.find(x=>x.id===i.id):null;
+    return t+((m&&(m.cat==='p'||m.cat==='s'))?q:0);
+  },0);
+}
+// entrega grátis: 3+ pizzas OU 3+ combos (mesma regra da loja)
+function caixaEntregaGratis(){
+  return !window._taxaManual&&(combosNoCaixa()>=COMBOS_ENTREGA_GRATIS||pizzasNoCaixa()>=PIZZAS_ENTREGA_GRATIS);
+}
 function totalCarrinho(){
   const itens=cart.reduce((s,i)=>s+i.unitPrice*i.qty,0);
   const tipo=document.getElementById('f-tipo')?.value;
-  const gratis=!window._taxaManual&&combosNoCaixa()>=COMBOS_ENTREGA_GRATIS;
+  const gratis=caixaEntregaGratis();
   const taxa=(tipo==='entrega'&&!gratis)?(Number(document.getElementById('f-taxa-entrega')?.value)||0):0;
   return itens+taxa;
 }
@@ -307,9 +322,9 @@ function renderCartItems(){
   document.getElementById('totais-row-taxa').style.display=taxa>0?'flex':'none';
   const aviso=document.getElementById('aviso-entrega-gratis');
   if(aviso){
-    const n=combosNoCaixa(), ent=document.getElementById('f-tipo')?.value==='entrega';
-    if(ent&&!window._taxaManual&&n>=COMBOS_ENTREGA_GRATIS){ aviso.textContent='🎁 ENTREGA GRÁTIS — '+n+' combos no pedido'; aviso.style.display='block'; }
-    else if(ent&&!window._taxaManual&&n>0){ aviso.textContent='🎁 Faltam '+(COMBOS_ENTREGA_GRATIS-n)+' combo(s) para entrega grátis'; aviso.style.display='block'; }
+    const np=pizzasNoCaixa(), nc=combosNoCaixa(), ent=document.getElementById('f-tipo')?.value==='entrega';
+    if(ent&&caixaEntregaGratis()){ aviso.textContent='🎁 ENTREGA GRÁTIS — '+(np>=PIZZAS_ENTREGA_GRATIS?np+' pizzas':nc+' combos')+' no pedido'; aviso.style.display='block'; }
+    else if(ent&&!window._taxaManual&&np>0){ aviso.textContent='🎁 Faltam '+Math.max(1,PIZZAS_ENTREGA_GRATIS-np)+' pizza(s) para entrega grátis'; aviso.style.display='block'; }
     else aviso.style.display='none';
   }
   document.getElementById('tot-taxa').textContent=fmt(taxa);
@@ -474,7 +489,7 @@ async function finalizarVenda(){
     troco: troco,
     delivery_type: tipo,
     entregador: tipo==='entrega' ? (entregador||null) : null,
-    taxa_entrega: (tipo==='entrega'&&!(!window._taxaManual&&combosNoCaixa()>=COMBOS_ENTREGA_GRATIS)) ? (Number(document.getElementById('f-taxa-entrega')?.value)||0) : 0,
+    taxa_entrega: (tipo==='entrega'&&!caixaEntregaGratis()) ? (Number(document.getElementById('f-taxa-entrega')?.value)||0) : 0,
     total: Math.round(total*100)/100,
     items_json: cart.map(i=>({id:i.id,name:i.name,price:i.unitPrice,qty:i.qty,borda:bordaReal(i.borda),removed:i.removedIng||[],added:i.addedIng||[],obs:i.obs||null,isMeia:!!i.isMeia})),
     status: 'finalizado',

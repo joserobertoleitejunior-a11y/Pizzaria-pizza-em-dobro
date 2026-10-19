@@ -108,7 +108,7 @@ function renderCombos(){
   if(!el||typeof COMBOS_DEFAULT==='undefined')return;
   const broto=_comboCfg('broto50');
   el.innerHTML=`<h2 class="cat-title reveal" id="anc-co">Combos</h2>`+
-    `<div class="eg-faixa">🎁 <b>3 ou mais combos = ENTREGA GRÁTIS</b></div>`+
+    `<div class="eg-faixa">🎁 <b>3 pizzas (ou 3 combos) = ENTREGA GRÁTIS</b> · cada combo vale 2 pizzas</div>`+
     `<div class="combo-vitrine" id="combo-vitrine">
       <div id="combo-3d" aria-hidden="true"></div>
       <div class="combo-vitrine-txt"><b>2 PIZZAS</b><span>1 preço só</span></div>
