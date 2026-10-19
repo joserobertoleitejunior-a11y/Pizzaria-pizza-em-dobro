@@ -147,8 +147,20 @@ function renderEsfihas(){
   if(!el||typeof ESFIHA_SABORES==='undefined')return;
   el.innerHTML=`<h2 class="cat-title reveal" id="anc-es">Esfihas</h2>`+
     `<div class="esf-box">
-      <div class="esf-topo"><span class="esf-preco"><small>apenas</small> R$ 5<sup>,00</sup></span>
-        <span class="esf-dica">Monte o seu combo:<br><b>10 = R$ 50 · 20 = R$ 90 · 30 = R$ 130</b></span></div>
+      <div class="esf-topo"><span class="esf-preco"><small>cada esfiha</small> R$ 5<sup>,00</sup></span>
+        <span class="esf-dica"><b>Quanto mais você leva,<br>menos paga em cada uma!</b></span></div>
+      <div class="esf-degraus" id="esf-degraus">`+
+      ESFIHA_PACOTES.map(pk=>{
+        const un=pk.preco/pk.qtd, eco=pk.qtd*ESFIHA_PRECO_UN-pk.preco;
+        return `<button type="button" class="esf-degrau" id="esf-deg-${pk.qtd}" onclick="esfSugerir(${pk.qtd})">
+          ${pk.qtd===30?'<em>MELHOR PREÇO</em>':''}
+          <span class="esf-deg-q">${pk.qtd}</span><span class="esf-deg-l">esfihas</span>
+          <b class="esf-deg-p">R$ ${fmtPrice(pk.preco)}</b>
+          <span class="esf-deg-u">R$ ${fmtPrice(un)} cada</span>
+          <span class="esf-deg-e">${eco>0?'economize R$ '+fmtPrice(eco):'preço normal'}</span></button>`;
+      }).join('')+`</div>
+      <div class="esf-barra" aria-hidden="true"><div class="esf-barra-fill" id="esf-barra-fill"></div><i style="left:33.3%"></i><i style="left:66.6%"></i></div>
+      <div class="esf-prox" id="esf-prox">Toque num pacote ou escolha os sabores abaixo.</div>
       <div class="esf-lista">`+
       ESFIHA_SABORES.map((sab,i)=>`<div class="esf-linha"><span class="esf-nome">${sab}</span>
         <div class="controls"><button class="btn-action btn-minus" onclick="esfMudar(${i},-1)" aria-label="menos ${sab}">−</button>
@@ -174,12 +186,32 @@ function esfSugerir(qtd){
 function esfAtualizar(){
   ESFIHA_SABORES.forEach((s,i)=>{ const e=document.getElementById('esf-q-'+i); if(e)e.textContent=_esf[s]||0; });
   const n=_esfTotal(), r=document.getElementById('esf-resumo'), b=document.getElementById('esf-add');
+  const prox=document.getElementById('esf-prox'), fill=document.getElementById('esf-barra-fill');
   if(!r||!b)return;
-  if(!n){ r.innerHTML='Escolha os sabores e as quantidades.'; b.disabled=true; b.innerHTML='Escolha as esfihas'; return; }
-  const total=precoEsfihas(n);
-  const prox=ESFIHA_PACOTES.map(p=>p.qtd).find(q=>q>n);
-  r.innerHTML=`<b>${n} esfiha${n>1?'s':''}</b> = <b class="esf-total">R$ ${fmtPrice(total)}</b>`+
-    (prox&&prox-n<=5?`<div class="esf-prox">Faltam ${prox-n} pro combo de ${prox}!</div>`:'');
+  if(fill) fill.style.width=Math.min(100,n/30*100)+'%';
+  ESFIHA_PACOTES.forEach(pk=>{
+    const d=document.getElementById('esf-deg-'+pk.qtd); if(!d)return;
+    const melhor=[...ESFIHA_PACOTES].reverse().find(x=>n>=x.qtd);
+    d.classList.toggle('on',!!melhor&&melhor.qtd===pk.qtd);
+    d.classList.toggle('feito',n>=pk.qtd);
+  });
+  if(!n){
+    r.innerHTML='Escolha os sabores e as quantidades.'; b.disabled=true; b.innerHTML='Escolha as esfihas';
+    if(prox) prox.innerHTML='Leve <b>20</b> e cada uma sai por <b>R$ 4,50</b> · leve <b>30</b> e sai por <b>R$ 4,33</b>!';
+    return;
+  }
+  const total=precoEsfihas(n), un=total/n;
+  r.innerHTML=`<b>${n} esfiha${n>1?'s':''}</b> = <b class="esf-total">R$ ${fmtPrice(total)}</b> <span class="esf-un">(R$ ${fmtPrice(un)} cada)</span>`;
+  const prox_=ESFIHA_PACOTES.map(x=>x.qtd).find(q=>q>n);
+  if(prox){
+    if(prox_===undefined) prox.innerHTML='🎉 <b>Melhor preço desbloqueado!</b> Cada esfiha sai por R$ 4,33 ou menos.';
+    else{
+      const falta=prox_-n, pk=ESFIHA_PACOTES.find(x=>x.qtd===prox_);
+      // quanto o cliente paga a mais pra chegar no próximo pacote, e quanto ele passa a pagar por esfiha
+      const extra=precoEsfihas(prox_)-total;
+      prox.innerHTML=`Mais <b>${falta}</b> por só <b>+R$ ${fmtPrice(extra)}</b> e você leva <b>${prox_} por R$ ${fmtPrice(pk.preco)}</b> — cada esfiha sai <b>R$ ${fmtPrice(pk.preco/pk.qtd)}</b>`;
+    }
+  }
   b.disabled=false; b.innerHTML=`Adicionar ao pedido · R$ ${fmtPrice(total)}`;
 }
 function addEsfihasToCart(){

@@ -910,3 +910,25 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 .hero-faixa::-webkit-scrollbar{display:none;}
 .hero-faixa.arrastando{cursor:grabbing;}
 .hero-faixa.arrastando a{pointer-events:none;}
+
+/* ESFIHAS — degraus de preço: quanto mais leva, menos paga em cada uma */
+.esf-degraus{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 10px;}
+.esf-degrau{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;padding:16px 4px 10px;border-radius:14px;cursor:pointer;color:#fff;
+  border:1.5px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);font-family:'Work Sans',sans-serif;transition:transform .12s,border-color .15s,background .15s;}
+.esf-degrau:active{transform:scale(.96);}
+.esf-degrau.feito{border-color:rgba(245,163,0,.55);}
+.esf-degrau.on{border-color:#F5A300;background:linear-gradient(160deg,rgba(245,163,0,.32),rgba(245,163,0,.08));box-shadow:0 6px 16px rgba(0,0,0,.35);}
+.esf-degrau em{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:#F5A300;color:#1A1A1A;font-style:normal;font-size:.52rem;font-weight:800;letter-spacing:.6px;padding:3px 8px;border-radius:999px;white-space:nowrap;}
+.esf-deg-q{font-family:var(--font-display);font-size:1.7rem;line-height:1;}
+.esf-deg-l{font-size:.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.esf-deg-p{font-family:var(--font-display);font-size:1.05rem;color:var(--amarelo);}
+.esf-deg-u{font-size:.68rem;font-weight:700;color:var(--tx-2);}
+.esf-deg-e{font-size:.58rem;font-weight:700;color:#5BE08D;margin-top:2px;text-align:center;}
+.esf-barra{position:relative;height:8px;border-radius:999px;background:rgba(255,255,255,.12);margin:4px 2px 8px;overflow:hidden;}
+.esf-barra-fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#F5A300,#FFD45C);transition:width .25s ease;}
+.esf-barra i{position:absolute;top:0;bottom:0;width:2px;background:rgba(0,0,0,.45);}
+.esf-prox{margin:0 0 12px;font-size:.78rem;color:var(--tx-2);line-height:1.4;}
+.esf-prox b{color:var(--amarelo);}
+.esf-un{color:var(--muted);font-size:.78rem;}
+.esf-atalhos{display:none;}
+@media (max-width:340px){.esf-deg-q{font-size:1.4rem;}.esf-deg-p{font-size:.9rem;}}
