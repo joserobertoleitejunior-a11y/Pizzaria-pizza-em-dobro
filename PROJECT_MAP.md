@@ -370,3 +370,8 @@ Caixa/Relatórios/Clientes/bot-config/painel, leia aquilo primeiro.
 ## ⚠️ Acesso provisório da equipe
 Por pedido do José, `server/staff-login.js` aceita o login fixo **usuário `marco` / senha `1234`**, sem bloqueio por tentativas
 e sem `STAFF_PASSWORD`. É temporário: trocar por senha forte (e reativar o limite de tentativas) antes do lançamento público.
+
+## Combos, 3D, dispositivo e zoom (loja)
+- Combos aparecem ANTES do cardápio (`#cat-co` primeiro; nav e botão do topo levam a eles). Cada cartão mostra preço grande, "de R$ X / você economiza R$ Y" (calculado do cardápio real) e botão 🎲 Surpreenda-me.
+- Vitrine 3D (`src/combo3d.src.js` → `npm run build:3d` → `assets/vendor/combo3d.js`, three.js só com o necessário, ~120KB gzip): carrega só depois da splash e ocioso, 30 quadros/s, pausa fora da tela/aba escondida, pula em aparelho fraco (`html[data-leve]`) e usa emoji.
+- `js/dispositivo.js` (no head): `data-disp` celular/tablet/desktop, `data-leve`, `--vh`, e bloqueio de zoom (junto de meta viewport `user-scalable=no` + `touch-action:manipulation`).

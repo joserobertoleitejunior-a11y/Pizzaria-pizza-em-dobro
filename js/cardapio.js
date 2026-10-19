@@ -22,30 +22,89 @@ function drawHH(canvas,u1,u2){
 // ══════════════════════════════════
 //  COMBOS "2 POR X" — seleção real de sabores
 // ══════════════════════════════════
-const COMBO_CORES={combo65:'#D62828',combo75:'#E8541E',combo80:'#B71C1C',combo85:'#7A1010'};
+const COMBO_CORES={combo65:'#D62828',combo75:'#E8541E',combo80:'#C2185B',combo85:'#7B1FA2'};
+// preço avulso de um sabor (pizza tradicional/especial) pra mostrar a economia do combo
+function _precoAvulso(nome){
+  const m=(typeof menu!=='undefined'?menu:[]).find(x=>(x.cat==='p'||x.cat==='s')&&x.n===nome);
+  return m?Number(m.p):null;
+}
+function _economiaCombo(id){
+  const c=COMBOS_DEFAULT.find(x=>x.id===id); if(!c)return null;
+  const s1=document.getElementById(id+'-s1')?.value, s2=document.getElementById(id+'-s2')?.value;
+  const p1=_precoAvulso(s1), p2=_precoAvulso(s2);
+  if(p1==null||p2==null||s1===s2)return null;
+  const eco=p1+p2-c.preco;
+  return eco>0.005?{eco,avulso:p1+p2}:null;
+}
+function atualizarComboCard(id){
+  const e=_economiaCombo(id), box=document.getElementById('combo-eco-'+id);
+  if(!box)return;
+  if(e){ box.innerHTML=`<span class="combo-de">de R$ ${fmtPrice(e.avulso)}</span><b>Você economiza R$ ${fmtPrice(e.eco)}</b>`; box.style.display=''; }
+  else box.style.display='none';
+}
+function comboSurpresa(id){
+  const c=COMBOS_DEFAULT.find(x=>x.id===id); if(!c||c.sabores.length<2)return;
+  const i=Math.floor(Math.random()*c.sabores.length);
+  let j=Math.floor(Math.random()*(c.sabores.length-1)); if(j>=i)j++;
+  document.getElementById(id+'-s1').value=c.sabores[i];
+  document.getElementById(id+'-s2').value=c.sabores[j];
+  atualizarComboCard(id);
+}
 function renderCombos(){
   const el=document.getElementById('cat-co');
   if(!el||typeof COMBOS_DEFAULT==='undefined')return;
+  const ordenados=COMBOS_DEFAULT.slice();
   el.innerHTML=`<h2 class="cat-title reveal" id="anc-co">Combos</h2>`+
-    `<p class="combo-intro reveal">Duas pizzas diferentes, um preço só. Escolha os 2 sabores e pronto. 🍕+🍕</p>`+
-    COMBOS_DEFAULT.map(c=>{
+    `<div class="combo-vitrine" id="combo-vitrine">
+      <div id="combo-3d" aria-hidden="true"></div>
+      <div class="combo-vitrine-txt"><b>2 PIZZAS</b><span>1 preço só</span></div>
+    </div>`+
+    `<p class="combo-intro reveal">Escolha 2 sabores, pague menos que as duas separadas. 🍕+🍕</p>`+
+    `<div class="combo-lista">`+
+    ordenados.map(c=>{
       const optsS1=c.sabores.map((s,i)=>`<option value="${s}"${i===0?' selected':''}>${s}</option>`).join('');
       const optsS2=c.sabores.map((s,i)=>`<option value="${s}"${i===1?' selected':''}>${s}</option>`).join('');
       const cor=COMBO_CORES[c.id]||'var(--pr)';
+      const reais=String(c.preco.toFixed(2)).split('.');
       return `<div class="combo-card" id="combo-card-${c.id}" style="--combo-cor:${cor};">
-        <span class="combo-ribbon">${c.titulo}</span>
-        <p class="combo-desc">Escolha 2 sabores diferentes (uma pizza de cada)</p>
+        <div class="combo-topo">
+          <span class="combo-ribbon">2 POR</span>
+          <span class="combo-price"><small>R$</small>${reais[0]}<sup>,${reais[1]}</sup></span>
+        </div>
+        <div id="combo-eco-${c.id}" class="combo-eco" style="display:none"></div>
         <div class="combo-select-row">
-          <select id="${c.id}-s1" class="combo-select">${optsS1}</select>
+          <label class="combo-slot"><i>🍕 1º sabor</i><select id="${c.id}-s1" class="combo-select" onchange="atualizarComboCard('${c.id}')">${optsS1}</select></label>
           <span class="combo-plus">+</span>
-          <select id="${c.id}-s2" class="combo-select">${optsS2}</select>
+          <label class="combo-slot"><i>🍕 2º sabor</i><select id="${c.id}-s2" class="combo-select" onchange="atualizarComboCard('${c.id}')">${optsS2}</select></label>
         </div>
         <div class="combo-footer">
-          <span class="combo-price">R$ ${fmtPrice(c.preco)}</span>
+          <button class="combo-sorte" type="button" onclick="comboSurpresa('${c.id}')" aria-label="Sortear sabores">🎲 Surpreenda-me</button>
           <button class="combo-add-btn" onclick="addComboToCart('${c.id}')">Adicionar<span>+</span></button>
         </div>
       </div>`;
-    }).join('');
+    }).join('')+`</div>`;
+  ordenados.forEach(c=>atualizarComboCard(c.id));
+  iniciarVitrine3D();
+}
+// 3D opcional: só depois da splash, só em aparelho que aguenta, e nunca bloqueia nada.
+let _c3dCarregando=false;
+function iniciarVitrine3D(){
+  const box=document.getElementById('combo-3d');
+  if(!box||_c3dCarregando)return;
+  const h=document.documentElement;
+  if(h.getAttribute('data-leve')==='1'){ box.classList.add('c3d-fallback'); return; }
+  _c3dCarregando=true;
+  const abrir=()=>{
+    const ok=()=>{ try{ if(!window.Combo3D||!window.Combo3D.iniciar(box)) box.classList.add('c3d-fallback'); }catch(e){ box.classList.add('c3d-fallback'); } };
+    if(window.Combo3D){ ok(); return; }
+    const sc=document.createElement('script'); sc.src='assets/vendor/combo3d.js'; sc.async=true;
+    sc.onload=ok; sc.onerror=()=>box.classList.add('c3d-fallback');
+    document.head.appendChild(sc);
+  };
+  const quando=()=>('requestIdleCallback' in window)?requestIdleCallback(abrir,{timeout:3000}):setTimeout(abrir,1200);
+  // espera a splash sair pra não competir com as animações dela
+  const ws=document.getElementById('ws');
+  if(ws&&getComputedStyle(ws).display!=='none') setTimeout(quando,5500); else quando();
 }
 function addComboToCart(comboTierId){
   const combo=COMBOS_DEFAULT.find(c=>c.id===comboTierId);

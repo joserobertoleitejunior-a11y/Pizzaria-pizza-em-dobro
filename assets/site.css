@@ -25,7 +25,17 @@
   --vidro:rgba(18,18,18,.82);--vidro-borda:rgba(255,255,255,.10);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html{scroll-behavior:smooth;}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation;width:100%;overflow-x:hidden;}
+/* encaixe em qualquer aparelho: nada passa da largura da tela, mídia nunca estoura, entalhe/ilha respeitados */
+body{width:100%;max-width:100%;overflow-x:hidden;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);touch-action:manipulation;}
+img,svg,video,canvas{max-width:100%;}
+input,select,textarea,button{font-size:max(16px,1em);touch-action:manipulation;} /* 16px+ : o iOS não dá zoom automático ao focar */
+@media (min-width:700px){.container{max-width:760px!important;}#destaques{max-width:640px!important;}}
+@media (min-width:1100px){.container{max-width:880px!important;}}
+@media (max-width:340px){#ws-brand{font-size:1.7rem;}}
+@media (max-height:520px) and (orientation:landscape){#ws-pizza,#ws-pizza-wrap{width:110px;height:110px;}#ws-logo{width:72px;height:72px;}#ws-conteudo{gap:8px;}header{min-height:auto;}}
+/* aparelho fraco: tira o que é só enfeite contínuo */
+html[data-leve="1"] .hero-faixa-trilho,html[data-leve="1"] .ws-vidro{animation:none!important;}
 /* Fundo branco chapado: sem gradiente e sem background-attachment:fixed (que forçava
    repintar a tela inteira a cada frame de scroll — era a causa real do site lento). */
 body{background:var(--painel);color:var(--text);font-family:'Work Sans','Public Sans',system-ui,sans-serif;overscroll-behavior:none;}
@@ -40,15 +50,15 @@ body{background:var(--painel);color:var(--text);font-family:'Work Sans','Public 
    sendo "pegas" uma a uma (cada fatia se solta e sai na direção dela) até sobrar o prato.
    Sem barra de carregamento. Passa sozinha (JS fecha ao fim da última fatia) e continua
    tocável pra quem quiser pular na hora. */
-#ws{position:fixed;inset:0;background:#141414;z-index:10000;overflow:hidden;
-  opacity:1;transition:opacity .4s ease;}
+#ws{position:fixed;inset:0;height:100vh;height:calc(var(--vh,1vh)*100);background:#141414;z-index:10000;overflow:hidden;
+  opacity:1;transition:opacity .6s ease;}
 #ws.aberto{opacity:0;}
 #ws-conteudo{position:relative;z-index:3;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
   cursor:pointer;gap:16px;padding:0 24px;}
 
 #ws-logo{position:relative;width:104px;height:104px;border-radius:50%;overflow:hidden;flex:none;
   box-shadow:0 14px 28px rgba(20,20,20,.28),0 0 0 3px #141414;
-  animation:wsLogoIn .6s cubic-bezier(.3,1.5,.4,1) both;}
+  animation:wsLogoIn .9s cubic-bezier(.25,.9,.3,1) both;}
 #ws-logo img{width:100%;height:100%;object-fit:cover;display:block;}
 /* o "vidro": reflexo curvo fixo no topo + borda clara + sombra interna embaixo (domo) */
 #ws-logo::before{content:"";position:absolute;inset:0;border-radius:50%;z-index:2;pointer-events:none;
@@ -57,33 +67,33 @@ body{background:var(--painel);color:var(--text);font-family:'Work Sans','Public 
 /* a luz atravessando o vidro, de tempos em tempos */
 .ws-vidro{position:absolute;top:-25%;left:0;width:42%;height:150%;z-index:3;pointer-events:none;
   background:linear-gradient(100deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.15) 30%,rgba(255,255,255,.9) 50%,rgba(255,255,255,.15) 70%,rgba(255,255,255,0) 100%);
-  transform:translateX(-170%) skewX(-18deg);animation:wsReflexo 1.7s .45s ease-in-out infinite;}
+  transform:translateX(-170%) skewX(-18deg);animation:wsReflexo 2.4s .8s ease-in-out 2 both;will-change:transform;}
 @keyframes wsReflexo{0%{transform:translateX(-170%) skewX(-18deg);}55%,100%{transform:translateX(320%) skewX(-18deg);}}
 @keyframes wsLogoIn{0%{transform:scale(.4) rotate(-20deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
 
 #ws-brand{font-family:var(--font-display);font-size:2.2rem;line-height:1;text-align:center;color:#FFFFFF;letter-spacing:-1px;
   text-transform:uppercase;display:flex;flex-wrap:wrap;justify-content:center;gap:0 .45rem;max-width:320px;}
-.ws-palavra{display:inline-block;opacity:0;animation:wsPalavraPula .5s cubic-bezier(.3,1.7,.4,1) both;
-  animation-delay:calc(.25s + var(--i) * .1s);}
+.ws-palavra{display:inline-block;opacity:0;animation:wsPalavraPula .8s cubic-bezier(.25,.9,.3,1) both;
+  animation-delay:calc(.35s + var(--i) * .2s);}
 .ws-destaque{color:var(--pr);}
 /* 100% repete opacity:1 de propósito — sem isso o nome voltava pro opacity:0 da regra base e sumia */
-@keyframes wsPalavraPula{0%{transform:translateY(22px) scale(.6);opacity:0;}70%{transform:translateY(-4px) scale(1.08);opacity:1;}100%{transform:translateY(0) scale(1);opacity:1;}}
+@keyframes wsPalavraPula{0%{transform:translateY(18px) scale(.85);opacity:0;}100%{transform:translateY(0) scale(1);opacity:1;}}
 
 #ws-pizza-wrap{width:168px;height:168px;flex:none;}
-#ws-pizza{width:168px;height:168px;overflow:visible;filter:drop-shadow(0 10px 14px rgba(20,20,20,.2));
-  animation:wsPizzaIn .55s .3s cubic-bezier(.3,1.4,.4,1) both;}
-@keyframes wsPizzaIn{0%{transform:scale(.55) rotate(-40deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
+#ws-pizza{width:168px;height:168px;overflow:visible;
+  animation:wsPizzaIn .9s .4s cubic-bezier(.25,.9,.3,1) both;}
+@keyframes wsPizzaIn{0%{transform:scale(.7) rotate(-20deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
 /* cada fatia: primeiro desgruda um pouquinho do resto (como quem puxa), depois sai voando
    na direção dela e some — uma de cada vez, em volta da pizza */
 .ws-fp{transform-box:view-box;transform-origin:80px 80px;
-  animation:wsPega .5s cubic-bezier(.55,0,.75,.2) both;animation-delay:calc(1.05s + var(--k) * .17s);}
+  animation:wsPega .8s cubic-bezier(.4,0,.6,1) both;animation-delay:calc(1.5s + var(--k) * .3s);}
 @keyframes wsPega{
   0%{transform:translate(0,0) rotate(0);opacity:1;}
   28%{transform:translate(calc(var(--dx) * .1),calc(var(--dy) * .1)) rotate(calc(var(--r) * .25));opacity:1;}
   100%{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0;}
 }
 #ws-toque-aviso{font-family:'Work Sans',sans-serif;font-weight:700;font-size:.62rem;letter-spacing:2.5px;text-transform:uppercase;
-  color:#999999;opacity:0;animation:wsAvisoIn .5s 1.2s ease forwards;}
+  color:#999999;opacity:0;animation:wsAvisoIn .6s 1.6s ease forwards;}
 @keyframes wsAvisoIn{to{opacity:1;}}
 
 /* Acessibilidade: quem pede menos movimento no sistema não recebe nenhuma animação contínua
@@ -252,27 +262,58 @@ body.sel-mode .item-card.savory.first-half-sel{
 .sel-trigger{display:none;position:absolute;inset:0;z-index:50;}
 body.sel-mode .item-card.savory .sel-trigger{display:block;}
 
-/* COMBOS "2 POR X" — cartão com selo por faixa, selects arredondados, "+" vermelho */
+/* COMBOS "2 POR X" — vitrine 3D no topo + cartões de vidro com preço grande e economia */
+.combo-vitrine{position:relative;height:150px;margin:0 0 12px;border-radius:var(--raio);overflow:hidden;
+  background:radial-gradient(120% 140% at 50% 0%,rgba(214,40,40,.35),rgba(20,20,20,.2) 60%,transparent),rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);box-shadow:var(--sombra-1);}
+#combo-3d{position:absolute;inset:0;}
+#combo-3d canvas{width:100%!important;height:100%!important;display:block;opacity:0;transition:opacity .6s;}
+#combo-3d.c3d-pronto canvas{opacity:1;}
+/* sem 3D (aparelho fraco ou sem WebGL): duas pizzas em emoji, sem animação contínua */
+#combo-3d.c3d-fallback::before,#combo-3d:not(.c3d-pronto)::before{content:"🍕 🍕";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:3.2rem;letter-spacing:8px;padding-bottom:30px;opacity:.9;}
+#combo-3d.c3d-pronto::before{content:none;}
+.combo-vitrine-txt{position:absolute;left:0;right:0;bottom:10px;text-align:center;pointer-events:none;display:flex;flex-direction:column;gap:1px;}
+.combo-vitrine-txt b{font-family:var(--font-display);font-size:1.15rem;color:#fff;letter-spacing:.5px;text-shadow:0 2px 8px rgba(0,0,0,.6);}
+.combo-vitrine-txt span{font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--amarelo);text-shadow:0 2px 6px rgba(0,0,0,.6);}
 .combo-intro{font-size:.86rem;color:var(--muted);margin:0 0 12px;line-height:1.45;}
-.combo-card{position:relative;background:var(--painel);border:1px solid rgba(255,255,255,.05);border-radius:var(--raio);padding:16px;margin:0 0 12px;box-shadow:var(--sombra-1);overflow:hidden;}
-.combo-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--combo-cor,#141414);}
-.combo-ribbon{display:inline-block;font-family:var(--font-display);font-size:1rem;text-transform:uppercase;
-  color:#FFFFFF;background:var(--combo-cor,#141414);padding:6px 13px;border-radius:999px;margin-bottom:10px;letter-spacing:.2px;box-shadow:0 6px 14px rgba(20,20,20,.18);}
-.combo-desc{font-size:.76rem;color:var(--muted);margin:0 0 12px;}
-.combo-select-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
-.combo-select{flex:1;min-width:0;appearance:none;-webkit-appearance:none;-moz-appearance:none;
+.combo-lista{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px;}
+.combo-card{position:relative;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02) 45%),var(--painel);
+  border:1px solid rgba(255,255,255,.08);border-radius:var(--raio);padding:16px;box-shadow:var(--sombra-1);overflow:hidden;}
+.combo-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--combo-cor,#D62828);}
+.combo-card::after{content:"";position:absolute;right:-40px;top:-40px;width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,var(--combo-cor,#D62828),transparent 70%);opacity:.22;pointer-events:none;}
+.combo-topo{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
+.combo-ribbon{display:inline-block;font-family:var(--font-display);font-size:.8rem;text-transform:uppercase;letter-spacing:1.2px;
+  color:#FFFFFF;background:var(--combo-cor,#D62828);padding:6px 13px;border-radius:999px;box-shadow:0 6px 14px rgba(0,0,0,.3);}
+.combo-price{font-family:var(--font-display);font-size:2.3rem;line-height:1;color:var(--amarelo);letter-spacing:-1px;white-space:nowrap;}
+.combo-price small{font-size:.9rem;letter-spacing:0;margin-right:3px;vertical-align:.9em;}
+.combo-price sup{font-size:.95rem;letter-spacing:0;vertical-align:.7em;}
+.combo-eco{position:relative;z-index:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;font-size:.74rem;}
+.combo-eco b{background:rgba(46,204,113,.16);color:#5BE08D;border:1px solid rgba(46,204,113,.35);padding:4px 10px;border-radius:999px;font-weight:800;}
+.combo-de{color:var(--muted);text-decoration:line-through;}
+.combo-select-row{position:relative;z-index:1;display:flex;align-items:flex-end;gap:8px;margin-bottom:14px;}
+.combo-slot{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;}
+.combo-slot i{font-style:normal;font-size:.62rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);}
+.combo-select{width:100%;min-width:0;appearance:none;-webkit-appearance:none;-moz-appearance:none;
   background:rgba(255,255,255,.07) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23FFFFFF' d='M7 10l5 5 5-5z'/></svg>") no-repeat right 8px center/16px;
-  color:var(--text);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:11px 28px 11px 11px;font-family:'Work Sans',sans-serif;
-  font-size:.76rem;font-weight:700;cursor:pointer;}
-.combo-select:focus{outline:none;border-color:var(--pr);box-shadow:0 0 0 3px rgba(214,40,40,.15);}
-.combo-plus{font-family:var(--font-display);font-size:1.3rem;color:var(--pr);flex:none;}
-.combo-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;}
-.combo-price{font-family:var(--font-display);font-size:1.5rem;color:var(--amarelo);letter-spacing:-.5px;}
-.combo-add-btn{display:flex;align-items:center;gap:8px;background:var(--combo-cor,#141414);color:#fff;border:none;
-  border-radius:12px;padding:13px 18px;font-family:var(--font-display);font-size:.78rem;letter-spacing:.5px;text-transform:uppercase;
-  cursor:pointer;transition:transform .12s;box-shadow:0 8px 18px rgba(20,20,20,.22);}
+  color:var(--text);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:12px 28px 12px 11px;font-family:'Work Sans',sans-serif;
+  font-size:16px;font-weight:700;cursor:pointer;text-overflow:ellipsis;} /* 16px: o iPhone não dá zoom ao focar */
+.combo-select:focus{outline:none;border-color:var(--pr);box-shadow:0 0 0 3px rgba(214,40,40,.2);}
+.combo-select option{background:#1b1b1b;color:#fff;}
+.combo-plus{display:flex;align-items:center;justify-content:center;width:30px;height:30px;margin-bottom:6px;border-radius:50%;background:var(--pr);
+  font-family:var(--font-display);font-size:1.1rem;color:#fff;flex:none;box-shadow:0 4px 10px rgba(214,40,40,.4);}
+.combo-footer{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.combo-sorte{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:var(--tx-2);border-radius:12px;padding:12px 12px;
+  font-family:'Work Sans',sans-serif;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;}
+.combo-sorte:active{transform:scale(.96);}
+.combo-add-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--combo-cor,#D62828);color:#fff;border:none;
+  border-radius:12px;padding:14px 16px;font-family:var(--font-display);font-size:.82rem;letter-spacing:.5px;text-transform:uppercase;
+  cursor:pointer;transition:transform .12s;box-shadow:0 8px 18px rgba(0,0,0,.35);}
 .combo-add-btn:active{transform:scale(.95);}
-.combo-add-btn span{font-size:1.05rem;line-height:1;}
+.combo-add-btn span{font-size:1.1rem;line-height:1;}
+@media (min-width:700px){.combo-lista{grid-template-columns:1fr 1fr;}.combo-vitrine{height:190px;}}
+@media (max-width:340px){.combo-price{font-size:1.9rem;}.combo-select-row{flex-direction:column;align-items:stretch;}.combo-plus{align-self:center;margin:0;}}
 
 /* ITEM IMAGE — miniatura arredondada ao lado do nome, nunca em cima */
 .item-row{display:flex;gap:14px;align-items:center;}

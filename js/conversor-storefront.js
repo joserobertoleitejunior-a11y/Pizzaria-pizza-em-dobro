@@ -1179,11 +1179,11 @@ function abrirPortaSplash(){
   setTimeout(()=>{
     ws.style.display='none';
     ws.style.visibility='hidden';
-  },400);
+  },650);
 }
-// última fatia: atraso 1.05s + 7 × .17s = 2.24s, mais .5s de animação = 2.74s; folga curta
+// última fatia: atraso 1.5s + 7 × .3s = 3.6s, mais .8s de animação = 4.4s; folga curta
 // pro cliente ver o prato vazio antes de entrar sozinho
-const _splashAutoTimer=setTimeout(abrirPortaSplash,2950);
+const _splashAutoTimer=setTimeout(abrirPortaSplash,4700);
 
 _initFB();
 init();

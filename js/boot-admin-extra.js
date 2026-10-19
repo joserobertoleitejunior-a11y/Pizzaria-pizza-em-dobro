@@ -33,6 +33,7 @@ async function init(){
   // cardápio/combos nascem depois de um await (Firestore) — o script de scroll lá
   // embaixo do index.html já tinha rodado e escaneado o DOM antes disso, então sem
   // essa chamada de novo os cards do cardápio nunca ganhavam a entrada animada
+  if(typeof window._observarReveal==='function') window._observarReveal();
   if(typeof window._iniciarAnimacoesScroll==='function') window._iniciarAnimacoesScroll();
   // restaura sessão admin se válida (mesmo login único da equipe, sem bloquear
   // a loja pro cliente comum — só reativa os controles se já tiver sessão)
