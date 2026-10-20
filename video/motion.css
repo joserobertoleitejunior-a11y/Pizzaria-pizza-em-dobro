@@ -1,63 +1,62 @@
 @font-face{font-family:'Archivo Black';src:url(fontes/ArchivoBlack-Regular.ttf)}
 @font-face{font-family:'Work Sans';src:url(fontes/WorkSans.ttf);font-weight:100 900}
-:root{--pr:#D62828;--ouro:#F5C518;--tx:#17120f;--bg:#F3F0EA}
+:root{--pr:#D62828;--ouro:#F5C518}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:#000;overflow:hidden;font-family:'Work Sans',system-ui,sans-serif}
-/* palco 1080×1920 (Stories). Texto e peças importantes ficam entre y 250 e y 1670 */
-#palco{position:absolute;left:50%;top:50%;width:1080px;height:1920px;transform-origin:center center;overflow:hidden;background:var(--bg);perspective:2400px}
-#blobs{position:absolute;inset:0;background:
-  radial-gradient(520px 520px at var(--b1x,20%) var(--b1y,18%),rgba(214,40,40,.16),transparent 70%),
-  radial-gradient(620px 620px at var(--b2x,85%) var(--b2y,70%),rgba(245,197,24,.20),transparent 70%)}
-#grao{position:absolute;inset:0;opacity:.5;background-image:linear-gradient(rgba(0,0,0,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.035) 1px,transparent 1px);background-size:60px 60px;
-  -webkit-mask-image:radial-gradient(70% 55% at 50% 45%,#000 20%,transparent 100%);mask-image:radial-gradient(70% 55% at 50% 45%,#000 20%,transparent 100%)}
-#marca{position:absolute;left:0;right:0;top:176px;display:flex;align-items:center;justify-content:center;gap:18px;color:var(--tx);font-family:'Archivo Black',sans-serif;font-size:30px;letter-spacing:7px}
-#marca img{width:58px;height:58px;border-radius:50%;border:3px solid var(--ouro)}
-#marca i{display:block;width:70px;height:3px;background:var(--pr);transform-origin:left}
-/* celular minimalista */
-#fone{position:absolute;left:184px;top:280px;width:712px;height:1202px;border-radius:92px;background:#161412;padding:16px;
-  box-shadow:0 70px 120px -30px rgba(60,28,10,.38),0 20px 40px rgba(0,0,0,.18),inset 0 0 0 2px #3a3532;transform-style:preserve-3d;will-change:transform}
-#tela{position:relative;width:680px;height:1170px;border-radius:76px;overflow:hidden;clip-path:inset(0 round 76px);isolation:isolate;background:#fff}
-#site{position:absolute;left:0;top:0;width:402px;height:692px;border:0;transform:scale(1.6915);transform-origin:0 0;background:#fff}
-#ilha{position:absolute;left:50%;top:20px;width:150px;height:42px;margin-left:-75px;border-radius:21px;background:#0c0b0a;z-index:5}
-/* legendas cinéticas */
-#cap{position:absolute;left:50px;right:50px;top:1512px;height:158px}
+/* palco 1080×1920 (Stories). Zona segura: nada abaixo de y 1500 (a legenda e a barra do Instagram cobrem a parte de baixo)
+   nem acima de y 250 (nome do perfil). Fundo = fachada da pizzaria tingida com a cor do Instagram (tema-instagram) ou do WhatsApp (tema-whatsapp) */
+#palco{position:absolute;left:50%;top:50%;width:1080px;height:1920px;transform-origin:center center;overflow:hidden;background:#0E0E0E;perspective:2400px}
+#fundo{position:absolute;inset:0;overflow:hidden}
+#fundo img{position:absolute;top:0;left:50%;height:1920px;width:auto;max-width:none;transform-origin:50% 40%;will-change:transform}
+#tinta,#escuro,#vinheta{position:absolute;inset:0}
+#tinta{mix-blend-mode:color;opacity:.92}
+.tema-instagram{--cor:#C13584;--cor2:#FD1D1D}
+.tema-instagram #tinta{background:linear-gradient(165deg,#833AB4 0%,#C13584 34%,#FD1D1D 66%,#FCB045 100%)}
+.tema-whatsapp{--cor:#25D366;--cor2:#128C7E}
+.tema-whatsapp #tinta{background:linear-gradient(165deg,#075E54 0%,#128C7E 45%,#25D366 100%)}
+#escuro{background:linear-gradient(180deg,rgba(8,8,8,.55) 0%,rgba(8,8,8,.30) 40%,rgba(8,8,8,.62) 100%)}
+#vinheta{background:radial-gradient(120% 90% at 50% 45%,transparent 45%,rgba(0,0,0,.62) 100%)}
+#part{position:absolute;inset:0;width:1080px;height:1920px;mix-blend-mode:screen;opacity:.9}
+#grao{position:absolute;inset:0;width:1080px;height:1920px;opacity:.07;mix-blend-mode:overlay;pointer-events:none}
+/* celular */
+#fone{position:absolute;left:206px;top:250px;width:668px;height:1040px;border-radius:88px;background:#0c0c0c;padding:14px;
+  box-shadow:0 0 0 2px #2c2c2c,0 0 100px -10px var(--cor),0 60px 110px -20px rgba(0,0,0,.75);transform-style:preserve-3d;will-change:transform}
+#tela{position:relative;width:640px;height:1012px;border-radius:76px;overflow:hidden;clip-path:inset(0 round 76px);isolation:isolate;background:#0E0E0E}
+#site{position:absolute;left:0;top:0;width:402px;height:635.6px;border:0;transform:scale(1.5920);transform-origin:0 0;background:#0E0E0E}
+#ilha{position:absolute;left:50%;top:18px;width:140px;height:38px;margin-left:-70px;border-radius:19px;background:#050505;z-index:5}
+#brilho{position:absolute;inset:0;z-index:6;pointer-events:none;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.20) 50%,transparent 62%);transform:translateX(-130%)}
+/* legendas cinéticas — sempre acima de y 1490 */
+#cap{position:absolute;left:44px;right:44px;top:1318px;height:170px}
 .leg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Archivo Black','Work Sans',sans-serif;
-  font-size:62px;line-height:1.12;color:var(--tx);text-transform:uppercase;letter-spacing:.5px;opacity:0;will-change:transform,opacity}
-.leg .in{display:block;max-width:980px}
+  font-size:56px;line-height:1.12;color:#fff;text-transform:uppercase;letter-spacing:.5px;opacity:0;will-change:transform,opacity;text-shadow:0 4px 26px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.6)}
+.leg .in{display:block;max-width:990px;text-wrap:balance}
 .p{display:inline-block;white-space:nowrap;position:relative}
 .l{display:inline-block;will-change:transform,opacity}
-.ac{color:var(--pr)}
-.p.ac-p::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:9px;border-radius:5px;background:var(--ouro);z-index:-1;transform-origin:0 50%;transform:scaleX(var(--ub,0))}
+.ac{color:#F5C518}
+.p.ac-p::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:8px;border-radius:4px;background:#D62828;transform-origin:0 50%;transform:scaleX(var(--ub,0))}
 /* WhatsApp dentro do celular */
 #zap{position:absolute;inset:0;background:#0B141A;display:flex;flex-direction:column;transform:translateY(100%);z-index:4}
-.z-top{display:flex;align-items:center;gap:20px;padding:92px 30px 24px;background:#202C33;color:#E9EDEF}
+.z-top{display:flex;align-items:center;gap:20px;padding:84px 28px 22px;background:#202C33;color:#E9EDEF}
 .z-av{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,#25D366,#128C7E);display:grid;place-items:center;font-size:40px;font-weight:800;color:#fff}
 .z-nome{font-size:40px;font-weight:700}.z-sub{font-size:26px;color:#8696A0;margin-top:2px}
 .z-chat{flex:1;padding:30px 26px;display:flex;flex-direction:column;justify-content:flex-end;gap:16px;overflow:hidden;background:#0B141A}
-.z-msg{align-self:flex-start;max-width:96%;background:#202C33;color:#E9EDEF;border-radius:6px 26px 26px 26px;padding:18px 24px 12px;font-size:22px;line-height:1.3;white-space:pre-wrap;opacity:0}
+.z-msg{align-self:flex-start;max-width:96%;background:#202C33;color:#E9EDEF;border-radius:6px 26px 26px 26px;padding:16px 22px 10px;font-size:20px;line-height:1.28;white-space:pre-wrap;opacity:0}
 .z-msg b{color:#fff}.z-hora{display:block;text-align:right;color:#8696A0;font-size:22px;margin-top:6px}
 .z-aviso{align-self:center;background:#182229;color:#8696A0;border-radius:18px;padding:8px 24px;font-size:24px}
 .z-input{height:104px;background:#202C33;display:flex;align-items:center;padding:0 26px}.z-input i{flex:1;height:60px;border-radius:30px;background:#2A3942}
-/* cartão final: collab Vibe Coding Process × Pizza em Dobro */
-#fim{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;text-align:center;clip-path:inset(0 100% 0 0);padding:0 60px}
-#fim .bl{position:absolute;inset:0;background:radial-gradient(560px 560px at 15% 20%,rgba(214,40,40,.14),transparent 70%),radial-gradient(640px 640px at 88% 75%,rgba(245,197,24,.22),transparent 70%)}
+/* cartão final: collab Vibe Coding Process × Pizza em Dobro (mesma zona segura) */
+#fim{position:absolute;inset:0;background:rgba(6,6,6,.58);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;clip-path:inset(0 100% 0 0);padding:300px 60px 0}
 .fx{position:relative;opacity:0;will-change:transform,opacity}
-.f-par{display:flex;align-items:center;justify-content:center;gap:70px;margin-bottom:84px}
-.f-x{font-family:'Archivo Black';font-size:64px;color:var(--pr)}
-.cubo-cena{width:170px;height:170px;perspective:1000px}
-.cubo{position:relative;width:170px;height:170px;transform-style:preserve-3d}
-.cubo i{position:absolute;inset:0;border:6px solid #1b1612;background:linear-gradient(135deg,rgba(245,197,24,.45),rgba(245,197,24,.08))}
-.cubo i:nth-child(1){transform:translateZ(85px)}.cubo i:nth-child(2){transform:rotateY(180deg) translateZ(85px)}
-.cubo i:nth-child(3){transform:rotateY(90deg) translateZ(85px)}.cubo i:nth-child(4){transform:rotateY(-90deg) translateZ(85px)}
-.cubo i:nth-child(5){transform:rotateX(90deg) translateZ(85px)}.cubo i:nth-child(6){transform:rotateX(-90deg) translateZ(85px)}
-.f-logo{width:200px;height:200px;border-radius:50%;object-fit:cover;border:7px solid var(--ouro);box-shadow:0 30px 60px rgba(60,28,10,.25)}
-.f-nome{font-family:'Archivo Black';font-size:66px;line-height:1.08;color:var(--tx);text-transform:uppercase;letter-spacing:1px}
-.f-nome .sep{color:var(--pr);margin:0 8px}
-.f-tag{font-size:36px;font-weight:600;color:#4b4540;margin-top:26px}
-.f-linha{width:520px;height:4px;background:linear-gradient(90deg,var(--pr),var(--ouro));border-radius:4px;margin:56px 0 48px;transform-origin:0 50%}
-.f-contato small{display:block;font-size:28px;font-weight:700;letter-spacing:5px;color:#7a716a;text-transform:uppercase}
-.f-fone{font-family:'Archivo Black';font-size:92px;color:var(--tx);margin:14px 0 10px;letter-spacing:1px}
-.f-jose{font-size:40px;font-weight:700;color:var(--pr)}
+.f-par{display:flex;align-items:center;justify-content:center;gap:46px;margin-bottom:56px}
+.f-x{font-family:'Archivo Black';font-size:46px;color:#F5C518}
+#espaco{width:300px;height:300px;border-radius:40px;display:block;box-shadow:0 30px 60px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08)}
+.f-logo{width:300px;height:300px;border-radius:50%;object-fit:cover;border:7px solid #F5C518;box-shadow:0 30px 60px rgba(0,0,0,.55)}
+.f-nome{font-family:'Archivo Black';font-size:60px;line-height:1.1;color:#fff;text-transform:uppercase;letter-spacing:1px;text-shadow:0 4px 26px rgba(0,0,0,.7)}
+.f-nome .ac{color:#F5C518}
+.f-tag{font-size:30px;font-weight:600;color:rgba(255,255,255,.82);margin-top:22px;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.f-linha{width:340px;height:3px;background:linear-gradient(90deg,#D62828,#F5C518);border-radius:3px;margin:46px 0 34px;transform-origin:0 50%}
+.f-fone{font-family:'Archivo Black';font-size:46px;color:#fff;letter-spacing:1.5px;text-shadow:0 3px 18px rgba(0,0,0,.6)}
+.f-jose{font-size:22px;font-weight:600;letter-spacing:5px;color:rgba(255,255,255,.72);text-transform:uppercase;margin-top:12px}
 /* controles (só no navegador) */
 #capa{position:fixed;inset:0;z-index:50;background:rgba(15,10,8,.86);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;color:#fff;text-align:center;padding:24px}
 #capa img{width:104px;height:104px;border-radius:50%;border:3px solid var(--ouro)}

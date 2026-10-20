@@ -9,11 +9,12 @@
 </head>
 <body>
 <div id="palco">
-  <div id="blobs"></div><div id="grao"></div>
-  <div id="marca"><i></i><img src="../assets/logo.png" alt="">PIZZA EM DOBRO<i></i></div>
-  <div id="fone"><div id="ilha"></div><div id="tela"><iframe id="site" title="Site da Pizza em Dobro" src="about:blank"></iframe><div id="zap"></div></div></div>
+  <div id="fundo"><img src="../assets/fachada-fundo.jpg" alt=""></div><div id="tinta"></div><div id="escuro"></div>
+  <canvas id="part" width="1080" height="1920"></canvas>
+  <div id="fone"><div id="ilha"></div><div id="tela"><iframe id="site" title="Site da Pizza em Dobro" src="about:blank"></iframe><div id="zap"></div><div id="brilho"></div></div></div>
   <div id="cap" aria-live="polite"></div>
   <div id="fim"></div>
+  <div id="vinheta"></div><canvas id="grao" width="270" height="480"></canvas>
 </div>
 <div id="capa"><img src="../assets/logo.png" alt=""><h1>Como pedir na Pizza em Dobro</h1><p>Um minuto: promoções, combo, pedido e a mensagem chegando no WhatsApp. Formato Stories (1080×1920), com música.</p>
   <div><button id="btSom" type="button">▶ Assistir com música</button><button class="sec" id="btMudo" type="button">Sem som</button></div></div>
@@ -22,24 +23,25 @@
 <script src="motion.js"></script>
 <script>
 Video.iniciar({
+  tema:'whatsapp',
   dur:60, splash:{t:3.6},
   legendas:[
-    {t0:.5,t1:3.5,html:'Bateu a <b>fome?</b>'},
-    {t0:3.9,t1:6.6,html:'Peça pelo <b>site</b>, sem baixar nada'},
-    {t0:6.8,t1:10.4,html:'<b>Promoções</b> todo dia'},
-    {t0:10.6,t1:13.9,html:'Pediu 3 pizzas? <b>Entrega grátis</b>'},
-    {t0:14.1,t1:17.9,html:'Monte o seu <b>combo</b>'},
-    {t0:18.0,t1:20.4,html:'Escolha <b>2 sabores</b> e pronto'},
-    {t0:20.6,t1:23.8,html:'Cardápio cheio de <b>sabor</b>'},
-    {t0:24.0,t1:26.4,html:'Toque no <b>+</b> e adicione'},
-    {t0:26.8,t1:29.4,html:'Confira o seu <b>pedido</b>'},
-    {t0:29.6,t1:32.2,html:'3 pizzas: <b>sem taxa</b> de entrega'},
-    {t0:32.4,t1:35.4,html:'Preencha os seus <b>dados</b>'},
-    {t0:35.6,t1:38.2,html:'Escolha o <b>Pix</b> e envie'},
-    {t0:38.8,t1:42.2,html:'O pedido chega no <b>WhatsApp</b>'},
-    {t0:42.4,t1:45.8,html:'Pronto. <b>Rápido</b> assim.'},
-    {t0:46.6,t1:49.0,html:'Veja como <b>chegar</b>'},
-    {t0:49.2,t1:52.2,html:'Site por <b>Vibe Coding Process</b>'}
+    {t0:.5,t1:3.9,html:'Bateu a <b>fome?</b>'},
+    {t0:3.9,t1:6.8,html:'Peça pelo <b>site</b>, sem baixar nada'},
+    {t0:6.8,t1:10.6,html:'<b>Promoções</b> todo dia'},
+    {t0:10.6,t1:14.1,html:'Pediu 3 pizzas? <b>Entrega grátis</b>'},
+    {t0:14.1,t1:18.0,html:'Monte o seu <b>combo</b>'},
+    {t0:18.0,t1:20.6,html:'Escolha <b>2 sabores</b> e pronto'},
+    {t0:20.6,t1:24.0,html:'Cardápio cheio de <b>sabor</b>'},
+    {t0:24.0,t1:26.8,html:'Toque no <b>+</b> e adicione'},
+    {t0:26.8,t1:29.6,html:'Confira o seu <b>pedido</b>'},
+    {t0:29.6,t1:32.4,html:'3 pizzas: <b>sem taxa</b> de entrega'},
+    {t0:32.4,t1:35.6,html:'Preencha os seus <b>dados</b>'},
+    {t0:35.6,t1:38.8,html:'Escolha o <b>Pix</b> e envie'},
+    {t0:38.8,t1:42.4,html:'O pedido chega no <b>WhatsApp</b>'},
+    {t0:42.4,t1:46.6,html:'Pronto. <b>Rápido</b> assim.'},
+    {t0:46.6,t1:49.2,html:'Veja como <b>chegar</b>'},
+    {t0:49.2,t1:52.4,html:'Site por <b>Vibe Coding Process</b>'}
   ],
   rolagens:[
     {t0:4.2,t1:6.6,y:260},

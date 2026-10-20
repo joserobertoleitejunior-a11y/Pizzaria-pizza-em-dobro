@@ -9,11 +9,12 @@
 </head>
 <body>
 <div id="palco">
-  <div id="blobs"></div><div id="grao"></div>
-  <div id="marca"><i></i><img src="../assets/logo.png" alt="">PIZZA EM DOBRO<i></i></div>
-  <div id="fone"><div id="ilha"></div><div id="tela"><iframe id="site" title="Site da Pizza em Dobro" src="about:blank"></iframe><div id="zap"></div></div></div>
+  <div id="fundo"><img src="../assets/fachada-fundo.jpg" alt=""></div><div id="tinta"></div><div id="escuro"></div>
+  <canvas id="part" width="1080" height="1920"></canvas>
+  <div id="fone"><div id="ilha"></div><div id="tela"><iframe id="site" title="Site da Pizza em Dobro" src="about:blank"></iframe><div id="zap"></div><div id="brilho"></div></div></div>
   <div id="cap" aria-live="polite"></div>
   <div id="fim"></div>
+  <div id="vinheta"></div><canvas id="grao" width="270" height="480"></canvas>
 </div>
 <div id="capa"><img src="../assets/logo.png" alt=""><h1>Promoções · Stories</h1><p>Vídeo de 26 segundos no formato do Instagram (1080×1920), com música.</p>
   <div><button id="btSom" type="button">▶ Assistir com música</button><button class="sec" id="btMudo" type="button">Sem som</button></div></div>
@@ -22,15 +23,16 @@
 <script src="motion.js"></script>
 <script>
 Video.iniciar({
+  tema:'instagram',
   dur:26,
   legendas:[
-    {t0:.4,t1:2.5,html:'Bateu a <b>fome?</b>'},
-    {t0:2.6,t1:5.1,html:'Promoções <b>imperdíveis</b>'},
-    {t0:5.2,t1:8.1,html:'<b>Entrega grátis</b> a partir de 3 pizzas'},
-    {t0:8.2,t1:11.1,html:'2 pizzas grandes a partir de <b>R$ 65</b>'},
-    {t0:11.2,t1:14.1,html:'2 pizzas broto por <b>R$ 50</b>'},
-    {t0:14.2,t1:17.1,html:'Esfiha a <b>R$ 5</b> · dez por <b>R$ 50</b>'},
-    {t0:17.2,t1:19.5,html:'Peça pelo <b>site</b>, é rapidinho'}
+    {t0:.4,t1:2.6,html:'Bateu a <b>fome?</b>'},
+    {t0:2.6,t1:5.2,html:'Promoções <b>imperdíveis</b>'},
+    {t0:5.2,t1:8.2,html:'<b>Entrega grátis</b> a partir de 3 pizzas'},
+    {t0:8.2,t1:11.2,html:'2 pizzas grandes a partir de <b>R$ 65</b>'},
+    {t0:11.2,t1:14.2,html:'2 pizzas broto por <b>R$ 50</b>'},
+    {t0:14.2,t1:17.2,html:'Esfiha a <b>R$ 5</b> · dez por <b>R$ 50</b>'},
+    {t0:17.2,t1:19.8,html:'Peça pelo <b>site</b>, é rapidinho'}
   ],
   rolagens:[
     {t0:2.6,t1:5.0,el:'promos',off:36},
