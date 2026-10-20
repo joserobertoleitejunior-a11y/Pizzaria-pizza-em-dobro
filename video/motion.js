@@ -123,7 +123,7 @@ function quadro(t){
   fundoVivo(t);
   /* celular: entra deslizando e flutua levemente */
   var ent=outBack(t/1.1), sai=C.fim?inOutCubic((t-C.fim.t0)/.7):0;
-  fone.style.opacity=clamp(t/.5);
+  fone.style.opacity=clamp(t/.5)*(1-sai);
   fone.style.transform='translateY('+(140*(1-ent)+sai*-80)+'px) rotateY('+(Math.sin(t*.6)*3.2*(1-sai))+'deg) rotateX('+(Math.cos(t*.45)*1.6)+'deg) scale('+(.9+.1*ent)+')';
   var br=(t%7)/1; $('brilho').style.transform='translateX('+(-130+260*inOutSine(br<1?br:1))+'%)';
   /* splash do site: animações travadas no tempo do vídeo */
