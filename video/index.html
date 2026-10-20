@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pizza em Dobro — Como pedir</title>
+<meta name="description" content="Veja como é fácil pedir pizza no site da Pizza em Dobro: promoções, combos, entrega grátis e pedido direto no WhatsApp.">
+<style>
+:root{--pr:#D62828;--ouro:#F5C518;--esc:#0b0b0b}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;overflow:hidden;font-family:'Work Sans',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
+/* palco 1080×1920 (vertical, formato de vídeo HD de celular) escalado pra caber em qualquer tela */
+#palco{position:absolute;left:50%;top:50%;width:1080px;height:1920px;transform-origin:center center;overflow:hidden;
+  background:radial-gradient(120% 80% at 50% 0%,#3a0a0a 0%,#150404 55%,#070707 100%)}
+#tela{position:absolute;left:60px;top:44px;width:960px;height:1580px;border-radius:64px;overflow:hidden;clip-path:inset(0 round 64px);isolation:isolate;background:#111;
+  box-shadow:0 0 0 14px #1c1c1c,0 0 0 16px #3a3a3a,0 40px 90px rgba(0,0,0,.65)}
+#site{position:absolute;left:0;top:0;width:402px;height:660px;border:0;transform:scale(2.4);transform-origin:0 0;background:#111;will-change:transform}
+#legenda{position:absolute;left:60px;right:60px;top:1668px;height:216px;display:flex;align-items:center;justify-content:center;text-align:center}
+#legenda span{display:block;font-size:54px;line-height:1.22;font-weight:800;color:#fff;letter-spacing:.2px;text-wrap:balance;
+  text-shadow:0 3px 14px rgba(0,0,0,.8);opacity:0;transform:translateY(10px);transition:opacity .25s,transform .25s}
+#legenda span.on{opacity:1;transform:none}
+#legenda b{color:var(--ouro);font-weight:800}
+/* WhatsApp */
+#zap{position:absolute;inset:0;background:#0B141A;display:none;flex-direction:column;opacity:0;transition:opacity .4s}
+#zap.on{display:flex}#zap.vis{opacity:1}
+.z-top{display:flex;align-items:center;gap:22px;padding:78px 34px 26px;background:#202C33;color:#E9EDEF}
+.z-av{width:92px;height:92px;border-radius:50%;background:linear-gradient(135deg,#25D366,#128C7E);display:grid;place-items:center;font-size:44px;font-weight:800;color:#fff}
+.z-nome{font-size:44px;font-weight:700}.z-sub{font-size:28px;color:#8696A0;margin-top:4px}
+.z-chat{flex:1;padding:34px 30px;display:flex;flex-direction:column;justify-content:flex-end;gap:18px;overflow:hidden;
+  background:#0B141A url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Ccircle cx='10' cy='10' r='1.6' fill='%23ffffff' fill-opacity='.04'/%3E%3Ccircle cx='50' cy='46' r='1.6' fill='%23ffffff' fill-opacity='.04'/%3E%3C/svg%3E")}
+.z-msg{align-self:flex-start;max-width:92%;background:#202C33;color:#E9EDEF;border-radius:6px 26px 26px 26px;padding:26px 30px 20px;font-size:31px;line-height:1.38;white-space:pre-wrap;
+  transform:translateY(40px) scale(.96);opacity:0;transition:transform .45s cubic-bezier(.2,.9,.3,1.2),opacity .3s}
+.z-msg.on{transform:none;opacity:1}
+.z-msg b{color:#fff}.z-hora{display:block;text-align:right;color:#8696A0;font-size:24px;margin-top:8px}
+.z-aviso{align-self:center;background:#182229;color:#8696A0;border-radius:18px;padding:10px 26px;font-size:26px}
+.z-input{height:120px;background:#202C33;display:flex;align-items:center;padding:0 30px}
+.z-input i{flex:1;height:68px;border-radius:34px;background:#2A3942}
+/* cartão final */
+#fim{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:54px;opacity:0;transition:opacity 1s;
+  background:radial-gradient(90% 60% at 50% 40%,#5a0f0f 0%,#1b0606 55%,#060606 100%);text-align:center;padding:0 60px}
+#fim.on{display:flex}#fim.vis{opacity:1}
+.f-linha{display:flex;align-items:center;justify-content:center;gap:44px;width:100%}
+.f-marca{display:flex;flex-direction:column;align-items:center;gap:22px;flex:1}
+.f-div{width:4px;height:320px;border-radius:4px;background:linear-gradient(#0000,var(--ouro),#0000)}
+.f-nome{font-family:'Archivo Black','Work Sans',sans-serif;font-size:54px;line-height:1.08;letter-spacing:1px;color:#fff;text-transform:uppercase}
+.f-nome small{display:block;font-size:30px;letter-spacing:6px;color:var(--ouro);margin-top:10px;font-family:'Work Sans',sans-serif;font-weight:700}
+.f-logo{width:250px;height:250px;border-radius:50%;object-fit:cover;border:6px solid var(--ouro);box-shadow:0 0 70px rgba(245,197,24,.35)}
+.f-frase{font-family:'Archivo Black','Work Sans',sans-serif;font-size:76px;line-height:1.05;color:#fff;text-transform:uppercase}
+.f-frase em{font-style:normal;color:var(--ouro)}
+.f-sub{font-size:38px;color:#e5e7eb;font-weight:600}
+/* cubo 3D da Vibe Coding Process */
+.cubo-cena{width:210px;height:210px;perspective:900px}
+.cubo{position:relative;width:210px;height:210px;transform-style:preserve-3d;animation:gira 9s linear infinite}
+.cubo i{position:absolute;inset:0;border:5px solid var(--ouro);background:linear-gradient(135deg,rgba(245,197,24,.18),rgba(245,197,24,.04));box-shadow:0 0 26px rgba(245,197,24,.35) inset}
+.cubo i:nth-child(1){transform:translateZ(105px)}.cubo i:nth-child(2){transform:rotateY(180deg) translateZ(105px)}
+.cubo i:nth-child(3){transform:rotateY(90deg) translateZ(105px)}.cubo i:nth-child(4){transform:rotateY(-90deg) translateZ(105px)}
+.cubo i:nth-child(5){transform:rotateX(90deg) translateZ(105px)}.cubo i:nth-child(6){transform:rotateX(-90deg) translateZ(105px)}
+@keyframes gira{from{transform:rotateX(-24deg) rotateY(0)}to{transform:rotateX(-24deg) rotateY(360deg)}}
+/* capa / controles (fora do vídeo) */
+#capa{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.86);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;color:#fff;text-align:center;padding:24px}
+#capa img{width:120px;height:120px;border-radius:50%;border:3px solid var(--ouro)}
+#capa h1{font-size:1.7rem;font-weight:800}#capa p{max-width:420px;color:#d1d5db;line-height:1.5}
+#capa button{background:var(--pr);color:#fff;border:0;border-radius:999px;padding:16px 34px;font-size:1.15rem;font-weight:800;cursor:pointer;box-shadow:0 12px 28px rgba(214,40,40,.45)}
+#capa small{color:#9ca3af}
+#ctl{position:fixed;right:14px;bottom:14px;z-index:40;display:flex;gap:8px;opacity:.35;transition:opacity .2s}
+#ctl:hover{opacity:1}
+#ctl button{background:#111;color:#fff;border:1px solid #333;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer}
+body.gravando #ctl{display:none}
+</style>
+</head>
+<body>
+<div id="palco" aria-label="Vídeo: como pedir pizza no site da Pizza em Dobro">
+  <div id="tela">
+    <iframe id="site" title="Site da Pizza em Dobro" src="about:blank"></iframe>
+    <div id="zap"></div>
+  </div>
+  <div id="legenda" aria-live="polite"><span id="leg"></span></div>
+  <div id="fim"></div>
+</div>
+
+<div id="capa">
+  <img src="../assets/logo.png" alt="Pizza em Dobro">
+  <h1>Como pedir na Pizza em Dobro</h1>
+  <p>Um passeio rápido pelo site: promoções, combos, pedido e a mensagem chegando no WhatsApp. Narração em voz de locutor.</p>
+  <button id="btn-ini" type="button">▶ Assistir com som</button>
+  <small>Use o Google Chrome para a melhor voz. Toque em "Sem som" para ver só com legenda.</small>
+  <button id="btn-mudo" type="button" style="background:#222;box-shadow:none;font-size:.95rem;padding:10px 22px">Sem som (só legendas)</button>
+</div>
+<div id="ctl"><button id="b-rep" type="button">↺ Reiniciar</button></div>
+
+<script>
+(function(){
+"use strict";
+/* ─────────────────────────  ROTEIRO  ───────────────────────── */
+var P=new URLSearchParams(location.search);
+var GRAVANDO=P.has('gravar'); if(GRAVANDO) document.body.classList.add('gravando');
+var MUDO=P.has('mudo');
+var $=function(id){return document.getElementById(id)};
+var palco=$('palco'), ifr=$('site'), leg=$('leg');
+
+function ajustar(){ var s=Math.min(innerWidth/1080,innerHeight/1920); palco.style.transform='translate(-50%,-50%) scale('+s+')'; }
+addEventListener('resize',ajustar); ajustar();
+
+/* ── utilidades ── */
+var cancelado=false, rodada=0;
+function esperar(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+function ease(t){ return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2; }  // início e fim suaves
+function anima(duracao,passo){ // rAF liso, sem toque aparecendo: só o conteúdo se movendo
+  return new Promise(function(res){ var t0=performance.now(); (function q(agora){ if(cancelado) return res();
+    var p=Math.min(1,(agora-t0)/duracao); passo(ease(p)); if(p<1) requestAnimationFrame(q); else res(); })(t0); });
+}
+var W=function(){return ifr.contentWindow}, D=function(){return ifr.contentDocument};
+function el(id){ return D().getElementById(id); }
+function topoDe(e,desl){ return e.getBoundingClientRect().top+W().scrollY-(desl||0); }
+function rolarPara(y,ms){ var de=W().scrollY; y=Math.max(0,y); return anima(ms,function(p){ W().scrollTo(0,de+(y-de)*p); }); }
+function rolarEl(e,desl,ms){ return rolarPara(topoDe(e,desl),ms); }
+function rolarHoriz(c,x,ms){ var de=c.scrollLeft; return anima(ms,function(p){ c.scrollLeft=de+(x-de)*p; }); }
+function rolarInterno(c,y,ms){ var de=c.scrollTop; return anima(ms,function(p){ c.scrollTop=de+(y-de)*p; }); }
+function digitar(campo,texto,ms){ var n=texto.length; return anima(ms,function(p){ var k=Math.round(n*p); if(campo.value!==texto.slice(0,k)){ campo.value=texto.slice(0,k); campo.dispatchEvent(new Event('input',{bubbles:true})); } }); }
+
+/* ── voz de locutor ── */
+var voz=null, comSom=true;
+function escolherVoz(){
+  var vs=(window.speechSynthesis&&speechSynthesis.getVoices())||[];
+  var pt=vs.filter(function(v){return /^pt(-|_)BR/i.test(v.lang)||/portugu[eê]s.*brasil/i.test(v.name);});
+  var pref=[/antonio/i,/daniel/i,/felipe/i,/luciano/i,/ricardo/i,/google.*portugu/i,/microsoft.*(portugu|brazil)/i];
+  for(var i=0;i<pref.length;i++){ var f=pt.filter(function(v){return pref[i].test(v.name);})[0]; if(f) return f; }
+  return pt[0]||null;
+}
+if(window.speechSynthesis){ speechSynthesis.onvoiceschanged=function(){ voz=escolherVoz(); }; voz=escolherVoz(); }
+function falar(trecho){
+  var ms=Math.max(900,trecho.length*62+350); // reserva de tempo quando não há voz
+  if(!comSom||!window.speechSynthesis||MUDO) return esperar(ms);
+  return new Promise(function(res){
+    var u=new SpeechSynthesisUtterance(trecho.replace(/<[^>]+>/g,''));
+    u.lang='pt-BR'; if(voz) u.voice=voz; u.rate=1.04; u.pitch=.82; u.volume=1;
+    var fim=false, fecha=function(){ if(!fim){ fim=true; clearTimeout(vig); res(); } };
+    u.onend=fecha; u.onerror=fecha; var vig=setTimeout(fecha,ms+6000);
+    speechSynthesis.speak(u);
+  });
+}
+/* legenda: um trecho por vez, sempre o mesmo texto que o locutor está dizendo (nada duplicado) */
+function mostrarLegenda(html){ leg.classList.remove('on'); return esperar(160).then(function(){ leg.innerHTML=html; leg.classList.add('on'); }); }
+function apagarLegenda(){ leg.classList.remove('on'); }
+function estimar(trechos){ return trechos.reduce(function(t,x){ return t+Math.max(900,x.replace(/<[^>]+>/g,'').length*62+350); },0); }
+async function narrar(trechos){ for(var i=0;i<trechos.length&&!cancelado;i++){ await mostrarLegenda(trechos[i]); await falar(trechos[i]); } }
+async function cena(trechos,acao){ var dur=estimar(trechos); await Promise.all([narrar(trechos),acao?acao(dur):Promise.resolve()]); }
+
+/* ── ajustes no site mostrado (só visual de demonstração) ── */
+function prepararSite(){
+  var d=D(), st=d.createElement('style');
+  st.textContent='html{scroll-behavior:auto!important}*{content-visibility:visible!important}html{scrollbar-width:none!important}html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}'+
+    '#pwa-banner,#fab-equipe,.fab-equipe,#music-bar{display:none!important}';
+  d.head.appendChild(st);
+  var fixa=function(){ var b=d.getElementById('status-loja'); if(b){ b.textContent='ABERTO'; b.className='status-badge open'; } }; fixa(); setInterval(fixa,500);
+}
+function esperarSite(){ return new Promise(function(res){ ifr.onload=function(){ res(); }; }); }
+
+/* ── WhatsApp (mensagem montada com o mesmo texto que o site envia) ── */
+function dataHora(){ var n=new Date(); var z=function(x){return String(x).padStart(2,'0');}; return {d:z(n.getDate())+'/'+z(n.getMonth()+1)+'/'+n.getFullYear(), h:z(n.getHours())+':'+z(n.getMinutes())}; }
+function negrito(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\*(.+?)\*/g,'<b>$1</b>'); }
+function montarMensagem(){
+  var w=W(), c=w.eval('cart')||[], dh=dataHora(), l=[];
+  l.push('🛎️ *NOVO PEDIDO - SITE OFICIAL*'); l.push('📅 '+dh.d+' às '+dh.h); l.push('────────────────────────'); l.push('');
+  l.push('👤 *Cliente:* Marcos'); l.push(''); l.push('🍕 *PEDIDO:*'); l.push('');
+  c.forEach(function(it){ l.push('*• '+it.n+'*'); l.push('  💰 R$ '+Number(it.p).toFixed(2).replace('.',',')); l.push(''); });
+  l.push('────────────────────────'); l.push('');
+  l.push('📍 *ENDEREÇO:* Rua XV de Novembro, nº 120'); l.push('');
+  l.push('💳 *PAGAMENTO:* Pix'); l.push('🚚 *ENTREGA GRÁTIS* 🎁'); l.push('');
+  l.push('💰 *TOTAL: '+(el('total-val')?el('total-val').textContent:'')+'*'); l.push('────────────────────────'); l.push('_Pedido via site oficial._');
+  return {texto:l.join('\n'),hora:dh.h};
+}
+async function mostrarZap(){
+  var m=montarMensagem(), z=$('zap');
+  z.innerHTML='<div class="z-top"><div class="z-av">P</div><div><div class="z-nome">Pizza em Dobro</div><div class="z-sub">pedidos do site</div></div></div>'+
+    '<div class="z-chat"><div class="z-aviso">Hoje</div><div class="z-msg" id="z-m">'+negrito(m.texto)+'<span class="z-hora">'+m.hora+'</span></div></div><div class="z-input"><i></i></div>';
+  z.classList.add('on'); await esperar(60); z.classList.add('vis'); await esperar(500); $('z-m').classList.add('on');
+}
+async function esconderZap(){ var z=$('zap'); z.classList.remove('vis'); await esperar(420); z.classList.remove('on'); z.innerHTML=''; }
+
+/* ── cartão final: colaboração ── */
+async function mostrarFim(){
+  var f=$('fim');
+  f.innerHTML='<div class="f-linha"><div class="f-marca"><div class="cubo-cena"><div class="cubo"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>'+
+    '<div class="f-nome">Vibe Coding<br>Process<small>TECNOLOGIA E DESIGN</small></div></div>'+
+    '<div class="f-div"></div>'+
+    '<div class="f-marca"><img class="f-logo" src="../assets/logo.png" alt="Pizza em Dobro"><div class="f-nome">Pizza em<br>Dobro<small>ITAPETININGA · SP</small></div></div></div>'+
+    '<div class="f-frase">Pedir pizza<br>nunca foi <em>tão fácil</em></div><div class="f-sub">Peça agora pelo site da Pizza em Dobro</div>';
+  f.classList.add('on'); await esperar(60); f.classList.add('vis');
+}
+function esconderFim(){ var f=$('fim'); f.classList.remove('vis','on'); f.innerHTML=''; }
+
+/* ─────────────────────────  O VÍDEO  ───────────────────────── */
+async function rodar(){
+  var minha=++rodada; cancelado=false; esconderFim(); esconderZap(); apagarLegenda();
+  if(window.speechSynthesis) speechSynthesis.cancel();
+  var pronto=esperarSite(); ifr.src='../index.html'; await pronto; if(cancelado||minha!==rodada) return;
+  prepararSite(); var w=W();
+
+  /* 1 — splash (a tela de abertura do site, do jeito que o cliente vê) */
+  await cena(['Bateu aquela fome?','Então fica comigo um minutinho, que eu vou te mostrar como é fácil pedir a sua pizza na <b>Pizza em Dobro</b>.'],
+    async function(){ var t0=Date.now(); while(Date.now()-t0<9000){ var ws=el('ws'); if(!ws||w.getComputedStyle(ws).display==='none') break; await esperar(120); } });
+  if(cancelado||minha!==rodada) return;
+
+  /* 2 — apresentação */
+  await cena(['A gente fica aqui em Itapetininga, e leva a pizza até a sua casa.','Ou, se preferir, você passa aqui e retira.','O pedido é todo pelo celular, sem baixar nada.'],
+    function(d){ return rolarPara(560,d); });
+
+  /* 3 — promoções */
+  var promos=el('promos'), trilho=el('promos-trilho'); trilho.scrollLeft=0;
+  await cena(['E agora o que você veio ver: as promoções!','Duas pizzas grandes a partir de <b>sessenta e cinco reais</b>.'],
+    function(d){ return rolarEl(promos,60,Math.min(d,2600)); });
+  var slides=trilho.querySelectorAll('.promo-slide');
+  await cena(['Setenta e cinco, oitenta ou oitenta e cinco, você escolhe o seu combo.','Gosta de esfiha? Cinco reais cada.','E quanto mais você leva, menos paga: dez por cinquenta, vinte por noventa e trinta por cento e trinta.'],
+    function(d){ return rolarHoriz(trilho,slides[1].offsetLeft-16,Math.min(d,3200)); });
+  await cena(['Tem também o combo broto: duas pizzas, qualquer sabor, por apenas <b>cinquenta reais</b>.'],
+    function(d){ return rolarHoriz(trilho,slides[2].offsetLeft-16,Math.min(d,2600)); });
+  await cena(['E olha que beleza: pediu três pizzas, ou três combos, a <b>entrega é grátis</b>.'],
+    function(d){ return rolarEl(el('entrega-gratis-card'),130,Math.min(d,2600)); });
+  if(cancelado||minha!==rodada) return;
+
+  /* 4 — montando um combo */
+  var cardCombo=el('combo-card-combo65');
+  await cena(['Montar o combo é facinho.','Escolhe o primeiro sabor, escolhe o segundo, e pronto: já está no seu pedido.'],
+    async function(d){
+      await rolarEl(cardCombo,150,Math.min(1800,d*.3));
+      await esperar(d*.12); w.comboToque('combo65','Mussarela');
+      await esperar(d*.2);  w.comboToque('combo65','Calabresa');
+      await esperar(d*.2);  w.comboAdicionar('combo65');
+    });
+  if(cancelado||minha!==rodada) return;
+
+  /* 5 — cardápio com as fotos */
+  var catP=el('cat-p'), menuSite=w.eval('menu'), pizza=menuSite.filter(function(m){return m.cat==='p'&&/frango catupiry/i.test(m.n);})[0]||menuSite.filter(function(m){return m.cat==='p';})[0];
+  await cena(['O cardápio é cheio de sabor: tem pizza tradicional, especial, doce, calzone e bebida gelada.','Cada uma com a sua foto, pra você escolher com os olhos.'],
+    async function(d){ await rolarEl(catP,110,Math.min(1800,d*.25)); await rolarPara(topoDe(catP,110)+1500,d*.6); });
+  await cena(['Gostou de uma? É só tocar no mais, e ela entra no pedido.'],
+    async function(d){ var card=el('card-'+pizza.id); await rolarEl(card,160,Math.min(1600,d*.45)); await esperar(d*.2); w.addItem(pizza.id); });
+  if(cancelado||minha!==rodada) return;
+
+  /* 6 — carrinho e dados */
+  var barra=el('cart-bar');
+  await cena(['Escolheu tudo? Abre o seu pedido e confere os itens.','Repara: com três pizzas, a taxa de entrega já sumiu.'],
+    async function(d){ w.toggleCart({stopPropagation:function(){},target:{}}); await esperar(700); await rolarInterno(barra,0,300); await rolarInterno(barra,260,Math.min(2200,d*.55)); });
+  await cena(['Agora é só preencher o seu nome, o telefone e o endereço.','Se quiser, usa a localização do celular que a gente acha rapidinho.'],
+    async function(d){
+      await rolarInterno(barra,620,Math.min(1600,d*.2));
+      await digitar(el('u-name'),'Marcos',d*.16);
+      await digitar(el('u-tel'),'(15) 99999-1234',d*.2);
+      el('u-end').value='Rua XV de Novembro'; el('u-num').value='120';
+    });
+  await cena(['Escolhe se vai pagar no <b>Pix</b>, no cartão ou em dinheiro,','e toca em enviar pedido pelo WhatsApp.'],
+    async function(d){ await rolarInterno(barra,1100,Math.min(1700,d*.3)); await esperar(d*.15); w.escolherPagamento('Pix'); await esperar(d*.2); await rolarInterno(barra,barra.scrollHeight,Math.min(1500,d*.3)); });
+  if(cancelado||minha!==rodada) return;
+
+  /* 7 — a mensagem chega no WhatsApp */
+  await cena(['Pronto! O pedido chega na hora no WhatsApp da pizzaria,','certinho, com tudo que você escolheu, o endereço e a forma de pagamento.','Rápido assim.'],
+    async function(d){ await esperar(500); await mostrarZap(); await esperar(d); });
+  await esconderZap(); w.toggleCart({stopPropagation:function(){},target:{}});
+
+  /* 8 — como chegar + rodapé */
+  await cena(['Quer vir até nós? O mapa está no final do site, com botão do <b>Waze</b> e do Google Maps.'],
+    function(d){ return rolarEl(el('local-section'),90,Math.min(d,3000)); });
+  await cena(['E esse site foi desenvolvido pela <b>Vibe Coding Process</b>:','tecnologia e design sob medida para o seu negócio.'],
+    async function(d){ await rolarPara(W().document.documentElement.scrollHeight,Math.min(d,3200)); });
+  if(cancelado||minha!==rodada) return;
+
+  /* 9 — anúncio final (colaboração) */
+  apagarLegenda(); await mostrarFim(); await esperar(900);
+  await narrar(['<b>Vibe Coding Process</b> e <b>Pizza em Dobro</b>.','Pedir pizza nunca foi tão fácil.']);
+  await esperar(2200); apagarLegenda(); await esperar(1500);
+  window.__fim=true;
+}
+
+/* ── controles ── */
+function comecar(som){ comSom=som; $('capa').style.display='none'; window.__fim=false; rodar(); }
+$('btn-ini').onclick=function(){ comecar(true); };
+$('btn-mudo').onclick=function(){ comecar(false); };
+$('b-rep').onclick=function(){ cancelado=true; if(window.speechSynthesis) speechSynthesis.cancel(); setTimeout(function(){ window.__fim=false; rodar(); },80); };
+if(GRAVANDO||MUDO){ $('capa').style.display='none'; setTimeout(function(){ comSom=!MUDO; rodar(); },400); }
+window.__rodar=rodar;
+window.addEventListener('unhandledrejection',function(e){ console.error('VIDEO-ERRO',e.reason&&e.reason.message); });
+})();
+</script>
+</body>
+</html>
