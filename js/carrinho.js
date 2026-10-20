@@ -212,6 +212,30 @@ function toggleRm(id,i,g,c){
 // ══════════════════════════════════
 //  UPDATE UI — com desconto promo
 // ══════════════════════════════════
+// ── BORDA no resumo do pedido: um toque, pra qualquer pizza (avulsa, meia a meia, broto e combos — no combo, uma por pizza)
+function ehPizzaSite(it){ return !!it&&(it.cat==='p'||it.cat==='s'||it.type==='half'||it.cat==='co'); }
+function seletorBordaResumo(it,idxs){
+  if(!ehPizzaSite(it)) return '';
+  const lista=idxs.join(',');
+  const combo=it.cat==='co';
+  const atual=k=>combo?((it.bordas||[0,0])[k]||0):Math.max(0,BORDAS.findIndex(b=>b.name===(it.selectedBorda&&it.selectedBorda.name)));
+  const sel=k=>`<select class="sum-borda-sel" onchange="bordaResumo('${lista}',${k},this.value)" aria-label="Borda${combo?' da '+(k+1)+'ª pizza':''}">`+
+    BORDAS.map((b,bi)=>`<option value="${bi}" ${atual(k)===bi?'selected':''}>${bi===0?'Sem borda':b.name+' +R$'+fmtPrice(b.price)}</option>`).join('')+'</select>';
+  return combo?`<span class="sum-borda-linha">🥖 1ª pizza ${sel(0)}</span><span class="sum-borda-linha">🥖 2ª pizza ${sel(1)}</span>`:`<span class="sum-borda-linha">🥖 Borda ${sel(0)}</span>`;
+}
+function bordaResumo(lista,k,vi){
+  vi=Number(vi)||0;
+  String(lista).split(',').map(Number).forEach(idx=>{
+    const it=cart[idx]; if(!it) return;
+    if(it.cat==='co'){
+      const bs=(it.bordas||[0,0]).slice(); bs[k]=vi; it.bordas=bs;
+      const b0=BORDAS[bs[0]]||BORDAS[0], b1=BORDAS[bs[1]]||BORDAS[0], preco=(bs[0]?b0.price:0)+(bs[1]?b1.price:0);
+      it.selectedBorda=preco>0?{name:bs[0]&&bs[0]===bs[1]?b0.name+' (nas 2)':[bs[0]?'1ª '+b0.name:null,bs[1]?'2ª '+b1.name:null].filter(Boolean).join(' / '),price:preco}:BORDAS[0];
+    }else it.selectedBorda=BORDAS[vi];
+    const bid=it.type==='half'?it.baseId:it.id; if(typeof renderBordas==='function') renderBordas(bid);
+  });
+  updateUI();
+}
 function updateUI(){
   const seen=new Set();
   cart.forEach(it=>{
@@ -271,7 +295,7 @@ function updateUI(){
     const precoLinha=g.unitPrice*g.qty;
 
     sumHTML+=`<div class="sum-item">
-      <div class="sum-nome">${nomeHTML}${ext}</div>
+      <div class="sum-nome">${nomeHTML}${ext}${seletorBordaResumo(it,g.idxs)}</div>
       <div class="sum-lado">
         <div class="sum-controls">
           <span class="sum-x" onclick="removeFromSum(${idxRef})" title="Diminuir" role="button" aria-label="Diminuir">−</span>

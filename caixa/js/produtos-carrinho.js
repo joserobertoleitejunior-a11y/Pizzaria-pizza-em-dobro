@@ -347,12 +347,42 @@ function openCartModal(){
   resetPagamento();
   openModal('modal-cart');
 }
+// ── BORDA direto no carrinho: um toque em cada pizza (avulsa, meia a meia, broto e combos — no combo, uma por pizza) ──
+function ehPizzaCx(i){
+  if(!i||String(i._chave||'').startsWith('esf|')) return false;
+  if(i.combos||i.isMeia) return true;
+  const m=(typeof DEFAULT_MENU!=='undefined'?DEFAULT_MENU:[]).find(x=>x.id===i.id);
+  return !!(m&&itemAceitaOpcoes(m.cat));
+}
+function _precoBordaCx(nome){ const b=BORDAS_DEFAULT.find(x=>x.name===nome); return b&&b.name!=='Sem Borda Recheada'?Number(b.price)||0:0; }
+function _bordasDoItem(i){ return i.bordas||(i.combos?[null,null]:[bordaReal(i.borda)||null]); }
+function seletorBordaCx(i,idx){
+  if(!ehPizzaCx(i)) return '';
+  const bs=_bordasDoItem(i);
+  const sel=(k)=>`<select onchange="setBordaCx(${idx},${k},this.value)" style="flex:1;min-width:0;padding:6px 8px;border-radius:8px;border:1px solid var(--card-bd,#ddd);background:var(--soft,#F9FAFB);color:var(--tx);font-size:.86rem;font-weight:600;">`+
+    BORDAS_DEFAULT.map(b=>`<option value="${b.name}" ${((bs[k]||'Sem Borda Recheada')===b.name)?'selected':''}>${b.name==='Sem Borda Recheada'?'Sem borda':b.name+' +'+fmt(b.price)}</option>`).join('')+'</select>';
+  return `<div style="display:flex;align-items:center;gap:6px;margin:6px 0 2px;font-size:.8rem;font-weight:700;">🥖 ${i.combos?'<span>1ª</span>'+sel(0)+'<span>2ª</span>'+sel(1):'Borda '+sel(0)}</div>`;
+}
+function setBordaCx(idx,k,nome){
+  const i=cart[idx]; if(!i) return;
+  const bs=_bordasDoItem(i).slice();
+  const antes=bs.reduce((t,b)=>t+_precoBordaCx(b),0);
+  bs[k]=nome==='Sem Borda Recheada'?null:nome;
+  const depois=bs.reduce((t,b)=>t+_precoBordaCx(b),0);
+  i.bordas=bs;
+  i.unitPrice=Math.round((Number(i.unitPrice)-antes+depois)*100)/100;
+  if(i.combos) i.borda=(bs[0]&&bs[0]===bs[1])?bs[0]+' (nas 2)':(bs[0]||bs[1]?[bs[0]?'1ª '+bs[0]:null,bs[1]?'2ª '+bs[1]:null].filter(Boolean).join(' / '):null);
+  else i.borda=bs[0];
+  i._chave=String(i._chave||'').replace(/\|b:.*$/,'')+'|b:'+bs.join(',');
+  renderCartItems(); atualizarBarraCarrinho();
+}
 function renderCartItems(){
   const box=document.getElementById('cart-items');
   box.innerHTML=cart.map((i,idx)=>`
     <div class="cart-item" style="${i.precisaRevisao?'background:rgba(231,29,54,.08);border-radius:10px;padding:8px;border-bottom:none;':''}">
       <div class="cart-item-info">
         <div style="${i.precisaRevisao?'color:var(--se);font-weight:700;':''}">${i.name}</div>
+        ${seletorBordaCx(i,idx)}
         <div class="cart-item-sub">${[bordaReal(i.borda)?('Borda: '+i.borda):null, i.addedIng&&i.addedIng.length?('+ '+i.addedIng.join(', ')):null, i.removedIng&&i.removedIng.length?('Sem: '+i.removedIng.join(', ')):null, i.obs?('Obs: '+i.obs):null].filter(Boolean).join(' · ')||''}</div>
         <div class="qty-ctrl">
           <div class="qty-btn" onclick="alterarQtd(${idx},-1)">−</div>

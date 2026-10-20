@@ -1213,3 +1213,7 @@ a.credito-txt{text-decoration:none;display:block}
 .esf-doce{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:#FEF3C7;color:#92400E;font-size:.72rem;font-weight:700;vertical-align:middle}
 #cart-bar #delivery-msg .eg-cart,#cart-bar #delivery-msg .eg-cart span{color:#92400E!important}
 #cart-bar #delivery-msg .eg-cart.ok,#cart-bar #delivery-msg .eg-cart.ok span{color:#047857!important}
+
+/* borda direto no resumo do pedido */
+.sum-borda-linha{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:.78rem;font-weight:700;color:var(--pr);white-space:nowrap}
+.sum-borda-sel{flex:1;min-width:0;max-width:210px;background:#fff;color:#141414;border:1.5px solid rgba(20,20,20,.22);border-radius:8px;padding:6px 8px;font-size:.84rem;font-weight:600;font-family:inherit}
