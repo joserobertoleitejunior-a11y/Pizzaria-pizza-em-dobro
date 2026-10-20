@@ -205,7 +205,7 @@ async function imprimirBluetooth(texto){
     // impressora Bluetooth — envia em pedacinhos (limite do BLE)
     for(let i=0;i<arr.length;i+=20){
       const pedaco=arr.slice(i,i+20);
-      if(btSemResposta&&btChar.writeValueWithoutResponse){ await btChar.writeValueWithoutResponse(pedaco); await new Promise(r=>setTimeout(r,8)); }
+      if(btSemResposta&&btChar.writeValueWithoutResponse){ await btChar.writeValueWithoutResponse(pedaco); await new Promise(r=>setTimeout(r,16)); } // 16 ms: abaixo disso a impressora perdia o final do texto
       else await btChar.writeValue(pedaco);
     }
   }
@@ -303,7 +303,12 @@ function formatarCupom(o){
   const dir=t=>String(t).padStart(24); // valor alinhado à direita
   let txt='PEDIDO Nº '+(o.numero_sequencial||'—')+'  '+(entrega?'ENTREGA':'RETIRADA')+'\n';
   txt+=data+' '+hora+'  PIZZA EM DOBRO\n'+sep+'\n';
-  txt+=(o.client_name||'—')+(o.client_phone?'  '+o.client_phone:'')+'\n'+sep+'\n';
+  // total: usa o do pedido; se não veio, soma os itens (+ entrega) — a comanda nunca sai sem valor
+  const somaItens=(o.items_json||[]).reduce((t,it)=>t+(Number(it.price??it.p??it.unitPrice)||0)*(Number(it.qty)||1),0);
+  const totalPedido=Number(o.total)>0?Number(o.total):somaItens+(entrega?(Number(o.taxa_entrega)||0):0);
+  // nome e valor logo no topo (e de novo no fim): se algum pedaço da impressão se perder, o essencial já saiu
+  txt+=(o.client_name&&o.client_name.trim()?o.client_name:'** SEM NOME **')+(o.client_phone?'  '+o.client_phone:'')+'\n';
+  txt+='TOTAL '+R(totalPedido)+'  '+(o.payment||'—')+'\n'+sep+'\n';
   // endereço logo no começo: se a impressão cortar no meio, o que não pode faltar é pra onde vai
   if(entrega){
     const numCasa=o.house_number&&!new RegExp('(^|[^0-9])'+String(o.house_number).replace(/[^0-9A-Za-z]/g,'')+'([^0-9]|$)').test(String(o.address||''))?', nº '+o.house_number:'';
@@ -324,7 +329,7 @@ function formatarCupom(o){
   });
   txt+=sep+'\n';
   if(entrega) txt+='Entrega'+dir(Number(o.taxa_entrega)>0?R(o.taxa_entrega):'grátis').slice(7)+'\n';
-  txt+='TOTAL'+dir(R(o.total)).slice(5)+'\n';
+  txt+='TOTAL'+dir(R(totalPedido)).slice(5)+'\n';
   txt+='Pagto: '+(o.payment||'—')+'\n';
   if(o.troco)txt+='Troco: '+R(o.troco)+'\n';
   else if(o.change_for&&Number(String(o.change_for).replace(',','.'))>0)txt+='Troco p/ '+R(String(o.change_for).replace(',','.'))+'\n';

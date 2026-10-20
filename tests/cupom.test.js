@@ -25,3 +25,13 @@ test('entrega grátis e retirada', () => {
   assert.match(formatarCupom({ ...pedido, taxa_entrega: 0 }), /Entrega\s+grátis/);
   assert.doesNotMatch(formatarCupom({ ...pedido, delivery_type: 'retirada' }), /Entrega/);
 });
+
+test('nome e total aparecem no topo e de novo no fim; sem total no pedido, soma os itens', () => {
+  const t = formatarCupom(pedido);
+  assert.ok(t.indexOf('Marcos') < t.indexOf('1x MEIA A MEIA'));
+  assert.ok(t.indexOf('TOTAL R$ 71,99') < t.indexOf('1x MEIA A MEIA'));
+  assert.equal((t.match(/71,99/g) || []).length, 2);
+  const sem = formatarCupom({ ...pedido, total: 0 }); // 39,99 + 24,00 + 8,00 de entrega
+  assert.match(sem, /TOTAL R\$ 71,99/);
+  assert.match(formatarCupom({ ...pedido, client_name: '' }), /SEM NOME/);
+});
