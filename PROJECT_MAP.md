@@ -439,11 +439,9 @@ e sem `STAFF_PASSWORD`. É temporário: trocar por senha forte (e reativar o lim
 - Conversor: `completarEsfihas(parsed,texto)` (rede de segurança) cria o combo de esfihas padrão a partir do texto ("combo com 20 esfilha", "esfirra", "combo de esfiha" = 10) mesmo se a IA errar/esquecer; não duplica o que a IA já montou.
 - Assistente do gerente: o servidor monta "VENDAS VÁLIDAS DE CADA DIA" já em blocos legíveis (sem cancelados) e o prompt manda a IA copiar esse formato (sem "|" nem tabelas, resumo em linhas); a tela (`formatarTextoIA` em `relatorios/relatorios.js`) escapa HTML e mostra títulos, listas e negrito.
 
-## Vídeo "Como pedir" (`/video/`)
-- `video/index.html`: vídeo em HTML (palco 1080×1920 escalado pra qualquer tela). Mostra o site real num `iframe` (`../index.html`, com a splash de verdade), rola com `requestAnimationFrame` + easing (sem dedo/toque na tela), faz o pedido de demonstração (combo 2 por R$ 65 + pizza), mostra a mensagem chegando no WhatsApp (texto no mesmo formato do site) e fecha com o anúncio "Vibe Coding Process | Pizza em Dobro".
-- Narração: voz do navegador (Web Speech API, pt-BR, a mais grave disponível); legenda = o mesmo trecho que está sendo falado, um por vez. `?gravar` (sem painel de controle, inicia sozinho, p/ gravar a tela), `?mudo` (sem voz, tempos fixos). Roteiro: função `rodar()`.
-
-### Vídeo de promoções (`/video/promocoes.html`) — Stories 1080×1920
-- Só as 3 artes de promoção (`assets/promo/*`) + abertura/encerramento, 36,5 s, trilha original `video/musica-promocoes.mp3` (gerada por `scripts/gerar-musica-video.py`, tarantela 6/8, sem direitos autorais).
-- Toda animação é função de `quadro(t)` (sem CSS transition), por isso `scripts/renderizar-video.js` gera o MP4 quadro a quadro: `node scripts/renderizar-video.js promocoes.html saida.mp4 36.5 video/musica-promocoes.mp3` (precisa do servidor local e de `imageio-ffmpeg`). MP4 pronto: `video/promocoes-stories.mp4`.
-- Texto e peças importantes ficam entre y 250 e y 1670 (zona segura dos Stories). O vídeo "Como pedir" (`index.html`) segue a mesma regra.
+### Vídeos Stories (`/video/`) — 1080×1920
+- `promocoes.html` (26 s) e `index.html` "Como pedir" (60 s): mostram o **site real rolando para baixo** dentro de um celular minimalista, com legendas cinéticas (letra por letra, da esquerda para a direita) e fechamento de collab Vibe Coding Process × Pizza em Dobro com o contato (15) 99668-8070 · José Roberto.
+- `motion.js` é o motor: tudo é função do tempo (`quadro(t)`); cada vídeo é só uma configuração (legendas, rolagens, eventos no site, digitação, WhatsApp, cartão final) no fim do HTML. `motion.css` tem o visual; `fontes/` tem Archivo Black e Work Sans locais.
+- MP4: `node scripts/renderizar-video.js promocoes.html saida.mp4 26 video/musica-promocoes.mp3` (servidor estático na porta 8765 + `pip install imageio-ffmpeg numpy`). Renderiza quadro a quadro, então não depende da velocidade da máquina.
+- Trilha original: `python3 scripts/gerar-musica-video.py video/musica-X.mp3 DURACAO` (120 bpm, Dó maior).
+- Zona segura dos Stories: texto e peças importantes entre y 250 e y 1670.
