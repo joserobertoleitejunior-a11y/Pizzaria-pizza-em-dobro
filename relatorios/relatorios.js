@@ -285,10 +285,22 @@ function alternarAssistente(){
 // ── ASSISTENTE DE IA — chat de verdade, com histórico da conversa ──
 let historicoChatIA=[]; // {role:'user'|'assistant', content:string}
 function formatarTextoIA(texto){
-  return texto
-    .replace(/^## (.+)$/gm, '<div style="font-family:var(--font-eyebrow);font-size:.72rem;letter-spacing:.5px;text-transform:uppercase;color:var(--pr);margin:8px 0 4px;">$1</div>')
-    .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
-    .split('\n').map(l=>l.trim()).join('<br>');
+  const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const inline=t=>esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+  const linhas=String(texto||'').replace(/\r/g,'').split('\n');
+  let html='', lista=false;
+  const fecha=()=>{ if(lista){ html+='</ul>'; lista=false; } };
+  linhas.forEach(bruta=>{
+    const l=bruta.trim();
+    if(!l){ fecha(); html+='<div class="ia-esp"></div>'; return; }
+    let m;
+    if((m=l.match(/^#{1,4}\s+(.+)$/))){ fecha(); html+='<div class="ia-tit">'+inline(m[1])+'</div>'; }
+    else if((m=l.match(/^[-*•]\s+(.+)$/))){ if(!lista){ html+='<ul class="ia-ul">'; lista=true; } html+='<li>'+inline(m[1])+'</li>'; }
+    else if(/^[-_=]{3,}$/.test(l)){ fecha(); html+='<hr class="ia-hr">'; }
+    else{ fecha(); html+='<div class="ia-lin">'+inline(l.replace(/\s*\|\s*/g,' — ').replace(/^—\s*|\s*—$/g,''))+'</div>'; } // se algum "|" escapar, vira traço
+  });
+  fecha();
+  return html;
 }
 function adicionarBolhaChatIA(texto, tipo){
   const box=document.getElementById('ia-chat-mensagens');

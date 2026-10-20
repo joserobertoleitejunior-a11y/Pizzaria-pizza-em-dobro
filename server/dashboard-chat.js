@@ -127,6 +127,24 @@ async function montarContextoVendas() {
   const rankingClientes = Object.values(porCliente).sort((a, b) => b.totalGasto - a.totalGasto);
   const clientesRecorrentes = rankingClientes.filter(c => c.qtdPedidos > 1).length;
 
+  // ── VENDAS VÁLIDAS DE CADA DIA, em blocos legíveis (a IA copia este formato nas respostas) ──
+  const moeda = v => 'R$ ' + Number(v || 0).toFixed(2).replace('.', ',');
+  const dd = iso => iso.slice(8, 10) + '/' + iso.slice(5, 7);
+  const dias = {};
+  pedidosValidos.forEach(p => {
+    const h = dataHoraBR(p.created_at || new Date().toISOString());
+    (dias[h.data] = dias[h.data] || []).push({ p, h });
+  });
+  const blocosPorDia = Object.keys(dias).sort().reverse().map(dia => {
+    const lista = dias[dia].sort((a, b) => (Number(a.p.numero_sequencial) || 0) - (Number(b.p.numero_sequencial) || 0));
+    const totalDia = lista.reduce((t, x) => t + Number(x.p.total || 0), 0);
+    const pedidosTxt = lista.map(({ p, h }) => {
+      const itens = (p.items_json || []).map(it => `${Number(it.qty) > 1 ? Number(it.qty) + 'x ' : ''}${it.name || 'item'}`).join(', ') || 'sem itens registrados';
+      return `#${p.numero_sequencial || '—'}  ${p.client_name || 'sem nome'}  (${h.hora}:${h.minuto})\n${itens}\n${moeda(p.total)} — ${categoriaPagamento(p.payment)} — ${p.delivery_type || '—'}`;
+    }).join('\n\n');
+    return `### ${dd(dia)} (${dia}): ${lista.length} venda(s) válida(s), total ${moeda(totalDia)}, ticket médio ${moeda(totalDia / lista.length)}\n\n${pedidosTxt}`;
+  }).join('\n\n');
+
   // ── LISTA DE PEDIDOS INDIVIDUAIS — permite a IA responder QUALQUER pergunta granular:
   // por cliente, por horário exato, quantidade de pizzas por pedido, etc. ──
   const listaPedidos = todosPedidos.map(p => {
@@ -194,6 +212,9 @@ ${Object.entries(porPagamento).map(([f, q]) => `- ${f}: ${q} pedido(s)`).join('\
 
 TIPO DE VENDA:
 ${Object.entries(porTipo).map(([t, q]) => `- ${t}: ${q} pedido(s)`).join('\n')}
+
+═══ VENDAS VÁLIDAS (SEM CANCELADOS) DE CADA DIA — formato pronto pra você copiar nas respostas ═══
+${blocosPorDia}
 
 ═══ LISTA COMPLETA DE PEDIDOS INDIVIDUAIS (mais recentes primeiro, até 600 pedidos, inclui cancelados marcados) ═══
 Use esta lista para QUALQUER pergunta granular: por cliente específico, por faixa de horário exata, quantidade de pizzas por pedido, quem pediu mais, comparação entre dois períodos exatos, etc. Cada linha é um pedido.
@@ -389,6 +410,13 @@ Você TEM acesso à lista COMPLETA de pedidos individuais dos últimos 30 dias (
 - "faturamento das 18h às 20h hoje" → filtre pedidos de hoje nesse intervalo de horário e some
 - "quanto o cliente fulano já gastou" → some os pedidos desse nome/telefone
 Nunca diga que "não tem esse dado disponível" ou "não consigo calcular" se a informação estiver na lista de pedidos — sempre calcule você mesmo, mostrando o resultado direto. Você é um analista de dados competente, não apenas um leitor de resumos prontos.
+
+COMO ESCREVER AS RESPOSTAS (muito importante — o Marco lê no celular):
+- NUNCA use a barra vertical "|" nem tabelas em nenhuma resposta. A lista de pedidos abaixo usa "|" só pra você ler; não copie esse estilo.
+- Pra listar vendas/pedidos, use EXATAMENTE o formato dos blocos de "VENDAS VÁLIDAS DE CADA DIA": uma linha em negrito com o número e o nome do cliente (ex: **#14 Cliente Balcão** (15:40)), na linha de baixo os itens, e na outra linha o valor, a forma de pagamento e se foi entrega ou retirada. Deixe UMA LINHA EM BRANCO entre um pedido e outro.
+- "Vendas válidas" = pedidos que NÃO estão cancelados. Pra um dia específico (ex: "ontem"), use SÓ os blocos daquele dia e confira a data.
+- No fim, um resumo curto, cada coisa numa linha própria: **Total do dia**, **Pedidos**, **Ticket médio**.
+- Títulos curtos com "## ", listas com "- " (um item por linha), valores sempre "R$ 99,90". Frases curtas, nada de parágrafo longo. Não repita a pergunta nem explique o que vai fazer: responda direto.
 
 Regra de ouro: NUNCA invente ou estime número que não esteja literalmente nos dados abaixo. Se genuinamente não houver dado suficiente pra responder (ex: pergunta sobre algo de antes dos últimos 30 dias, ou um cliente que nunca pediu), diga isso claramente e não invente um número aproximado nem cite dados que pareçam plausíveis mas não estão na lista.
 
