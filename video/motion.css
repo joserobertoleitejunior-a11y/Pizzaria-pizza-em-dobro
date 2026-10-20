@@ -76,3 +76,7 @@ body.gravando #ctl,body.gravando #capa{display:none}
 .chip{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Archivo Black';font-size:27px;letter-spacing:8px;color:#fff;text-transform:uppercase;opacity:0;text-shadow:0 2px 14px rgba(0,0,0,.7)}
 .chip .in{display:inline-block;padding:7px 26px 7px 34px;border:2px solid rgba(255,255,255,.55);border-radius:999px;background:rgba(0,0,0,.28)}
 .chip .l:first-child{margin-left:0}
+
+/* trilho de rolagem (acompanha a rolagem real do site) */
+#rail{position:absolute;left:896px;top:330px;width:6px;height:1040px;border-radius:3px;background:rgba(255,255,255,.18);opacity:0}
+#rail i{position:absolute;left:0;right:0;top:0;border-radius:3px;background:#F5C518;box-shadow:0 0 14px rgba(245,197,24,.7)}
