@@ -103,6 +103,14 @@ musica = corpo(violao) * .75 + corpo(viola) * .8 + corpo(baixo) * 1.0 + perc * .
 tr = np.arange(int(1.4 * SR)) / SR; rv = rng.standard_normal(len(tr)) * np.exp(-tr * 3.2); rv = lfilter([1 - .55], [1, -.55], rv)
 musica = musica + fftconvolve(musica, rv)[: len(musica)] * .035
 musica = musica[:N]; musica /= np.abs(musica).max()
+# trilha escolhida pelo cliente (MP3 de banco de músicas livres, ex.: Pixabay) substitui a sintetizada
+MUSICA = os.environ.get('MUSICA', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'video', 'trilha-pizzaria.mp3'))
+if MUSICA and os.path.exists(MUSICA):
+    bruto = subprocess.run([FF, '-loglevel', 'error', '-i', MUSICA, '-f', 'f32le', '-ac', '1', '-ar', str(SR), '-'], capture_output=True, check=True).stdout
+    m = np.frombuffer(bruto, '<f4').astype(float)
+    m = np.tile(m, int(np.ceil(N / len(m))))[:N]
+    musica = m / (np.sqrt((m[: int(SR * 20)] ** 2).mean()) + 1e-9) * 0.30   # bem no fundo: ~0,05 de RMS depois do ganho da mixagem
+    print('  trilha:', os.path.basename(MUSICA))
 
 # abaixa o violão quando a voz fala (sidechain suave)
 e = lfilter([1 - .998], [1, -.998], np.abs(voz)); mask = (e > .02).astype(float)
