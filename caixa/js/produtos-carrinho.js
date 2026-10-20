@@ -306,8 +306,16 @@ function pizzasNoCaixa(){
 function caixaEntregaGratis(){
   return !window._taxaManual&&(combosNoCaixa()>=COMBOS_ENTREGA_GRATIS||pizzasNoCaixa()>=PIZZAS_ENTREGA_GRATIS);
 }
+// assinatura do carrinho: o "valor combinado" no WhatsApp só vale enquanto os itens forem os mesmos
+function _sigCarrinho(){ return cart.map(c=>(c._chave||c.id)+'x'+c.qty).join('|'); }
+function valorCombinadoAtivo(){
+  if(!(window._totalCombinado>0)) return 0;
+  if(window._combinadoSig!==_sigCarrinho()){ window._totalCombinado=0; return 0; } // mexeu nos itens: volta ao cálculo normal
+  return window._totalCombinado;
+}
 function totalCarrinho(){
   if(!cart.length) return 0; // carrinho vazio nunca mostra taxa de entrega
+  const combinado=valorCombinadoAtivo(); if(combinado>0) return combinado;
   const itens=cart.reduce((s,i)=>s+i.unitPrice*i.qty,0);
   const tipo=document.getElementById('f-tipo')?.value;
   const gratis=caixaEntregaGratis();
@@ -318,7 +326,7 @@ function qtdCarrinho(){ return cart.reduce((s,i)=>s+i.qty,0); }
 
 function atualizarBarraCarrinho(){
   const vazio=cart.length===0;
-  if(vazio) window._taxaManual=false;
+  if(vazio){ window._taxaManual=false; window._totalCombinado=0; window._origemConversor=false; }
   document.getElementById('cart-count').textContent=vazio?'Caixa vazio':qtdCarrinho()+(qtdCarrinho()===1?' item':' itens');
   document.getElementById('cart-total').textContent=fmt(totalCarrinho());
   document.getElementById('btn-abrir-carrinho').disabled=vazio;
@@ -506,13 +514,9 @@ async function finalizarVenda(){
   }
   const nomeDigitado=document.getElementById('f-nome').value.trim();
   const tel=document.getElementById('f-tel').value.trim()||null;
-  if(document.getElementById('f-tipo').value==='entrega'&&!nomeDigitado){ // entrega nunca é "balcão": precisa saber pra quem vai
-    alert('⚠️ Entrega sem NOME do cliente. Preencha o nome (e o telefone, se tiver) antes de finalizar.');
-    const cn=document.getElementById('f-nome'); if(cn){ cn.style.borderColor='#e71d36'; cn.focus(); }
-    return;
-  }
   const balcao=!nomeDigitado&&!tel; // venda de balcão anônima: fora de ranking/lista de clientes
-  const nome=nomeDigitado||(tel?'Cliente':'Cliente Balcão');
+  const doConversor=!!window._origemConversor; // veio do Conversor (conversa de WhatsApp): o nome está no contato, não no texto
+  const nome=nomeDigitado||(doConversor?'Cliente WhatsApp':(tel?'Cliente':'Cliente Balcão'));
   const tipo=document.getElementById('f-tipo').value;
   const entregador=document.getElementById('f-entregador')?.value||null;
   const total=totalCarrinho();
@@ -537,7 +541,8 @@ async function finalizarVenda(){
     total: Math.round(total*100)/100,
     items_json: cart.map(i=>({id:i.id,name:i.name,price:i.unitPrice,qty:i.qty,borda:bordaReal(i.borda),removed:i.removedIng||[],added:i.addedIng||[],obs:i.obs||null,isMeia:!!i.isMeia})),
     status: 'finalizado',
-    origem: pedidoEmEdicaoId ? 'loja' : 'caixa', // pedido de notificação mantém a origem real (loja/conversor)
+    valor_combinado: valorCombinadoAtivo()>0 ? true : null,
+    origem: pedidoEmEdicaoId ? 'loja' : (doConversor ? 'conversor' : 'caixa'), // pedido de notificação mantém a origem real (loja/conversor)
     whatsapp_sent:false,
     created_at:new Date().toISOString()
   };

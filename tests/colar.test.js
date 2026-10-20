@@ -7,7 +7,7 @@ const { esfDistribuirPadrao } = require('../shared/utils.js');
 const src = fs.readFileSync(__dirname + '/../caixa/js/colar-pedido.js', 'utf8');
 const trecho = src.slice(src.indexOf('function consolidarBrotos'), src.indexOf('function montarCaixaComPedidoInterpretado'));
 const trechoEsf = src.slice(src.indexOf('const RE_ESFIHA'), src.indexOf('// Junta as pizzas broto'));
-const { completarEsfihas, extrairEsfihasDoSite, extrairClienteDoSite } = new Function(trechoEsf + '; return { completarEsfihas, extrairEsfihasDoSite, extrairClienteDoSite };')();
+const { completarEsfihas, extrairEsfihasDoSite, extrairClienteDoSite, extrairValorCombinado } = new Function(trechoEsf + '; return { completarEsfihas, extrairEsfihasDoSite, extrairClienteDoSite, extrairValorCombinado };')();
 const consolidarBrotos = new Function(trecho + '; return consolidarBrotos;')();
 const par = (r) => r.map((x) => x.nome_cardapio + '+' + x.nome_cardapio_2);
 
@@ -83,4 +83,21 @@ test('mensagem do site: nome e telefone lidos do texto (comanda não sai como Cl
   assert.deepEqual(extrairClienteDoSite(txt), { nome: 'Marcos Silva', telefone: '(15) 99999-1234' });
   assert.deepEqual(extrairClienteDoSite('quero uma calabresa'), { nome: null, telefone: null });
   assert.equal(extrairClienteDoSite('👤 *Cliente:* Zé\n').nome, 'Zé');
+});
+
+test('valor combinado na conversa: "Fica 60 tudo" vira o total; tempo e perguntas não', () => {
+  assert.equal(extrairValorCombinado('Quanto ficou ?\nFica 60 tudo\nPrecisa de troco\nPix'), 60);
+  assert.equal(extrairValorCombinado('deu 85,50 com a entrega'), 85.5);
+  assert.equal(extrairValorCombinado('o total é R$ 72'), 72);
+  assert.equal(extrairValorCombinado('fica 20 minutos pra chegar'), null);
+  assert.equal(extrairValorCombinado('Quanto ficou ?'), null);
+  assert.equal(extrairValorCombinado('Eu quero 1 pizza grande'), null);
+});
+
+test('"uma esfirra doce" é 1 esfiha (não combo de 10) e pede pra confirmar o sabor', () => {
+  const r = completarEsfihas({ itens: [] }, 'Quero tambem uma esfirra doce por favor');
+  assert.equal(r.itens[0].esfihas_total, 1);
+  assert.match(r.itens[0].observacao, /Confete ou Brigadeiro/);
+  assert.equal(completarEsfihas({ itens: [] }, 'duas esfihas').itens[0].esfihas_total, 2);
+  assert.equal(completarEsfihas({ itens: [] }, 'queria um combo de esfiha').itens[0].esfihas_total, 10);
 });

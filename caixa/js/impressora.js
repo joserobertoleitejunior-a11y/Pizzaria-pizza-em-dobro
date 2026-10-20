@@ -330,6 +330,7 @@ function formatarCupom(o){
   txt+=sep+'\n';
   if(entrega) txt+='Entrega'+dir(Number(o.taxa_entrega)>0?R(o.taxa_entrega):'grátis').slice(7)+'\n';
   txt+='TOTAL'+dir(R(totalPedido)).slice(5)+'\n';
+  if(o.valor_combinado) txt+='(valor combinado)\n';
   txt+='Pagto: '+(o.payment||'—')+'\n';
   if(o.troco)txt+='Troco: '+R(o.troco)+'\n';
   else if(o.change_for&&Number(String(o.change_for).replace(',','.'))>0)txt+='Troco p/ '+R(String(o.change_for).replace(',','.'))+'\n';

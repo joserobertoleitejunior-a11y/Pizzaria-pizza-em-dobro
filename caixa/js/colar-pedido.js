@@ -128,6 +128,7 @@ JSON esperado:
     { const cs=extrairClienteDoSite(texto); parsed.cliente=parsed.cliente||{}; if(cs.nome) parsed.cliente.nome=cs.nome; if(cs.telefone&&!parsed.cliente.telefone) parsed.cliente.telefone=cs.telefone; }
     sitEsf.itens.forEach(i=>parsed.itens.push(i));
     completarEsfihas(parsed,texto);
+    window._origemConversor=true; window._valorCombinadoPendente=extrairValorCombinado(texto);
     montarCaixaComPedidoInterpretado(parsed);
     closeModal('modal-colar');
   }catch(e){
@@ -192,6 +193,15 @@ function extrairClienteDoSite(texto){
   });
   return r;
 }
+// Valor que o ATENDENTE passou na conversa ("Fica 60 tudo", "deu 85 com a entrega"): vale como total do pedido.
+// Só vale com palavra de preço antes (fica/deu/total/valor...) e sem unidade de tempo depois ("fica 20 minutos" não é preço).
+function extrairValorCombinado(texto){
+  let v=null; const re=/(?:\bfic(?:a|ou|aria)\b|\bdeu\b|\bsai(?:ria)?\b|\btotal\b|\bvalor\b)\s*(?:de|em|é|:)?\s*(?:R\$\s*)?(\d{2,4}(?:[.,]\d{1,2})?)(?![\d,.]*\s*(?:min|hora|h\b|x\b|metros|km))/gi;
+  let m; while((m=re.exec(String(texto||'')))) v=m[1];
+  if(v===null) return null;
+  const n=parseFloat(String(v).replace(',','.'));
+  return n>=5&&n<=3000?Math.round(n*100)/100:null;
+}
 function completarEsfihas(parsed,texto){
   const t=String(texto||'');
   if(!RE_ESFIHA.test(t)) return parsed;
@@ -203,6 +213,11 @@ function completarEsfihas(parsed,texto){
   if((m=t.match(/(\d{1,3})\s*(?:x\s*)?esf[iíy]/i))) n=parseInt(m[1]);
   else if((m=t.match(/combo\s*(?:de|com|c\/|do)?\s*(\d{1,3})\b/i))) n=parseInt(m[1]);
   else if((m=t.match(/esf[iíy]\w*\s*(?:de|com)?\s*(\d{1,3})\b/i))) n=parseInt(m[1]);
+  // "uma esfirra doce", "duas esfihas": número por extenso (antes virava combo de 10 por engano)
+  if(!n&&(m=t.match(/\b(um|uma|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez)\s+esf[iíy]/i))){
+    n={um:1,uma:1,dois:2,duas:2,tres:3,'três':3,quatro:4,cinco:5,seis:6,sete:7,oito:8,nove:9,dez:10}[m[1].toLowerCase()]||null;
+  }
+  const doce=/esf[iíy]\w*\s+doce|doce\s+esf[iíy]/i.test(t); // "esfirra doce": Confete ou Brigadeiro — não adivinha
   if(!n||n<1||n>120) n=10; // sem número: combo padrão de 10
   const itens=Array.isArray(parsed.itens)?parsed.itens:(parsed.itens=[]);
   const existente=itens.find(i=>i&&i.tipo==='esfihas');
@@ -214,7 +229,7 @@ function completarEsfihas(parsed,texto){
   }
   // a IA não montou as esfihas (ou deixou um item "normal" sem nome falando de esfiha): remove o resto e cria o combo padrão
   parsed.itens=itens.filter(i=>!(i&&i.tipo==='normal'&&!i.nome_cardapio&&RE_ESFIHA.test(String(i.observacao||''))));
-  parsed.itens.push({tipo:'esfihas',esfihas:null,esfihas_total:n,qtd:1,nome_cardapio:null,nome_cardapio_2:null,borda:null,remover:[],observacao:null});
+  parsed.itens.push({tipo:'esfihas',esfihas:doce?[{sabor:'doce',qtd:n}]:null,esfihas_total:n,qtd:1,nome_cardapio:null,nome_cardapio_2:null,borda:null,remover:[],observacao:doce?'Esfiha doce: confirmar o sabor (Confete ou Brigadeiro)':null});
   return parsed;
 }
 
@@ -441,7 +456,13 @@ function montarCaixaComPedidoInterpretado(parsed){
     btn.classList.add('active');
     setTimeout(()=>btn.classList.remove('active'),1600);
   }
+  if(window._valorCombinadoPendente>0&&cart.length){
+    window._totalCombinado=window._valorCombinadoPendente; window._combinadoSig=_sigCarrinho();
+    atualizarBarraCarrinho();
+  }
   const avisos=[];
+  if(window._valorCombinadoPendente>0&&cart.length) avisos.push('💰 Valor combinado na conversa: '+fmt(window._valorCombinadoPendente)+' — o total do Caixa já ficou nesse valor (se mexer nos itens, volta a somar o cardápio).');
+  window._valorCombinadoPendente=null;
   if(naoIdentificados>0) avisos.push('⚠️ '+naoIdentificados+' item(ns) não foram reconhecidos com certeza e aparecem marcados no carrinho como "CONFERIR" — remova e adicione o item correto pela busca antes de finalizar.');
   if(brotoSobra) avisos.push('🍕 Veio uma quantidade ímpar de pizzas broto: a última ficou num combo com o MESMO sabor nos dois lados — confira com o cliente.');
   if(comboDetectado) avisos.push('🍕🍕 Combo/esfihas identificados e adicionados ao carrinho — confira os sabores, quantidades e o preço antes de finalizar.');
