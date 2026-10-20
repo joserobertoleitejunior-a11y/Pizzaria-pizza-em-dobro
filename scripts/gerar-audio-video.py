@@ -1,6 +1,7 @@
 """Áudio dos vídeos Stories: violão de nylon calmo (valsa italiana de pizzaria, com bandolim suave ao fundo) + locução.
 Uso: python3 scripts/gerar-audio-video.py roteiro.json saida.mp3
-  roteiro.json = {"dur": 31, "falas": [{"t": 0.5, "texto": "Bateu a fome?"}, ...]}   (gerado por scripts/exportar-roteiro.js)
+  roteiro.json = {"tempos": "tempos-X.json", "cenas": [{"id":..., "fala":..., "min": s, "fim": bool}, ...]}   (gerado por scripts/exportar-roteiro.js)
+  Cada cena dura o tempo da fala + folga (nenhuma frase é cortada). Grava também video/tempos-X.json, que o vídeo usa pra montar a linha do tempo.
 Precisa de: numpy, scipy, imageio-ffmpeg, sherpa-onnx (pip) e o modelo Kokoro multilíngue (KOKORO_DIR = pasta de
 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-multi-lang-v1_0.tar.bz2). Voz pt-BR masculina "pm_alex" (VOZ_SID=43).
 A música é sintetizada (Karplus-Strong), sem direitos autorais; a voz é neural (Kokoro) tratada com EQ leve, compressão e sala curta."""
@@ -9,16 +10,45 @@ from scipy.signal import lfilter, fftconvolve
 import imageio_ffmpeg
 FF = imageio_ffmpeg.get_ffmpeg_exe()
 SR = 44100
-rot = json.load(open(sys.argv[1])); saida = sys.argv[2]; DUR = float(rot['dur'])
+rot = json.load(open(sys.argv[1])); saida = sys.argv[2]
 KOKORO = os.environ.get('KOKORO_DIR', '/tmp/tts/kokoro-multi-lang-v1_0')
 VOZ_SID = int(os.environ.get('VOZ_SID', '43'))             # 42 = pf_dora (feminina), 43 = pm_alex, 44 = pm_santa (masculinas)
-VOZ_VEL = float(os.environ.get('VOZ_VEL', '1.12'))         # >1 = fala mais animada de vendedor
+VOZ_VEL = float(os.environ.get('VOZ_VEL', '0.9'))          # <1 = fala mais pausada (dá pra entender cada palavra)
 import sherpa_onnx
 _tts = sherpa_onnx.OfflineTts(sherpa_onnx.OfflineTtsConfig(model=sherpa_onnx.OfflineTtsModelConfig(kokoro=sherpa_onnx.OfflineTtsKokoroModelConfig(
     model=f'{KOKORO}/model.onnx', voices=f'{KOKORO}/voices.bin', tokens=f'{KOKORO}/tokens.txt', data_dir=f'{KOKORO}/espeak-ng-data',
     dict_dir=f'{KOKORO}/dict', lexicon=f'{KOKORO}/lexicon-us-en.txt', lang='pt-br'), num_threads=4, provider='cpu')))
-rng = np.random.default_rng(5)
+# ───────────── locução (primeiro: a duração de cada cena vem da fala) ─────────────
+def ler(p):
+    w = wave.open(p); d = np.frombuffer(w.readframes(w.getnframes()), '<i2').astype(float) / 32768; return d, w.getframerate()
+cache = tempfile.mkdtemp()
+FILTRO = ('aresample=44100,highpass=f=70,equalizer=f=140:t=q:w=1:g=2,equalizer=f=3200:t=q:w=1.2:g=1.5,'
+          'acompressor=threshold=0.1:ratio=3:attack=5:release=120:makeup=2,aecho=0.8:0.4:45:0.08,alimiter=limit=0.9')
+clipes = []
+for i, c in enumerate(rot['cenas']):
+    bruto, tratado = f'{cache}/{i}.wav', f'{cache}/{i}t.wav'
+    g = _tts.generate(c['fala'], sid=VOZ_SID, speed=VOZ_VEL)
+    with wave.open(bruto, 'wb') as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(g.sample_rate); w.writeframes((np.clip(np.array(g.samples), -1, 1) * 32767).astype('<i2').tobytes())
+    subprocess.run([FF, '-y', '-loglevel', 'error', '-i', bruto, '-af', FILTRO, '-ar', str(SR), tratado], check=True)
+    d, _ = ler(tratado); clipes.append(d / (np.abs(d).max() + 1e-9) * .92)
+# linha do tempo: cada cena = fala + folga; a fala começa 0,3 s depois da legenda
+t = 0.0; tempos = {}; inicios = []
+for c, d in zip(rot['cenas'], clipes):
+    dv = len(d) / SR
+    atraso = 1.0 if c.get('fim') else .3
+    fim_cena = t + max(c.get('min') or 0, atraso + dv + (1.8 if c.get('fim') else .85))
+    tempos[c['id']] = {'t0': round(t, 2), 't1': round(fim_cena, 2)}; inicios.append(t + atraso)
+    print(f"  {c['id']:9s} {t:6.2f} → {fim_cena:6.2f}s  fala {dv:.2f}s  {c['fala'][:55]}")
+    t = fim_cena
+DUR = round(t, 2)
+os.makedirs('video', exist_ok=True)
+json.dump({'dur': DUR, 'cenas': tempos}, open(os.path.join(os.path.dirname(os.path.abspath(saida)), rot['tempos']), 'w'), indent=1)
 N = int(SR * (DUR + 3))
+voz = np.zeros(N)
+for ini, d in zip(inicios, clipes):
+    i0 = int(ini * SR); voz[i0:i0 + len(d)] += d[: N - i0]
+rng = np.random.default_rng(5)
 def hz(m): return 440.0 * 2 ** ((m - 69) / 12)
 
 # ───────────── violão (Karplus-Strong + corpo) ─────────────
@@ -66,24 +96,6 @@ tr = np.arange(int(1.4 * SR)) / SR; rv = rng.standard_normal(len(tr)) * np.exp(-
 musica = musica + fftconvolve(musica, rv)[: len(musica)] * .035
 musica = musica[:N]; musica /= np.abs(musica).max()
 
-# ───────────── locução ─────────────
-def ler(p):
-    w = wave.open(p); d = np.frombuffer(w.readframes(w.getnframes()), '<i2').astype(float) / 32768; return d, w.getframerate()
-voz = np.zeros(N); marcas = []
-cache = tempfile.mkdtemp()
-FILTRO = ('aresample=44100,highpass=f=70,equalizer=f=140:t=q:w=1:g=2,equalizer=f=3200:t=q:w=1.2:g=1.5,'
-          'acompressor=threshold=0.1:ratio=3:attack=5:release=120:makeup=2,aecho=0.8:0.4:45:0.08,alimiter=limit=0.9')
-for i, f in enumerate(rot['falas']):
-    bruto, tratado = f'{cache}/{i}.wav', f'{cache}/{i}t.wav'
-    g = _tts.generate(f['texto'], sid=VOZ_SID, speed=VOZ_VEL)
-    with wave.open(bruto, 'wb') as w:
-        w.setnchannels(1); w.setsampwidth(2); w.setframerate(g.sample_rate); w.writeframes((np.clip(np.array(g.samples), -1, 1) * 32767).astype('<i2').tobytes())
-    subprocess.run([FF, '-y', '-loglevel', 'error', '-i', bruto, '-af', FILTRO, '-ar', str(SR), tratado], check=True)
-    d, _ = ler(tratado); d = d / (np.abs(d).max() + 1e-9) * .92
-    i0 = int(f['t'] * SR); voz[i0:i0 + len(d)] += d[: N - i0]
-    fim = f['t'] + len(d) / SR; marcas.append((f['t'], fim))
-    folga = f.get('ate')
-    print(f"  fala {i:2d}: {f['t']:6.2f} → {fim:6.2f}s ({len(d)/SR:.2f}s){'  ⚠ passa do trecho!' if folga and fim > folga else ''}  {f['texto'][:50]}")
 # abaixa o violão quando a voz fala (sidechain suave)
 e = lfilter([1 - .998], [1, -.998], np.abs(voz)); mask = (e > .02).astype(float)
 jan = np.ones(int(.55 * SR)); mask = np.clip(np.convolve(mask, jan, 'full')[int(.2 * SR): int(.2 * SR) + N], 0, 1)   # começa a abaixar antes da voz, solta devagar

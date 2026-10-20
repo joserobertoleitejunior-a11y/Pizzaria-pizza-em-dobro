@@ -12,6 +12,7 @@
   <div id="fundo"><img src="../assets/fachada-fundo.jpg" alt=""></div><div id="tinta"></div><div id="escuro"></div>
   <canvas id="part" width="1080" height="1920"></canvas>
   <div id="fone"><div id="ilha"></div><div id="tela"><iframe id="site" title="Site da Pizza em Dobro" src="about:blank"></iframe><div id="zap"></div><div id="brilho"></div></div></div>
+  <div id="parte"></div>
   <div id="cap" aria-live="polite"></div>
   <div id="fim"></div>
   <div id="credito"><canvas id="cuboMini" width="200" height="200"></canvas><div><b>VIBE CODING PROCESS</b><span>(15) 99668-8070 · José Roberto</span></div></div>
@@ -24,25 +25,17 @@
 <script src="motion.js"></script>
 <script>
 Video.iniciar({
-  tema:'instagram', dur:31.5,
-  legendas:[
-    {t0:.3,t1:2.6,html:'Bateu a <b>fome?</b>'},
-    {t0:2.6,t1:5.3,html:'Promoções <b>imperdíveis</b>',fala:'Promoções imperdíveis!'},
-    {t0:5.3,t1:8.7,html:'<b>Entrega grátis</b> a partir de 3 pizzas',fala:'Entrega grátis a partir de três pizzas!'},
-    {t0:8.7,t1:13.1,html:'2 pizzas grandes a partir de <b>R$ 65</b>',fala:'Duas pizzas grandes a partir de sessenta e cinco reais!'},
-    {t0:13.1,t1:16.3,html:'2 pizzas broto por <b>R$ 50</b>',fala:'Duas pizzas broto por cinquenta reais!'},
-    {t0:16.3,t1:20.4,html:'Esfiha a <b>R$ 5</b> · dez por <b>R$ 50</b>',fala:'Esfiha a cinco reais. Dez por cinquenta!'},
-    {t0:20.4,t1:23.0,html:'Peça pelo <b>site</b>, é rapidinho',fala:'Peça pelo site, é rapidinho!'}
-  ],
-  rolagens:[
-    {t0:2.6,t1:5.2,el:'promos',off:36},
-    {t0:5.3,t1:8.6,el:'entrega-gratis-card',off:150},
-    {t0:8.7,t1:13.0,el:'combo-card-combo65',off:130},
-    {t0:13.1,t1:16.2,el:'combo-card-broto50',off:130},
-    {t0:16.3,t1:20.3,el:'anc-es',off:70},
-    {t0:20.4,t1:23.0,el:'cat-p',off:60}
-  ],
-  fim:{t0:23.2,tag:'Pedir pizza nunca foi tão fácil',fala:'Pizza em Dobro. Pedir pizza nunca foi tão fácil. Peça já pelo site!'}
+  tema:'instagram', tempos:'tempos-promocoes.json',
+  cenas:[
+    {id:'splash',parte:'Abertura',html:'Bateu a <b>fome?</b> Vem ver!',fala:'Bateu a fome? Vem ver!',min:4.4,splash:true},
+    {id:'promos',parte:'Promoções',html:'Promoções <b>imperdíveis</b>',fala:'Promoções imperdíveis!',rolar:{el:'promos',off:36}},
+    {id:'entrega',parte:'Promoções',html:'<b>Entrega grátis</b> a partir de 3 pizzas',fala:'Entrega grátis a partir de três pizas!',rolar:{el:'entrega-gratis-card',off:150}},
+    {id:'combo65',parte:'Combos',html:'2 pizzas grandes a partir de <b>R$ 65</b>',fala:'Duas pizas grandes, a partir de sessenta e cinco reais!',rolar:{el:'combo-card-combo65',off:130}},
+    {id:'broto',parte:'Combos',html:'2 pizzas broto por <b>R$ 50</b>',fala:'Duas pizas broto, por cinquenta reais!',rolar:{el:'combo-card-broto50',off:130}},
+    {id:'esfiha',parte:'Esfihas',html:'Esfiha a <b>R$ 5</b> · dez por <b>R$ 50</b>',fala:'Esfiha a cinco reais. Dez, por cinquenta!',rolar:{el:'anc-es',off:70}},
+    {id:'pedir',parte:'Pedido',html:'Peça pelo <b>site</b>, é rapidinho',fala:'Peça pelo site, é rapidinho!',rolar:{el:'cat-p',off:60}},
+    {id:'fim',fim:true,tag:'Pedir pizza nunca foi tão fácil',fala:'Piza em Dobro. Pedir piza nunca foi tão fácil. Peça já, pelo site!'}
+  ]
 });
 </script>
 </body>
