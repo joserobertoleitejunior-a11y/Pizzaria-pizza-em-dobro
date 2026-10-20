@@ -23,6 +23,14 @@ function abrirColarPedido(){
 async function interpretarPedidoColado(){
   const texto=document.getElementById('colar-texto').value.trim();
   if(!texto){ alert('Cole a mensagem do cliente primeiro.'); return; }
+  // sem nome do cliente não converte: a comanda não pode sair sem saber de quem é o pedido
+  const campoNome=document.getElementById('colar-nome');
+  if(!nomeDoClienteNoConversor(texto)){
+    alert('Falta o NOME do cliente.\n\nDigite no campo "Nome do cliente" o nome que aparece no topo da conversa do WhatsApp e toque em Interpretar de novo.');
+    if(campoNome){ campoNome.style.borderColor='#e71d36'; campoNome.focus(); }
+    return;
+  }
+  if(campoNome) campoNome.style.borderColor='';
   const btn=document.getElementById('colar-btn');
   const status=document.getElementById('colar-status');
   btn.disabled=true; btn.style.opacity='.5';
@@ -222,6 +230,11 @@ function extrairClienteDoWhatsapp(texto){
   const n=nomes[0], dig=n.replace(/\D/g,'');
   if(dig.length>=10&&dig.length<=13&&/^[\d+\s()-]+$/.test(n)) return {nome:null,telefone:n};
   return {nome:n.replace(/[^\p{L}\p{N}\s.'-]/gu,'').trim()||null,telefone:null};
+}
+// nome que o Conversor vai usar: o digitado no campo, o "Cliente:" da mensagem do site ou o remetente da conversa copiada
+function nomeDoClienteNoConversor(texto){
+  const manual=(document.getElementById('colar-nome')?.value||'').trim();
+  return manual||extrairClienteDoSite(texto).nome||extrairClienteDoWhatsapp(texto).nome||null;
 }
 function completarEsfihas(parsed,texto){
   const t=String(texto||'');
