@@ -202,6 +202,7 @@ function carregar(){
   return new Promise(function(res){
     ifr.onload=function(){
       prepararSite();
+      if(C.splash){try{W().eval('clearTimeout(_splashAutoTimer)');}catch(e){}}   // a abertura só some quando o vídeo mandar
       var ate=Date.now()+8000;
       (function esp(){ // espera o cardápio existir
         var ok=false;try{ok=!!(el('cat-p')&&el('cat-p').children.length&&W().eval('typeof menu!=="undefined"&&menu.length'));}catch(e){}
