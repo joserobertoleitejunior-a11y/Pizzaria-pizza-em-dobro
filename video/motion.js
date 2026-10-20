@@ -22,9 +22,9 @@ function letras(html){
   (function walk(no,ac,dest){
     Array.prototype.forEach.call(no.childNodes,function(n){
       if(n.nodeType===3){
-        n.textContent.split(/(\s+)/).forEach(function(w){
+        n.textContent.split(/([ \t\r\n]+)/).forEach(function(w){
           if(!w)return;
-          if(/^\s+$/.test(w)){dest.appendChild(document.createTextNode(' '));return;}
+          if(/^[ \t\r\n]+$/.test(w)){dest.appendChild(document.createTextNode(' '));return;}
           var p=document.createElement('span');p.className='p'+(ac?' ac-p':'');
           w.split('').forEach(function(ch){var l=document.createElement('span');l.className='l'+(ac?' ac':'');l.textContent=ch;p.appendChild(l);});
           dest.appendChild(p);
