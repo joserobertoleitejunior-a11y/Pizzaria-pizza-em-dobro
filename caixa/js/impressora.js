@@ -299,9 +299,16 @@ function formatarCupom(o){
   const hora=dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   const sep='────────────────────────';
   const entrega=o.delivery_type==='entrega';
+  const R=v=>'R$ '+Number(v||0).toFixed(2).replace('.',',');
+  const dir=t=>String(t).padStart(24); // valor alinhado à direita
   let txt='PEDIDO Nº '+(o.numero_sequencial||'—')+'  '+(entrega?'ENTREGA':'RETIRADA')+'\n';
   txt+=data+' '+hora+'  PIZZA EM DOBRO\n'+sep+'\n';
   txt+=(o.client_name||'—')+(o.client_phone?'  '+o.client_phone:'')+'\n'+sep+'\n';
+  // endereço logo no começo: se a impressão cortar no meio, o que não pode faltar é pra onde vai
+  if(entrega){
+    const numCasa=o.house_number&&!new RegExp('(^|[^0-9])'+String(o.house_number).replace(/[^0-9A-Za-z]/g,'')+'([^0-9]|$)').test(String(o.address||''))?', nº '+o.house_number:'';
+    txt+=(o.address||'—')+numCasa+'\n'+sep+'\n';
+  }
   (o.items_json||[]).forEach(it=>{
     const nome=it.name||(it.halves?it.halves.map(h=>h.n).join(' + '):it.n)||'—';
     const qty=Number(it.qty)||1;
@@ -312,16 +319,15 @@ function formatarCupom(o){
     if(it.added&&it.added.length)txt+='   + '+it.added.join(', ')+'\n';
     if(it.removed&&it.removed.length)txt+='   SEM: '+it.removed.join(', ')+'\n';
     if(it.obs)txt+='   OBS: '+it.obs+'\n';
+    const unit=Number(it.price??it.p??it.unitPrice);
+    if(unit>0)txt+=dir(R(unit*qty))+'\n'; // valor do item
   });
   txt+=sep+'\n';
-  if(entrega){
-    const numCasa=o.house_number&&!new RegExp('(^|[^0-9])'+String(o.house_number).replace(/[^0-9A-Za-z]/g,'')+'([^0-9]|$)').test(String(o.address||''))?', nº '+o.house_number:'';
-    txt+=(o.address||'—')+numCasa+'\n'+sep+'\n';
-  }
-  txt+='TOTAL R$ '+Number(o.total||0).toFixed(2).replace('.',',')+(entrega?(Number(o.taxa_entrega)>0?'  (entrega R$ '+Number(o.taxa_entrega).toFixed(2).replace('.',',')+')':'  (entrega grátis)'):'')+'\n';
+  if(entrega) txt+='Entrega'+dir(Number(o.taxa_entrega)>0?R(o.taxa_entrega):'grátis').slice(7)+'\n';
+  txt+='TOTAL'+dir(R(o.total)).slice(5)+'\n';
   txt+='Pagto: '+(o.payment||'—')+'\n';
-  if(o.troco)txt+='Troco: R$ '+Number(o.troco).toFixed(2).replace('.',',')+'\n';
-  else if(o.change_for&&Number(String(o.change_for).replace(',','.'))>0)txt+='Troco p/ R$ '+Number(String(o.change_for).replace(',','.')).toFixed(2).replace('.',',')+'\n';
+  if(o.troco)txt+='Troco: '+R(o.troco)+'\n';
+  else if(o.change_for&&Number(String(o.change_for).replace(',','.'))>0)txt+='Troco p/ '+R(String(o.change_for).replace(',','.'))+'\n';
   return txt+'\n';
 }
 // ponto único pra tentar reconectar (USB primeiro, depois Bluetooth) — trava contra tentativas
