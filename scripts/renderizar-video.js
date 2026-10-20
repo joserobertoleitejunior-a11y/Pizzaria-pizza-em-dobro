@@ -26,19 +26,21 @@ const FONTES = `@font-face{font-family:'Archivo Black';src:url(http://localhost:
   if (musica) args.push('-i', musica);
   args.push('-map', '0:v', ...(musica ? ['-map', '1:a'] : []), '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-pix_fmt', 'yuv420p', '-r', String(FPS),
     ...(musica ? ['-c:a', 'aac', '-b:a', '192k'] : []), '-t', dur, '-movflags', '+faststart', saida);
-  const ff = spawn(ffmpeg, args, { stdio: ['pipe', 'inherit', 'inherit'] });
+  const soAmostras = !!process.env.SO_AMOSTRAS; // só gera os quadros de amostra (teste rápido, sem MP4)
+  const ff = soAmostras ? null : spawn(ffmpeg, args, { stdio: ['pipe', 'inherit', 'inherit'] });
   const total = Math.round(+dur * FPS);
   const amostras = (process.env.AMOSTRAS || '').split(',').filter(Boolean).map(Number);
   for (let i = 0; i < total; i++) {
     const t = i / FPS;
     await p.evaluate(x => window.quadro(x), t);
+    const ehAmostra = amostras.some(a => Math.abs(a - t) < 1 / FPS / 2);
+    if (soAmostras && !ehAmostra) continue;
     const img = await p.screenshot({ type: 'jpeg', quality: 96 });
-    if (amostras.some(a => Math.abs(a - t) < 1 / FPS / 2)) require('fs').writeFileSync(path.join(path.dirname(saida), `amostra-${t.toFixed(1)}.jpg`), img);
-    if (!ff.stdin.write(img)) await new Promise(r => ff.stdin.once('drain', r));
+    if (ehAmostra) require('fs').writeFileSync(path.join(path.dirname(saida), `amostra-${t.toFixed(2)}.jpg`), img);
+    if (ff && !ff.stdin.write(img)) await new Promise(r => ff.stdin.once('drain', r));
     if (i % 150 === 0) console.log('quadro', i, '/', total);
   }
-  ff.stdin.end();
-  await new Promise(r => ff.on('close', r));
+  if (ff) { ff.stdin.end(); await new Promise(r => ff.on('close', r)); }
   await b.close();
   console.log('pronto', saida);
 })();
