@@ -22,12 +22,14 @@ function letras(html){
   (function walk(no,ac,dest){
     Array.prototype.forEach.call(no.childNodes,function(n){
       if(n.nodeType===3){
+        var partes0=n.textContent.split(/([ \t\r\n]+)/)[0];
         n.textContent.split(/([ \t\r\n]+)/).forEach(function(w){
           if(!w)return;
           if(/^[ \t\r\n]+$/.test(w)){dest.appendChild(document.createTextNode(' '));return;}
-          var p=document.createElement('span');p.className='p'+(ac?' ac-p':'');
+          var ult=dest.lastChild,colar=(w===partes0&&ult&&ult.nodeType===1&&ult.classList.contains('p')&&!/^[ \t\r\n]/.test(n.textContent));
+          var p=colar?ult:document.createElement('span'); if(!colar)p.className='p'+(ac?' ac-p':'');   // pontuação colada na palavra anterior não quebra sozinha
           w.split('').forEach(function(ch){var l=document.createElement('span');l.className='l'+(ac?' ac':'');l.textContent=ch;p.appendChild(l);});
-          dest.appendChild(p);
+          if(!colar)dest.appendChild(p);
         });
       }else if(n.nodeType===1){walk(n,ac||n.tagName==='B',dest);}
     });
