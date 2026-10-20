@@ -34,7 +34,14 @@ for i, c in enumerate(rot['cenas']):
     d, _ = ler(tratado); clipes.append(d / (np.abs(d).max() + 1e-9) * .92)
 # linha do tempo: cada cena = fala + folga; a fala começa 0,3 s depois da legenda
 t = 0.0; tempos = {}; inicios = []
+# TEMPOS_FIXOS=arquivo.json: mantém a linha do tempo de um vídeo já renderizado (troca só o áudio, sem renderizar de novo)
+FIXOS = json.load(open(os.environ['TEMPOS_FIXOS']))['cenas'] if os.environ.get('TEMPOS_FIXOS') else None
 for c, d in zip(rot['cenas'], clipes):
+    if FIXOS:
+        f = FIXOS[c['id']]; atraso = 1.0 if c.get('fim') else .3
+        tempos[c['id']] = f; inicios.append(f['t0'] + atraso)
+        if f['t0'] + atraso + len(d) / SR > f['t1'] + .2: print('  ⚠ fala passa da cena:', c['id'])
+        t = f['t1']; continue
     dv = len(d) / SR
     atraso = 1.0 if c.get('fim') else .3
     fim_cena = t + max(c.get('min') or 0, atraso + dv + (1.8 if c.get('fim') else .85))
