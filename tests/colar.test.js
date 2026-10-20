@@ -7,7 +7,7 @@ const { esfDistribuirPadrao } = require('../shared/utils.js');
 const src = fs.readFileSync(__dirname + '/../caixa/js/colar-pedido.js', 'utf8');
 const trecho = src.slice(src.indexOf('function consolidarBrotos'), src.indexOf('function montarCaixaComPedidoInterpretado'));
 const trechoEsf = src.slice(src.indexOf('const RE_ESFIHA'), src.indexOf('// Junta as pizzas broto'));
-const completarEsfihas = new Function(trechoEsf + '; return completarEsfihas;')();
+const { completarEsfihas, extrairEsfihasDoSite } = new Function(trechoEsf + '; return { completarEsfihas, extrairEsfihasDoSite };')();
 const consolidarBrotos = new Function(trecho + '; return consolidarBrotos;')();
 const par = (r) => r.map((x) => x.nome_cardapio + '+' + x.nome_cardapio_2);
 
@@ -59,4 +59,21 @@ test('esfihas: não duplica quando a IA já montou, e completa o total', () => {
 });
 test('texto sem esfiha não cria esfihas', () => {
   assert.equal(completarEsfihas({ itens: [] }, 'uma calabresa e uma coca').itens.length, 0);
+});
+
+test('pedido do site com combo de esfihas: lido sem IA e não vai pro texto da IA', () => {
+  const txt = '🛎️ *NOVO PEDIDO - SITE OFICIAL*\n\n*• Esfihas (10) — 4 Carne + 6 Mista*\n  💰 R$ 50,00\n\n*• Calabresa*\n  💰 R$ 37,99\n';
+  const r = extrairEsfihasDoSite(txt);
+  assert.equal(r.itens.length, 1);
+  assert.equal(r.itens[0].tipo, 'esfihas');
+  assert.equal(r.itens[0].esfihas_total, 10);
+  assert.deepEqual(r.itens[0].esfihas, [{ sabor: 'Carne', qtd: 4 }, { sabor: 'Mista', qtd: 6 }]);
+  assert.ok(!/Esfihas|Carne|50,00/.test(r.texto));
+  assert.ok(/Calabresa/.test(r.texto));
+});
+test('"combo de esfihas" na mão: combo de pizza sem sabor que a IA criou é descartado', () => {
+  const r = completarEsfihas({ itens: [{ tipo: 'combo', nome_cardapio: null, qtd: 1 }] }, 'Combo de esfihas');
+  assert.equal(r.itens.length, 1);
+  assert.equal(r.itens[0].tipo, 'esfihas');
+  assert.equal(r.itens[0].esfihas_total, 10);
 });

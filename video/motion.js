@@ -95,7 +95,7 @@ function desenharEspaco(cv,t){
 function montarFim(){
   var f=C.fim;
   fimEl.innerHTML=
-   '<div class="fx f-par"><canvas id="espaco" width="600" height="600"></canvas><div class="f-x">×</div><img class="f-logo" src="../assets/logo.png" alt=""></div>'+
+   '<div class="fx f-par"><canvas id="espaco" width="600" height="600"></canvas><div class="f-x"></div><img class="f-logo" src="../assets/logo.png" alt=""></div>'+
    '<div class="fx f-nome"></div><div class="fx f-tag"></div><div class="fx f-linha"></div>'+
    '<div class="fx f-contato"><div class="f-fone"></div><div class="f-jose"></div></div>';
   var q=function(s){return fimEl.querySelector(s);};

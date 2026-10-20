@@ -106,13 +106,14 @@ JSON esperado:
 
   try{
     // 1ª tentativa; se a IA devolver algo que não é JSON (acontece com mensagem muito bagunçada), tenta de novo uma vez
+    const sitEsf=extrairEsfihasDoSite(texto), textoIA=sitEsf.itens.length?sitEsf.texto:texto;
     let parsed=null, ultimoErro=null;
     for(let tentativa=0;tentativa<2&&!parsed;tentativa++){
       try{
         const r=await fetch('/api/parse-order',{
           method:'POST',
           headers:await cabecalhosEquipe(),
-          body:JSON.stringify({systemPrompt, raw:texto})
+          body:JSON.stringify({systemPrompt, raw:textoIA})
         });
         const d=await r.json();
         if(d.error) throw new Error(d.error);
@@ -123,6 +124,8 @@ JSON esperado:
       }catch(e){ ultimoErro=e; if(tentativa===0) status.textContent='🤖 Conferindo de novo...'; }
     }
     if(!parsed) throw ultimoErro||new Error('sem resposta');
+    if(!Array.isArray(parsed.itens)) parsed.itens=[];
+    sitEsf.itens.forEach(i=>parsed.itens.push(i));
     completarEsfihas(parsed,texto);
     montarCaixaComPedidoInterpretado(parsed);
     closeModal('modal-colar');
@@ -160,9 +163,27 @@ const _acharAcrescimos=ls=>(Array.isArray(ls)?ls:[]).map(n=>_acharPorNome(n,ACRE
 // ── Rede de segurança do combo de esfihas: mesmo que a IA erre ou esqueça, o texto manda.
 // "combo com 20 esfilha", "quero esfirra", "combo de esfiha" (sem número = 10) → combo com os sabores padrão.
 const RE_ESFIHA=/\besf[iíy]r?l?h?[ao]s?\b|\besfirra|\besfira|\besfiha/i;
+// Pedido vindo do site traz o combo assim: "• Esfihas (10) — 4 Carne + 6 Mista" + linha de preço.
+// A IA confundia esses sabores (Carne, Mista, Calabresa...) com pizzas; então essas linhas são lidas aqui,
+// sem IA, e saem do texto que vai pra IA.
+function extrairEsfihasDoSite(texto){
+  const linhas=String(texto||'').split('\n'), itens=[], resto=[];
+  for(let i=0;i<linhas.length;i++){
+    const m=linhas[i].replace(/[*_]/g,'').match(/esfihas?\s*\((\d+)\)\s*[—–-]\s*(.+)$/i);
+    if(!m){ resto.push(linhas[i]); continue; }
+    const esfihas=[];
+    m[2].split('+').forEach(p=>{ const q=p.trim().match(/^(\d+)\s*x?\s*(.+)$/i); if(q) esfihas.push({sabor:q[2].trim(),qtd:parseInt(q[1])}); });
+    itens.push({tipo:'esfihas',esfihas:esfihas.length?esfihas:null,esfihas_total:parseInt(m[1]),qtd:1,nome_cardapio:null,nome_cardapio_2:null,borda:null,acrescimos:[],remover:[],observacao:null});
+    if(i+1<linhas.length&&/💰|^\s*R\$\s*[\d.,]+\s*$/.test(linhas[i+1])) i++; // linha de preço do combo
+  }
+  return {texto:resto.join('\n'),itens};
+}
 function completarEsfihas(parsed,texto){
   const t=String(texto||'');
   if(!RE_ESFIHA.test(t)) return parsed;
+  // "combo de esfihas" não é combo de pizza: tira o que a IA montou como combo sem sabor
+  if(/combo\s*(?:de|com|c\/|do)?\s*(?:\d{1,3}\s*)?esf/i.test(t)&&Array.isArray(parsed.itens))
+    parsed.itens=parsed.itens.filter(i=>!(i&&(i.tipo==='combo'||i.tipo==='broto')&&!i.nome_cardapio));
   // número do combo: "combo de/com 20", "20 esfiha(s)", "combo de esfiha 30"
   let n=null, m;
   if((m=t.match(/(\d{1,3})\s*(?:x\s*)?esf[iíy]/i))) n=parseInt(m[1]);
