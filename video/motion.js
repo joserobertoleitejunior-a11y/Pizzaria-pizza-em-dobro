@@ -57,7 +57,8 @@ function resolverY(s){
 function prepararSite(){
   var d=D(),st=d.createElement('style');
   st.textContent='html{scroll-behavior:auto!important}*{content-visibility:visible!important}html{scrollbar-width:none!important}html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}'+
-   '#pwa-banner,#fab-equipe,.fab-equipe,#music-bar{display:none!important}.reveal{opacity:1!important;transform:none!important;transition:none!important}';
+   '#pwa-banner,#fab-equipe,.fab-equipe,#music-bar{display:none!important}.reveal{opacity:1!important;transform:none!important;transition:none!important}'+
+   '.promos-trilho{scroll-snap-type:none!important}.promo-slide{transition:none!important}.promo-slide.toque{transform:scale(.95)!important;filter:brightness(.82)!important}';
   d.head.appendChild(st);
   var fixa=function(){var b=d.getElementById('status-loja');if(b){b.textContent='ABERTO';b.className='status-badge open';}};fixa();setInterval(fixa,400);
 }
@@ -136,12 +137,15 @@ function quadro(t){
   /* rolagens do site (vertical, com início e fim suaves) */
   segs.forEach(function(s){
     if(t<s.t0)return;
-    if(!s.y0&&s.y0!==0){ // primeira vez que entra no trecho: lê de onde partiu e resolve o destino
-      var alvo=s.inner?el(s.inner):null;
-      s.y0=s.inner?alvo.scrollTop:W().scrollY; s.y1=s.inner?s.y:resolverY(s);
+    var alvo=s.inner?el(s.inner):(s.horiz?el(s.horiz):null);
+    if(!s.lido){ // primeira vez que entra no trecho: lê de onde partiu e resolve o destino
+      s.lido=true;
+      if(s.horiz){s.y0=alvo.scrollLeft;s.y1=alvo.querySelectorAll('.promo-slide')[s.slide].offsetLeft-16;}
+      else if(s.inner){s.y0=alvo.scrollTop;s.y1=s.y;}
+      else{s.y0=W().scrollY;s.y1=resolverY(s);}
     }
     var p=inOutSine((t-s.t0)/(s.t1-s.t0)), y=s.y0+(s.y1-s.y0)*p;
-    if(s.inner){el(s.inner).scrollTop=y;}else{W().scrollTo(0,y);}
+    if(s.horiz){alvo.scrollLeft=y;}else if(s.inner){alvo.scrollTop=y;}else{W().scrollTo(0,y);}
   });
   /* digitação */
   (C.digitar||[]).forEach(function(d){
@@ -239,6 +243,8 @@ function montarLinhaDoTempo(cfg,tp){
   });
   return {tema:cfg.tema,dur:tp.dur,legendas:L,rolagens:R,eventos:E,digitar:Dg,zap:zap,fim:fim,splash:splash,partes:partes};
 }
+/* "toque" no banner: só o cartaz afunda um pouco (sem dedo aparecendo) */
+window.VT={toque:function(w,i,on){var s=w.document.querySelectorAll('.promo-slide')[i];if(s)s.classList.toggle('toque',!!on);}};
 window.Video={
   iniciar:function(cfg){
     window.__cfg=cfg; palco.className='tema-'+(cfg.tema||'instagram'); som=$('som');
