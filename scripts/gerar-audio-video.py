@@ -1,4 +1,4 @@
-"""Áudio dos vídeos Stories: violão de nylon calmo (valsa italiana de pizzaria, com bandolim suave ao fundo) + locução.
+"""Áudio dos vídeos Stories: reggae-sertanejo bem calmo ao fundo (violão com batida no contratempo, baixo redondo, viola em terças, rim click) + locução suave.
 Uso: python3 scripts/gerar-audio-video.py roteiro.json saida.mp3
   roteiro.json = {"tempos": "tempos-X.json", "cenas": [{"id":..., "fala":..., "min": s, "fim": bool}, ...]}   (gerado por scripts/exportar-roteiro.js)
   Cada cena dura o tempo da fala + folga (nenhuma frase é cortada). Grava também video/tempos-X.json, que o vídeo usa pra montar a linha do tempo.
@@ -13,7 +13,7 @@ SR = 44100
 rot = json.load(open(sys.argv[1])); saida = sys.argv[2]
 KOKORO = os.environ.get('KOKORO_DIR', '/tmp/tts/kokoro-multi-lang-v1_0')
 VOZ_SID = int(os.environ.get('VOZ_SID', '43'))             # 42 = pf_dora (feminina), 43 = pm_alex, 44 = pm_santa (masculinas)
-VOZ_VEL = float(os.environ.get('VOZ_VEL', '0.9'))          # <1 = fala mais pausada (dá pra entender cada palavra)
+VOZ_VEL = float(os.environ.get('VOZ_VEL', '0.85'))         # <1 = fala mais pausada e suave
 import sherpa_onnx
 _tts = sherpa_onnx.OfflineTts(sherpa_onnx.OfflineTtsConfig(model=sherpa_onnx.OfflineTtsModelConfig(kokoro=sherpa_onnx.OfflineTtsKokoroModelConfig(
     model=f'{KOKORO}/model.onnx', voices=f'{KOKORO}/voices.bin', tokens=f'{KOKORO}/tokens.txt', data_dir=f'{KOKORO}/espeak-ng-data',
@@ -22,8 +22,8 @@ _tts = sherpa_onnx.OfflineTts(sherpa_onnx.OfflineTtsConfig(model=sherpa_onnx.Off
 def ler(p):
     w = wave.open(p); d = np.frombuffer(w.readframes(w.getnframes()), '<i2').astype(float) / 32768; return d, w.getframerate()
 cache = tempfile.mkdtemp()
-FILTRO = ('aresample=44100,highpass=f=70,equalizer=f=140:t=q:w=1:g=2,equalizer=f=3200:t=q:w=1.2:g=1.5,'
-          'acompressor=threshold=0.1:ratio=3:attack=5:release=120:makeup=2,aecho=0.8:0.4:45:0.08,alimiter=limit=0.9')
+FILTRO = ('aresample=44100,highpass=f=60,equalizer=f=120:t=q:w=1:g=2.5,equalizer=f=3000:t=q:w=1.5:g=-2.5,equalizer=f=5500:t=q:w=1:g=-3,lowpass=f=9500,'
+          'acompressor=threshold=0.14:ratio=2:attack=12:release=200:makeup=2,aecho=0.8:0.35:60:0.10,alimiter=limit=0.9')
 clipes = []
 for i, c in enumerate(rot['cenas']):
     bruto, tratado = f'{cache}/{i}.wav', f'{cache}/{i}t.wav'
@@ -66,32 +66,40 @@ def corda(f, dur, brilho=.5, decaimento=.9965, pos=.18):
 def nota(bus, t, m, vel=.7, dur=2.2, **k):
     y = corda(hz(m), dur, **k) * vel; i = max(0, int(t * SR))
     if i < len(bus): y = y[: len(bus) - i]; bus[i:i + len(y)] += y
-violao = np.zeros(N); bandolim = np.zeros(N)
-# acordes (midi, cordas de baixo→agudo) — valsa lenta em Dó
-AC = {'C': [48, 52, 55, 60, 64], 'Am': [45, 52, 57, 60, 64], 'Dm': [50, 57, 62, 65], 'G7': [43, 50, 55, 59, 65], 'F': [41, 48, 53, 57, 60], 'E7': [40, 47, 52, 56, 59]}
-PROG = ['C', 'Am', 'Dm', 'G7', 'C', 'F', 'G7', 'C', 'Am', 'Dm', 'E7', 'Am', 'F', 'G7', 'C', 'C']
-BPM = 96; BEAT = 60 / BPM; BAR = BEAT * 3
+violao = np.zeros(N); viola = np.zeros(N); baixo = np.zeros(N); perc = np.zeros(N)
+# reggae lento (72 bpm), tom de Sol maior, I–IV–V como no sertanejo. Acordes: (baixo, notas do violão)
+AC = {'G': (43, [55, 59, 62, 67]), 'C': (48, [55, 60, 64, 67]), 'D': (50, [57, 62, 66, 69]), 'Em': (40, [55, 59, 64, 67])}
+TERCAS = {'G': [(71, 74), (69, 72), (67, 71)], 'C': [(72, 76), (71, 74), (69, 72)], 'D': [(74, 78), (73, 76), (71, 74)], 'Em': [(71, 74), (69, 72), (67, 71)]}
+PROG = ['G', 'G', 'C', 'G', 'Em', 'C', 'D', 'G'] * 8
+BPM = 72; BEAT = 60 / BPM; BAR = BEAT * 4
 nbar = int((DUR + 2) / BAR) + 1
+def cl(n): return corda(hz(n), .22, brilho=.35, decaimento=.93)          # acorde "abafado" (skank)
 for b in range(nbar):
-    ac = AC[PROG[b % len(PROG)]]; t0 = b * BAR
-    jit = lambda: rng.normal(0, .006)
-    nota(violao, t0 + jit(), ac[0], .85, 2.6)                                  # baixo no 1
-    if b % 2 == 0: nota(violao, t0 + BEAT * .02, ac[-1] + 0, .0)              # (respiro)
-    for k, idx in enumerate((2, 3, 4)):                                         # dedilhado: agudos
-        nota(violao, t0 + BEAT * 1 + k * BEAT / 3 * .98 + jit(), ac[min(idx, len(ac) - 1)], .45 + .1 * k, 1.8)
-    nota(violao, t0 + BEAT * 2 + jit(), ac[1], .55, 1.8)                       # segundo baixo
-    nota(violao, t0 + BEAT * 2.5 + jit(), ac[3 if len(ac) > 3 else -1], .5, 1.6)
-    # bandolim com tremolo só nos finais de frase (suave, ao fundo)
-    if b % 4 == 3:
-        mel = {'G7': [79, 77, 76], 'C': [76, 74, 72], 'Am': [76, 77, 76], 'Dm': [77, 76, 74], 'E7': [80, 81, 80], 'F': [77, 76, 72]}[PROG[b % len(PROG)]]
-        for j, m in enumerate(mel):
-            tt = t0 + j * BEAT
-            for r in range(5): nota(bandolim, tt + r * .055, m, .13 + .02 * (r % 2), .5, brilho=.8, decaimento=.992)
+    ch = PROG[b % len(PROG)]; raiz, ac = AC[ch]; t0 = b * BAR; jit = lambda: rng.normal(0, .007)
+    # violão: batida de reggae só nos contratempos (&2 e &4), curta e abafada
+    for k in (1.5, 3.5):
+        for j, n in enumerate(ac): nota(violao, t0 + k * BEAT + j * .008 + jit(), n, .5 if k == 1.5 else .42, .25, brilho=.35, decaimento=.93)
+    # baixo redondo: "one drop" (sem o 1, forte no 3) com notinha de passagem
+    nota(baixo, t0 + 2 * BEAT, raiz, .9, 1.0, brilho=.1, decaimento=.9985)
+    nota(baixo, t0 + 3 * BEAT, raiz + 7, .6, .7, brilho=.1, decaimento=.9985)
+    nota(baixo, t0 + 3.5 * BEAT, raiz + 12, .45, .5, brilho=.1, decaimento=.9985)
+    # percussão bem suave: rim click no 3 e shaker nos contratempos
+    perc_i = int((t0 + 2 * BEAT) * SR)
+    if perc_i + 2000 < N:
+        tt = np.arange(1500) / SR; perc[perc_i:perc_i + 1500] += np.sin(2 * np.pi * 1700 * tt) * np.exp(-tt * 120) * .5
+    for k in range(8):
+        i = int((t0 + k * BEAT / 2) * SR)
+        if i + 900 < N: perc[i:i + 900] += np.diff(rng.standard_normal(901)) * np.exp(-np.arange(900) / SR * 150) * (.22 if k % 2 else .12)
+    # viola em terças (sertanejo): frase curta a cada 4 compassos, notas longas e doces
+    if b % 4 in (1, 3) and b >= 2:
+        for j, (n1, n2) in enumerate(TERCAS[ch]):
+            tt = t0 + (j * 1.25 + .5) * BEAT
+            nota(viola, tt, n1, .5, 1.6, brilho=.6, decaimento=.9975); nota(viola, tt + .01, n2, .42, 1.6, brilho=.6, decaimento=.9975)
 t = np.arange(int(.9 * SR)) / SR
 ir = sum(a * np.sin(2 * np.pi * f * t) * np.exp(-t * d) for f, a, d in ((98, 1, 22), (196, .8, 30), (392, .5, 45), (780, .25, 70))) + rng.standard_normal(len(t)) * np.exp(-t * 90) * .15
 ir /= np.abs(ir).sum() * .12
 corpo = lambda x: fftconvolve(x, ir)[: len(x)]
-musica = corpo(violao) * .9 + corpo(bandolim) * .5
+musica = corpo(violao) * .75 + corpo(viola) * .8 + corpo(baixo) * 1.0 + perc * .5
 tr = np.arange(int(1.4 * SR)) / SR; rv = rng.standard_normal(len(tr)) * np.exp(-tr * 3.2); rv = lfilter([1 - .55], [1, -.55], rv)
 musica = musica + fftconvolve(musica, rv)[: len(musica)] * .035
 musica = musica[:N]; musica /= np.abs(musica).max()
@@ -100,9 +108,9 @@ musica = musica[:N]; musica /= np.abs(musica).max()
 e = lfilter([1 - .998], [1, -.998], np.abs(voz)); mask = (e > .02).astype(float)
 jan = np.ones(int(.55 * SR)); mask = np.clip(np.convolve(mask, jan, 'full')[int(.2 * SR): int(.2 * SR) + N], 0, 1)   # começa a abaixar antes da voz, solta devagar
 mask = lfilter([1 - .9992], [1, -.9992], mask)
-duck = 1 - .62 * mask
+duck = 1 - .5 * mask
 fade = np.clip(np.arange(N) / SR / 1.2, 0, 1) * np.clip((DUR - np.arange(N) / SR) / 2.2, 0, 1)
-mix = musica * .30 * duck * fade + voz * .95
+mix = musica * .17 * duck * fade + voz * .95
 mix = np.tanh(mix * 1.1) / np.tanh(1.1); mix = mix / np.abs(mix).max() * .93
 pcm = (mix[: int(DUR * SR)] * 32767).astype('<i2')
 tmp = tempfile.mktemp(suffix='.wav')
