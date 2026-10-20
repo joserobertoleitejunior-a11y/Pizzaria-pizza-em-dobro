@@ -24,7 +24,7 @@ const FONTES = `@font-face{font-family:'Archivo Black';src:url(http://localhost:
   await p.evaluate('document.fonts.ready');
   const args = ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'mjpeg', '-i', '-'];
   if (musica) args.push('-i', musica);
-  args.push('-map', '0:v', ...(musica ? ['-map', '1:a'] : []), '-c:v', 'libx264', '-preset', 'medium', '-crf', '17', '-pix_fmt', 'yuv420p', '-r', String(FPS),
+  args.push('-map', '0:v', ...(musica ? ['-map', '1:a'] : []), '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-pix_fmt', 'yuv420p', '-r', String(FPS),
     ...(musica ? ['-c:a', 'aac', '-b:a', '192k'] : []), '-t', dur, '-movflags', '+faststart', saida);
   const ff = spawn(ffmpeg, args, { stdio: ['pipe', 'inherit', 'inherit'] });
   const total = Math.round(+dur * FPS);
