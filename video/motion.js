@@ -211,7 +211,7 @@ function tocar(comSom){
 }
 window.Video={
   iniciar:function(cfg){
-    C=cfg; palco.className='tema-'+(cfg.tema||'instagram'); construir(); som=$('som');
+    window.__cfg=cfg; C=cfg; palco.className='tema-'+(cfg.tema||'instagram'); construir(); som=$('som');
     $('capa').style.display=GRAVANDO?'none':'flex';
     carregar().then(function(){
       quadro(0);
