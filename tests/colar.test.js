@@ -7,7 +7,7 @@ const { esfDistribuirPadrao } = require('../shared/utils.js');
 const src = fs.readFileSync(__dirname + '/../caixa/js/colar-pedido.js', 'utf8');
 const trecho = src.slice(src.indexOf('function consolidarBrotos'), src.indexOf('function montarCaixaComPedidoInterpretado'));
 const trechoEsf = src.slice(src.indexOf('const RE_ESFIHA'), src.indexOf('// Junta as pizzas broto'));
-const { completarEsfihas, extrairEsfihasDoSite, extrairClienteDoSite, extrairValorCombinado } = new Function(trechoEsf + '; return { completarEsfihas, extrairEsfihasDoSite, extrairClienteDoSite, extrairValorCombinado };')();
+const { completarEsfihas, extrairEsfihasDoSite, extrairClienteDoSite, extrairValorCombinado, extrairClienteDoWhatsapp } = new Function(trechoEsf + '; return { completarEsfihas, extrairEsfihasDoSite, extrairClienteDoSite, extrairValorCombinado, extrairClienteDoWhatsapp };')();
 const consolidarBrotos = new Function(trecho + '; return consolidarBrotos;')();
 const par = (r) => r.map((x) => x.nome_cardapio + '+' + x.nome_cardapio_2);
 
@@ -100,4 +100,14 @@ test('"uma esfirra doce" é 1 esfiha (não combo de 10) e pede pra confirmar o s
   assert.match(r.itens[0].observacao, /Confete ou Brigadeiro/);
   assert.equal(completarEsfihas({ itens: [] }, 'duas esfihas').itens[0].esfihas_total, 2);
   assert.equal(completarEsfihas({ itens: [] }, 'queria um combo de esfiha').itens[0].esfihas_total, 10);
+});
+
+test('conversa copiada do WhatsApp: nome do cliente vem do remetente (não do atendente)', () => {
+  const a = '[18:52, 20/10/2026] Alex Sandro: Boa noite, tudo bem?\n[18:52, 20/10/2026] Alex Sandro: Eu quero 1 pizza grande\n[18:53, 20/10/2026] Você: Ok\n[19:02, 20/10/2026] Você: Fica 60 tudo';
+  assert.deepEqual(extrairClienteDoWhatsapp(a), { nome: 'Alex Sandro', telefone: null });
+  const b = '20/10/2026 18:52 - ~ Maria José: quero uma calabresa\n20/10/2026 18:53 - Pizza em Dobro: ok';
+  assert.equal(extrairClienteDoWhatsapp(b).nome, 'Maria José');
+  const c = '[18:52, 20/10/2026] +55 15 99123-4567: oi\n[18:53, 20/10/2026] Você: oi';
+  assert.deepEqual(extrairClienteDoWhatsapp(c), { nome: null, telefone: '+55 15 99123-4567' });
+  assert.deepEqual(extrairClienteDoWhatsapp('Boa noite, eu quero 1 pizza grande'), { nome: null, telefone: null });
 });

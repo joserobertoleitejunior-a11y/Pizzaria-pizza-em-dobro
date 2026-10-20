@@ -15,6 +15,7 @@ function abrirColarPedido(){
   }
   document.getElementById('colar-texto').value='';
   document.getElementById('colar-tel').value='';
+  { const cn=document.getElementById('colar-nome'); if(cn) cn.value=''; }
   document.getElementById('colar-status').textContent='';
   openModal('modal-colar');
 }
@@ -125,7 +126,10 @@ JSON esperado:
     }
     if(!parsed) throw ultimoErro||new Error('sem resposta');
     if(!Array.isArray(parsed.itens)) parsed.itens=[];
-    { const cs=extrairClienteDoSite(texto); parsed.cliente=parsed.cliente||{}; if(cs.nome) parsed.cliente.nome=cs.nome; if(cs.telefone&&!parsed.cliente.telefone) parsed.cliente.telefone=cs.telefone; }
+    { const cs=extrairClienteDoSite(texto), cw=extrairClienteDoWhatsapp(texto), nomeManual=(document.getElementById('colar-nome')?.value||'').trim();
+      parsed.cliente=parsed.cliente||{};
+      const nome=nomeManual||cs.nome||cw.nome; if(nome) parsed.cliente.nome=nome;
+      const tel=cs.telefone||cw.telefone; if(tel&&!parsed.cliente.telefone) parsed.cliente.telefone=tel; }
     sitEsf.itens.forEach(i=>parsed.itens.push(i));
     completarEsfihas(parsed,texto);
     window._origemConversor=true; window._valorCombinadoPendente=extrairValorCombinado(texto);
@@ -201,6 +205,23 @@ function extrairValorCombinado(texto){
   if(v===null) return null;
   const n=parseFloat(String(v).replace(',','.'));
   return n>=5&&n<=3000?Math.round(n*100)/100:null;
+}
+// Conversa copiada do WhatsApp (várias mensagens selecionadas, ou "exportar conversa") traz o remetente em cada linha:
+//   "[18:52, 20/10/2026] Alex Sandro: Boa noite"   ou   "20/10/2026 18:52 - Alex Sandro: Boa noite"
+// O cliente é quem NÃO é o atendente ("Você", "Eu", Pizza em Dobro, Marco...). Se o remetente for um número, vira telefone.
+function extrairClienteDoWhatsapp(texto){
+  const re=[/^\[?\s*\d{1,2}[:h]\d{2}(?::\d{2})?(?:\s*[ap]m)?\s*,?\s*\d{1,2}\/\d{1,2}(?:\/\d{2,4})?\s*\]?\s*[-–]?\s*([^:\n]{2,45}):/i,
+            /^\[?\s*\d{1,2}\/\d{1,2}(?:\/\d{2,4})?\s*,?\s*(?:às\s*)?\d{1,2}[:h]\d{2}(?::\d{2})?(?:\s*[ap]m)?\s*\]?\s*[-–]?\s*([^:\n]{2,45}):/i];
+  const ATENDENTE=/^(voc[eê]|eu|me|pizza\s*em\s*dobro|pizzaria|marco|atendente|loja|dobro|\+?\s*55\s*15\s*9?9705[-\s]?8390)/i;
+  const cont={};
+  String(texto||'').split('\n').forEach(l=>{
+    for(const r of re){ const m=l.trim().match(r); if(m){ const n=m[1].replace(/^[~\s]+/,'').replace(/[\u200e\u202a-\u202e]/g,'').trim(); if(n&&!ATENDENTE.test(n)) cont[n]=(cont[n]||0)+1; break; } }
+  });
+  const nomes=Object.keys(cont).sort((a,b)=>cont[b]-cont[a]);
+  if(!nomes.length) return {nome:null,telefone:null};
+  const n=nomes[0], dig=n.replace(/\D/g,'');
+  if(dig.length>=10&&dig.length<=13&&/^[\d+\s()-]+$/.test(n)) return {nome:null,telefone:n};
+  return {nome:n.replace(/[^\p{L}\p{N}\s.'-]/gu,'').trim()||null,telefone:null};
 }
 function completarEsfihas(parsed,texto){
   const t=String(texto||'');
