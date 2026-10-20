@@ -442,3 +442,8 @@ e sem `STAFF_PASSWORD`. É temporário: trocar por senha forte (e reativar o lim
 ## Vídeo "Como pedir" (`/video/`)
 - `video/index.html`: vídeo em HTML (palco 1080×1920 escalado pra qualquer tela). Mostra o site real num `iframe` (`../index.html`, com a splash de verdade), rola com `requestAnimationFrame` + easing (sem dedo/toque na tela), faz o pedido de demonstração (combo 2 por R$ 65 + pizza), mostra a mensagem chegando no WhatsApp (texto no mesmo formato do site) e fecha com o anúncio "Vibe Coding Process | Pizza em Dobro".
 - Narração: voz do navegador (Web Speech API, pt-BR, a mais grave disponível); legenda = o mesmo trecho que está sendo falado, um por vez. `?gravar` (sem painel de controle, inicia sozinho, p/ gravar a tela), `?mudo` (sem voz, tempos fixos). Roteiro: função `rodar()`.
+
+### Vídeo de promoções (`/video/promocoes.html`) — Stories 1080×1920
+- Só as 3 artes de promoção (`assets/promo/*`) + abertura/encerramento, 36,5 s, trilha original `video/musica-promocoes.mp3` (gerada por `scripts/gerar-musica-video.py`, tarantela 6/8, sem direitos autorais).
+- Toda animação é função de `quadro(t)` (sem CSS transition), por isso `scripts/renderizar-video.js` gera o MP4 quadro a quadro: `node scripts/renderizar-video.js promocoes.html saida.mp4 36.5 video/musica-promocoes.mp3` (precisa do servidor local e de `imageio-ffmpeg`). MP4 pronto: `video/promocoes-stories.mp4`.
+- Texto e peças importantes ficam entre y 250 e y 1670 (zona segura dos Stories). O vídeo "Como pedir" (`index.html`) segue a mesma regra.

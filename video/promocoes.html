@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pizza em Dobro — Promoções (Stories)</title>
+<style>
+:root{--pr:#D62828;--ouro:#F5C518}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;overflow:hidden;font-family:'Work Sans',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
+/* palco 1080×1920 (Stories do Instagram); texto e peças importantes ficam entre y 250 e y 1670 */
+#palco{position:absolute;left:50%;top:50%;width:1080px;height:1920px;transform-origin:center center;overflow:hidden;
+  background:radial-gradient(120% 80% at 50% 0%,#4a0d0d 0%,#170404 55%,#070707 100%)}
+.cena{position:absolute;inset:0;opacity:0}
+.poster{position:absolute;left:90px;top:250px;width:900px;height:1350px;border-radius:44px;overflow:hidden;
+  box-shadow:0 0 0 8px var(--ouro),0 40px 90px rgba(0,0,0,.65);clip-path:inset(0 round 44px)}
+.poster img{width:100%;height:100%;object-fit:cover;transform:scale(1);transform-origin:50% 40%}
+.leg{position:absolute;left:60px;right:60px;top:1612px;height:62px;display:flex;align-items:center;justify-content:center;
+  font-size:50px;font-weight:900;color:#fff;text-align:center;text-shadow:0 3px 14px #000;letter-spacing:.3px;white-space:nowrap}
+.leg b{color:var(--ouro)}
+/* abertura e encerramento */
+.centro{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px;text-align:center;padding:0 70px}
+.logo{width:380px;height:380px;border-radius:50%;object-fit:cover;border:8px solid var(--ouro);box-shadow:0 0 90px rgba(245,197,24,.35)}
+.t1{font-family:'Archivo Black','Work Sans',sans-serif;font-weight:900;font-size:128px;line-height:1;color:#fff;text-transform:uppercase;
+  text-shadow:0 8px 0 var(--pr),0 14px 40px rgba(0,0,0,.6)}
+.t1 em{font-style:normal;color:var(--ouro)}
+.t2{font-size:46px;font-weight:700;color:#f3f4f6}
+.t3{font-size:62px;font-weight:900;color:#fff;line-height:1.12;text-transform:uppercase}
+.t3 em{font-style:normal;color:var(--ouro)}
+.fone{display:inline-flex;align-items:center;gap:20px;background:#128C7E;color:#fff;font-weight:900;font-size:56px;padding:22px 44px;border-radius:999px;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+/* controles fora do vídeo */
+#capa{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.86);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;color:#fff;text-align:center;padding:24px}
+#capa img{width:110px;height:110px;border-radius:50%;border:3px solid var(--ouro)}
+#capa h1{font-size:1.6rem;font-weight:800}#capa p{max-width:420px;color:#d1d5db;line-height:1.5}
+#capa button{background:var(--pr);color:#fff;border:0;border-radius:999px;padding:16px 34px;font-size:1.15rem;font-weight:800;cursor:pointer;margin:4px}
+#capa .sec{background:#222}
+#ctl{position:fixed;right:14px;bottom:14px;z-index:40;opacity:.35}#ctl:hover{opacity:1}
+#ctl button{background:#111;color:#fff;border:1px solid #333;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer}
+body.gravando #ctl,body.gravando #capa{display:none}
+</style>
+</head>
+<body>
+<div id="palco">
+  <div class="cena centro" id="c0">
+    <img class="logo pop" src="../assets/logo.png" alt="Pizza em Dobro">
+    <div class="t1 pop">Promo<em>ções</em></div>
+    <div class="t2 pop">Pizza em Dobro · Itapetininga</div>
+  </div>
+  <div class="cena" id="c1"><div class="poster"><img src="../assets/promo/pizzas.jpg" alt=""></div>
+    <div class="leg"><span>2 pizzas grandes a partir de <b>R$ 65</b></span></div></div>
+  <div class="cena" id="c2"><div class="poster"><img src="../assets/promo/esfihas.jpg" alt=""></div>
+    <div class="leg"><span>Esfiha <b>R$ 5</b> · 10 por <b>R$ 50</b></span></div></div>
+  <div class="cena" id="c3"><div class="poster"><img src="../assets/promo/broto.jpg" alt=""></div>
+    <div class="leg"><span>2 pizzas broto por <b>R$ 50</b></span></div></div>
+  <div class="cena centro" id="c4">
+    <img class="logo pop" src="../assets/logo.png" alt="" style="width:280px;height:280px">
+    <div class="t3 pop">Entrega <em>grátis</em><br>a partir de 3 pizzas</div>
+    <div class="t2 pop">Peça pelo site, é rapidinho</div>
+    <div class="fone pop">WhatsApp 15 99705-8390</div>
+  </div>
+</div>
+<div id="capa">
+  <img src="../assets/logo.png" alt="">
+  <h1>Promoções · Stories</h1>
+  <p>Vídeo de 36 segundos no formato do Instagram (1080×1920), com música.</p>
+  <div><button id="btSom">▶ Assistir com música</button><button class="sec" id="btMudo">Sem som</button></div>
+</div>
+<div id="ctl"><button id="btRe">↺ Recomeçar</button></div>
+<audio id="som" src="musica-promocoes.mp3" preload="auto"></audio>
+<script>
+(function(){
+  var q=new URLSearchParams(location.search),gravar=q.has('gravar'),mudo=q.has('mudo');
+  if(gravar)document.body.classList.add('gravando');
+  var palco=document.getElementById('palco');
+  function ajusta(){var s=Math.min(innerWidth/1080,innerHeight/1920);palco.style.transform='translate(-50%,-50%) scale('+s+')';}
+  addEventListener('resize',ajusta);ajusta();
+  // [início s, fim s] de cada cena (compassos de 1,5 s da música)
+  var roteiro=[[0,4.5],[4.5,13.5],[13.5,22.5],[22.5,31.5],[31.5,36.5]],FIM=36.5,som=document.getElementById('som');
+  var cenas=roteiro.map(function(_,k){return document.getElementById('c'+k);});
+  var ease=function(x){x=Math.max(0,Math.min(1,x));return 1-Math.pow(1-x,3);};
+  var suave=function(x){x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);};
+  // estado do vídeo em função do tempo t (usado tanto no play quanto na gravação quadro a quadro)
+  function quadro(t){
+    roteiro.forEach(function(r,k){
+      var u=t-r[0],d=r[1]-r[0],el=cenas[k],ult=k===roteiro.length-1;
+      var a=ease(u/.6)*(ult?1:1-ease((u-(d-.5))/.5));
+      el.style.opacity=(u<0||u>d)?0:a;
+      if(u<0||u>d)return;
+      var po=el.querySelector('.poster');
+      if(po){var e=ease(u/.8);po.style.transform='translateY('+(60*(1-e))+'px) scale('+(.96+.04*e)+')';
+        po.firstElementChild.style.transform='scale('+(1+.07*suave(u/d))+')';}
+      el.querySelectorAll('.pop').forEach(function(x,n){var e=ease((u-[0,.25,.5,.8][n])/.7);
+        x.style.opacity=e;x.style.transform='translateY('+(40*(1-e))+'px) scale('+(.94+.06*e)+')';});
+      var lg=el.querySelector('.leg');if(lg){var e2=ease((u-.9)/.5);lg.style.opacity=e2;lg.style.transform='translateY('+(24*(1-e2))+'px)';}
+    });
+  }
+  window.quadro=quadro;
+  var raf=0;
+  function iniciar(comSom){
+    cancelAnimationFrame(raf);
+    var ini=performance.now();
+    if(comSom){som.currentTime=0;som.play().catch(function(){});}
+    window.__t0=Date.now();
+    (function passo(){var t=(performance.now()-ini)/1000;quadro(t);
+      if(t<FIM)raf=requestAnimationFrame(passo);else{window.__fim=true;document.title='FIM';}})();
+  }
+  quadro(0);
+  document.getElementById('capa').style.display=gravar?'none':'flex';
+  document.getElementById('btSom').onclick=function(){document.getElementById('capa').style.display='none';iniciar(true);};
+  document.getElementById('btMudo').onclick=function(){document.getElementById('capa').style.display='none';iniciar(false);};
+  document.getElementById('btRe').onclick=function(){iniciar(!mudo&&!gravar);};
+})();
+</script>
+</body>
+</html>

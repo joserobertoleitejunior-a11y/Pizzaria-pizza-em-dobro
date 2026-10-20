@@ -12,10 +12,10 @@ html,body{height:100%;background:#000;overflow:hidden;font-family:'Work Sans',sy
 /* palco 1080×1920 (vertical, formato de vídeo HD de celular) escalado pra caber em qualquer tela */
 #palco{position:absolute;left:50%;top:50%;width:1080px;height:1920px;transform-origin:center center;overflow:hidden;
   background:radial-gradient(120% 80% at 50% 0%,#3a0a0a 0%,#150404 55%,#070707 100%)}
-#tela{position:absolute;left:60px;top:44px;width:960px;height:1580px;border-radius:64px;overflow:hidden;clip-path:inset(0 round 64px);isolation:isolate;background:#111;
+#tela{position:absolute;left:60px;top:240px;width:960px;height:1130px;border-radius:64px;overflow:hidden;clip-path:inset(0 round 64px);isolation:isolate;background:#111;
   box-shadow:0 0 0 14px #1c1c1c,0 0 0 16px #3a3a3a,0 40px 90px rgba(0,0,0,.65)}
-#site{position:absolute;left:0;top:0;width:402px;height:660px;border:0;transform:scale(2.4);transform-origin:0 0;background:#111;will-change:transform}
-#legenda{position:absolute;left:60px;right:60px;top:1668px;height:216px;display:flex;align-items:center;justify-content:center;text-align:center}
+#site{position:absolute;left:0;top:0;width:402px;height:471px;border:0;transform:scale(2.4);transform-origin:0 0;background:#111;will-change:transform}
+#legenda{position:absolute;left:60px;right:60px;top:1410px;height:250px;display:flex;align-items:center;justify-content:center;text-align:center}
 #legenda span{display:block;font-size:54px;line-height:1.22;font-weight:800;color:#fff;letter-spacing:.2px;text-wrap:balance;
   text-shadow:0 3px 14px rgba(0,0,0,.8);opacity:0;transform:translateY(10px);transition:opacity .25s,transform .25s}
 #legenda span.on{opacity:1;transform:none}
@@ -41,6 +41,7 @@ html,body{height:100%;background:#000;overflow:hidden;font-family:'Work Sans',sy
 #fim.on{display:flex}#fim.vis{opacity:1}
 .f-linha{display:flex;align-items:center;justify-content:center;gap:44px;width:100%}
 .f-marca{display:flex;flex-direction:column;align-items:center;gap:22px;flex:1}
+.f-marca .cubo-cena{margin-bottom:46px}
 .f-div{width:4px;height:320px;border-radius:4px;background:linear-gradient(#0000,var(--ouro),#0000)}
 .f-nome{font-family:'Archivo Black','Work Sans',sans-serif;font-size:54px;line-height:1.08;letter-spacing:1px;color:#fff;text-transform:uppercase}
 .f-nome small{display:block;font-size:30px;letter-spacing:6px;color:var(--ouro);margin-top:10px;font-family:'Work Sans',sans-serif;font-weight:700}
