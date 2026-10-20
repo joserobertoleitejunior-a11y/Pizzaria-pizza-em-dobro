@@ -66,3 +66,4 @@ html,body{height:100%;background:#000;overflow:hidden;font-family:'Work Sans',sy
 #ctl{position:fixed;right:14px;bottom:14px;z-index:40;opacity:.35}#ctl:hover{opacity:1}
 #ctl button{background:#111;color:#fff;border:1px solid #333;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer}
 body.gravando #ctl,body.gravando #capa{display:none}
+.f-nome .p.ac-p::after{display:none}
