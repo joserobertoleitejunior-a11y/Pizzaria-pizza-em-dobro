@@ -125,6 +125,7 @@ JSON esperado:
     }
     if(!parsed) throw ultimoErro||new Error('sem resposta');
     if(!Array.isArray(parsed.itens)) parsed.itens=[];
+    { const cs=extrairClienteDoSite(texto); parsed.cliente=parsed.cliente||{}; if(cs.nome) parsed.cliente.nome=cs.nome; if(cs.telefone&&!parsed.cliente.telefone) parsed.cliente.telefone=cs.telefone; }
     sitEsf.itens.forEach(i=>parsed.itens.push(i));
     completarEsfihas(parsed,texto);
     montarCaixaComPedidoInterpretado(parsed);
@@ -177,6 +178,19 @@ function extrairEsfihasDoSite(texto){
     if(i+1<linhas.length&&/💰|^\s*R\$\s*[\d.,]+\s*$/.test(linhas[i+1])) i++; // linha de preço do combo
   }
   return {texto:resto.join('\n'),itens};
+}
+// Mensagem do site ("NOVO PEDIDO - SITE OFICIAL") traz "👤 *Cliente:* Nome" e (agora) "📞 *Telefone:* ...".
+// Lido direto do texto: sem isso, se a IA deixasse o nome em branco a comanda saía como "Cliente Balcão".
+function extrairClienteDoSite(texto){
+  const r={nome:null,telefone:null};
+  String(texto||'').split('\n').forEach(l=>{
+    const t=l.replace(/[*_]/g,'').trim();
+    let m=t.match(/^(?:[^\wÀ-ú]*\s*)?Cliente\s*:\s*(.+)$/i);
+    if(m&&!r.nome&&m[1].trim().length>1) r.nome=m[1].trim();
+    m=t.match(/^(?:[^\wÀ-ú]*\s*)?(?:Telefone|WhatsApp|Fone)\s*:\s*([\d()+\s.-]{8,})$/i);
+    if(m&&!r.telefone) r.telefone=m[1].trim();
+  });
+  return r;
 }
 function completarEsfihas(parsed,texto){
   const t=String(texto||'');

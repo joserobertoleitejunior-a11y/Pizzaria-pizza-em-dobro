@@ -506,6 +506,11 @@ async function finalizarVenda(){
   }
   const nomeDigitado=document.getElementById('f-nome').value.trim();
   const tel=document.getElementById('f-tel').value.trim()||null;
+  if(document.getElementById('f-tipo').value==='entrega'&&!nomeDigitado){ // entrega nunca é "balcão": precisa saber pra quem vai
+    alert('⚠️ Entrega sem NOME do cliente. Preencha o nome (e o telefone, se tiver) antes de finalizar.');
+    const cn=document.getElementById('f-nome'); if(cn){ cn.style.borderColor='#e71d36'; cn.focus(); }
+    return;
+  }
   const balcao=!nomeDigitado&&!tel; // venda de balcão anônima: fora de ranking/lista de clientes
   const nome=nomeDigitado||(tel?'Cliente':'Cliente Balcão');
   const tipo=document.getElementById('f-tipo').value;

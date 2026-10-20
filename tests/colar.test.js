@@ -7,7 +7,7 @@ const { esfDistribuirPadrao } = require('../shared/utils.js');
 const src = fs.readFileSync(__dirname + '/../caixa/js/colar-pedido.js', 'utf8');
 const trecho = src.slice(src.indexOf('function consolidarBrotos'), src.indexOf('function montarCaixaComPedidoInterpretado'));
 const trechoEsf = src.slice(src.indexOf('const RE_ESFIHA'), src.indexOf('// Junta as pizzas broto'));
-const { completarEsfihas, extrairEsfihasDoSite } = new Function(trechoEsf + '; return { completarEsfihas, extrairEsfihasDoSite };')();
+const { completarEsfihas, extrairEsfihasDoSite, extrairClienteDoSite } = new Function(trechoEsf + '; return { completarEsfihas, extrairEsfihasDoSite, extrairClienteDoSite };')();
 const consolidarBrotos = new Function(trecho + '; return consolidarBrotos;')();
 const par = (r) => r.map((x) => x.nome_cardapio + '+' + x.nome_cardapio_2);
 
@@ -76,4 +76,11 @@ test('"combo de esfihas" na mão: combo de pizza sem sabor que a IA criou é des
   assert.equal(r.itens.length, 1);
   assert.equal(r.itens[0].tipo, 'esfihas');
   assert.equal(r.itens[0].esfihas_total, 10);
+});
+
+test('mensagem do site: nome e telefone lidos do texto (comanda não sai como Cliente Balcão)', () => {
+  const txt = '🛎️ *NOVO PEDIDO - SITE OFICIAL*\n📅 20/10/2026 às 18:54\n\n👤 *Cliente:* Marcos Silva\n📞 *Telefone:* (15) 99999-1234\n\n🍕 *PEDIDO:*\n';
+  assert.deepEqual(extrairClienteDoSite(txt), { nome: 'Marcos Silva', telefone: '(15) 99999-1234' });
+  assert.deepEqual(extrairClienteDoSite('quero uma calabresa'), { nome: null, telefone: null });
+  assert.equal(extrairClienteDoSite('👤 *Cliente:* Zé\n').nome, 'Zé');
 });

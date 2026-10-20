@@ -89,7 +89,8 @@ async function finalizar(){
   let msg=`🛎️ *NOVO PEDIDO - SITE OFICIAL*%0A`+
     `📅 ${dt} às ${hr}%0A`+
     `${'─'.repeat(28)}%0A%0A`+
-    `👤 *Cliente:* ${encodeURIComponent(name)}%0A%0A`+
+    `👤 *Cliente:* ${encodeURIComponent(name)}%0A`+
+    `📞 *Telefone:* ${encodeURIComponent(tel)}%0A%0A`+
     `🍕 *PEDIDO:*%0A%0A${resumo}%0A%0A`+
     `${'─'.repeat(28)}%0A%0A`;
   if(!isRet)msg+=`📍 *ENDEREÇO:* ${encodeURIComponent(end)}, nº ${encodeURIComponent(num)}%0A%0A`;
