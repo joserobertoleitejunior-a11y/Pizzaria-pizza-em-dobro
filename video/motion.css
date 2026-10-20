@@ -44,19 +44,22 @@ html,body{height:100%;background:#000;overflow:hidden;font-family:'Work Sans',sy
 .z-msg b{color:#fff}.z-hora{display:block;text-align:right;color:#8696A0;font-size:22px;margin-top:6px}
 .z-aviso{align-self:center;background:#182229;color:#8696A0;border-radius:18px;padding:8px 24px;font-size:24px}
 .z-input{height:104px;background:#202C33;display:flex;align-items:center;padding:0 26px}.z-input i{flex:1;height:60px;border-radius:30px;background:#2A3942}
-/* cartão final: collab Vibe Coding Process × Pizza em Dobro (mesma zona segura) */
+/* cartão final: foco na pizzaria (mesma zona segura) */
 #fim{position:absolute;inset:0;background:rgba(6,6,6,.58);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;clip-path:inset(0 100% 0 0);padding:300px 60px 0}
 .fx{position:relative;opacity:0;will-change:transform,opacity}
-.f-par{display:flex;align-items:center;justify-content:center;gap:46px;margin-bottom:56px}
-.f-x{width:4px;height:250px;border-radius:4px;background:linear-gradient(#fff0,#F5C518,#fff0)}
-#espaco{width:300px;height:300px;border-radius:40px;display:block;box-shadow:0 30px 60px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08)}
-.f-logo{width:300px;height:300px;border-radius:50%;object-fit:cover;border:7px solid #F5C518;box-shadow:0 30px 60px rgba(0,0,0,.55)}
-.f-nome{font-family:'Archivo Black';font-size:60px;line-height:1.1;color:#fff;text-transform:uppercase;letter-spacing:1px;text-shadow:0 4px 26px rgba(0,0,0,.7)}
+.f-par{margin-bottom:50px}
+.f-logo{width:400px;height:400px;border-radius:50%;object-fit:cover;border:9px solid #F5C518;box-shadow:0 0 120px -10px var(--cor),0 36px 70px rgba(0,0,0,.6)}
+.f-nome{font-family:'Archivo Black';font-size:92px;line-height:1.05;color:#fff;text-transform:uppercase;letter-spacing:1px;text-shadow:0 4px 26px rgba(0,0,0,.7)}
 .f-nome .ac{color:#F5C518}
-.f-tag{font-size:30px;font-weight:600;color:rgba(255,255,255,.82);margin-top:22px;text-shadow:0 2px 12px rgba(0,0,0,.6)}
-.f-linha{width:340px;height:3px;background:linear-gradient(90deg,#D62828,#F5C518);border-radius:3px;margin:46px 0 34px;transform-origin:0 50%}
-.f-fone{font-family:'Archivo Black';font-size:46px;color:#fff;letter-spacing:1.5px;text-shadow:0 3px 18px rgba(0,0,0,.6)}
-.f-jose{font-size:22px;font-weight:600;letter-spacing:5px;color:rgba(255,255,255,.72);text-transform:uppercase;margin-top:12px}
+.f-tag{font-size:40px;font-weight:700;color:#fff;margin-top:26px;text-shadow:0 2px 14px rgba(0,0,0,.7)}
+.f-linha{width:360px;height:4px;background:linear-gradient(90deg,#D62828,#F5C518);border-radius:4px;margin:44px 0 38px;transform-origin:0 50%}
+.f-fone{font-family:'Archivo Black';font-size:58px;color:#fff;letter-spacing:1.5px;text-shadow:0 3px 18px rgba(0,0,0,.6)}
+.f-jose{font-size:28px;font-weight:700;letter-spacing:5px;color:#F5C518;text-transform:uppercase;margin-top:14px}
+/* crédito discreto no canto de baixo (nos dois vídeos): logo + contato da Vibe Coding Process */
+#credito{position:absolute;left:46px;top:1556px;display:flex;align-items:center;gap:16px;opacity:0;z-index:20}
+#cuboMini{width:92px;height:92px;border-radius:22px;box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.1)}
+#credito b{display:block;font-family:'Archivo Black';font-size:22px;letter-spacing:2px;color:#fff;font-weight:400;text-shadow:0 2px 10px rgba(0,0,0,.8)}
+#credito span{display:block;font-size:20px;font-weight:600;color:rgba(255,255,255,.85);margin-top:4px;text-shadow:0 2px 10px rgba(0,0,0,.8)}
 /* controles (só no navegador) */
 #capa{position:fixed;inset:0;z-index:50;background:rgba(15,10,8,.86);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;color:#fff;text-align:center;padding:24px}
 #capa img{width:104px;height:104px;border-radius:50%;border:3px solid var(--ouro)}

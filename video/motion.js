@@ -95,14 +95,14 @@ function desenharEspaco(cv,t){
 function montarFim(){
   var f=C.fim;
   fimEl.innerHTML=
-   '<div class="fx f-par"><canvas id="espaco" width="600" height="600"></canvas><div class="f-x"></div><img class="f-logo" src="../assets/logo.png" alt=""></div>'+
+   '<div class="fx f-par"><img class="f-logo" src="../assets/logo.png" alt=""></div>'+
    '<div class="fx f-nome"></div><div class="fx f-tag"></div><div class="fx f-linha"></div>'+
    '<div class="fx f-contato"><div class="f-fone"></div><div class="f-jose"></div></div>';
   var q=function(s){return fimEl.querySelector(s);};
-  q('.f-nome').appendChild(letras('Vibe Coding Process'));q('.f-nome').appendChild(document.createElement('br'));q('.f-nome').appendChild(letras('<b>|</b> Pizza em Dobro'));
-  q('.f-tag').appendChild(letras(f.tag||'Tecnologia e design sob medida para o seu negócio.'));
-  q('.f-fone').appendChild(letras('(15) 99668-8070'));
-  q('.f-jose').appendChild(letras('Falar com José Roberto'));
+  q('.f-nome').appendChild(letras('Pizza em <b>Dobro</b>'));
+  q('.f-tag').appendChild(letras(f.tag));
+  q('.f-fone').appendChild(letras('(15) 99705-8390'));
+  q('.f-jose').appendChild(letras('WhatsApp · Peça já pelo site'));
 }
 /* ── fundo: fachada com movimento de câmera lenta, partículas de luz e grão de filme ── */
 var part=$('part'),pc=part.getContext('2d'),grao=$('grao'),gc=grao.getContext('2d'),fotoEl=document.querySelector('#fundo img'),pts=[];
@@ -121,6 +121,7 @@ function fundoVivo(t){
 function quadro(t){
   if(!ifrOk)return;
   fundoVivo(t);
+  var cr=$('credito'); cr.style.opacity=clamp((t-.8)/.6); cr.style.transform='translateX('+(-40*(1-outCubic((t-.8)/.7)))+'px)'; desenharEspaco($('cuboMini'),t);
   /* celular: entra deslizando e flutua levemente */
   var ent=outBack(t/1.1), sai=C.fim?inOutCubic((t-C.fim.t0)/.7):0;
   fone.style.opacity=clamp(t/.5)*(1-sai);
@@ -171,7 +172,6 @@ function quadro(t){
     if(u>-.1){
       if(!flags.fimMontado){flags.fimMontado=1;montarFim();}
       var itens=fimEl.querySelectorAll('.fx'),ult=[.5,.95,1.35,1.7,1.9];
-      desenharEspaco($('espaco'),u);
       Array.prototype.forEach.call(itens,function(x,i){
         var uu=u-ult[i],e=outCubic(uu/.7);x.style.opacity=e;
         if(i===3)x.style.transform='scaleX('+e+')'; else x.style.transform='translateX('+(-70*(1-e))+'px)';
