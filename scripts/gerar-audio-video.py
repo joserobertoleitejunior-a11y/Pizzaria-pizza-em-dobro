@@ -12,8 +12,8 @@ FF = imageio_ffmpeg.get_ffmpeg_exe()
 SR = 44100
 rot = json.load(open(sys.argv[1])); saida = sys.argv[2]
 KOKORO = os.environ.get('KOKORO_DIR', '/tmp/tts/kokoro-multi-lang-v1_0')
-VOZ_SID = int(os.environ.get('VOZ_SID', '43'))             # 42 = pf_dora (feminina), 43 = pm_alex, 44 = pm_santa (masculinas)
-VOZ_VEL = float(os.environ.get('VOZ_VEL', '0.85'))         # <1 = fala mais pausada e suave
+VOZ_SID = int(os.environ.get('VOZ_SID', '44'))             # 42 = pf_dora (feminina), 43 = pm_alex, 44 = pm_santa (masculinas)
+VOZ_VEL = float(os.environ.get('VOZ_VEL', '1.0'))         # <1 = fala mais pausada e suave
 import sherpa_onnx
 _tts = sherpa_onnx.OfflineTts(sherpa_onnx.OfflineTtsConfig(model=sherpa_onnx.OfflineTtsModelConfig(kokoro=sherpa_onnx.OfflineTtsKokoroModelConfig(
     model=f'{KOKORO}/model.onnx', voices=f'{KOKORO}/voices.bin', tokens=f'{KOKORO}/tokens.txt', data_dir=f'{KOKORO}/espeak-ng-data',
