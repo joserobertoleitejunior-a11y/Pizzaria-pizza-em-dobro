@@ -375,6 +375,7 @@ function setBordaCx(idx,k,nome){
   else i.borda=bs[0];
   i._chave=String(i._chave||'').replace(/\|b:.*$/,'')+'|b:'+bs.join(',');
   renderCartItems(); atualizarBarraCarrinho();
+  if(window._ppAtivo&&typeof ppRender==='function') ppRender();
 }
 function renderCartItems(){
   const box=document.getElementById('cart-items');

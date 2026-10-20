@@ -19,7 +19,7 @@ function abrirPasso(){
 }
 function fecharPasso(){ window._ppAtivo=false; document.getElementById('pp-ov').classList.remove('open'); renderProdutos(); }
 function ppIr(passo,extra){ Object.assign(_pp,{passo},extra||{}); ppRender(); }
-function ppAposAdicionar(){ if(!window._ppAtivo) return; if(_pp.passo==='item'&&(_pp.tipo==='pizza'||_pp.tipo==='combo'||_pp.tipo==='broto'||_pp.tipo==='meia'||_pp.tipo==='esf')) ppIr('mais'); else ppRender(); }
+function ppAposAdicionar(){ if(!window._ppAtivo) return; if(_pp.passo==='item'&&(_pp.tipo==='combo'||_pp.tipo==='broto')){ ppIr('cborda'); return; } if(_pp.passo==='item'&&(_pp.tipo==='pizza'||_pp.tipo==='combo'||_pp.tipo==='broto'||_pp.tipo==='meia'||_pp.tipo==='esf')) ppIr('mais'); else ppRender(); }
 
 function _ppResumo(){
   const n=qtdCarrinho();
@@ -38,7 +38,7 @@ function _ppChips(itens,fn){ return '<div class="chips-sab">'+itens.map(i=>`<but
 function ppRender(){
   const t=document.getElementById('pp-titulo'), b=document.getElementById('pp-corpo'), f=document.getElementById('pp-rodape');
   if(!t) return;
-  const passos={tipo:1,item:1,mais:1,bebida:2,bebida2:2,entrega:3};
+  const passos={tipo:1,item:1,borda:1,tirar:1,cborda:1,mais:1,bebida:2,bebida2:2,entrega:3};
   document.querySelectorAll('#pp-trilha i').forEach((d,i)=>d.classList.toggle('on',i<passos[_pp.passo]));
   let corpo='', rodape='', titulo='';
   if(_pp.passo==='tipo'){
@@ -55,6 +55,22 @@ function ppRender(){
     else if(_pp.tipo==='doce'){ corpo=_ppGradeQtd(DEFAULT_MENU.filter(i=>i.cat==='dw')); }
     else if(_pp.tipo==='calz'){ corpo=_ppGradeQtd(DEFAULT_MENU.filter(i=>i.cat==='cz')); }
     rodape=`<button type="button" class="pp-sec" onclick="ppIr('tipo')">← Voltar</button><button type="button" class="pp-prim" onclick="ppIr('mais')">Continuar →</button>`;
+  }else if(_pp.passo==='borda'){
+    const nomeP=_pp.alvo==='meia'?'½ '+_pp.meiaA.n+' + ½ '+_pp.meiaB.n:_pp.pz.n;
+    titulo='Borda recheada?';
+    corpo=`<p class="pp-dica"><b>${nomeP}</b> — toque na borda (ou "Sem borda").</p><div class="pp-opcoes">`+BORDAS_DEFAULT.map((b,i)=>`<button type="button" class="pp-opcao" onclick="ppBorda(${i})"><b>${i===0?'Sem borda recheada':b.name}</b><span>${b.price?'+ '+fmt(b.price):'grátis'}</span></button>`).join('')+'</div>';
+    rodape=`<button type="button" class="pp-sec" onclick="ppIr('item')">← Voltar</button>`;
+  }else if(_pp.passo==='tirar'){
+    const bases=_pp.alvo==='meia'?[_pp.meiaA,_pp.meiaB]:[_pp.pz];
+    const ings=[...new Set(bases.flatMap(m=>getIngredientes(m.d||'').flatMap(x=>x.split(' e ')).map(x=>x.trim())))].filter(g=>g.toLowerCase()!=='molho');
+    titulo='Tirar algum ingrediente?';
+    corpo=`<p class="pp-dica">Toque no que o cliente NÃO quer. Se não for tirar nada, é só adicionar.</p><div class="chips-sab">`+ings.map(g=>`<span class="ing-chip ${_pp.rem.includes(g)?'removido':''}" onclick="ppTirar(this,'${g.replace(/'/g,"\\'")}')">✕ ${g}</span>`).join('')+'</div>';
+    rodape=`<button type="button" class="pp-sec" onclick="ppIr('borda')">← Voltar</button><button type="button" class="pp-prim" onclick="ppAddPizza()">Adicionar ✓</button>`;
+  }else if(_pp.passo==='cborda'){
+    titulo='Borda das pizzas do combo';
+    const combos=cart.map((i,idx)=>({i,idx})).filter(x=>x.i.combos);
+    corpo=`<p class="pp-dica">Cada pizza do combo pode ter a sua borda. Se não tiver borda, é só continuar.</p>`+combos.map(x=>`<div class="pp-cborda"><b>${x.i.name}</b>${seletorBordaCx(x.i,x.idx)}</div>`).join('');
+    rodape=`<button type="button" class="pp-prim" onclick="ppIr('mais')">Continuar →</button>`;
   }else if(_pp.passo==='mais'){
     titulo='Adicionado! ✅';
     corpo=`<div class="pp-lista">${cart.map(i=>`<div><span>${i.qty}× ${i.name}</span><b>${fmt(i.unitPrice*i.qty)}</b></div>`).join('')||'<p>Carrinho vazio.</p>'}</div><div class="pp-pergunta">Mais alguma pizza, combo ou esfiha?</div>
@@ -81,12 +97,22 @@ function ppRender(){
     if(sub&&_pp.tipo==='esf') renderEsfihasCaixa(sub);
   }
 }
-function ppPizza(id){ abrirItem(id); }
+// pizza: sabor → borda → tirar ingrediente → adiciona (uma pergunta por tela)
+function ppPizza(id){ const m=DEFAULT_MENU.find(x=>x.id===id); if(!m) return; ppIr('borda',{alvo:'pizza',pz:m,meiaB:null,borda:0,rem:[]}); }
+function ppBorda(i){ _pp.borda=i; ppIr('tirar'); }
+function ppTirar(el,g){ const r=_pp.rem,k=r.indexOf(g); if(k>=0) r.splice(k,1); else r.push(g); el.classList.toggle('removido',k<0); }
+function ppAddPizza(){
+  if(_pp.alvo==='meia'){
+    adicionarMeiaAMeiaAoCarrinho(_pp.meiaA,_pp.meiaB,BORDAS_DEFAULT[_pp.borda||0].name,_pp.rem.slice(),1);
+    _pp.meiaA=null; _pp.meiaB=null; atualizarBarraCarrinho(); avisoRapido('✓ Meia a meia adicionada'); ppIr('mais'); return;
+  }
+  itemEmEdicao={menuItem:_pp.pz,borda:BORDAS_DEFAULT[_pp.borda||0],removidos:_pp.rem.slice(),acrescimos:[]};
+  _pp.passo='item'; _pp.tipo='pizza'; confirmarItem(); avisoRapido('✓ Pizza adicionada');
+}
 function ppMeia(id){
   const m=DEFAULT_MENU.find(x=>x.id===id); if(!m) return;
   if(!_pp.meiaA){ _pp.meiaA=m; ppRender(); return; }
-  adicionarMeiaAMeiaAoCarrinho(_pp.meiaA,m,null,[],1);
-  _pp.meiaA=null; atualizarBarraCarrinho(); avisoRapido('✓ Meia a meia adicionada'); ppAposAdicionar();
+  ppIr('borda',{alvo:'meia',meiaB:m,borda:0,rem:[]});
 }
 function ppFechar(tipoVenda){
   const sel=document.getElementById('f-tipo'); if(sel){ sel.value=tipoVenda; alternarCampoEntregador(); }

@@ -447,3 +447,8 @@ e sem `STAFF_PASSWORD`. É temporário: trocar por senha forte (e reativar o lim
 - Legendas: letra a letra da esquerda pra direita, reagem à velocidade da rolagem do site; trilho de rolagem ao lado do celular; etiqueta da parte (Abertura/Promoções/Pedido...); selo da Vibe Coding Process no canto de baixo; créditos finais focados na pizzaria.
 - Banners: scroll horizontal (`horiz:'promos-trilho',slide:N`) e toque (`VT.toque`) levam ao resultado (rolagem própria, determinística).
 - Zona segura dos Stories: tudo acima de y ≈ 1670 e abaixo de y ≈ 250. Os MP4 não ficam no repositório (`.gitignore`).
+
+### Pedido passo a passo
+- **Site** (`js/passo-a-passo.js`, estilos `.pa-*` em `assets/site.css`): assistente `PA.abrir(tipo?)` — botão no topo (hero), botão flutuante e nas seções de Combos/Esfihas. Uma pergunta por tela: tipo → sabor(es) → borda (no combo, uma por pizza) → tirar ingrediente → "mais alguma coisa?" → entrega/retirada → dados → endereço → pagamento → confere → WhatsApp (`finalizar()`). Usa o mesmo carrinho; os campos de nome/telefone/endereço/pagamento do carrinho são "emprestados" pra dentro do assistente e devolvidos ao fechar.
+- **Caixa** (`caixa/js/passo-a-passo.js`): pizza e meia a meia agora passam por "Borda recheada?" e "Tirar algum ingrediente?"; combos/broto ganham a etapa "Borda das pizzas do combo"; trilha com nomes (1 · Itens, 2 · Bebida, 3 · Entrega).
+- Borda direto no carrinho: site (`seletorBordaResumo`/`bordaResumo` em `js/carrinho.js`) e Caixa (`seletorBordaCx`/`setBordaCx`); no combo a borda é cobrada por pizza.
