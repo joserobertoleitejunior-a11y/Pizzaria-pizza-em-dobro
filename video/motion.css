@@ -19,11 +19,17 @@ html,body{height:100%;background:#000;overflow:hidden;font-family:'Work Sans',sy
 #part{position:absolute;inset:0;width:1080px;height:1920px;mix-blend-mode:screen;opacity:.9}
 #grao{position:absolute;inset:0;width:1080px;height:1920px;opacity:.07;mix-blend-mode:overlay;pointer-events:none}
 /* celular */
-#fone{position:absolute;left:206px;top:330px;width:668px;height:1040px;border-radius:88px;background:#0c0c0c;padding:14px;
-  box-shadow:0 0 0 2px #2c2c2c,0 0 100px -10px var(--cor),0 60px 110px -20px rgba(0,0,0,.75);transform-style:preserve-3d;will-change:transform}
-#tela{position:relative;width:640px;height:1012px;border-radius:76px;overflow:hidden;clip-path:inset(0 round 76px);isolation:isolate;background:#0E0E0E}
+#fone{position:absolute;left:206px;top:330px;width:668px;height:1040px;border-radius:92px;background:#050505;padding:14px;
+  /* aro de titânio (iPhone) + sombra */
+  box-shadow:0 0 0 3px #c9c4bd,0 0 0 6px #7d7873,0 0 0 8px #3c3936,0 0 0 9px #9b968f,0 0 100px -10px var(--cor),0 60px 110px -20px rgba(0,0,0,.75);transform-style:preserve-3d;will-change:transform}
+/* botões laterais: liga/desliga à direita; ação + volume à esquerda */
+#fone::before{content:"";position:absolute;right:-14px;top:300px;width:6px;height:160px;border-radius:0 4px 4px 0;background:linear-gradient(90deg,#5d5955,#bdb8b1 60%,#7d7873)}
+#fone::after{content:"";position:absolute;left:-14px;top:200px;width:6px;height:56px;border-radius:4px 0 0 4px;background:linear-gradient(270deg,#5d5955,#bdb8b1 60%,#7d7873);
+  box-shadow:0 110px 0 0 #9b968f,0 230px 0 0 #9b968f}
+#tela{position:relative;width:640px;height:1012px;border-radius:80px;overflow:hidden;clip-path:inset(0 round 80px);isolation:isolate;background:#0E0E0E}
 #site{position:absolute;left:0;top:0;width:402px;height:635.6px;border:0;transform:scale(1.5920);transform-origin:0 0;background:#0E0E0E}
-#ilha{position:absolute;left:50%;top:18px;width:140px;height:38px;margin-left:-70px;border-radius:19px;background:#050505;z-index:5}
+#ilha{position:absolute;left:50%;top:22px;width:168px;height:46px;margin-left:-84px;border-radius:23px;background:#000;z-index:5;
+  background-image:radial-gradient(circle at 132px 23px,#1d2733 0 7px,#0b0f14 8px 10px,transparent 11px)}
 #brilho{position:absolute;inset:0;z-index:6;pointer-events:none;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.20) 50%,transparent 62%);transform:translateX(-130%)}
 /* legendas cinéticas — sempre acima de y 1490 */
 #cap{position:absolute;left:44px;right:44px;top:1392px;height:160px}

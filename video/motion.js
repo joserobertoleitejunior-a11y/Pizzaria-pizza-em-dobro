@@ -85,7 +85,7 @@ function resolverY(s){
 function prepararSite(){
   var d=D(),st=d.createElement('style');
   st.textContent='html{scroll-behavior:auto!important}*{content-visibility:visible!important}html{scrollbar-width:none!important}html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}'+
-   '#pwa-banner,#fab-equipe,.fab-equipe,#music-bar{display:none!important}.reveal{opacity:1!important;transform:none!important;transition:none!important}'+
+   '#pwa-banner,#fab-equipe,.fab-equipe,#music-bar,.pa-flutuante{display:none!important}.reveal{opacity:1!important;transform:none!important;transition:none!important}'+
    '.promos-trilho{scroll-snap-type:none!important}.promo-slide{transition:none!important}.promo-slide.toque{transform:scale(.95)!important;filter:brightness(.82)!important}';
   d.head.appendChild(st);
   var fixa=function(){var b=d.getElementById('status-loja');if(b){b.textContent='ABERTO';b.className='status-badge open';}};fixa();setInterval(fixa,400);
