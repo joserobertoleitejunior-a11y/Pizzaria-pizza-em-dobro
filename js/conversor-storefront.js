@@ -1189,10 +1189,11 @@ function abrirPortaSplash(){
   const ws=document.getElementById('ws');
   if(!ws || ws.classList.contains('aberto')) return;
   ws.classList.add('aberto');
+  // tela "Pedido rápido" / "Ver o site" entra por cima do splash enquanto ele some (sem mostrar o site no meio)
+  if(!document.documentElement.classList.contains('sem-splash') && typeof mostrarBoasVindas==='function') mostrarBoasVindas();
   setTimeout(()=>{
     ws.style.display='none';
     ws.style.visibility='hidden';
-    if(typeof mostrarBoasVindas==='function') mostrarBoasVindas(); // "Pedido rápido" ou "Ver o site"
   },650);
 }
 // última fatia: atraso 1.5s + 7 × .3s = 3.6s, mais .8s de animação = 4.4s; folga curta
