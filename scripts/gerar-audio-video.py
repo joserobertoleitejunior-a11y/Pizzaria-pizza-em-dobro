@@ -13,7 +13,7 @@ SR = 44100
 rot = json.load(open(sys.argv[1])); saida = sys.argv[2]
 KOKORO = os.environ.get('KOKORO_DIR', '/tmp/tts/kokoro-multi-lang-v1_0')
 VOZ_SID = int(os.environ.get('VOZ_SID', '44'))             # 42 = pf_dora (feminina), 43 = pm_alex, 44 = pm_santa (masculinas)
-VOZ_VEL = float(os.environ.get('VOZ_VEL', '1.0'))         # <1 = fala mais pausada e suave
+VOZ_VEL = float(os.environ.get('VOZ_VEL', '1.15'))        # >1 = fala mais rápida (locutor animado)
 import sherpa_onnx
 _tts = sherpa_onnx.OfflineTts(sherpa_onnx.OfflineTtsConfig(model=sherpa_onnx.OfflineTtsModelConfig(kokoro=sherpa_onnx.OfflineTtsKokoroModelConfig(
     model=f'{KOKORO}/model.onnx', voices=f'{KOKORO}/voices.bin', tokens=f'{KOKORO}/tokens.txt', data_dir=f'{KOKORO}/espeak-ng-data',
@@ -38,13 +38,13 @@ t = 0.0; tempos = {}; inicios = []
 FIXOS = json.load(open(os.environ['TEMPOS_FIXOS']))['cenas'] if os.environ.get('TEMPOS_FIXOS') else None
 for c, d in zip(rot['cenas'], clipes):
     if FIXOS:
-        f = FIXOS[c['id']]; atraso = 1.0 if c.get('fim') else .3
+        f = FIXOS[c['id']]; atraso = .8 if c.get('fim') else .2
         tempos[c['id']] = f; inicios.append(f['t0'] + atraso)
         if f['t0'] + atraso + len(d) / SR > f['t1'] + .2: print('  ⚠ fala passa da cena:', c['id'])
         t = f['t1']; continue
     dv = len(d) / SR
-    atraso = 1.0 if c.get('fim') else .3
-    fim_cena = t + max(c.get('min') or 0, atraso + dv + (1.8 if c.get('fim') else .85))
+    atraso = .8 if c.get('fim') else .2
+    fim_cena = t + max(c.get('min') or 0, atraso + dv + (1.3 if c.get('fim') else .45))
     tempos[c['id']] = {'t0': round(t, 2), 't1': round(fim_cena, 2)}; inicios.append(t + atraso)
     print(f"  {c['id']:9s} {t:6.2f} → {fim_cena:6.2f}s  fala {dv:.2f}s  {c['fala'][:55]}")
     t = fim_cena

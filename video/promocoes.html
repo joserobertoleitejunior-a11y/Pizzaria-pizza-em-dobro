@@ -28,17 +28,16 @@
 Video.iniciar({
   tema:'instagram', tempos:'tempos-promocoes.json',
   cenas:[
-    {id:'splash',parte:'Abertura',html:'Bateu a <b>fome?</b> Vem ver!',fala:'Bateu a fome? Vem ver!',min:4.4,splash:true},
+    {id:'splash',parte:'Abertura',html:'Bateu a <b>fome?</b> Vem ver!',fala:'Bateu a fome? Vem ver!',min:3.6,splash:true},
     {id:'promos',parte:'Promoções',html:'Vamos às <b>promoções</b>',fala:'Vamos às promoções!',rolar:{el:'promos',off:36}},
-    {id:'ban1',parte:'Promoções',html:'2 pizzas a partir de <b>R$&nbsp;65</b>. Toque no banner!',fala:'Duas pitsas grandes, a partir de sessenta e cinco reais! Toque no banner!',acoes:[{dt:-1.25,fn:function(w){VT.toque(w,0,1);}},{dt:-.85,fn:function(w){VT.toque(w,0,0);}}]},
-    {id:'res1',parte:'Combos',html:'E ele leva você direto aos <b>combos</b>',fala:'E ele leva você direto aos combos!',rolar:{el:'combo-card-combo65',off:130}},
-    {id:'ban2',parte:'Promoções',html:'Deslize: esfiha a <b>R$&nbsp;5</b>. Toque no banner!',fala:'Deslize para o lado: esfiha a cinco reais! Toque no banner!',rolagens:[{dt0:.1,dt1:1.5,el:'promos',off:36},{dt0:.3,dt1:1.7,horiz:'promos-trilho',slide:1}],acoes:[{dt:-1.25,fn:function(w){VT.toque(w,1,1);}},{dt:-.85,fn:function(w){VT.toque(w,1,0);}}]},
-    {id:'res2',parte:'Esfihas',html:'Aqui você monta o seu <b>combo de esfihas</b>',fala:'Aqui, você monta o seu combo de esfihas!',rolar:{el:'anc-es',off:70}},
-    {id:'ban3',parte:'Promoções',html:'Combo broto: 2 por <b>R$&nbsp;50</b>. Toque no banner!',fala:'Combo broto: duas pitsas por cinquenta reais! Toque no banner!',rolagens:[{dt0:.1,dt1:1.5,el:'promos',off:36},{dt0:.3,dt1:1.7,horiz:'promos-trilho',slide:2}],acoes:[{dt:-1.25,fn:function(w){VT.toque(w,2,1);}},{dt:-.85,fn:function(w){VT.toque(w,2,0);}}]},
-    {id:'res3',parte:'Combos',html:'E já escolha os <b>sabores</b>',fala:'E já escolha os sabores!',rolar:{el:'combo-card-broto50',off:130}},
-    {id:'entrega',parte:'Promoções',html:'<b>Entrega grátis</b> a partir de 3 pizzas',fala:'Entrega grátis, a partir de três pitsas!',rolar:{el:'entrega-gratis-card',off:150}},
-    {id:'pedir',parte:'Pedido',html:'Peça pelo <b>site</b>, é rapidinho',fala:'Peça pelo site, é rapidinho!',rolar:{el:'cat-p',off:60}},
-    {id:'fim',fim:true,tag:'Pedir pizza nunca foi tão fácil',fala:'Pitsa em Dobro. Pedir pitsa nunca foi tão fácil. Peça já, pelo site!'}
+    {id:'ban1',parte:'Promoções',html:'2 pizzas a partir de <b>R$&nbsp;65</b>. Toque!',fala:'Duas pitsas a partir de sessenta e cinco! Toque!',min:3.4,acoes:[{dt:-1.25,fn:function(w){VT.toque(w,0,1);}},{dt:-.85,fn:function(w){VT.toque(w,0,0);}}]},
+    {id:'res1',parte:'Combos',html:'Direto nos <b>combos</b>!',fala:'Direto nos combos!',rolar:{el:'combo-card-combo65',off:130}},
+    {id:'ban2',parte:'Promoções',html:'Esfiha a <b>R$&nbsp;5</b>. Toque!',fala:'Esfiha a cinco reais! Toque!',min:3.4,rolagens:[{dt0:.1,dt1:1.5,el:'promos',off:36},{dt0:.3,dt1:1.7,horiz:'promos-trilho',slide:1}],acoes:[{dt:-1.25,fn:function(w){VT.toque(w,1,1);}},{dt:-.85,fn:function(w){VT.toque(w,1,0);}}]},
+    {id:'res2',parte:'Esfihas',html:'Monte seu <b>combo de esfihas</b>!',fala:'Monte seu combo de esfihas!',rolar:{el:'anc-es',off:70}},
+    {id:'ban3',parte:'Promoções',html:'Combo broto: 2 por <b>R$&nbsp;50</b>!',fala:'Combo broto: duas por cinquenta!',min:3.4,rolagens:[{dt0:.1,dt1:1.5,el:'promos',off:36},{dt0:.3,dt1:1.7,horiz:'promos-trilho',slide:2}],acoes:[{dt:-1.25,fn:function(w){VT.toque(w,2,1);}},{dt:-.85,fn:function(w){VT.toque(w,2,0);}}]},
+    {id:'res3',parte:'Combos',html:'Escolha os <b>sabores</b>!',fala:'Escolha os sabores!',rolar:{el:'combo-card-broto50',off:130}},
+    {id:'entrega',parte:'Promoções',html:'<b>Entrega grátis</b> com 3 pizzas!',fala:'Entrega grátis com três pitsas!',rolar:{el:'entrega-gratis-card',off:150}},
+    {id:'fim',fim:true,tag:'Pedir pizza nunca foi tão fácil',fala:'Pitsa em Dobro. Pedir pitsa nunca foi tão fácil!'}
   ]
 });
 </script>
