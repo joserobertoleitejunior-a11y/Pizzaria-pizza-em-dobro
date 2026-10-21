@@ -206,12 +206,11 @@
     if($('boas-vindas')) return;
     try{ if(sessionStorage.getItem('bv_ok')) return; sessionStorage.setItem('bv_ok','1'); }catch(e){}
     var d=document.createElement('div'); d.id='boas-vindas'; d.className='bv-ov'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','Como você quer pedir?');
-    d.innerHTML='<div class="bv-caixa">'+
-      '<div class="bv-video"><video id="bv-v" src="video/como-pedir-site.mp4" poster="video/como-pedir-capa.jpg" muted playsinline autoplay loop preload="metadata"></video>'+
-        '<button type="button" class="bv-som" onclick="PA.somVideo(this)" aria-label="Ligar o som">🔇 Ouvir</button><span class="bv-tag">▶ Veja como pedir</span></div>'+
-      '<div class="bv-txt"><img src="assets/logo.png" alt="" width="54" height="54"><h2>Como você quer <span>pedir?</span></h2>'+
+    d.innerHTML='<video id="bv-v" class="bv-fundo" src="video/como-pedir-site.mp4" poster="video/como-pedir-capa.jpg" muted playsinline autoplay loop preload="auto"></video><div class="bv-veu"></div>'+
+      '<button type="button" class="bv-som" onclick="PA.somVideo(this)" aria-label="Ligar o som">🔇 Ouvir</button>'+
+      '<div class="bv-txt"><h2>Como você quer <span>pedir?</span></h2>'+
         '<button type="button" class="bv-rapido" onclick="PA.bvRapido()">⚡ Pedido rápido<small>uma pergunta por vez, bem fácil</small></button>'+
-        '<button type="button" class="bv-site" onclick="PA.bvSite()">🍕 Ver o site e o cardápio</button></div></div>';
+        '<button type="button" class="bv-site" onclick="PA.bvSite()">🍕 Ver o site e o cardápio</button></div>';
     document.body.appendChild(d); requestAnimationFrame(function(){ d.classList.add('on'); });
     var v=$('bv-v'); if(v){ var pl=v.play&&v.play(); if(pl&&pl.catch) pl.catch(function(){}); }
   }
