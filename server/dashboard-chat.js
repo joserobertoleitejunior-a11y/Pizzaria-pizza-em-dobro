@@ -27,8 +27,8 @@ function categoriaPagamento(raw) {
 const COMBOS_DEFAULT = [
   { titulo: '2 Por R$ 65,00', preco: 65.00, sabores: ['Mussarela', 'Calabresa'] },
   { titulo: '2 Por R$ 75,00', preco: 75.00, sabores: ['Marguerita', 'Palmito', 'Frango Catupiry', 'Milho', 'Alho Frito', 'Calabresa Piry'] },
-  { titulo: '2 Por R$ 80,00', preco: 80.00, sabores: ['Portuguesa', 'Toscana', '4 Queijos', 'Franqueijo', 'Bauru', 'Bacon'] },
-  { titulo: '2 Por R$ 85,00', preco: 85.00, sabores: ['Brócolis com Bacon', 'Peperone', 'Franqueijo Piry', 'Toscana Piry', 'Bacon', 'Atum', 'Lombo', 'Peito de Peru'] }
+  { titulo: '2 Por R$ 80,00', preco: 80.00, sabores: ['Portuguesa', 'Toscana', 'Quatro Queijos', 'Franqueijo', 'Bauru', 'Bacon'] },
+  { titulo: '2 Por R$ 85,00', preco: 85.00, sabores: ['Brocolis com Bacon', 'Peperone', 'Franqueijo Piry', 'Toscana Piry', 'Bacon', 'Atum', 'Lombo', 'Peito de Peru'] }
 ];
 const BORDAS_DEFAULT = [
   { name: 'Sem Borda Recheada', price: 0 }, { name: 'Catupiry', price: 10 }, { name: 'Cheddar', price: 10 },

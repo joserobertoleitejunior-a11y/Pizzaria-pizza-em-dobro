@@ -74,8 +74,8 @@ function _normalizarCategoriaCardapio(cat){
 const COMBOS_DEFAULT=[
   {id:'combo65', preco:65.00, titulo:'2 Por R$ 65,00', sabores:['Mussarela','Calabresa']},
   {id:'combo75', preco:75.00, titulo:'2 Por R$ 75,00', sabores:['Marguerita','Palmito','Frango Catupiry','Milho','Alho Frito','Calabresa Piry']},
-  {id:'combo80', preco:80.00, titulo:'2 Por R$ 80,00', sabores:['Portuguesa','Toscana','4 Queijos','Franqueijo','Bauru','Bacon']},
-  {id:'combo85', preco:85.00, titulo:'2 Por R$ 85,00', sabores:['Brócolis com Bacon','Peperone','Franqueijo Piry','Toscana Piry','Bacon','Atum','Lombo','Peito de Peru']}
+  {id:'combo80', preco:80.00, titulo:'2 Por R$ 80,00', sabores:['Portuguesa','Toscana','Quatro Queijos','Franqueijo','Bauru','Bacon']},
+  {id:'combo85', preco:85.00, titulo:'2 Por R$ 85,00', sabores:['Brocolis com Bacon','Peperone','Franqueijo Piry','Toscana Piry','Bacon','Atum','Lombo','Peito de Peru']}
 ];
 
 // ── Combo BROTO: 2 pizzas broto por R$ 50,00, QUALQUER sabor (tradicional ou especial), pode repetir ──

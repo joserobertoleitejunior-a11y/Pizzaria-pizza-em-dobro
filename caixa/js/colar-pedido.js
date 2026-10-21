@@ -89,7 +89,7 @@ EXEMPLOS SÓ DE NÚMERO (pra fixar o padrão, endereço completo fora deles pode
 
 8. "borda" É INDIVIDUAL DE CADA ITEM e só pode ser preenchida se o cliente pediu uma borda recheada EXPLICITAMENTE para aquela pizza específica (ex: "borda de catupiry", "borda recheada de chocolate"). Muitos sabores do cardápio já contêm palavras como "Catupiry" no PRÓPRIO NOME/descrição (ex: "Frango Catupiry", "Calabresa Piry", "Franqueijo Piry") — isso é o RECHEIO da pizza, não é pedido de borda, e NUNCA deve fazer você preencher "borda" nesse item nem em nenhum outro. Preencher "borda" em um item nunca deve influenciar os outros itens do pedido — cada item é avaliado sozinho, olhando só o que foi dito sobre ELE. Na dúvida, "borda":null.
 
-9. COMBO "2 por X": se o cliente pedir um combo (duas pizzas de sabores diferentes por um preço fixo, ex: "quero o 2 por 65", "o combo de mussarela com calabresa"), use "tipo":"combo". Preencha "nome_cardapio" com o 1º sabor e "nome_cardapio_2" com o 2º sabor, EXATAMENTE como aparecem na lista de FAIXAS DE COMBO acima (nunca do cardápio normal). Preencha "combo_faixa" com o valor da faixa (65, 75, 80 ou 85) SE o cliente disse o preço/faixa explicitamente — senão deixe "combo_faixa":null, o sistema descobre sozinho pelos 2 sabores. O combo é sempre 2 sabores DIFERENTES — nunca repita o mesmo sabor nos dois campos. Se não tiver certeza se é combo ou 2 pizzas avulsas, ou não tiver certeza da faixa/sabores, prefira "tipo":"normal" com um item pra cada sabor (nunca invente uma faixa de combo que o cliente não pediu claramente).
+9. COMBO "2 por X": se o cliente pedir um combo (duas pizzas de sabores diferentes por um preço fixo, ex: "quero o 2 por 65", "o combo de mussarela com calabresa"), use "tipo":"combo". Preencha "nome_cardapio" com o 1º sabor e "nome_cardapio_2" com o 2º sabor, EXATAMENTE como aparecem na lista de FAIXAS DE COMBO acima (nunca do cardápio normal). Preencha "combo_faixa" com o valor da faixa (65, 75, 80 ou 85) SE o cliente disse o preço/faixa explicitamente — senão deixe "combo_faixa":null, o sistema descobre sozinho pelos 2 sabores. Se o cliente pedir as 2 pizzas do combo com o MESMO sabor, repita o sabor nos dois campos. Se não tiver certeza se é combo ou 2 pizzas avulsas, ou não tiver certeza da faixa/sabores, prefira "tipo":"normal" com um item pra cada sabor (nunca invente uma faixa de combo que o cliente não pediu claramente).
 
 10. COMBO BROTO — "2 pizzas broto por R$ 50" (o cliente diz "combo broto", "2 broto", "duas brotinho", "broto 50", "uma broto de X e uma de Y"): cada pizza broto pedida é UM item com "tipo":"broto", "nome_cardapio" = o sabor (EXATAMENTE como no CARDÁPIO REAL, qualquer tradicional ou especial) e "nome_cardapio_2":null, e "qtd" = QUANTAS pizzas broto desse sabor (NÃO quantos combos). Ex: "2 broto, uma de calabresa e uma de mussarela" → DOIS itens broto (calabresa qtd 1 e mussarela qtd 1); "2 broto de calabresa" → UM item broto calabresa com qtd 2. O sistema junta as brotos de 2 em 2 em combos de R$ 50 sozinho — NUNCA monte o combo você mesmo e NUNCA repita o sabor pra "completar" o par. Se disser "broto" mas não ficar claro que é combo (pizza broto avulsa), ainda use "tipo":"broto" e conte as pizzas; o atendente confere.
 
@@ -140,7 +140,7 @@ JSON esperado:
       const tel=cs.telefone||cw.telefone; if(tel&&!parsed.cliente.telefone) parsed.cliente.telefone=tel; }
     sitEsf.itens.forEach(i=>parsed.itens.push(i));
     completarEsfihas(parsed,texto);
-    window._origemConversor=true; window._valorCombinadoPendente=extrairValorCombinado(texto);
+    window._origemConversor=true; window._valorCombinadoPendente=extrairValorCombinado(texto); parsed._texto=texto;
     montarCaixaComPedidoInterpretado(parsed);
     closeModal('modal-colar');
   }catch(e){
@@ -154,7 +154,9 @@ JSON esperado:
 
 // ── Casamento tolerante com o cardápio: a IA pode errar a grafia ("calabreza", "Frango c/ Catupiry").
 // Primeiro igualdade sem acento/maiúscula, depois "contém", depois palavras em comum.
-function _normNome(t){ return String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\b(pizza|de|da|do|a|o|com|c|e|extra)\b/g,' ').replace(/\s+/g,' ').trim(); }
+function _normNome(t){ return String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/\bquatro\b/g,'4').replace(/\bcinco\b/g,'5').replace(/\btres\b/g,'3') // "quatro queijos" = "4 queijos"
+    .replace(/\b(?:mucarela|muzarela|mozarela|mozzarella|muzzarella|mussa)\b/g,'mussarela').replace(/\bpep+eron[ie]\b/g,'peperone').replace(/[^a-z0-9 ]/g,' ').replace(/\b(pizza|de|da|do|a|o|com|c|e|extra)\b/g,' ').replace(/\s+/g,' ').trim(); }
 function _acharPorNome(nome,lista,getNome){
   const alvo=_normNome(nome); if(!alvo) return null;
   const nomes=lista.map(x=>_normNome(getNome(x)));
@@ -296,8 +298,48 @@ function consolidarBrotos(itens, saborValido){
   return out;
 }
 
+// ── COMBOS "2 por X": o Conversor entende o combo mesmo quando a IA erra o nome do sabor, mistura faixas
+// ou devolve as 2 pizzas como avulsas.
+// Sabor: casa com os sabores dos combos por aproximação ("4 queijos" = "Quatro Queijos", "brocolis", "calabreza").
+// Faixa: a que o cliente falou; senão a que tem os 2 sabores (se tiver mais de uma, a mais barata);
+// sabores de faixas diferentes → vale a faixa da pizza mais cara (e avisa o atendente).
+function resolverComboConversor(s1,s2,faixa){
+  const todos=[...new Set(COMBOS_DEFAULT.flatMap(c=>c.sabores))];
+  const a=_acharPorNome(s1,todos,x=>x), b=_acharPorNome(s2,todos,x=>x);
+  if(!a||!b) return null;
+  const tem=(c,x)=>c.sabores.includes(x);
+  if(faixa){ const c=COMBOS_DEFAULT.find(c=>c.preco===Number(faixa)); if(c&&tem(c,a)&&tem(c,b)) return {combo:c,s1:a,s2:b,aviso:null}; }
+  const ambos=COMBOS_DEFAULT.filter(c=>tem(c,a)&&tem(c,b)).sort((x,y)=>x.preco-y.preco);
+  if(ambos.length) return {combo:ambos[0],s1:a,s2:b,aviso:null};
+  const menor=x=>COMBOS_DEFAULT.filter(c=>tem(c,x)).sort((p,q)=>p.preco-q.preco)[0];
+  const ca=menor(a), cb=menor(b); const c=ca.preco>=cb.preco?ca:cb;
+  return {combo:c,s1:a,s2:b,aviso:a+' e '+b+' são de faixas diferentes: usei '+c.titulo+' (a da pizza mais cara) — confira com o cliente.'};
+}
+// O cliente falou em combo / "2 por 65", mas a IA devolveu pizzas avulsas → junta de 2 em 2 em combos.
+const RE_COMBO_PIZZA=/\bcombo\b|\b(?:2|duas)\s*(?:pizzas?\s*)?(?:grandes?\s*)?por\s*(?:r\$\s*)?(?:65|75|80|85)\b/i;
+function combosDeAvulsas(itens,texto){
+  const t=String(texto||'').replace(/combo\s*(?:de\s*|do\s*)?(?:\d+\s*)?(?:esf\w*|broto\w*)/gi,' ');
+  const lista=Array.isArray(itens)?itens:[];
+  if(!RE_COMBO_PIZZA.test(t)||lista.some(i=>i&&i.tipo==='combo')) return lista;
+  const mf=t.match(/(?:por|combo\s*(?:de|do)?)\s*(?:r\$\s*)?(65|75|80|85)\b/i), faixa=mf?Number(mf[1]):null;
+  const todos=[...new Set(COMBOS_DEFAULT.flatMap(c=>c.sabores))];
+  const unid=[]; const resto=[];
+  lista.forEach(i=>{
+    const ok=i&&i.tipo==='normal'&&i.nome_cardapio&&_acharPorNome(i.nome_cardapio,todos,x=>x);
+    if(ok){ for(let k=0;k<Math.max(1,parseInt(i.qtd)||1);k++) unid.push(i); } else resto.push(i);
+  });
+  if(unid.length<2) return lista;
+  const out=[];
+  for(let k=0;k+1<unid.length;k+=2) out.push({tipo:'combo',nome_cardapio:unid[k].nome_cardapio,nome_cardapio_2:unid[k+1].nome_cardapio,combo_faixa:faixa,qtd:1,
+    borda:unid[k].borda||unid[k+1].borda||null,remover:[...(unid[k].remover||[]),...(unid[k+1].remover||[])],observacao:[unid[k].observacao,unid[k+1].observacao].filter(Boolean).join(' · ')||null,_juntado:true});
+  if(unid.length%2) resto.push(Object.assign({},unid[unid.length-1],{qtd:1}));
+  const r=out.concat(resto); r.combosJuntados=out.length; return r;
+}
+
 function montarCaixaComPedidoInterpretado(parsed){
   const itensOrig=parsed.itens;
+  parsed.itens=combosDeAvulsas(parsed.itens,parsed._texto);
+  const combosJuntados=(parsed.itens&&parsed.itens.combosJuntados)||0; const avisosCombo=[];
   parsed.itens=consolidarBrotos(parsed.itens,n=>{ const m=DEFAULT_MENU.find(x=>x.n===n)||_acharItem(n); return !!m&&(m.cat==='p'||m.cat==='s'); });
   const brotoSobra=!!(parsed.itens&&parsed.itens.brotoSobra);
   let naoIdentificados=0;
@@ -308,10 +350,10 @@ function montarCaixaComPedidoInterpretado(parsed){
 
     // ---- COMBO "2 POR X" ----
     if(it.tipo==='combo'){
-      const s1=it.nome_cardapio, s2=it.nome_cardapio_2;
-      // resolverFaixaCombo() vem de shared/utils.js — fonte única com o site e o bot do WhatsApp
-      const combo=(typeof resolverFaixaCombo==='function')?resolverFaixaCombo(s1,s2,it.combo_faixa):null;
-      if(!combo||!s1||!s2||s1===s2){
+      const rc=(it.nome_cardapio&&it.nome_cardapio_2)?resolverComboConversor(it.nome_cardapio,it.nome_cardapio_2,it.combo_faixa):null;
+      const combo=rc&&rc.combo, s1=rc?rc.s1:it.nome_cardapio, s2=rc?rc.s2:it.nome_cardapio_2;
+      if(rc&&rc.aviso) avisosCombo.push('🍕 '+rc.aviso);
+      if(!combo){
         naoIdentificados++;
         cart.push({
           _chave:'manual-'+Date.now()+'-'+Math.random(),
@@ -499,6 +541,8 @@ function montarCaixaComPedidoInterpretado(parsed){
   window._valorCombinadoPendente=null;
   if(naoIdentificados>0) avisos.push('⚠️ '+naoIdentificados+' item(ns) não foram reconhecidos com certeza e aparecem marcados no carrinho como "CONFERIR" — remova e adicione o item correto pela busca antes de finalizar.');
   if(brotoSobra) avisos.push('🍕 Veio uma quantidade ímpar de pizzas broto: a última ficou num combo com o MESMO sabor nos dois lados — confira com o cliente.');
+  if(combosJuntados) avisos.push('🍕🍕 O cliente pediu combo: juntei as pizzas em '+combosJuntados+' combo(s) — confira os sabores e a faixa.');
+  avisosCombo.forEach(a=>avisos.push(a));
   if(comboDetectado) avisos.push('🍕🍕 Combo/esfihas identificados e adicionados ao carrinho — confira os sabores, quantidades e o preço antes de finalizar.');
   if(enderecoFaltandoNumero) avisos.push('📍 Não encontrei o NÚMERO da casa/apartamento no texto colado — confira com o cliente antes de despachar a entrega.');
   if(avisoPagamento) avisos.push(avisoPagamento);
