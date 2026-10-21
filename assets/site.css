@@ -226,9 +226,14 @@ header{position:relative;min-height:74vh;display:flex;flex-direction:column;just
 
 /* LAST ORDER */
 #last-order-banner{max-width:450px;margin:0 auto 12px;padding:0 16px;display:none;}
-.lo-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:var(--raio-p);padding:11px 14px;font-size:.86rem;color:var(--tx-2);display:flex;align-items:center;justify-content:space-between;gap:10px;}
-.lo-card b{color:var(--bg2);}
-.lo-repeat-btn{background:rgba(20,20,20,.15);border:1px solid rgba(255,255,255,.3);color:var(--bg2);padding:6px 12px;border-radius:var(--raio-p);font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;letter-spacing:.5px;}
+.lo-card{background:rgba(24,24,24,.60);border:1px solid rgba(255,255,255,.12);border-radius:var(--raio);padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.07);display:flex;align-items:center;gap:12px;color:#fff;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.lo-ico{flex:0 0 auto;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:1.3rem;background:rgba(245,197,24,.16);border:1px solid rgba(245,197,24,.35)}
+.lo-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.lo-tit{font-size:.68rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--amarelo)}
+.lo-text{font-size:.88rem;font-weight:700;line-height:1.3;color:#fff;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.lo-date{font-size:.72rem;color:rgba(255,255,255,.55)}
+.lo-repeat-btn{flex:0 0 auto;background:var(--amarelo);color:#141414;border:0;padding:10px 14px;border-radius:999px;font-size:.8rem;font-weight:900;cursor:pointer;white-space:nowrap;font-family:inherit;transition:transform .15s}
+.lo-repeat-btn:active{transform:scale(.95)}
 
 /* ── CIRURGIA: STATS PÚBLICO ── */
 #stats-publico{max-width:450px;margin:0 auto 12px;padding:0 16px;display:none;}

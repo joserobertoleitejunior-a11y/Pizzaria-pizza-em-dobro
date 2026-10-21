@@ -123,7 +123,7 @@ function loadClientBadge(){
     nd.innerHTML=currentUser.name.split(' ')[0].toUpperCase();
     const last=DB.get('last_order');
     const banner=document.getElementById('last-order-banner');
-    if(last){banner.style.display='block';document.getElementById('lo-text').innerText=`${last.text} — ${last.date}`;}
+    if(last){banner.style.display='block';document.getElementById('lo-text').innerText=last.text;document.getElementById('lo-date').innerText=last.date||'';}
   } else {
     nd.style.display='none';
   }
