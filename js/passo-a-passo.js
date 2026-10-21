@@ -10,7 +10,7 @@
   var P={passo:'tipo',hist:[],tipo:null,it:{}};
   var ETAPAS=[['Escolher',['tipo','sabor','meia1','meia2','faixa','c1','c2','esf','beb']],
               ['Personalizar',['borda','borda1','borda2','tirar']],
-              ['Seus dados',['mais','modo','dados','end']],
+              ['Seus dados',['mais','refri','modo','dados','end']],
               ['Enviar',['pag','confere']]];
   var TIPOS=[
     {id:'pizza',ico:'🍕',nome:'Pizza grande',sub:'um sabor, com ou sem borda'},
@@ -60,7 +60,7 @@
   }
 
   // ── adiciona ao carrinho do site (mesmas estruturas que o cardápio usa) ──
-  function adicionar(){
+  function adicionar(destino){
     var t=P.tipo, it=P.it;
     if(t==='pizza'){
       var m=menu.find(function(x){return x.id===it.id;}); if(!m) return;
@@ -83,7 +83,7 @@
     }
     updateUI();
     if(typeof mostrarAviso==='function') mostrarAviso('✓ Adicionado ao pedido');
-    ir('mais');
+    ir(destino||'mais');
   }
 
   // ── telas ──
@@ -103,6 +103,7 @@
   }
   function qtdNoCarrinho(id){ return cart.filter(function(c){return c.id===id&&c.type!=='half';}).length; }
 
+  var FECHAR='<button type="button" class="pa-fechar" onclick="PA.fecharRapido()">⚡ Fechar pedido agora</button>';
   function render(){
     devolver();
     var t='',d='',corpo='',rod='', it=P.it;
@@ -134,17 +135,17 @@
         rod=vol; break;
       case 'borda':
         t='Quer borda recheada?'; d='Escolha uma opção. "Sem borda recheada" não muda o preço.';
-        corpo=cardsBorda('PA.borda',it.borda); rod=vol; break;
+        corpo=cardsBorda('PA.borda',it.borda); rod=FECHAR+vol; break;
       case 'borda1': case 'borda2':
         var q=P.passo==='borda1'?1:2;
         t='Borda da '+q+'ª pizza'; d=(q===1?it.s1:it.s2)+' — cada pizza do combo pode ter a sua borda.';
-        corpo=cardsBorda(q===1?'PA.b1':'PA.b2',q===1?it.b1:it.b2); rod=vol; break;
+        corpo=cardsBorda(q===1?'PA.b1':'PA.b2',q===1?it.b1:it.b2); rod=FECHAR+vol; break;
       case 'tirar':
         var base=P.tipo==='meia'?[menu.find(function(x){return x.id===it.a;}),menu.find(function(x){return x.id===it.b;})]:[menu.find(function(x){return x.id===it.id;})];
         var ings=[]; base.forEach(function(m){ingredientes(m).forEach(function(g){if(ings.indexOf(g)<0)ings.push(g);});});
         t='Quer tirar algum ingrediente?'; d='Toque para tirar. Se não quiser tirar nada, é só seguir.';
         corpo='<div class="pa-chips">'+ings.map(function(g){var on=it.rem.indexOf(g)>=0;return '<button type="button" class="pa-chip'+(on?' on':'')+'" onclick="PA.tirar(\''+esc(g).replace(/'/g,"\\'")+'\')">'+(on?'✓ Sem ':'Sem ')+esc(g)+'</button>';}).join('')+'</div>';
-        rod=vol+'<button type="button" class="pa-prim" onclick="PA.add()">Adicionar ao pedido ✓</button>'; break;
+        rod=FECHAR+vol+'<button type="button" class="pa-prim" onclick="PA.add()">Adicionar ao pedido ✓</button>'; break;
       case 'esf':
         var n=_esfTotal();
         t='Monte suas esfihas'; d='R$ 5 cada. Com 10 sai R$ 50, 20 por R$ 90 e 30 por R$ 130. Use + e −.';
@@ -156,7 +157,13 @@
         var grupos=[['Bebidas','d'],['Doces','dw'],['Calzones','cz']];
         corpo=grupos.map(function(g){var l=menu.filter(function(m){return m.cat===g[1];}); if(!l.length) return '';
           return '<h4 class="pa-h4">'+g[0]+'</h4><div class="pa-esf">'+l.map(function(m){var q=qtdNoCarrinho(m.id);return '<div class="pa-esf-l"><span>'+esc(m.n)+' <small>'+R(m.p)+'</small></span><button type="button" onclick="PA.beb('+m.id+',-1)">−</button><b>'+q+'</b><button type="button" onclick="PA.beb('+m.id+',1)">+</button></div>';}).join('')+'</div>';}).join('');
-        rod=vol+'<button type="button" class="pa-prim" onclick="PA.ir(\'mais\')">Continuar →</button>'; break;
+        rod=vol+'<button type="button" class="pa-prim" onclick="PA.contBeb()">'+(P.rapido?'Fechar pedido →':'Continuar →')+'</button>'; break;
+      case 'refri':
+        t='Quer um refrigerante?'; d='Seu pedido está pronto. É só dizer sim ou não e fechar.';
+        corpo='<div class="pa-tipos">'+
+          '<button type="button" class="pa-tipo" onclick="PA.refri(true)"><span>🥤</span><b>Sim</b><small>escolher a bebida</small></button>'+
+          '<button type="button" class="pa-tipo" onclick="PA.refri(false)"><span>✅</span><b>Não, obrigado</b><small>fechar o pedido</small></button></div>';
+        rod=vol; break;
       case 'mais':
         t='Mais alguma coisa?'; d='Seu pedido até agora está aqui embaixo.';
         corpo='<div class="pa-tipos pa-tipos-2">'+
@@ -224,6 +231,12 @@
     abrir:abrir, fechar:fechar, voltar:voltar, ir:ir,
     tipo:function(t){escolherTipo(t);},
     tipoDireto:function(t){escolherTipo(t);},
+    // Marco: "um botão que leva direto a fechar o pedido" — conclui o item em andamento (com o que já foi escolhido), pergunta do refri e vai pros dados
+    fecharRapido:function(){ P.rapido=true; var it=P.it, t=P.tipo;
+      var ok=(t==='pizza'&&it.id)||(t==='meia'&&it.a&&it.b)||((t==='combo'||t==='broto')&&it.s1&&it.s2);
+      if(ok) adicionar('refri'); else ir('refri'); },
+    contBeb:function(){ ir(P.rapido?'modo':'mais'); },
+    refri:function(sim){ if(sim){ P.tipo='beb'; P.it={borda:0,b1:0,b2:0,rem:[]}; ir('beb'); } else ir('modo'); },
     filtrar:function(q){ q=String(q||'').toLowerCase(); document.querySelectorAll('#pa-corpo .pa-op').forEach(function(b){ b.style.display=b.textContent.toLowerCase().indexOf(q)>=0?'':'none'; }); },
     sabor:function(id){P.it.id=id; ir('borda');},
     meia1:function(id){P.it.a=id; ir('meia2');},
