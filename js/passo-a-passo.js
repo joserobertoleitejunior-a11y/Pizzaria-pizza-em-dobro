@@ -38,7 +38,7 @@
 
   function montarCasca(){
     if($('pa-ov')) return;
-    var d=document.createElement('div'); d.id='pa-ov'; d.className='pa-ov'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','Pedido passo a passo');
+    var d=document.createElement('div'); d.id='pa-ov'; d.className='pa-ov'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','Pedido rápido');
     d.innerHTML='<div class="pa-caixa"><div class="pa-topo"><button type="button" class="pa-x" onclick="PA.fechar()" aria-label="Fechar">✕</button>'+
       '<div class="pa-trilha" id="pa-trilha"></div><h2 id="pa-titulo"></h2><p id="pa-dica"></p></div>'+
       '<div class="pa-corpo" id="pa-corpo"></div><div class="pa-carrinho" id="pa-carrinho"></div><div class="pa-rodape" id="pa-rodape"></div></div>';
