@@ -220,7 +220,7 @@
   window.PA={
     bvRapido:function(){ fecharBV(); abrir(); },
     bvSite:function(){ fecharBV(); },
-    somVideo:function(b){ var v=$('bv-v'); if(!v) return; v.muted=!v.muted; if(!v.muted){ v.currentTime=0; v.play(); } b.classList.toggle('mudo',v.muted); b.setAttribute('aria-label',v.muted?'Ligar o som':'Desligar o som'); },
+    somVideo:function(b){ var v=$('bv-v'); if(!v) return; v.muted=false; v.currentTime=0; var pl=v.play(); if(pl&&pl.catch) pl.catch(function(){}); b.classList.add('some'); setTimeout(function(){ if(b.parentNode) b.parentNode.removeChild(b); },350); },
     abrir:abrir, fechar:fechar, voltar:voltar, ir:ir,
     tipo:function(t){escolherTipo(t);},
     tipoDireto:function(t){escolherTipo(t);},
