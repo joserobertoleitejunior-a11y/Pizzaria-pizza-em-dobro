@@ -610,7 +610,9 @@ async function finalizarVenda(){
     }
     pedido.created_at=new Date().toISOString();
     pedidoEmEdicaoId=null;
-    try{ await imprimirBluetooth(formatarCupom(pedido)); }catch(e){ alert('Venda salva, mas houve erro ao imprimir: '+e.message); }
+    // impressora desconectada: a venda já está salva — guarda a comanda e oferece conectar na hora
+    if(!impressoraPronta()) guardarCupomPendente(formatarCupom(pedido));
+    else try{ await imprimirBluetooth(formatarCupom(pedido)); }catch(e){ guardarCupomPendente(formatarCupom(pedido)); }
     cart=[];
     atualizarBarraCarrinho();
     closeModal('modal-cart');

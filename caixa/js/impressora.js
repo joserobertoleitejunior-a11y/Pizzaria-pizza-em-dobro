@@ -78,6 +78,7 @@ async function conectarDispositivo(device){
     localStorage.setItem(BT_STORAGE_KEY,nome);
     usbEndpointOut=null; usbDevice=null;
     esconderAlertaImpressora();
+    imprimirPendente();
     _tentativasReconexaoBT=0;
     // {once:true}: cada reconexão bem-sucedida registra um listener novo (linha acima é
     // chamada de novo a cada sucesso) — sem "once", cada desconexão/reconexão ia empilhando
@@ -94,13 +95,13 @@ async function conectarDispositivo(device){
   }
 }
 
-async function conectarBluetooth(){
+async function conectarBluetooth(ev){
   if(!navigator.bluetooth){
     alert('Este navegador não tem Bluetooth pelo site. Use o Google Chrome (Android ou Windows) ou conecte pelo cabo USB.');
     return;
   }
   const SERVICES=BT_SERVICOS;
-  const btnEl=event?event.target:null;
+  const e0=ev||(typeof event!=='undefined'?event:null); const btnEl=e0&&e0.target&&e0.target.tagName==='BUTTON'?e0.target:null;
   const origTxt=btnEl?btnEl.innerText:'';
   if(btnEl){btnEl.innerText='Buscando...';btnEl.disabled=true;}
   const nameEl=document.getElementById('bt-name');
@@ -130,6 +131,44 @@ async function conectarBluetooth(){
 }
 
 let usbDevice=null, usbEndpointOut=null, usbInterfaceNumber=null;
+
+// ── Venda salva com a impressora desconectada: o cupom fica guardado e sai sozinho assim que a
+// impressora conectar. A tela mostra um botão grande pra conectar na hora (o Bluetooth do celular só
+// abre a lista de aparelhos com um toque na tela — por isso o botão, e não uma reconexão escondida).
+let _cupomPendente=null;
+function guardarCupomPendente(texto){ _cupomPendente=texto; mostrarModalImpressora(); }
+async function imprimirPendente(){
+  if(!_cupomPendente||!impressoraPronta()) return;
+  const t=_cupomPendente; _cupomPendente=null;
+  try{ await imprimirBluetooth(t); fecharModalImpressora(); if(typeof avisoRapido==='function') avisoRapido('🖨️ Comanda impressa'); }
+  catch(e){ _cupomPendente=t; }
+}
+function mostrarModalImpressora(){
+  let m=document.getElementById('modal-impressora');
+  if(!m){
+    m=document.createElement('div'); m.id='modal-impressora';
+    m.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:18px';
+    m.innerHTML='<div style="background:#fff;border-radius:18px;max-width:420px;width:100%;padding:22px;text-align:center;font-family:inherit;box-shadow:0 20px 60px rgba(0,0,0,.4)">'+
+      '<div style="font-size:2.4rem">🖨️</div><h3 style="margin:6px 0 4px;font-size:1.25rem">Venda salva ✅</h3>'+
+      '<p style="margin:0 0 16px;color:#374151;line-height:1.45">A impressora está <b>desconectada</b>. Conecte agora e a comanda sai na hora.</p>'+
+      '<button type="button" onclick="conectarEImprimir(\'bt\',event)" style="width:100%;padding:16px;border:0;border-radius:14px;background:#D62828;color:#fff;font-size:1.05rem;font-weight:800;margin-bottom:8px;cursor:pointer">🔌 Conectar impressora (Bluetooth) e imprimir</button>'+
+      '<button type="button" onclick="conectarEImprimir(\'usb\',event)" style="width:100%;padding:13px;border:1px solid #E5E7EB;border-radius:14px;background:#fff;color:#141414;font-size:.95rem;font-weight:700;margin-bottom:8px;cursor:pointer">🔌 Conectar pelo cabo USB</button>'+
+      '<button type="button" onclick="fecharModalImpressora()" style="width:100%;padding:10px;border:0;background:none;color:#6B7280;font-size:.9rem;cursor:pointer">Imprimir depois (a comanda fica guardada)</button></div>';
+    document.body.appendChild(m);
+  }
+  m.style.display='flex';
+}
+function fecharModalImpressora(){ const m=document.getElementById('modal-impressora'); if(m) m.style.display='none'; }
+async function conectarEImprimir(tipo,ev){
+  if(tipo==='usb') await conectarUSB(); else await conectarBluetooth(ev);
+  await imprimirPendente();
+}
+// faixa vermelha no topo sempre que a impressora usada aqui estiver desconectada
+function checarFaixaImpressora(){
+  const usou=!!(localStorage.getItem(BT_STORAGE_KEY)||localStorage.getItem('ped_usb_usado'));
+  if(usou&&!impressoraPronta()) mostrarAlertaImpressora(); else if(impressoraPronta()) esconderAlertaImpressora();
+}
+setTimeout(checarFaixaImpressora,6000); setInterval(checarFaixaImpressora,15000);
 
 // ── Acentos: a maioria das térmicas (inclui a POS-5890U) NÃO entende UTF-8 — imprime lixo no lugar
 // de ã/ç/é. Convertemos o texto para a tabela de caracteres da impressora. Modos (botão "Teste"
@@ -259,6 +298,8 @@ async function conectarDispositivoUSB(device){
     await device.claimInterface(interfaceEncontrada);
     usbDevice=device; usbEndpointOut=endpointEncontrado; usbInterfaceNumber=interfaceEncontrada;
     btChar=null; // usando USB agora, Bluetooth fica em segundo plano
+    try{ localStorage.setItem('ped_usb_usado','1'); }catch(e){}
+    setTimeout(imprimirPendente,300);
     const nome=device.productName||'Impressora USB';
     const el=document.getElementById('bt-name');
     if(el) el.innerText=nome+' (USB) ✅';
