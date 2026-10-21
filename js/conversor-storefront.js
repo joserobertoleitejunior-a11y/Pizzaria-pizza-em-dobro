@@ -1192,6 +1192,7 @@ function abrirPortaSplash(){
   setTimeout(()=>{
     ws.style.display='none';
     ws.style.visibility='hidden';
+    if(typeof mostrarBoasVindas==='function') mostrarBoasVindas(); // "Pedido rápido" ou "Ver o site"
   },650);
 }
 // última fatia: atraso 1.5s + 7 × .3s = 3.6s, mais .8s de animação = 4.4s; folga curta

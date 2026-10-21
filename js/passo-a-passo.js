@@ -16,7 +16,7 @@
     {id:'pizza',ico:'🍕',nome:'Pizza grande',sub:'um sabor, com ou sem borda'},
     {id:'meia',ico:'🌗',nome:'Meia a meia',sub:'dois sabores na mesma pizza'},
     {id:'combo',ico:'🍕🍕',nome:'Combo 2 pizzas',sub:'a partir de R$ 65'},
-    {id:'broto',ico:'🧁',nome:'Combo 2 broto',sub:'R$ 50, qualquer sabor'},
+    {id:'broto',ico:'<svg class="ico-broto" viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#D9932F"/><circle cx="20" cy="20" r="14.6" fill="#F3C443"/><circle cx="20" cy="20" r="14.6" fill="#E25B2C" opacity=".22"/><g fill="#B8331F"><circle cx="13.6" cy="13.8" r="2.7"/><circle cx="26.4" cy="14.4" r="2.7"/><circle cx="14.2" cy="26.2" r="2.7"/><circle cx="26" cy="26" r="2.7"/></g><path d="M20 5.4v29.2M5.4 20h29.2" stroke="#7A4A14" stroke-width="1.5"/></svg>',nome:'Combo 2 broto',sub:'R$ 50 · pizza pequena de 4 pedaços'},
     {id:'esf',ico:'🥟',nome:'Esfihas',sub:'R$ 5 cada · 10 por R$ 50'},
     {id:'beb',ico:'🥤',nome:'Bebidas e doces',sub:'refri, suco, doces e calzones'}
   ];
@@ -200,7 +200,28 @@
     $('pa-carrinho').innerHTML=n?'🛒 <b>'+n+' ite'+(n===1?'m':'ns')+'</b> no pedido · <b>'+($('total-val')?$('total-val').textContent:'')+'</b>':'🛒 Seu pedido está vazio';
   }
 
+  // ── Tela de boas-vindas (logo depois da splash): "Pedido rápido" (este assistente) ou "Ver o site",
+  //    com o vídeo "Como pedir" num quadro pequeno (não cobre a tela toda). Uma vez por visita.
+  function boasVindas(){
+    if($('boas-vindas')) return;
+    try{ if(sessionStorage.getItem('bv_ok')) return; sessionStorage.setItem('bv_ok','1'); }catch(e){}
+    var d=document.createElement('div'); d.id='boas-vindas'; d.className='bv-ov'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','Como você quer pedir?');
+    d.innerHTML='<div class="bv-caixa">'+
+      '<div class="bv-video"><video id="bv-v" src="video/como-pedir-site.mp4" poster="video/como-pedir-capa.jpg" muted playsinline autoplay loop preload="metadata"></video>'+
+        '<button type="button" class="bv-som" onclick="PA.somVideo(this)" aria-label="Ligar o som">🔇 Ouvir</button><span class="bv-tag">▶ Veja como pedir</span></div>'+
+      '<div class="bv-txt"><img src="assets/logo.png" alt="" width="54" height="54"><h2>Como você quer <span>pedir?</span></h2>'+
+        '<button type="button" class="bv-rapido" onclick="PA.bvRapido()">⚡ Pedido rápido<small>uma pergunta por vez, bem fácil</small></button>'+
+        '<button type="button" class="bv-site" onclick="PA.bvSite()">🍕 Ver o site e o cardápio</button></div></div>';
+    document.body.appendChild(d); requestAnimationFrame(function(){ d.classList.add('on'); });
+    var v=$('bv-v'); if(v){ var pl=v.play&&v.play(); if(pl&&pl.catch) pl.catch(function(){}); }
+  }
+  function fecharBV(){ var d=$('boas-vindas'); if(!d) return; var v=$('bv-v'); if(v) v.pause(); d.classList.remove('on'); setTimeout(function(){ d.remove(); },300); }
+  window.mostrarBoasVindas=boasVindas;
+
   window.PA={
+    bvRapido:function(){ fecharBV(); abrir(); },
+    bvSite:function(){ fecharBV(); },
+    somVideo:function(b){ var v=$('bv-v'); if(!v) return; v.muted=!v.muted; if(!v.muted){ v.currentTime=0; v.play(); } b.textContent=v.muted?'🔇 Ouvir':'🔊 Som ligado'; },
     abrir:abrir, fechar:fechar, voltar:voltar, ir:ir,
     tipo:function(t){escolherTipo(t);},
     tipoDireto:function(t){escolherTipo(t);},

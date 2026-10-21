@@ -7,7 +7,7 @@ let _pp={passo:'tipo',tipo:null,meiaA:null};
 const PP_TIPOS=[
   {id:'pizza',ico:'🍕',nome:'Pizza grande',sub:'inteira, com borda e acréscimos'},
   {id:'combo',ico:'🍕🍕',nome:'Combo 2 por…',sub:'R$ 65 · 75 · 80 · 85'},
-  {id:'broto',ico:'🧁',nome:'Combo Broto',sub:'2 broto por R$ 50'},
+  {id:'broto',ico:'<svg class="ico-broto" viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#D9932F"/><circle cx="20" cy="20" r="14.6" fill="#F3C443"/><circle cx="20" cy="20" r="14.6" fill="#E25B2C" opacity=".22"/><g fill="#B8331F"><circle cx="13.6" cy="13.8" r="2.7"/><circle cx="26.4" cy="14.4" r="2.7"/><circle cx="14.2" cy="26.2" r="2.7"/><circle cx="26" cy="26" r="2.7"/></g><path d="M20 5.4v29.2M5.4 20h29.2" stroke="#7A4A14" stroke-width="1.5"/></svg>',nome:'Combo Broto',sub:'2 broto por R$ 50 (4 pedaços cada)'},
   {id:'meia',ico:'½',nome:'Meia a meia',sub:'2 sabores numa pizza'},
   {id:'esf',ico:'🥟',nome:'Esfihas',sub:'10 · 20 · 30'},
   {id:'doce',ico:'🍫',nome:'Doces',sub:'pizza doce, brigadeirão, pudim'},

@@ -9,3 +9,4 @@ dist/
 .wrangler/
 .dev.vars
 video/*.mp4
+!video/como-pedir-site.mp4
