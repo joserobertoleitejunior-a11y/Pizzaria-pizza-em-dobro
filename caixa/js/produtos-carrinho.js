@@ -287,15 +287,17 @@ function openModal(id){ document.getElementById(id).classList.add('open'); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 
 // ---- CARRINHO ----
-// 3+ combos (pizza, broto, esfihas) = entrega grátis. Pedidos vindos do site (sem marca) contam pelo nome.
+// 3+ combos (pizza e esfihas; broto não conta) = entrega grátis. Pedidos vindos do site (sem marca) contam pelo nome.
+// combo de broto NÃO conta pra entrega grátis (pedido do Marco): nem como combo, nem como pizza
+const _ehBroto=i=>/broto/i.test(i.name||'');
 function combosNoCaixa(){
-  return cart.reduce((t,i)=>t+((i.combos!=null?i.combos:(/combo|2 por|2 broto|esfiha/i.test(i.name||'')?1:0))*i.qty),0);
+  return cart.reduce((t,i)=>t+(_ehBroto(i)?0:(i.combos!=null?i.combos:(/combo|2 por|esfiha/i.test(i.name||'')?1:0))*i.qty),0);
 }
 // pizzas no pedido: pizza/meia = 1; combo de pizza ou broto = 2 (esfihas e bebidas não contam)
 function pizzasNoCaixa(){
   return cart.reduce((t,i)=>{
     const q=i.qty||1;
-    if(/^esfihas/i.test(i.name||'')) return t;
+    if(/^esfihas/i.test(i.name||'')||_ehBroto(i)) return t;
     if(i.isMeia) return t+q;
     if(i.combos!=null&&i.combos>0) return t+2*q;
     const m=i.id!=null?DEFAULT_MENU.find(x=>x.id===i.id):null;
