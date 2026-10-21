@@ -204,7 +204,7 @@
   //    com o vídeo "Como pedir" num quadro pequeno (não cobre a tela toda). Uma vez por visita.
   function boasVindas(){
     if($('boas-vindas')) return;
-    try{ if(sessionStorage.getItem('bv_ok')) return; sessionStorage.setItem('bv_ok','1'); }catch(e){}
+    
     var d=document.createElement('div'); d.id='boas-vindas'; d.className='bv-ov'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','Como você quer pedir?');
     d.innerHTML='<video id="bv-v" class="bv-fundo" src="video/como-pedir-site.mp4" poster="video/como-pedir-capa.jpg" muted playsinline autoplay loop preload="auto"></video><div class="bv-veu"></div>'+
       '<button type="button" class="bv-som" onclick="PA.somVideo(this)" aria-label="Ligar o som">🔇 Ouvir</button>'+
