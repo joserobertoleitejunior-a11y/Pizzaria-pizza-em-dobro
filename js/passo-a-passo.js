@@ -103,7 +103,7 @@
   }
   function qtdNoCarrinho(id){ return cart.filter(function(c){return c.id===id&&c.type!=='half';}).length; }
 
-  var FECHAR='<button type="button" class="pa-fechar" onclick="PA.fecharRapido()">⚡ Fechar pedido agora</button>';
+  var FECHAR='<div class="pa-atalhos"><button type="button" class="pa-fechar" onclick="PA.fecharRapido()">⚡ Fechar pedido</button><button type="button" class="pa-cont" onclick="PA.continuarPedindo()">➕ Continuar pedindo</button></div>';
   function render(){
     devolver();
     var t='',d='',corpo='',rod='', it=P.it;
@@ -235,6 +235,10 @@
     fecharRapido:function(){ P.rapido=true; var it=P.it, t=P.tipo;
       var ok=(t==='pizza'&&it.id)||(t==='meia'&&it.a&&it.b)||((t==='combo'||t==='broto')&&it.s1&&it.s2);
       if(ok) adicionar('refri'); else ir('refri'); },
+    // "Continuar pedindo": guarda o item em andamento e volta pra escolher mais coisas
+    continuarPedindo:function(){ var it=P.it, t=P.tipo;
+      var ok=(t==='pizza'&&it.id)||(t==='meia'&&it.a&&it.b)||((t==='combo'||t==='broto')&&it.s1&&it.s2);
+      if(ok) adicionar('tipo'); else ir('tipo'); },
     contBeb:function(){ ir(P.rapido?'modo':'mais'); },
     refri:function(sim){ if(sim){ P.tipo='beb'; P.it={borda:0,b1:0,b2:0,rem:[]}; ir('beb'); } else ir('modo'); },
     filtrar:function(q){ q=String(q||'').toLowerCase(); document.querySelectorAll('#pa-corpo .pa-op').forEach(function(b){ b.style.display=b.textContent.toLowerCase().indexOf(q)>=0?'':'none'; }); },

@@ -1334,4 +1334,6 @@ body.pa-aberto .pa-flutuante{display:none}
 @media (prefers-reduced-motion:reduce){.bv-rapido,.bv-site,.bv-rapido::before,.bv-site::before,.bv-rapido::after,.bv-site::after,.bv-ico,.bv-seta{animation:none!important}.bv-rapido,.bv-site{opacity:1;transform:none}}
 .ico-broto{display:inline-block;vertical-align:middle}
 
-.pa-fechar{flex:1 1 100%;border:0;border-radius:14px;padding:13px 12px;font-size:.95rem;font-weight:900;cursor:pointer;font-family:inherit;background:var(--amarelo);color:#141414;letter-spacing:.3px}
+.pa-atalhos{flex:1 1 100%;display:flex;gap:10px}
+.pa-cont{flex:1;border-radius:14px;padding:13px 10px;font-size:.92rem;font-weight:900;cursor:pointer;font-family:inherit;background:transparent;color:#fff;border:2px solid rgba(255,255,255,.4)}
+.pa-fechar{flex:1;border:0;border-radius:14px;padding:13px 12px;font-size:.95rem;font-weight:900;cursor:pointer;font-family:inherit;background:var(--amarelo);color:#141414;letter-spacing:.3px}
