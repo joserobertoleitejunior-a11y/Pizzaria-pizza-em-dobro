@@ -1291,7 +1291,31 @@ body.pa-aberto .pa-flutuante{display:none}
 .bv-txt{position:absolute;left:0;right:0;bottom:0;padding:18px 18px calc(22px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;color:#fff;max-width:480px;margin:0 auto}
 .bv-txt h2{font-family:var(--font-display);font-size:1.3rem;line-height:1.05;margin:0 0 2px;text-transform:uppercase;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,.7)}
 .bv-txt h2 span{color:var(--amarelo)}
-.bv-rapido,.bv-site{border-radius:16px;padding:14px;font-weight:900;font-size:1rem;cursor:pointer;font-family:inherit;text-align:center;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);text-shadow:0 1px 6px rgba(0,0,0,.6)}
-.bv-rapido{display:flex;flex-direction:column;gap:2px;align-items:center;background:rgba(245,197,24,.2);border-color:rgba(245,197,24,.55)}
-.bv-rapido small{font-weight:600;font-size:.78rem;opacity:.9}
+@property --bv-ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+.bv-rapido,.bv-site{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;gap:12px;text-align:left;padding:14px 16px;border:0;border-radius:20px;color:#fff;font-family:inherit;font-weight:900;font-size:1.02rem;cursor:pointer;background:rgba(18,18,18,.28);backdrop-filter:blur(10px) saturate(1.4);-webkit-backdrop-filter:blur(10px) saturate(1.4);box-shadow:0 10px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.25);text-shadow:0 1px 6px rgba(0,0,0,.55);opacity:0;transform:translateY(26px) scale(.96);transition:transform .18s,box-shadow .2s;-webkit-tap-highlight-color:transparent}
+.bv-ov.on .bv-rapido,.bv-ov.on .bv-site{animation:bvEntra .7s cubic-bezier(.2,.9,.25,1.15) forwards}
+.bv-ov.on .bv-rapido{animation-delay:.25s}
+.bv-ov.on .bv-site{animation-delay:.45s}
+@keyframes bvEntra{to{opacity:1;transform:none}}
+.bv-rapido::before,.bv-site::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--bv-ang),transparent 0 55%,rgba(255,255,255,.95) 75%,transparent 90%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:bvGira 3.6s linear infinite;pointer-events:none;z-index:-1}
+.bv-rapido::before{background:conic-gradient(from var(--bv-ang),transparent 0 45%,#ffd84a 70%,#ff8a1f 85%,transparent 100%);animation-duration:2.6s}
+@keyframes bvGira{to{--bv-ang:360deg}}
+.bv-rapido::after,.bv-site::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);animation:bvBrilho 3.8s ease-in-out infinite;pointer-events:none;z-index:-1}
+.bv-site::after{animation-delay:1.6s}
+@keyframes bvBrilho{0%,55%{left:-60%}100%{left:130%}}
+.bv-rapido{background:linear-gradient(135deg,rgba(255,200,40,.34),rgba(255,120,20,.22));animation-name:bvEntra,bvPulso}
+.bv-ov.on .bv-rapido{animation:bvEntra .7s cubic-bezier(.2,.9,.25,1.15) .25s forwards,bvPulso 2.4s ease-in-out 1.2s infinite}
+@keyframes bvPulso{0%,100%{box-shadow:0 10px 30px rgba(0,0,0,.35),0 0 0 0 rgba(255,190,40,.45),inset 0 1px 0 rgba(255,255,255,.3)}50%{box-shadow:0 10px 30px rgba(0,0,0,.35),0 0 24px 6px rgba(255,190,40,.35),inset 0 1px 0 rgba(255,255,255,.3)}}
+.bv-ico{flex:0 0 auto;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:1.35rem;background:rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.bv-rapido .bv-ico{background:linear-gradient(135deg,#ffd84a,#ff8a1f);box-shadow:0 4px 14px rgba(255,150,30,.5);animation:bvRaio 1.8s ease-in-out infinite}
+@keyframes bvRaio{0%,100%{transform:rotate(0) scale(1)}50%{transform:rotate(-10deg) scale(1.12)}}
+.bv-site .bv-ico{animation:bvGiraPizza 6s linear infinite}
+@keyframes bvGiraPizza{to{transform:rotate(360deg)}}
+.bv-tx{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.bv-tx small{font-weight:600;font-size:.76rem;opacity:.9}
+.bv-seta{font-size:1.3rem;font-weight:900;opacity:.85;animation:bvSeta 1.4s ease-in-out infinite}
+@keyframes bvSeta{50%{transform:translateX(5px)}}
+.bv-rapido:active,.bv-site:active{transform:scale(.97)}
+@media (hover:hover){.bv-rapido:hover,.bv-site:hover{transform:translateY(-2px)}}
+@media (prefers-reduced-motion:reduce){.bv-rapido,.bv-site,.bv-rapido::before,.bv-site::before,.bv-rapido::after,.bv-site::after,.bv-ico,.bv-seta{animation:none!important}.bv-rapido,.bv-site{opacity:1;transform:none}}
 .ico-broto{display:inline-block;vertical-align:middle}

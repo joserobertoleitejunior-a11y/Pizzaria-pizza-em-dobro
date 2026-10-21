@@ -208,9 +208,9 @@
     var d=document.createElement('div'); d.id='boas-vindas'; d.className='bv-ov'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','Como você quer pedir?');
     d.innerHTML='<video id="bv-v" class="bv-fundo" src="video/como-pedir-site.mp4" poster="video/como-pedir-capa.jpg" muted playsinline autoplay loop preload="auto"></video><div class="bv-veu"></div>'+
       '<button type="button" class="bv-som" onclick="PA.somVideo(this)" aria-label="Ligar o som">🔇 Ouvir</button>'+
-      '<div class="bv-txt"><h2>Como você quer <span>pedir?</span></h2>'+
-        '<button type="button" class="bv-rapido" onclick="PA.bvRapido()">⚡ Pedido rápido<small>uma pergunta por vez, bem fácil</small></button>'+
-        '<button type="button" class="bv-site" onclick="PA.bvSite()">🍕 Ver o site e o cardápio</button></div>';
+      '<div class="bv-txt">'+
+        '<button type="button" class="bv-rapido" onclick="PA.bvRapido()"><span class="bv-ico">⚡</span><span class="bv-tx">Pedido rápido<small>uma pergunta por vez, bem fácil</small></span><span class="bv-seta">›</span></button>'+
+        '<button type="button" class="bv-site" onclick="PA.bvSite()"><span class="bv-ico">🍕</span><span class="bv-tx">Ver o site e o cardápio<small>escolha do seu jeito</small></span><span class="bv-seta">›</span></button></div>';
     document.body.appendChild(d); requestAnimationFrame(function(){ d.classList.add('on'); });
     var v=$('bv-v'); if(v){ var pl=v.play&&v.play(); if(pl&&pl.catch) pl.catch(function(){}); }
   }
