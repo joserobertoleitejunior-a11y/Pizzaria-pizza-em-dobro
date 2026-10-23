@@ -1337,3 +1337,5 @@ body.pa-aberto .pa-flutuante{display:none}
 .pa-atalhos{flex:1 1 100%;display:flex;gap:10px}
 .pa-cont{flex:1;border-radius:14px;padding:13px 10px;font-size:.92rem;font-weight:900;cursor:pointer;font-family:inherit;background:transparent;color:#fff;border:2px solid rgba(255,255,255,.4)}
 .pa-fechar{flex:1;border:0;border-radius:14px;padding:13px 12px;font-size:.95rem;font-weight:900;cursor:pointer;font-family:inherit;background:var(--amarelo);color:#141414;letter-spacing:.3px}
+.bv-dica{text-align:center;font-size:.72rem;font-weight:800;letter-spacing:.4px;color:rgba(255,255,255,.75);text-shadow:0 1px 6px rgba(0,0,0,.7);animation:bvDica 1.6s ease-in-out infinite}
+@keyframes bvDica{0%,100%{transform:translateY(2px);opacity:.6}50%{transform:translateY(-4px);opacity:1}}

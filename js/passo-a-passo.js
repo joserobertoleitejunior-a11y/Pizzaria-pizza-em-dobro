@@ -215,9 +215,14 @@
     var d=document.createElement('div'); d.id='boas-vindas'; d.className='bv-ov'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','Como você quer pedir?');
     d.innerHTML='<video id="bv-v" class="bv-fundo" src="video/como-pedir-site.mp4" poster="video/como-pedir-capa.jpg" muted playsinline autoplay loop preload="auto"></video><div class="bv-veu"></div>'+
       '<button type="button" class="bv-som mudo" onclick="PA.somVideo(this)" aria-label="Ligar o som"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z" fill="#fff" fill-opacity=".9"/><g class="bv-on"><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></g><g class="bv-off"><path d="m16 9 5 6M21 9l-5 6"/></g></svg><span class="bv-dedo" aria-hidden="true">👆</span></button>'+
-      '<div class="bv-txt">'+
+      '<div class="bv-txt"><div class="bv-dica">⌃ deslize pra cima para ver o site</div>'+
         '<button type="button" class="bv-rapido" onclick="PA.bvRapido()"><span class="bv-ico">⚡</span><span class="bv-tx">Pedido rápido<small>uma pergunta por vez, bem fácil</small></span><span class="bv-seta">›</span></button>'+
         '<button type="button" class="bv-site" onclick="PA.bvSite()"><span class="bv-ico">🍕</span><span class="bv-tx">Ver o site e o cardápio<small>escolha do seu jeito</small></span><span class="bv-seta">›</span></button></div>';
+    // rolar/deslizar pra cima na tela do vídeo = entrar no site (tablet/celular: o gesto natural de "scroll")
+    var y0=null;
+    d.addEventListener('touchstart',function(e){ y0=e.touches[0].clientY; },{passive:true});
+    d.addEventListener('touchmove',function(e){ if(y0!==null && y0-e.touches[0].clientY>50){ y0=null; PA.bvSite(); } },{passive:true});
+    d.addEventListener('wheel',function(e){ if(e.deltaY>10) PA.bvSite(); },{passive:true});
     document.body.appendChild(d); requestAnimationFrame(function(){ d.classList.add('on'); });
     var v=$('bv-v'); if(v){ var pl=v.play&&v.play(); if(pl&&pl.catch) pl.catch(function(){}); }
   }
