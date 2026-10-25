@@ -6,7 +6,7 @@
   --font-display:'Archivo Black',sans-serif; --font-eyebrow:'Work Sans',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{overflow-x:hidden;max-width:100%;}
+html{overflow-x:hidden;max-width:100%;}body{overflow-x:clip;max-width:100%;}
 body{background:var(--bg);color:var(--tx);font-family:'Public Sans','Work Sans',system-ui,sans-serif;font-size:15px;min-height:100vh;padding-bottom:60px;
   background-image:radial-gradient(circle at 15% -10%,rgba(255,159,28,.12) 0%,transparent 55%),radial-gradient(circle at 100% 10%,rgba(231,29,54,.07) 0%,transparent 45%);}
 button,input,select,textarea{font:inherit;color:inherit;}

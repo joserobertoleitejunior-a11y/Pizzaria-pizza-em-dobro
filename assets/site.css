@@ -28,7 +28,7 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation;width:100%;overflow-x:hidden;}
 /* encaixe em qualquer aparelho: nada passa da largura da tela, mídia nunca estoura, entalhe/ilha respeitados */
-body{width:100%;max-width:100%;overflow-x:hidden;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);touch-action:manipulation;}
+body{width:100%;max-width:100%;overflow-x:clip;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);touch-action:manipulation;}
 img,svg,video,canvas{max-width:100%;}
 input,select,textarea,button{font-size:max(16px,1em);touch-action:manipulation;} /* 16px+ : o iOS não dá zoom automático ao focar */
 @media (min-width:700px){.container{max-width:760px!important;}#destaques{max-width:640px!important;}}
