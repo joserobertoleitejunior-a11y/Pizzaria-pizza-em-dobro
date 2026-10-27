@@ -108,7 +108,7 @@ function renderCombos(){
   if(!el||typeof COMBOS_DEFAULT==='undefined')return;
   const broto=_comboCfg('broto50');
   el.innerHTML=`<h2 class="cat-title reveal" id="anc-co">Combos</h2>`+
-    `<div class="eg-selo mini"><div class="eg-ico">${EG_ICONES.moto}</div><div class="eg-t"><b>Entrega grátis</b><span>A partir de 3 pizzas ou 3 combos. Cada combo vale 2 pizzas.</span></div></div>`+
+    `<div class="eg-selo mini"><div class="eg-ico">${EG_ICONES.moto}</div><div class="eg-t"><b>Entrega grátis</b><span>Em qualquer combo ou a partir de 2 pizzas. Só 1 pizza paga R$ 8,00.</span></div></div>`+
     `<div class="combo-vitrine" id="combo-vitrine">
       <div id="combo-3d" aria-hidden="true"></div>
       <div class="combo-vitrine-txt"><b>2 PIZZAS</b><span>1 preço só</span></div>
@@ -153,7 +153,7 @@ function renderEsfihas(){
   const el=document.getElementById('cat-es');
   if(!el||typeof ESFIHA_SABORES==='undefined')return;
   el.innerHTML=`<h2 class="cat-title reveal" id="anc-es">Esfihas</h2>`+
-    `<div class="eg-selo mini"><div class="eg-ico">${EG_ICONES.moto}</div><div class="eg-t"><b>Entrega grátis</b><span>Com 3 combos. A cada 10 esfihas, 1 combo.</span></div></div>`+
+    `<div class="eg-selo mini"><div class="eg-ico">${EG_ICONES.moto}</div><div class="eg-t"><b>Entrega grátis</b><span>A cada 10 esfihas (1 combo), a entrega é grátis.</span></div></div>`+
     `<div class="esf-box">
       <div class="esf-topo"><span class="esf-preco"><small>cada esfiha</small> R$ 5<sup>,00</sup></span>
         <span class="esf-dica"><b>Quanto mais você leva,<br>menos paga em cada uma!</b></span></div>

@@ -336,12 +336,12 @@ function updateUI(){
     if(entregaGratis(cart)){
       fee=0;
       sumHTML+=`<div class="sum-linha ok"><span>Taxa de entrega</span><span>GRÁTIS</span></div>`;
-      document.getElementById('delivery-msg').innerHTML=`<span class="eg-cart ok">${EG_ICONES.moto}<span>Entrega grátis! Seu pedido tem ${nPizzas>=PIZZAS_ENTREGA_GRATIS?nPizzas+' pizzas':nCombos+' combos'}.</span></span>`;
+      document.getElementById('delivery-msg').innerHTML=`<span class="eg-cart ok">${EG_ICONES.moto}<span>Entrega grátis! ${nCombos>=COMBOS_ENTREGA_GRATIS?'Seu pedido tem combo.':'Seu pedido tem '+nPizzas+' pizzas.'}</span></span>`;
     }else{
       fee=8;
       sumHTML+=`<div class="sum-linha"><span>Taxa de entrega</span><span>R$ 8,00</span></div>`;
       const faltaP=Math.max(1,PIZZAS_ENTREGA_GRATIS-nPizzas);
-      document.getElementById('delivery-msg').innerHTML=`Taxa de entrega R$ 8,00<span class="eg-cart">${EG_ICONES.presente}<span>${nPizzas>0?'Faltam '+faltaP+' pizza'+(faltaP>1?'s':'')+' para a entrega ser grátis':'Peça 3 pizzas e a entrega é grátis'}</span></span>${egProgresso(nPizzas,PIZZAS_ENTREGA_GRATIS)}`;
+      document.getElementById('delivery-msg').innerHTML=`Taxa de entrega R$ 8,00<span class="eg-cart">${EG_ICONES.presente}<span>${nPizzas>0?'Falta '+faltaP+' pizza para a entrega ser grátis (ou peça um combo)':'Peça um combo ou 2 pizzas e a entrega é grátis'}</span></span>${egProgresso(nPizzas,PIZZAS_ENTREGA_GRATIS)}`;
     }
   }
 

@@ -172,7 +172,7 @@
         rod='<button type="button" class="pa-prim pa-cheio" onclick="PA.ir(\'modo\')">Não, finalizar pedido →</button>'; break;
       case 'modo':
         var ret=$('delivery-method')&&$('delivery-method').checked;
-        t='Entrega ou retirada?'; d='Com 3 pizzas ou 3 combos a entrega é grátis.';
+        t='Entrega ou retirada?'; d='Com qualquer combo ou 2 pizzas a entrega é grátis (1 pizza: R$ 8,00).';
         corpo=cards([{v:false,t:'🛵 Entrega',s:'levamos até você'},{v:true,t:'🏠 Retirada',s:'você busca no balcão, grátis'}],'PA.modo',ret);
         rod=vol; break;
       case 'dados':
