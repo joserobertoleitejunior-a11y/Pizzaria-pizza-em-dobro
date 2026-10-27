@@ -190,18 +190,22 @@ function codificarTexto(t,modo){
   }
   return out;
 }
+function colunasPapel(){ try{ const n=parseInt(localStorage.getItem('ped_cols'),10); if(n>=16&&n<=64) return n; }catch(e){} return 32; } // 58mm = 32 colunas
 function montarBytesImpressao(texto){
   const ESC=0x1B,GS=0x1D;
-  const modo=modoAcento();
+  const modo=modoAcento(), COLS=colunasPapel();
   const cmds=[ESC,0x40]; // inicia
   if(modo==='cp850') cmds.push(ESC,0x74,2);        // tabela PC850 (multilíngue)
   else if(modo==='cp1252') cmds.push(ESC,0x74,16); // tabela WPC1252
-  cmds.push(ESC,0x61,0x00,ESC,0x45,0x01); // à esquerda + negrito (mais escuro/legível)
-  for(const l of texto.split('\n')){
-    for(const b of codificarTexto(l,modo)) cmds.push(b);
-    cmds.push(0x0A);
-  }
-  cmds.push(0x0A,0x0A,GS,0x56,0x01); // avança papel e corta
+  cmds.push(ESC,0x4D,0x00,ESC,0x61,0x00); // fonte A (a maior das duas) + à esquerda
+  const emite=(str,n)=>{ cmds.push(ESC,0x21,n); for(const b of codificarTexto(str,modo)) cmds.push(b); cmds.push(0x0A); };
+  classificarLinhasCupom(texto).forEach(l=>{
+    if(l.k==='S'){ emite('-'.repeat(COLS),0x08); return; }
+    const dupla=l.k==='G', n=dupla?0x38:0x18; // bit3 negrito, bit4 altura dupla, bit5 largura dupla
+    const larg=dupla?Math.floor(COLS/2):COLS;
+    quebrarLinha(l.t,larg).forEach(x=>emite(l.dir?x.padStart(larg):x,n));
+  });
+  cmds.push(ESC,0x21,0x00,0x0A,0x0A,0x0A,GS,0x56,0x01); // volta ao normal, avança papel e corta
   return new Uint8Array(cmds);
 }
 
@@ -216,8 +220,8 @@ function impressoraPronta(){ return !!(btChar||usbEndpointOut||autoDriverAtivo()
 function imprimirViaNavegador(texto){
   return new Promise((resolve)=>{
     const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
-    // linha só de "─" vira um traço de verdade (não estoura a largura do papel)
-    const html=String(texto).split('\n').map(l=>/^[─\-=]{6,}$/.test(l.trim())?'<hr>':'<div>'+(esc(l)||'&nbsp;')+'</div>').join('');
+    // letra grande: cada linha ganha o tamanho decidido em classificarLinhasCupom ('G' grande, 'A' médio, 'S' traço)
+    const html=classificarLinhasCupom(texto).map(l=>l.k==='S'?'<hr>':'<div class="'+l.k.toLowerCase()+(l.dir?' d':'')+'">'+(esc(l.t)||'&nbsp;')+'</div>').join('');
     const ifr=document.createElement('iframe');
     ifr.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0;';
     document.body.appendChild(ifr);
@@ -225,7 +229,7 @@ function imprimirViaNavegador(texto){
     d.open();
     // papel 58mm: a área imprimível é ~48mm — por isso largura fixa menor que o papel (antes cortava a direita).
     // Fonte em negrito e preta pra sair escura na térmica.
-    d.write('<html><head><meta charset="utf-8"><style>@page{size:58mm auto;margin:0}html,body{margin:0;padding:0;background:#fff}body{width:46mm;padding:1mm 1mm 6mm 2mm;font:700 13px/1.3 Arial,Helvetica,sans-serif;color:#000;overflow-wrap:anywhere}div{white-space:pre-wrap}hr{border:0;border-top:2px dashed #000;margin:4px 0}</style></head><body>'+html+'</body></html>');
+    d.write('<html><head><meta charset="utf-8"><style>@page{size:58mm auto;margin:0}html,body{margin:0;padding:0;background:#fff}body{width:46mm;padding:1mm 1mm 6mm 2mm;font:800 17px/1.25 Arial,Helvetica,sans-serif;color:#000;overflow-wrap:anywhere}div{white-space:pre-wrap;margin:1px 0}.g{font-size:25px;line-height:1.15}.d{text-align:right}hr{border:0;border-top:2px dashed #000;margin:4px 0}</style></head><body>'+html+'</body></html>');
     d.close();
     setTimeout(()=>{ try{ ifr.contentWindow.focus(); ifr.contentWindow.print(); }catch(e){ console.warn('Falha ao imprimir pelo navegador:',e); } setTimeout(()=>{ ifr.remove(); resolve(); },1500); },300);
   });
@@ -324,6 +328,30 @@ async function reconectarUSBAuto(){
 
 // Cupom da COZINHA: sem preço por item, sabores um por linha, o que importa em destaque.
 // Divide o nome do item em título + linhas ("Esfihas (20) — 4 Carne + 3 Mista" vira uma lista).
+// ── Estilo da comanda (letra GRANDE e fácil de ler): o texto do cupom é um só; aqui decide-se o tamanho
+// de cada linha. 'G' = letra dupla (largura e altura), 'A' = altura dupla, 'S' = separador.
+// Linhas "valor à direita" (só espaços + R$) viram texto alinhado à direita.
+function classificarLinhasCupom(texto){
+  const ls=String(texto).replace(/\n+$/,'').split('\n');
+  return ls.map((l,i)=>{
+    const t=l.trim();
+    if(/^-{6,}$/.test(t)) return {t:'',k:'S'};
+    if(i===0||i===3||/^\d+x\s/.test(t)||/^TOTAL\b/.test(t)) return {t,k:'G'};
+    if(/^R\$\s*[\d.,]+$/.test(t)) return {t,k:'G',dir:true};
+    return {t,k:'A'};
+  });
+}
+function quebrarLinha(t,max){
+  const out=[]; let atual='';
+  for(const w of String(t).split(/\s+/)){
+    if(!w) continue;
+    let p=w;
+    while(p.length>max){ if(atual){ out.push(atual); atual=''; } out.push(p.slice(0,max)); p=p.slice(max); }
+    if(!atual) atual=p; else if((atual+' '+p).length<=max) atual+=' '+p; else { out.push(atual); atual=p; }
+  }
+  if(atual) out.push(atual);
+  return out.length?out:[''];
+}
 function linhasDoItem(nome){
   const n=String(nome||'—').trim();
   let m=n.match(/^Esfihas\s*\((\d+)\)\s*[—-]\s*(.+)$/i);
@@ -338,11 +366,11 @@ function formatarCupom(o){
   const dt=new Date(dataStr(o.created_at)||Date.now());
   const data=dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
   const hora=dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  const sep='────────────────────────';
+  const sep='--------------------------------'; // só ASCII: '─' saía como 'ÄÄÄ' em térmica com outra tabela de caracteres
   const entrega=o.delivery_type==='entrega';
   const R=v=>'R$ '+Number(v||0).toFixed(2).replace('.',',');
   const dir=t=>String(t).padStart(24); // valor alinhado à direita
-  let txt='PEDIDO Nº '+(o.numero_sequencial||'—')+'  '+(entrega?'ENTREGA':'RETIRADA')+'\n';
+  let txt='PEDIDO '+(o.numero_sequencial||'-')+'  '+(entrega?'ENTREGA':'RETIRADA')+'\n';
   txt+=data+' '+hora+'  PIZZA EM DOBRO\n'+sep+'\n';
   // total: usa o do pedido; se não veio, soma os itens (+ entrega) — a comanda nunca sai sem valor
   const somaItens=(o.items_json||[]).reduce((t,it)=>t+(Number(it.price??it.p??it.unitPrice)||0)*(Number(it.qty)||1),0);

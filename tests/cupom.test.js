@@ -35,3 +35,20 @@ test('nome e total aparecem no topo e de novo no fim; sem total no pedido, soma 
   assert.match(sem, /TOTAL R\$ 71,99/);
   assert.match(formatarCupom({ ...pedido, client_name: '' }), /SEM NOME/);
 });
+
+test('comanda usa só ASCII nos traços e no cabeçalho (térmica com outra tabela imprimia "ÄÄÄ" e perdia o º)', () => {
+  const t = formatarCupom(pedido);
+  assert.doesNotMatch(t.split('\n').slice(0, 4).join('\n'), /[─º°]/);
+  assert.match(t, /^PEDIDO 4\s+ENTREGA/);
+  assert.match(t, /\n-{20,}\n/);
+});
+test('classificação de letra grande: pedido, nome, itens e total em G; detalhes em A; valor à direita', () => {
+  const trecho2 = src.slice(src.indexOf('function classificarLinhasCupom'), src.indexOf('function linhasDoItem'));
+  const { classificarLinhasCupom, quebrarLinha } = new Function(trecho2 + '; return {classificarLinhasCupom, quebrarLinha};')();
+  const l = classificarLinhasCupom(formatarCupom({ ...pedido, delivery_type: 'retirada' }));
+  assert.equal(l[0].k, 'G');
+  assert.equal(l[3].k, 'G');
+  assert.ok(l.some((x) => x.k === 'G' && x.dir));
+  assert.ok(l.some((x) => x.k === 'S'));
+  assert.deepEqual(quebrarLinha('PEDIDO 3 RETIRADA', 16), ['PEDIDO 3', 'RETIRADA']);
+});
