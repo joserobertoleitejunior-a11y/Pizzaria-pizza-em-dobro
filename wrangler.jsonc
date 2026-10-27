@@ -1,7 +1,7 @@
 {
   // Pizza em Dobro — Cloudflare Workers (site estático + /api + tarefa agendada do bot)
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "pizza-em-dobro",
+  "name": "pizzaria-pizza-em-dobro",
   "main": "worker/index.js",
   "compatibility_date": "2025-09-01",
   "compatibility_flags": ["nodejs_compat"],
