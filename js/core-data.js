@@ -140,11 +140,13 @@ function getPromoAtiva(){
 }
 
 // combos no carrinho da loja: combo de pizza/broto = 1 cada; esfihas = 1 a cada 10
+// combo de BROTO não dá entrega grátis (nem como combo, nem como pizza): paga a taxa de R$ 8,00
+const _ehBrotoItem=i=>i.cat==='co'&&/broto/i.test((i.n||'')+(i.d||''));
 function combosNoCarrinho(cartItems){
-  return (cartItems||[]).reduce((t,i)=>t+(i.cat==='co'?1:(i.cat==='es'?combosDeEsfiha(i.esfQtd):0)),0);
+  return (cartItems||[]).reduce((t,i)=>t+(_ehBrotoItem(i)?0:i.cat==='co'?1:(i.cat==='es'?combosDeEsfiha(i.esfQtd):0)),0);
 }
 function pizzasNoCarrinho(cartItems){
-  return (cartItems||[]).reduce((t,i)=>t+((i.cat==='p'||i.cat==='s')?1:(i.cat==='co'?2:0)),0);
+  return (cartItems||[]).reduce((t,i)=>t+((i.cat==='p'||i.cat==='s')?1:(i.cat==='co'&&!_ehBrotoItem(i)?2:0)),0);
 }
 function entregaGratis(cartItems){ return combosNoCarrinho(cartItems)>=COMBOS_ENTREGA_GRATIS||pizzasNoCarrinho(cartItems)>=PIZZAS_ENTREGA_GRATIS; }
 

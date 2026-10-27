@@ -341,7 +341,7 @@ function updateUI(){
       fee=8;
       sumHTML+=`<div class="sum-linha"><span>Taxa de entrega</span><span>R$ 8,00</span></div>`;
       const faltaP=Math.max(1,PIZZAS_ENTREGA_GRATIS-nPizzas);
-      document.getElementById('delivery-msg').innerHTML=`Taxa de entrega R$ 8,00<span class="eg-cart">${EG_ICONES.presente}<span>${nPizzas>0?'Falta '+faltaP+' pizza para a entrega ser grátis (ou peça um combo)':'Peça um combo ou 2 pizzas e a entrega é grátis'}</span></span>${egProgresso(nPizzas,PIZZAS_ENTREGA_GRATIS)}`;
+      document.getElementById('delivery-msg').innerHTML=`Taxa de entrega R$ 8,00<span class="eg-cart">${EG_ICONES.presente}<span>${nPizzas>0?'Falta '+faltaP+' pizza para a entrega ser grátis (ou peça um combo de pizza)':'Peça um combo de pizza ou 2 pizzas e a entrega é grátis'}</span></span>${egProgresso(nPizzas,PIZZAS_ENTREGA_GRATIS)}`;
     }
   }
 

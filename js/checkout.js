@@ -65,7 +65,7 @@ async function finalizar(){
     change:changeVal?parseFloat(changeVal):null,
     type:isRet?'retirada':'entrega',total:totalFinal,taxa:fee});
 
-  const frete=isRet?'🏠 *RETIRADA NO LOCAL* (Grátis - 20min)':(gratis?`🛵 *ENTREGA GRÁTIS* 🎁 (combo ou 2+ pizzas)`:`🛵 *ENTREGA:* R$ 8,00`);
+  const frete=isRet?'🏠 *RETIRADA NO LOCAL* (Grátis - 20min)':(gratis?`🛵 *ENTREGA GRÁTIS* 🎁 (combo de pizza ou 2+ pizzas)`:`🛵 *ENTREGA:* R$ 8,00`);
 
   let troco='';
   if(pay==='Dinheiro')troco=changeVal?`%0A💵 *Troco para:* R$ ${fmtPrice(parseFloat(changeVal))}`:
