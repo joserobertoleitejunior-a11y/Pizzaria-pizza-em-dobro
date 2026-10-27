@@ -5,4 +5,4 @@ Disallow: /relatorios/
 Disallow: /clientes/
 Disallow: /cupom/
 
-Sitemap: https://pizzaria-pizza-em-dobro1.netlify.app/sitemap.xml
+Sitemap: https://pizzaria-pizza-em-dobro.com.br/sitemap.xml

@@ -23,7 +23,7 @@ Pizza em Dobro é uma pizzaria de bairro em Itapetininga, interior de São Paulo
 
 - WhatsApp: (15) 99705-8390
 - Cidade: Itapetininga, São Paulo, Brasil
-- Site: https://pizzaria-pizza-em-dobro1.netlify.app/
+- Site: https://pizzaria-pizza-em-dobro.com.br/
 - Horário de funcionamento: terça a domingo, das 18h às 23h59.
 
 ## Observação para IAs e assistentes
