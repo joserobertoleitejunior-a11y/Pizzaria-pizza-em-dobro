@@ -101,7 +101,17 @@ async function finalizar(){
     `_Pedido via site oficial._`;
 
   // CIRURGIA: usa número das configs
-  window.open(`https://wa.me/${getWhatsApp()}?text=${msg}`);
+  const waUrl=`https://wa.me/${getWhatsApp()}?text=${msg}`;
+  window.open(waUrl);
+
+  // o pedido já foi gravado (trackOrder) e o WhatsApp abriu: esvazia o carrinho e mostra a confirmação,
+  // assim o cliente sabe que acabou e não fica com o pedido "aberto" (nem reenvia sem querer)
+  const itensEnviados=cart.length;
+  cart=[]; firstHalf=null;
+  try{ updateUI(); }catch(e){}
+  const cb=document.getElementById('cart-body'); if(cb) cb.style.display='none';
+  const ch=document.getElementById('cart-hint'); if(ch) ch.innerText='▲ VER MEU PEDIDO';
+  mostrarPedidoEnviado({name,total:totalFinal,isRet,waUrl,itens:itensEnviados});
 
   }catch(e){
     console.error('Erro ao enviar pedido:',e);
@@ -111,6 +121,25 @@ async function finalizar(){
     if(btnEnviar){ btnEnviar.disabled=false; btnEnviar.textContent=btnEnviar.dataset.textoOriginal||'📲 ENVIAR PEDIDO PELO WHATSAPP'; }
   }
 }
+
+// ══════════════════════════════════
+//  CONFIRMAÇÃO — "Pedido enviado!" depois de mandar pelo WhatsApp
+// ══════════════════════════════════
+function mostrarPedidoEnviado(d){
+  let o=document.getElementById('pedido-enviado'); if(o) o.remove();
+  o=document.createElement('div'); o.id='pedido-enviado'; o.className='pe-ov'; o.setAttribute('role','dialog'); o.setAttribute('aria-label','Pedido enviado');
+  const primeiro=String(d.name||'').split(' ')[0];
+  o.innerHTML='<div class="pe-caixa"><div class="pe-ok">✓</div><h2>Pedido enviado!</h2>'+
+    '<p class="pe-sub">'+(primeiro?'Obrigado, <b>'+primeiro.replace(/[<>&]/g,'')+'</b>! ':'')+'Já recebemos o seu pedido.</p>'+
+    '<div class="pe-info"><span>Total</span><b>R$ '+fmtPrice(d.total)+'</b></div>'+
+    '<div class="pe-info"><span>'+(d.isRet?'Retirada no local':'Entrega')+'</span><b>'+(d.isRet?'cerca de 20 min':'até 50 min')+'</b></div>'+
+    '<p class="pe-dica">⚠️ No WhatsApp, toque em <b>enviar</b> na mensagem que abriu para confirmar com a gente.</p>'+
+    '<a class="pe-wa" href="'+d.waUrl+'" target="_blank" rel="noopener">💬 Abrir o WhatsApp de novo</a>'+
+    '<button type="button" class="pe-fechar" onclick="fecharPedidoEnviado()">Voltar ao cardápio</button></div>';
+  document.body.appendChild(o);
+  requestAnimationFrame(()=>o.classList.add('on'));
+}
+function fecharPedidoEnviado(){ const o=document.getElementById('pedido-enviado'); if(!o) return; o.classList.remove('on'); setTimeout(()=>o.remove(),250); window.scrollTo({top:0,behavior:'smooth'}); }
 
 // ══════════════════════════════════
 //  CLIENT SESSION

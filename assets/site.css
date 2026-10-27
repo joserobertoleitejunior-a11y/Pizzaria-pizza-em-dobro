@@ -1339,3 +1339,17 @@ body.pa-aberto .pa-flutuante{display:none}
 .pa-fechar{flex:1;border:0;border-radius:14px;padding:13px 12px;font-size:.95rem;font-weight:900;cursor:pointer;font-family:inherit;background:var(--amarelo);color:#141414;letter-spacing:.3px}
 .bv-dica{text-align:center;font-size:.72rem;font-weight:800;letter-spacing:.4px;color:rgba(255,255,255,.75);text-shadow:0 1px 6px rgba(0,0,0,.7);animation:bvDica 1.6s ease-in-out infinite}
 @keyframes bvDica{0%,100%{transform:translateY(2px);opacity:.6}50%{transform:translateY(-4px);opacity:1}}
+
+.pe-ov{position:fixed;inset:0;z-index:12000;background:rgba(0,0,0,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:18px;opacity:0;transition:opacity .25s}
+.pe-ov.on{opacity:1}
+.pe-caixa{width:100%;max-width:400px;background:#161616;border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:26px 20px 20px;text-align:center;color:#fff;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.pe-ok{width:68px;height:68px;margin:0 auto 12px;border-radius:50%;background:#25D366;color:#fff;font-size:2.2rem;font-weight:900;display:grid;place-items:center;animation:peOk .5s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes peOk{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+.pe-caixa h2{font-family:var(--font-display);font-size:1.6rem;margin:0 0 4px;text-transform:uppercase}
+.pe-sub{margin:0 0 14px;color:rgba(255,255,255,.8);font-size:.95rem}
+.pe-info{display:flex;justify-content:space-between;gap:10px;padding:10px 14px;margin:0 0 8px;border-radius:12px;background:rgba(255,255,255,.06);font-size:.92rem}
+.pe-info b{color:var(--amarelo)}
+.pe-dica{margin:12px 0;padding:10px 12px;border-radius:12px;background:rgba(245,197,24,.12);border:1px solid rgba(245,197,24,.35);font-size:.84rem;line-height:1.35}
+.pe-wa,.pe-fechar{display:block;width:100%;border:0;border-radius:14px;padding:14px;font-size:1rem;font-weight:900;font-family:inherit;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.pe-wa{background:#25D366;color:#fff;margin-bottom:8px}
+.pe-fechar{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.3)}
