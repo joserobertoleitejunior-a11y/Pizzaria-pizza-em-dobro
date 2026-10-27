@@ -1290,8 +1290,8 @@ body.pa-aberto .pa-flutuante{display:none}
 /* boas-vindas depois da splash: pedido rápido ou site, com o vídeo "Como pedir" num quadro pequeno */
 .bv-ov{position:fixed;inset:0;z-index:11000;background:#000;opacity:0;transition:opacity .3s;overflow:hidden}
 .bv-ov.on{opacity:1}
-.bv-fundo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.bv-veu{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25) 0%,rgba(0,0,0,0) 30%,rgba(0,0,0,0) 55%,rgba(0,0,0,.55) 100%);pointer-events:none}
+.bv-fundo{position:absolute;inset:0;background-size:cover;background-position:center}
+.bv-veu{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.45) 40%,rgba(0,0,0,.82) 100%);pointer-events:none}
 .bv-som{position:absolute;left:50%;top:50%;margin:-36px 0 0 -36px;width:72px;height:72px;border:1.5px solid rgba(255,255,255,.55);border-radius:50%;background:rgba(0,0,0,.5);box-shadow:0 4px 18px rgba(0,0,0,.5);display:grid;place-items:center;cursor:pointer;padding:0;opacity:.85;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);-webkit-tap-highlight-color:transparent}
 .bv-som svg{display:block;width:38px;height:38px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6))}
 .bv-som.some{opacity:0;transform:scale(.6);transition:opacity .3s,transform .3s;pointer-events:none}
@@ -1353,3 +1353,9 @@ body.pa-aberto .pa-flutuante{display:none}
 .pe-wa,.pe-fechar{display:block;width:100%;border:0;border-radius:14px;padding:14px;font-size:1rem;font-weight:900;font-family:inherit;cursor:pointer;text-decoration:none;box-sizing:border-box}
 .pe-wa{background:#25D366;color:#fff;margin-bottom:8px}
 .pe-fechar{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.3)}
+
+.bv-txt{justify-content:center;top:0;gap:10px}
+.bv-logo{align-self:center;width:84px;height:84px;border-radius:50%;border:2px solid var(--amarelo);box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.bv-sub{margin:0 0 6px;text-align:center;font-size:.92rem;color:rgba(255,255,255,.85);text-shadow:0 1px 6px rgba(0,0,0,.7)}
+.bv-adm{opacity:.85}
+.bv-txt .bv-ico{font-size:1.25rem}
