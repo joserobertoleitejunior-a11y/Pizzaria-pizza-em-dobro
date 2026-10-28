@@ -343,8 +343,9 @@ async function enviarMensagemIA(){
       headers:await cabecalhosEquipe(),
       body:JSON.stringify({mensagens:historicoChatIA})
     });
-    const data=await resp.json();
-    const resposta=data.texto||data.erro||'Não consegui responder agora, tenta de novo.';
+    let data={};
+    try{ data=await resp.json(); }catch(_){ data={erro:'O servidor da IA falhou (código '+resp.status+'). Tenta de novo em instantes.'}; }
+    const resposta=data.texto||data.erro||data.error||('Não consegui responder agora (código '+resp.status+'), tenta de novo.');
     adicionarBolhaChatIA(resposta,'bot');
     if(Array.isArray(data.itensAfetados) && data.itensAfetados.length){
       adicionarAcoesImagemChatIA(data.itensAfetados);
