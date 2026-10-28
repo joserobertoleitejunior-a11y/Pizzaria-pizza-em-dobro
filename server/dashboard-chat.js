@@ -135,7 +135,12 @@ async function montarContextoVendas() {
     const h = dataHoraBR(p.created_at || new Date().toISOString());
     (dias[h.data] = dias[h.data] || []).push({ p, h });
   });
-  const blocosPorDia = Object.keys(dias).sort().reverse().map(dia => {
+  // Economia de tokens: cada pergunta mandava TODOS os pedidos de 30 dias DUAS vezes (blocos por dia + lista).
+  // Agora: blocos por dia só dos últimos 7 dias; lista individual dos últimos 14 dias. Os totais/rankings
+  // continuam cobrindo os 30 dias.
+  const limiteDia = (n) => dataHoraBR(new Date(Date.now() - n * 24 * 60 * 60 * 1000).toISOString()).data;
+  const corte7 = limiteDia(6), corte14 = limiteDia(13);
+  const blocosPorDia = Object.keys(dias).filter(dia => dia >= corte7).sort().reverse().map(dia => {
     const lista = dias[dia].sort((a, b) => (Number(a.p.numero_sequencial) || 0) - (Number(b.p.numero_sequencial) || 0));
     const totalDia = lista.reduce((t, x) => t + Number(x.p.total || 0), 0);
     const pedidosTxt = lista.map(({ p, h }) => {
@@ -147,7 +152,7 @@ async function montarContextoVendas() {
 
   // ── LISTA DE PEDIDOS INDIVIDUAIS — permite a IA responder QUALQUER pergunta granular:
   // por cliente, por horário exato, quantidade de pizzas por pedido, etc. ──
-  const listaPedidos = todosPedidos.map(p => {
+  const listaPedidos = todosPedidos.filter(p => dataHoraBR(p.created_at || new Date().toISOString()).data >= corte14).map(p => {
     const { data, hora, minuto } = dataHoraBR(p.created_at || new Date().toISOString());
     const itens = (p.items_json || []).map(it => `${Number(it.qty) || 1}x ${it.name || 'item'}`).join(', ') || 'sem itens registrados';
     const qtdTotalItens = (p.items_json || []).reduce((s, it) => s + (Number(it.qty) || 1), 0);
@@ -213,10 +218,10 @@ ${Object.entries(porPagamento).map(([f, q]) => `- ${f}: ${q} pedido(s)`).join('\
 TIPO DE VENDA:
 ${Object.entries(porTipo).map(([t, q]) => `- ${t}: ${q} pedido(s)`).join('\n')}
 
-═══ VENDAS VÁLIDAS (SEM CANCELADOS) DE CADA DIA — formato pronto pra você copiar nas respostas ═══
+═══ VENDAS VÁLIDAS (SEM CANCELADOS) DE CADA DIA (ÚLTIMOS 7 DIAS; dias anteriores: use os totais por data acima) — formato pronto pra você copiar nas respostas ═══
 ${blocosPorDia}
 
-═══ LISTA COMPLETA DE PEDIDOS INDIVIDUAIS (mais recentes primeiro, até 600 pedidos, inclui cancelados marcados) ═══
+═══ LISTA DE PEDIDOS INDIVIDUAIS DOS ÚLTIMOS 14 DIAS (mais recentes primeiro, inclui cancelados marcados; antes disso, use totais e ranking de clientes) ═══
 Use esta lista para QUALQUER pergunta granular: por cliente específico, por faixa de horário exata, quantidade de pizzas por pedido, quem pediu mais, comparação entre dois períodos exatos, etc. Cada linha é um pedido.
 ${listaPedidos}`;
 }
@@ -404,7 +409,7 @@ Hoje é ${hojeISO} (formato AAAA-MM-DD, horário de Brasília). Use essa data co
 
 Você é direto, prático e fala a língua de dono de pizzaria de bairro — sem economês, sem enrolação, sem embromation. Frases curtas. Pode usar emoji com moderação (🍕📈💡).
 
-Você TEM acesso à lista COMPLETA de pedidos individuais dos últimos 30 dias (ou até 600 pedidos), incluindo cliente, telefone, itens exatos com quantidade, horário exato, forma de pagamento e status. Isso quer dizer que você consegue responder QUALQUER pergunta granular calculando na hora a partir dessa lista, por exemplo:
+Você TEM acesso à lista de pedidos individuais dos últimos 14 dias (e aos totais por data, horário, pagamento e ranking de clientes dos últimos 30 dias), incluindo cliente, telefone, itens exatos com quantidade, horário exato, forma de pagamento e status. Isso quer dizer que você consegue responder QUALQUER pergunta granular calculando na hora a partir dessa lista, por exemplo:
 - "quantas pizzas vendemos hoje" → some a coluna de itens de todos os pedidos de hoje (não cancelados)
 - "qual cliente pediu mais pizzas num pedido só" → percorra a lista e ache o maior
 - "faturamento das 18h às 20h hoje" → filtre pedidos de hoje nesse intervalo de horário e some
@@ -478,7 +483,7 @@ ${contextoVendas}`;
         body: JSON.stringify({
           model: MODELOS[modeloIdx],
           max_tokens: 4096,
-          system: systemPrompt,
+          system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
           messages: mensagensAPI,
           tools
         })
