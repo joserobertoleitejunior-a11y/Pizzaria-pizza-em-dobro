@@ -7,7 +7,10 @@
 // ══════════════════════════════════════════════════════════
 const { chamarClaude } = require('./claude');
 
-const MODELOS_GEMINI = ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite'];
+// A família 2.5 não aceita mais contas novas (o próprio Google indica a 3.5). Ordem: o Flash (melhor
+// resposta) primeiro; se não estiver liberado ou o limite dele acabar, o Flash-Lite; por último os apelidos
+// "latest", que o Google aponta sempre pro modelo atual.
+const MODELOS_GEMINI = ['gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-flash-latest', 'gemini-flash-lite-latest'];
 
 // schema da Anthropic → schema do Gemini (aceita só um subconjunto do OpenAPI)
 function esquemaGemini(s) {
@@ -64,7 +67,7 @@ async function chamarGemini(chave, { system, messages, ferramentas, busca, max_t
   const corpoBase = {
     systemInstruction: { parts: [{ text: String(system || '') }] },
     contents: conteudoGemini(messages),
-    generationConfig: { maxOutputTokens: max_tokens || 4000, temperature: 0.2 } // baixa: números e fatos, sem inventar
+    generationConfig: { maxOutputTokens: max_tokens || 4000 } // temperatura padrão (recomendação do Google pros modelos 3.x)
   };
   if (ferramentas && ferramentas.length) {
     // o Gemini não mistura pesquisa na internet com ferramentas de função: com ferramentas, só elas

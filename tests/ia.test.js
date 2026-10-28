@@ -50,7 +50,7 @@ test('limite do Gemini grátis: tenta os outros modelos e depois cai na Anthropi
   const r = await chamarIA({ geminiKey: 'g', anthropicKey: 'a' }, { system: 'S', messages: [{ role: 'user', content: 'x' }] });
   global.fetch = antes;
   assert.equal(r.content[0].text, 'da anthropic');
-  assert.equal(chamadas.filter(u => u.includes('generativelanguage')).length, 3);
+  assert.equal(chamadas.filter(u => u.includes("generativelanguage")).length, 4);
 });
 
 test('sem chave da Anthropic, o erro do Gemini volta pro chamador mostrar', async () => {
