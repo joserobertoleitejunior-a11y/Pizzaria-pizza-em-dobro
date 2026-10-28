@@ -146,7 +146,8 @@ JSON esperado:
   }catch(e){
     console.error('Erro ao interpretar pedido:',e);
     status.style.color='var(--se)';
-    status.textContent='⚠️ Não consegui interpretar. Confira o texto ou monte manualmente.';
+    // erro da IA (chave, limite, modelo) aparece com o motivo — antes ficava só "não consegui interpretar"
+    status.textContent=/^A IA |chave|limite/i.test(e&&e.message||'')?'⚠️ '+e.message:'⚠️ Não consegui interpretar. Confira o texto ou monte manualmente.';
   }finally{
     btn.disabled=false; btn.style.opacity='1';
   }

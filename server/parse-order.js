@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════════════════════
-//  CONVERSOR DE PEDIDO — via Anthropic (Claude)
+//  CONVERSOR DE PEDIDO — via IA (Gemini; Anthropic de reserva)
 //  Recebe o texto colado do WhatsApp e devolve o pedido formatado.
 //  A chave fica só aqui no servidor — nunca exposta no navegador
 //  (antes ficava direto no código do site; corrigido).
@@ -7,6 +7,7 @@
 
 const { admin, db } = require('./lib/firebase');
 const { getSecrets } = require('./lib/secrets');
+const { chamarIA } = require('./lib/ia');
 const { reportError } = require('./lib/sentry');
 const { exigirEquipe } = require('./lib/equipe');
 
@@ -23,8 +24,8 @@ exports.handler = async (event) => {
 
   try {
     const secrets = await getSecrets(db);
-    if (!secrets.anthropicKey) {
-      return { statusCode: 500, body: JSON.stringify({ error: 'Chave da Anthropic não configurada no painel do bot.' }) };
+    if (!secrets.geminiKey && !secrets.anthropicKey) {
+      return { statusCode: 500, body: JSON.stringify({ error: 'Chave da IA não configurada. Coloque a chave no painel admin.' }) };
     }
 
     const payload = JSON.parse(event.body || '{}');
@@ -34,26 +35,19 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ error: 'Faltou texto do pedido ou instrução.' }) };
     }
 
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': secrets.anthropicKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 800,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: raw }]
-      })
+    // Gemini primeiro (chave do painel admin); Anthropic de reserva. 4000 tokens: os modelos 3.x
+    // "pensam" antes de responder e isso conta no limite — com 800 a resposta (JSON) podia sair cortada.
+    const data = await chamarIA(secrets, {
+      max_tokens: 4000, system: systemPrompt,
+      messages: [{ role: 'user', content: raw }]
     });
-    const data = await resp.json();
-    if (data.type === 'error') {
-      console.error('Erro da API da Anthropic:', JSON.stringify(data.error));
-      return { statusCode: 500, body: JSON.stringify({ error: data.error?.message || 'Erro da API da Anthropic.' }) };
+    if (data?.type === 'error') {
+      const e = data.error || {};
+      console.error('Erro da IA no conversor:', JSON.stringify(e));
+      const motivo = e.gemini ? 'Gemini: ' + (e.gemini.message || e.gemini.type) + ' | reserva: ' + (e.message || e.type) : (e.message || e.type);
+      return { statusCode: 500, body: JSON.stringify({ error: 'A IA não respondeu: ' + String(motivo || '').slice(0, 300) }) };
     }
-    const texto = (data?.content || []).map(b => b.text || '').join('');
+    const texto = (data?.content || []).filter(b => b.type === 'text').map(b => b.text || '').join('');
     return { statusCode: 200, body: JSON.stringify({ texto }) };
   } catch (err) {
     reportError(err, 'parse-order');
