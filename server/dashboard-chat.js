@@ -8,6 +8,7 @@
 
 const { admin, db } = require('./lib/firebase');
 const { getSecrets } = require('./lib/secrets');
+const { chamarClaude } = require('./lib/claude');
 const { reportError } = require('./lib/sentry');
 const { exigirEquipe } = require('./lib/equipe');
 const { decomporSaboresItem, ehClienteBalcao } = require('../shared/utils.js');
@@ -463,8 +464,7 @@ ${contextoVendas}`;
 
     // Erro da API vira mensagem clara pro Marco (antes só aparecia "não consegui responder agora"):
     // sem crédito / chave inválida / IA sobrecarregada. Modelo descontinuado → tenta o substituto.
-    const MODELOS = ['claude-sonnet-4-6', 'claude-sonnet-5-5'];
-    let modeloIdx = 0, esperouSobrecarga = false;
+    let esperouSobrecarga = false;
     const erroAmigavel = (e) => {
       const tipo = e?.type || '', msg = String(e?.message || '');
       if (/credit balance|billing|insufficient/i.test(msg)) return 'Os créditos da IA (Anthropic) acabaram. Recarregue em console.anthropic.com → Billing e tente de novo.';
@@ -473,26 +473,15 @@ ${contextoVendas}`;
       return 'A IA respondeu com erro (' + (tipo || 'desconhecido') + '): ' + msg.slice(0, 160);
     };
     for (let tentativa = 0; tentativa < 10; tentativa++) {
-      const claudeResp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-api-key': secrets.anthropicKey,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-          model: MODELOS[modeloIdx],
-          max_tokens: 4096,
-          system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
-          messages: mensagensAPI,
-          tools
-        })
+      const claudeData = await chamarClaude(secrets.anthropicKey, {
+        max_tokens: 6000,
+        system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
+        messages: mensagensAPI,
+        tools
       });
-      const claudeData = await claudeResp.json();
       if (claudeData?.type === 'error') {
         console.error('ERRO da API da Anthropic:', JSON.stringify(claudeData.error));
         const tipo = claudeData.error?.type;
-        if (tipo === 'not_found_error' && modeloIdx < MODELOS.length - 1) { modeloIdx++; tentativa--; continue; }
         if ((tipo === 'overloaded_error' || tipo === 'rate_limit_error') && !esperouSobrecarga) {
           esperouSobrecarga = true; await new Promise(r => setTimeout(r, 2500)); tentativa--; continue;
         }

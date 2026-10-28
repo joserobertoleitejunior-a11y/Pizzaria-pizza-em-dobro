@@ -9,6 +9,7 @@
 
 const { admin, db } = require('./lib/firebase');
 const { getSecrets } = require('./lib/secrets');
+const { chamarClaude } = require('./lib/claude');
 const { reportError } = require('./lib/sentry');
 const { exigirEquipe } = require('./lib/equipe');
 const { decomporSaboresItem } = require('../shared/utils.js');
@@ -146,22 +147,12 @@ Analise os dados de vendas fornecidos e escreva um relatório curto e MUITO prá
 
 Regras: seja objetivo, sem enrolação, frases curtas. Nada de disclaimer ou introdução — comece direto no primeiro título. Não invente números que não foram dados.`;
 
-    const claudeResp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': secrets.anthropicKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1800,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: dadosResumo }],
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }]
-      })
+    const claudeData = await chamarClaude(secrets.anthropicKey, {
+      max_tokens: 4000,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: dadosResumo }],
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }]
     });
-    const claudeData = await claudeResp.json();
     const texto = (claudeData?.content || [])
       .filter(b => b.type === 'text')
       .map(b => b.text)
