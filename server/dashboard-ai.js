@@ -37,7 +37,7 @@ exports.handler = async (event) => {
   try {
     const secrets = await getSecrets(db);
     if (!secrets.anthropicKey && !secrets.geminiKey) {
-      return { statusCode: 500, body: JSON.stringify({ erro: 'Chave da IA não configurada. Coloque a chave do Gemini (grátis) ou da Anthropic no painel admin.' }) };
+      return { statusCode: 500, body: JSON.stringify({ erro: 'Chave da IA não configurada. Coloque a chave no painel admin.' }) };
     }
 
     // ── 1. Junta os dados de vendas dos últimos 30 dias ──
@@ -154,7 +154,7 @@ Regras: seja objetivo, sem enrolação, frases curtas. Nada de disclaimer ou int
     if (claudeData?.type === 'error') {
       const e = claudeData.error || {};
       if (e.gemini) e.message = 'Gemini: ' + String(e.gemini.message || e.gemini.type).slice(0, 200) + ' | reserva: ' + String(e.message || '').slice(0, 100);
-      const msg = e.type === 'rate_limit_error' ? 'O limite grátis da IA acabou por agora. Tenta de novo em 1 minuto (ou amanhã).'
+      const msg = e.type === 'rate_limit_error' ? 'O limite de uso da IA acabou por agora. Tenta de novo em 1 minuto (ou amanhã).'
         : e.type === 'authentication_error' ? 'A chave da IA está inválida. Confira no painel admin.'
         : 'A IA respondeu com erro: ' + String(e.message || e.type || '').slice(0, 160);
       return { statusCode: 200, body: JSON.stringify({ texto: '⚠️ ' + msg, geradoEm: new Date().toISOString() }) };

@@ -401,7 +401,7 @@ exports.handler = async (event) => {
   try {
     const secrets = await getSecrets(db);
     if (!secrets.anthropicKey && !secrets.geminiKey) {
-      return { statusCode: 500, body: JSON.stringify({ erro: 'Chave da IA não configurada. Coloque a chave do Gemini (grátis) ou da Anthropic no painel admin.' }) };
+      return { statusCode: 500, body: JSON.stringify({ erro: 'Chave da IA não configurada. Coloque a chave no painel admin.' }) };
     }
 
     const payload = JSON.parse(event.body || '{}');
@@ -481,9 +481,9 @@ ${contextoVendas}`;
     // sem crédito / chave inválida / IA sobrecarregada. Modelo descontinuado → tenta o substituto.
     let esperouSobrecarga = false;
     const erroAmigavel = function erroAmigavel(e) {
-      if (e?.gemini) return 'O Gemini (grátis) falhou: ' + String(e.gemini.message || e.gemini.type).slice(0, 200) + ' — e a reserva também: ' + erroAmigavel({ ...e, gemini: null });
+      if (e?.gemini) return 'O Gemini falhou: ' + String(e.gemini.message || e.gemini.type).slice(0, 200) + ' — e a reserva também: ' + erroAmigavel({ ...e, gemini: null });
       const tipo = e?.type || '', msg = String(e?.message || '');
-      if (tipo === 'rate_limit_error' && /gemini|quota|RESOURCE_EXHAUSTED/i.test(msg)) return 'O limite grátis do Gemini acabou por agora. Espere 1 minuto (ou até amanhã, se foi o limite do dia) e tente de novo.';
+      if (tipo === 'rate_limit_error' && /gemini|quota|RESOURCE_EXHAUSTED/i.test(msg)) return 'O limite de uso da IA acabou por agora. Espere 1 minuto (ou até amanhã, se foi o limite do dia) e tente de novo.';
       if (/credit balance|billing|insufficient/i.test(msg)) return 'Os créditos da IA (Anthropic) acabaram. Recarregue em console.anthropic.com → Billing e tente de novo.';
       if (tipo === 'authentication_error' || tipo === 'permission_error') return 'A chave da IA está inválida ou sem permissão. Confira a chave no painel admin.';
       if (tipo === 'rate_limit_error' || tipo === 'overloaded_error') return 'A IA está sobrecarregada agora. Tenta de novo em 1 minuto.';
