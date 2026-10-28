@@ -8,7 +8,7 @@
 
 const { admin, db } = require('./lib/firebase');
 const { getSecrets } = require('./lib/secrets');
-const { chamarClaude } = require('./lib/claude');
+const { chamarIA } = require('./lib/ia');
 const { reportError } = require('./lib/sentry');
 const { exigirEquipe } = require('./lib/equipe');
 const { decomporSaboresItem, ehClienteBalcao } = require('../shared/utils.js');
@@ -386,8 +386,8 @@ exports.handler = async (event) => {
 
   try {
     const secrets = await getSecrets(db);
-    if (!secrets.anthropicKey) {
-      return { statusCode: 500, body: JSON.stringify({ erro: 'Chave da IA não configurada.' }) };
+    if (!secrets.anthropicKey && !secrets.geminiKey) {
+      return { statusCode: 500, body: JSON.stringify({ erro: 'Chave da IA não configurada. Coloque a chave do Gemini (grátis) ou da Anthropic no painel admin.' }) };
     }
 
     const payload = JSON.parse(event.body || '{}');
@@ -460,24 +460,22 @@ ${contextoVendas}`;
     let mensagensAPI = [...historico];
     let textoFinal = '';
     let itensAfetados = [];
-    const tools = [{ type: 'web_search_20250305', name: 'web_search' }, ...ferramentasCardapio];
 
     // Erro da API vira mensagem clara pro Marco (antes só aparecia "não consegui responder agora"):
     // sem crédito / chave inválida / IA sobrecarregada. Modelo descontinuado → tenta o substituto.
     let esperouSobrecarga = false;
     const erroAmigavel = (e) => {
       const tipo = e?.type || '', msg = String(e?.message || '');
+      if (tipo === 'rate_limit_error' && /gemini|quota|RESOURCE_EXHAUSTED/i.test(msg)) return 'O limite grátis do Gemini acabou por agora. Espere 1 minuto (ou até amanhã, se foi o limite do dia) e tente de novo.';
       if (/credit balance|billing|insufficient/i.test(msg)) return 'Os créditos da IA (Anthropic) acabaram. Recarregue em console.anthropic.com → Billing e tente de novo.';
-      if (tipo === 'authentication_error' || tipo === 'permission_error') return 'A chave da IA (Anthropic) está inválida ou sem permissão. Confira a chave no painel admin.';
+      if (tipo === 'authentication_error' || tipo === 'permission_error') return 'A chave da IA está inválida ou sem permissão. Confira a chave no painel admin.';
       if (tipo === 'rate_limit_error' || tipo === 'overloaded_error') return 'A IA está sobrecarregada agora. Tenta de novo em 1 minuto.';
       return 'A IA respondeu com erro (' + (tipo || 'desconhecido') + '): ' + msg.slice(0, 160);
     };
     for (let tentativa = 0; tentativa < 10; tentativa++) {
-      const claudeData = await chamarClaude(secrets.anthropicKey, {
-        max_tokens: 6000,
-        system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
-        messages: mensagensAPI,
-        tools
+      const claudeData = await chamarIA(secrets, {
+        max_tokens: 6000, system: systemPrompt, cache: true,
+        messages: mensagensAPI, ferramentas: ferramentasCardapio, busca: true
       });
       if (claudeData?.type === 'error') {
         console.error('ERRO da API da Anthropic:', JSON.stringify(claudeData.error));

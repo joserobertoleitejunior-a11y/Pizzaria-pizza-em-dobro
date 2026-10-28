@@ -13,7 +13,7 @@ const CAMPOS_CONFIG = [
   ['tempoEntrega', 'Tempo de entrega'], ['formasPagamento', 'Formas de pagamento'], ['horarioInicio', 'Abre às', 'time'],
   ['horarioFim', 'Fecha às', 'time'], ['mensagemFechado', 'Mensagem de loja fechada'], ['observacoesLoja', 'Observações']
 ];
-const SEGREDOS = [['anthropicKey', 'Anthropic (IA do Conversor e do Dashboard)']];
+const SEGREDOS = [['geminiKey', 'Gemini — GRÁTIS (assistente do gerente e análise do Dashboard) · aistudio.google.com → Get API key'], ['anthropicKey', 'Anthropic (IA do Conversor; reserva do assistente)']];
 
 const estado = { cardapio: [], clientes: [] };
 

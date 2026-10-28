@@ -9,7 +9,7 @@
 
 const { admin, db } = require('./lib/firebase');
 const { getSecrets } = require('./lib/secrets');
-const { chamarClaude } = require('./lib/claude');
+const { chamarIA } = require('./lib/ia');
 const { reportError } = require('./lib/sentry');
 const { exigirEquipe } = require('./lib/equipe');
 const { decomporSaboresItem } = require('../shared/utils.js');
@@ -36,8 +36,8 @@ exports.handler = async (event) => {
 
   try {
     const secrets = await getSecrets(db);
-    if (!secrets.anthropicKey) {
-      return { statusCode: 500, body: JSON.stringify({ erro: 'Chave da IA não configurada.' }) };
+    if (!secrets.anthropicKey && !secrets.geminiKey) {
+      return { statusCode: 500, body: JSON.stringify({ erro: 'Chave da IA não configurada. Coloque a chave do Gemini (grátis) ou da Anthropic no painel admin.' }) };
     }
 
     // ── 1. Junta os dados de vendas dos últimos 30 dias ──
@@ -147,12 +147,17 @@ Analise os dados de vendas fornecidos e escreva um relatório curto e MUITO prá
 
 Regras: seja objetivo, sem enrolação, frases curtas. Nada de disclaimer ou introdução — comece direto no primeiro título. Não invente números que não foram dados.`;
 
-    const claudeData = await chamarClaude(secrets.anthropicKey, {
-      max_tokens: 4000,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: dadosResumo }],
-      tools: [{ type: 'web_search_20250305', name: 'web_search' }]
+    const claudeData = await chamarIA(secrets, {
+      max_tokens: 4000, system: systemPrompt, busca: true,
+      messages: [{ role: 'user', content: dadosResumo }]
     });
+    if (claudeData?.type === 'error') {
+      const e = claudeData.error || {};
+      const msg = e.type === 'rate_limit_error' ? 'O limite grátis da IA acabou por agora. Tenta de novo em 1 minuto (ou amanhã).'
+        : e.type === 'authentication_error' ? 'A chave da IA está inválida. Confira no painel admin.'
+        : 'A IA respondeu com erro: ' + String(e.message || e.type || '').slice(0, 160);
+      return { statusCode: 200, body: JSON.stringify({ texto: '⚠️ ' + msg, geradoEm: new Date().toISOString() }) };
+    }
     const texto = (claudeData?.content || [])
       .filter(b => b.type === 'text')
       .map(b => b.text)
