@@ -66,3 +66,25 @@ test('esquema: tira campos que o Gemini não aceita', () => {
   const e = esquemaGemini({ type: 'object', additionalProperties: false, properties: { a: { type: 'number', description: 'd' } }, required: ['a'] });
   assert.deepEqual(e, { type: 'object', properties: { a: { type: 'number', description: 'd' } }, required: ['a'] });
 });
+
+test('chave nova "AQ.": se o AI Studio recusar, tenta a Vertex AI (modo expresso)', async () => {
+  const antes = global.fetch; const urls = [];
+  global.fetch = async (url) => {
+    urls.push(String(url));
+    if (String(url).includes('generativelanguage')) return erroHttp(401, 'UNAUTHENTICATED', 'API keys are not supported by this API');
+    return respostaGemini([{ text: 'veio da vertex' }]);
+  };
+  const r = await chamarIA({ geminiKey: 'AQ.Ab8abc' }, { system: 'S', messages: [{ role: 'user', content: 'x' }] });
+  global.fetch = antes;
+  assert.equal(r.content[0].text, 'veio da vertex');
+  assert.ok(urls[0].includes('generativelanguage') && urls[1].includes('aiplatform.googleapis.com'));
+});
+
+test('chave inválida de verdade (sem "AQ.") não tenta Vertex nem outros modelos', async () => {
+  const antes = global.fetch; let n = 0;
+  global.fetch = async () => { n++; return erroHttp(400, 'INVALID_ARGUMENT', 'API key not valid. Please pass a valid API key.'); };
+  const r = await chamarIA({ geminiKey: 'AIzaRUIM' }, { system: 'S', messages: [{ role: 'user', content: 'x' }] });
+  global.fetch = antes;
+  assert.equal(r.error.type, 'authentication_error');
+  assert.equal(n, 1);
+});

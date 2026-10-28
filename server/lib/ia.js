@@ -73,8 +73,16 @@ async function chamarGemini(chave, { system, messages, ferramentas, busca, max_t
     corpoBase.tools = [{ google_search: {} }];
   }
   let ultimo = null;
-  for (const modelo of MODELOS_GEMINI) {
-    const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + modelo + ':generateContent', {
+  // Chaves novas do Google começam com "AQ." (em vez de "AIza"): se a API do AI Studio recusar a chave,
+  // tenta o endereço da Vertex AI (modo expresso), que aceita esse formato.
+  const ehAQ = String(chave).startsWith('AQ.');
+  let usarVertex = false;
+  for (let i = 0; i < MODELOS_GEMINI.length; i++) {
+    const modelo = MODELOS_GEMINI[i];
+    const url = usarVertex
+      ? 'https://aiplatform.googleapis.com/v1/publishers/google/models/' + modelo + ':generateContent'
+      : 'https://generativelanguage.googleapis.com/v1beta/models/' + modelo + ':generateContent';
+    const resp = await fetch(url, {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-goog-api-key': chave },
       body: JSON.stringify(corpoBase)
@@ -99,7 +107,10 @@ async function chamarGemini(chave, { system, messages, ferramentas, busca, max_t
     const tipo = tipoErroGemini(resp.status, data.error);
     console.error('ERRO do Gemini (' + modelo + '):', JSON.stringify(data.error || { status: resp.status }));
     ultimo = { type: 'error', error: { type: tipo, message: String(data.error?.message || ('HTTP ' + resp.status)).slice(0, 300) } };
-    if (tipo === 'authentication_error') return ultimo;   // chave ruim: não adianta trocar de modelo
+    if (tipo === 'authentication_error') {
+      if (ehAQ && !usarVertex) { usarVertex = true; i = -1; continue; } // recomeça a lista pelo endereço da Vertex
+      return ultimo;                                                    // chave ruim: não adianta trocar de modelo
+    }
     // limite/instabilidade/modelo sumiu: tenta o próximo modelo da lista
   }
   return ultimo;
