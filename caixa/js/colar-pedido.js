@@ -173,7 +173,14 @@ function _acharPorNome(nome,lista,getNome){
   nomes.forEach((n,k)=>{ if(!n) return; const pn=n.split(' '); const comum=pn.filter(w=>pa.has(w)).length; const sc=comum/Math.max(pn.length,pa.size); if(sc>ms){ms=sc;melhor=k;empate=false;} else if(sc===ms&&sc>0) empate=true; });
   return (melhor>=0&&ms>=0.6&&!empate)?lista[melhor]:null;
 }
-const _acharItem=n=>_acharPorNome(n,DEFAULT_MENU,m=>m.n);
+// Refri: a pizzaria só vende Coca e Fanta de 1.5L — "coca 2l", "coca 2 litros", "coca lata", "coca" viram a 1.5L
+// (pedido do José). Só entra se o nome não bater com nenhum item de verdade do cardápio.
+const REFRI_UNICO=[[/\bcoca\b|coca[- ]?cola/i,/^coca/i],[/\bfanta\b/i,/^fanta/i]];
+function _refriPadrao(nome,lista,getNome){
+  for(const [re,pref] of REFRI_UNICO){ if(re.test(String(nome||''))){ const op=lista.filter(x=>pref.test(getNome(x))); if(op.length===1) return op[0]; } }
+  return null;
+}
+const _acharItem=n=>_acharPorNome(n,DEFAULT_MENU,m=>m.n)||_refriPadrao(n,DEFAULT_MENU,m=>m.n);
 const _acharBorda=n=>_acharPorNome(n,BORDAS_DEFAULT,b=>b.name);
 const _acharAcrescimos=ls=>(Array.isArray(ls)?ls:[]).map(n=>_acharPorNome(n,ACRESCIMOS_DEFAULT,a=>a.name)).filter((a,i,arr)=>a&&arr.indexOf(a)===i);
 

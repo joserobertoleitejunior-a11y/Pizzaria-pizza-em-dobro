@@ -111,3 +111,13 @@ test('conversa copiada do WhatsApp: nome do cliente vem do remetente (não do at
   assert.deepEqual(extrairClienteDoWhatsapp(c), { nome: null, telefone: '+55 15 99123-4567' });
   assert.deepEqual(extrairClienteDoWhatsapp('Boa noite, eu quero 1 pizza grande'), { nome: null, telefone: null });
 });
+
+test('refri: qualquer pedido de Coca/Fanta vira a garrafa de 1.5L (única do cardápio); Kuat 2L continua Kuat', () => {
+  const t = src.slice(src.indexOf('function _normNome'), src.indexOf('const _acharBorda'));
+  const MENU = [{ n: 'Coca-Cola 1.5L', cat: 'd' }, { n: 'Fanta 1.5L', cat: 'd' }, { n: 'Kuat 2L', cat: 'd' }, { n: 'Calabresa', cat: 'p' }];
+  const acharItem = new Function('DEFAULT_MENU', t + '; return _acharItem;')(MENU);
+  for (const pedido of ['Coca 2L', 'coca 2 litros', 'Coca-Cola lata', 'coca', 'Coca Cola 2l']) assert.equal(acharItem(pedido)?.n, 'Coca-Cola 1.5L', pedido);
+  assert.equal(acharItem('Fanta 2L')?.n, 'Fanta 1.5L');
+  assert.equal(acharItem('Kuat 2L')?.n, 'Kuat 2L');
+  assert.equal(acharItem('Guaraná'), null);
+});
