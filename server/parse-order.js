@@ -38,7 +38,7 @@ exports.handler = async (event) => {
     // Gemini primeiro (chave do painel admin); Anthropic de reserva. 4000 tokens: os modelos 3.x
     // "pensam" antes de responder e isso conta no limite — com 800 a resposta (JSON) podia sair cortada.
     const data = await chamarIA(secrets, {
-      max_tokens: 4000, system: systemPrompt,
+      max_tokens: 8000, system: systemPrompt, json: true,
       messages: [{ role: 'user', content: raw }]
     });
     if (data?.type === 'error') {

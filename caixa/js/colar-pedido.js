@@ -124,12 +124,12 @@ JSON esperado:
           headers:await cabecalhosEquipe(),
           body:JSON.stringify({systemPrompt, raw:textoIA})
         });
-        const d=await r.json();
+        let d; try{ d=await r.json(); }catch(_){ throw new Error('A IA não respondeu (código '+r.status+'). Tente de novo.'); }
         if(d.error) throw new Error(d.error);
         let raw=(d?.texto||'').trim().replace(/^```json\s*|^```\s*|```$/g,'');
         const ini=raw.indexOf('{'), fim=raw.lastIndexOf('}');
         if(ini>=0&&fim>ini) raw=raw.slice(ini,fim+1); // pega só o JSON, mesmo que venha texto antes/depois
-        parsed=JSON.parse(raw);
+        try{ parsed=JSON.parse(raw); }catch(_){ throw new Error('A IA respondeu fora do formato: "'+String(d?.texto||'(vazio)').slice(0,140)+'"'); }
       }catch(e){ ultimoErro=e; if(tentativa===0) status.textContent='🤖 Conferindo de novo...'; }
     }
     if(!parsed) throw ultimoErro||new Error('sem resposta');

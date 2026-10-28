@@ -63,12 +63,13 @@ function tipoErroGemini(status, e) {
   return 'api_error';
 }
 
-async function chamarGemini(chave, { system, messages, ferramentas, busca, max_tokens }) {
+async function chamarGemini(chave, { system, messages, ferramentas, busca, max_tokens, json }) {
   const corpoBase = {
     systemInstruction: { parts: [{ text: String(system || '') }] },
     contents: conteudoGemini(messages),
     generationConfig: { maxOutputTokens: max_tokens || 4000 } // temperatura padrão (recomendação do Google pros modelos 3.x)
   };
+  if (json) corpoBase.generationConfig.responseMimeType = 'application/json'; // resposta só com o JSON, sem texto em volta
   if (ferramentas && ferramentas.length) {
     // o Gemini não mistura pesquisa na internet com ferramentas de função: com ferramentas, só elas
     corpoBase.tools = [{ functionDeclarations: ferramentas.map(f => ({ name: f.name, description: f.description, parameters: esquemaGemini(f.input_schema) })) }];
@@ -105,7 +106,9 @@ async function chamarGemini(chave, { system, messages, ferramentas, busca, max_t
         ultimo = { type: 'error', error: { type: 'api_error', message: 'O Gemini não devolveu texto (' + motivo + ').' } };
         continue;
       }
-      return { content, stop_reason: content.some(b => b.type === 'tool_use') ? 'tool_use' : 'end_turn', _provedor: 'gemini ' + modelo };
+      const fim = data.candidates?.[0]?.finishReason;
+      if (fim === 'MAX_TOKENS' && !content.some(b => b.type === 'tool_use')) console.warn('Gemini parou no limite de tokens (' + modelo + ')');
+      return { content, stop_reason: content.some(b => b.type === 'tool_use') ? 'tool_use' : (fim === 'MAX_TOKENS' ? 'max_tokens' : 'end_turn'), _provedor: 'gemini ' + modelo };
     }
     const tipo = tipoErroGemini(resp.status, data.error);
     console.error('ERRO do Gemini (' + modelo + '):', JSON.stringify(data.error || { status: resp.status }));
@@ -120,10 +123,10 @@ async function chamarGemini(chave, { system, messages, ferramentas, busca, max_t
 }
 
 // system: texto. ferramentas: ferramentas de função (formato Anthropic). busca: pesquisa na internet.
-async function chamarIA(secrets, { system, messages, ferramentas, busca, max_tokens, cache }) {
+async function chamarIA(secrets, { system, messages, ferramentas, busca, max_tokens, cache, json }) {
   let erroGemini = null;
   if (secrets.geminiKey) {
-    const r = await chamarGemini(secrets.geminiKey, { system, messages, ferramentas, busca, max_tokens });
+    const r = await chamarGemini(secrets.geminiKey, { system, messages, ferramentas, busca, max_tokens, json });
     if (r.type !== 'error') return r;
     erroGemini = r;
     if (!secrets.anthropicKey) return r;

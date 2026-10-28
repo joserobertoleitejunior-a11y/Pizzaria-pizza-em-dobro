@@ -100,3 +100,13 @@ test('se Gemini e Anthropic falham, o erro leva o motivo do Gemini junto', async
   assert.match(r.error.message, /credit balance/);
   assert.match(r.error.gemini.message, /chave sem permissão/);
 });
+
+test('modo JSON: pede ao Gemini resposta só em JSON', async () => {
+  const antes = global.fetch; let corpo;
+  global.fetch = async (url, init) => { corpo = JSON.parse(init.body); return respostaGemini([{ text: '{"itens":[]}' }]); };
+  const r = await chamarIA({ geminiKey: 'g' }, { system: 'S', messages: [{ role: 'user', content: 'x' }], json: true, max_tokens: 8000 });
+  global.fetch = antes;
+  assert.equal(corpo.generationConfig.responseMimeType, 'application/json');
+  assert.equal(corpo.generationConfig.maxOutputTokens, 8000);
+  assert.equal(r.content[0].text, '{"itens":[]}');
+});
