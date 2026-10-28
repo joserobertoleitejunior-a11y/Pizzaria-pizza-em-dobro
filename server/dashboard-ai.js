@@ -153,6 +153,7 @@ Regras: seja objetivo, sem enrolação, frases curtas. Nada de disclaimer ou int
     });
     if (claudeData?.type === 'error') {
       const e = claudeData.error || {};
+      if (e.gemini) e.message = 'Gemini: ' + String(e.gemini.message || e.gemini.type).slice(0, 200) + ' | reserva: ' + String(e.message || '').slice(0, 100);
       const msg = e.type === 'rate_limit_error' ? 'O limite grátis da IA acabou por agora. Tenta de novo em 1 minuto (ou amanhã).'
         : e.type === 'authentication_error' ? 'A chave da IA está inválida. Confira no painel admin.'
         : 'A IA respondeu com erro: ' + String(e.message || e.type || '').slice(0, 160);

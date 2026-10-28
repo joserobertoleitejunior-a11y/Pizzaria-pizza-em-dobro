@@ -88,3 +88,15 @@ test('chave inválida de verdade (sem "AQ.") não tenta Vertex nem outros modelo
   assert.equal(r.error.type, 'authentication_error');
   assert.equal(n, 1);
 });
+
+test('se Gemini e Anthropic falham, o erro leva o motivo do Gemini junto', async () => {
+  const antes = global.fetch;
+  global.fetch = async (url) => String(url).includes('generativelanguage')
+    ? erroHttp(403, 'PERMISSION_DENIED', 'chave sem permissão')
+    : { ok: false, status: 400, json: async () => ({ type: 'error', error: { type: 'invalid_request_error', message: 'credit balance is too low' } }) };
+  const r = await chamarIA({ geminiKey: 'AIzaX', anthropicKey: 'a' }, { system: 'S', messages: [{ role: 'user', content: 'x' }] });
+  global.fetch = antes;
+  assert.equal(r.type, 'error');
+  assert.match(r.error.message, /credit balance/);
+  assert.match(r.error.gemini.message, /chave sem permissão/);
+});

@@ -480,7 +480,8 @@ ${contextoVendas}`;
     // Erro da API vira mensagem clara pro Marco (antes só aparecia "não consegui responder agora"):
     // sem crédito / chave inválida / IA sobrecarregada. Modelo descontinuado → tenta o substituto.
     let esperouSobrecarga = false;
-    const erroAmigavel = (e) => {
+    const erroAmigavel = function erroAmigavel(e) {
+      if (e?.gemini) return 'O Gemini (grátis) falhou: ' + String(e.gemini.message || e.gemini.type).slice(0, 200) + ' — e a reserva também: ' + erroAmigavel({ ...e, gemini: null });
       const tipo = e?.type || '', msg = String(e?.message || '');
       if (tipo === 'rate_limit_error' && /gemini|quota|RESOURCE_EXHAUSTED/i.test(msg)) return 'O limite grátis do Gemini acabou por agora. Espere 1 minuto (ou até amanhã, se foi o limite do dia) e tente de novo.';
       if (/credit balance|billing|insufficient/i.test(msg)) return 'Os créditos da IA (Anthropic) acabaram. Recarregue em console.anthropic.com → Billing e tente de novo.';

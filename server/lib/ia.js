@@ -134,6 +134,8 @@ async function chamarIA(secrets, { system, messages, ferramentas, busca, max_tok
     messages, tools
   });
   if (r && r.type !== 'error') r._provedor = 'anthropic';
+  // as duas falharam: devolve o erro da reserva, mas leva junto o motivo do Gemini pra aparecer na tela
+  if (r && r.type === 'error' && erroGemini) r.error = { ...r.error, gemini: erroGemini.error };
   return r;
 }
 
