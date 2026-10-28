@@ -123,12 +123,16 @@ function analisarItem(it){
   return ehPizza?{pizzas:qtd,esfihas:0,sabores:[[nome,qtd]]}:{pizzas:0,esfihas:0,sabores:[]};
 }
 
+// Cada carga ganha um número: se o usuário trocar de período antes da anterior terminar, a resposta
+// antiga é DESCARTADA. Antes, os 7 dias da abertura chegavam depois e apareciam com o rótulo "Hoje".
+let _cargaRelatorio=0;
 async function carregarRelatorio(){
+  const minhaCarga=++_cargaRelatorio;
   if(!FS){ document.getElementById('kpis').innerHTML='<div class="empty">⚠️ Sem conexão com o banco de dados.</div>'; return; }
   let diaIni, diaFim;
   if(periodoAtivo==='custom'&&dataCustomSelecionada){ diaIni=diaFim=dataCustomSelecionada; }
   else{ const cfg=PERIODOS.find(p=>p.id===periodoAtivo); diaFim=hojeBR(); diaIni=somaDias(diaFim,-(cfg.dias-1)); }
-  periodoRotulo=rotuloPeriodoAtual();
+  const rotulo=rotuloPeriodoAtual();
   document.getElementById('kpis').innerHTML='<div class="sk-wrap" aria-hidden="true"><i class="sk"></i><i class="sk"></i><i class="sk"></i></div>';
   try{
     await carregarCardapioMapa();
@@ -136,14 +140,17 @@ async function carregarRelatorio(){
       .where('created_at','>=',limiteDiaBrasilia(diaIni))
       .where('created_at','<=',limiteDiaBrasilia(diaFim,true))
       .orderBy('created_at','desc').limit(3000).get();
+    if(minhaCarga!==_cargaRelatorio) return; // outro período foi pedido no meio: ignora esta resposta
     pedidosPeriodoTodos=snap.docs.map(d=>Object.assign({id:d.id},d.data()));
     pedidosPeriodo=pedidosPeriodoTodos.filter(p=>p.status!=='cancelado');
     window._corte=(snap.size>=3000);
   }catch(e){
+    if(minhaCarga!==_cargaRelatorio) return;
     console.error('Erro ao carregar relatório:',e);
     document.getElementById('kpis').innerHTML='<div class="empty" style="grid-column:1/-1">⚠️ Não foi possível carregar os dados. Verifique a conexão e toque no período de novo.</div>';
     return;
   }
+  periodoRotulo=rotulo;
   window._dias={ini:diaIni,fim:diaFim};
   renderKpis(); renderFaturamento(); renderPagamento(); renderTipoVenda(); renderSabores(); renderSequencia();
 }
