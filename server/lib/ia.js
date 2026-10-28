@@ -64,7 +64,7 @@ async function chamarGemini(chave, { system, messages, ferramentas, busca, max_t
   const corpoBase = {
     systemInstruction: { parts: [{ text: String(system || '') }] },
     contents: conteudoGemini(messages),
-    generationConfig: { maxOutputTokens: max_tokens || 4000 }
+    generationConfig: { maxOutputTokens: max_tokens || 4000, temperature: 0.2 } // baixa: números e fatos, sem inventar
   };
   if (ferramentas && ferramentas.length) {
     // o Gemini não mistura pesquisa na internet com ferramentas de função: com ferramentas, só elas

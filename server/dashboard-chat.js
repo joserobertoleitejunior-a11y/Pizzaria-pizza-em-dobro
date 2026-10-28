@@ -161,6 +161,16 @@ async function montarContextoVendas() {
     return `${data} ${hora}:${minuto} | #${p.numero_sequencial || '—'} | Cliente: ${p.client_name || 'não informado'} | Tel: ${p.client_phone || '—'} | Itens(${qtdTotalItens}): ${itens} | Total: R$ ${Number(p.total || 0).toFixed(2)} | Pagamento: ${p.payment || '—'} | Tipo: ${p.delivery_type || '—'} | Origem: ${p.origem || '—'}${statusTag}`;
   }).join('\n');
 
+  // Números de hoje/ontem/7/30 dias somados AQUI (não pela IA): modelos básicos erram conta em lista grande.
+  const periodosProntos = [['Hoje', 0, 0], ['Ontem', 1, 1], ['Últimos 7 dias (incluindo hoje)', 6, 0], ['Últimos 30 dias (incluindo hoje)', 29, 0]].map(([nome, ini, fim]) => {
+    const dIni = limiteDia(ini), dFim = limiteDia(fim);
+    const dentro = (p) => { const d = dataHoraBR(p.created_at || new Date().toISOString()).data; return d >= dIni && d <= dFim; };
+    const v = pedidosValidos.filter(dentro);
+    const cancel = todosPedidos.filter(p => p.status === 'cancelado' && dentro(p)).length;
+    const tot = v.reduce((t, p) => t + Number(p.total || 0), 0);
+    return `- ${nome} (${dIni === dFim ? dIni : dIni + ' a ' + dFim}): faturamento ${moeda(tot)} · ${v.length} pedido(s) válido(s) · ticket médio ${moeda(v.length ? tot / v.length : 0)} · ${cancel} cancelado(s)`;
+  }).join('\n');
+
   return `DADOS DE VENDAS DOS ÚLTIMOS 30 DIAS (ou até 600 pedidos mais recentes) — PIZZARIA "PIZZA EM DOBRO" (Itapetininga-SP, Brasil):
 
 ═══ SOBRE A LOJA (config real do sistema) ═══
@@ -182,6 +192,9 @@ ${COMBOS_DEFAULT.map(c => `- ${c.titulo} (R$ ${c.preco.toFixed(2)}): escolha 2 s
 
 ═══ OPÇÕES DE BORDA RECHEADA ═══
 ${BORDAS_DEFAULT.map(b => `- ${b.name}${b.price > 0 ? ': +R$ ' + b.price.toFixed(2) : ' (sem custo extra)'}`).join('\n')}
+
+═══ NÚMEROS JÁ CALCULADOS POR PERÍODO (o servidor somou; COPIE estes valores, NÃO recalcule) ═══
+${periodosProntos}
 
 ═══ RESUMO RÁPIDO DE VENDAS (não conta pedidos cancelados) ═══
 Faturamento total: R$ ${totalFaturamento.toFixed(2)}
@@ -374,6 +387,7 @@ function _mensagemAmbiguidade(nomeBuscado, opcoes) {
   return `Encontrei MAIS DE UM item chamado ou parecido com "${nomeBuscado}" no cardápio — isso é uma duplicidade no banco de dados, provavelmente de um teste anterior:\n${lista}\nNão fiz nenhuma alteração pra não mexer no item errado. Pergunte ao Marco qual dos ids acima ele quer editar/remover, ou se prefere remover o duplicado.`;
 }
 
+exports.montarContextoVendas = montarContextoVendas; // exposto para teste
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 200, body: 'ok' };
@@ -423,6 +437,8 @@ COMO ESCREVER AS RESPOSTAS (muito importante — o Marco lê no celular):
 - "Vendas válidas" = pedidos que NÃO estão cancelados. Pra um dia específico (ex: "ontem"), use SÓ os blocos daquele dia e confira a data.
 - No fim, um resumo curto, cada coisa numa linha própria: **Total do dia**, **Pedidos**, **Ticket médio**.
 - Títulos curtos com "## ", listas com "- " (um item por linha), valores sempre "R$ 99,90". Frases curtas, nada de parágrafo longo. Não repita a pergunta nem explique o que vai fazer: responda direto.
+
+REGRA DE PRECISÃO (obrigatória): para faturamento/quantidade de "hoje", "ontem", "esta semana/7 dias" e "mês/30 dias", responda com os valores EXATOS da seção "NÚMEROS JÁ CALCULADOS POR PERÍODO", sem somar nem arredondar por conta própria. Se o período tiver 0 pedidos, diga claramente "R$ 0,00 — nenhum pedido". Quando precisar somar algo que não está pronto, some devagar, confira o resultado uma segunda vez e mostre a conta. Se não tiver certeza de um número, diga que não tem certeza em vez de chutar. Responda sempre em português do Brasil, direto e organizado, com os valores em R$ e o período escrito.
 
 Regra de ouro: NUNCA invente ou estime número que não esteja literalmente nos dados abaixo. Se genuinamente não houver dado suficiente pra responder (ex: pergunta sobre algo de antes dos últimos 30 dias, ou um cliente que nunca pediu), diga isso claramente e não invente um número aproximado nem cite dados que pareçam plausíveis mas não estão na lista.
 
