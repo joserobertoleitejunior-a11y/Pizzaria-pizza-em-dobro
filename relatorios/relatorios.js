@@ -169,6 +169,17 @@ async function cancelarRepetido(id,num){
   try{ await FS.collection('orders').doc(id).update({status:'cancelado',cancelado_motivo:'pedido repetido (dashboard)'}); carregarRelatorio(); }
   catch(e){ alert('Não foi possível cancelar agora. Tente pelo Caixa.'); }
 }
+// todos de uma vez: cancela os pedidos ANTIGOS de cada repetição (fica o mais novo, que é o completo)
+function antigosRepetidos(){ const vistos={}; Object.values(repetidoDe).forEach(a=>{ vistos[a.id]=a; }); return Object.values(vistos); }
+async function cancelarTodosRepetidos(){
+  const lista=antigosRepetidos(); if(!lista.length) return;
+  const nums=lista.map(a=>a.numero_sequencial?'#'+a.numero_sequencial:(a.client_name||'?')).join(', ');
+  if(!confirm('Cancelar os '+lista.length+' pedido(s) repetido(s) de uma vez?\n\n'+nums+'\n\nFica o pedido mais novo de cada cliente. Os cancelados saem do faturamento (não são apagados).')) return;
+  let falhas=0;
+  for(const a of lista){ try{ await FS.collection('orders').doc(a.id).update({status:'cancelado',cancelado_motivo:'pedido repetido (dashboard)'}); }catch(e){ falhas++; } }
+  if(falhas) alert(falhas+' pedido(s) não puderam ser cancelados agora. Tente de novo.');
+  carregarRelatorio();
+}
 function renderKpis(){
   const total=pedidosPeriodo.reduce((s,p)=>s+Number(p.total||0),0);
   const qtd=pedidosPeriodo.length, ticket=qtd?total/qtd:0;
@@ -282,7 +293,8 @@ function renderSequencia(){
   lista.sort((a,b)=>dir*(dataStr(b.created_at).localeCompare(dataStr(a.created_at))));
   const filtroHtml=filtroPagamentoAtivo?`<div class="filtro-ativo">Mostrando só <b>${esc(filtroPagamentoAtivo)}</b> <button type="button" onclick="selecionarPagamento('${filtroPagamentoAtivo.replace(/'/g,"\\'")}')">✕ limpar</button></div>`:'';
   if(!lista.length){ box.innerHTML=filtroHtml+'<div class="empty">Nenhum pedido com esse filtro.</div>'; return; }
-  let html=filtroHtml, diaAtual=null;
+  const nRep=antigosRepetidos().length;
+  let html=filtroHtml+(nRep?`<div class="rep-todos">⚠️ ${nRep} pedido(s) repetido(s) <button type="button" onclick="cancelarTodosRepetidos()">Cancelar todos os repetidos</button></div>`:''), diaAtual=null;
   lista.slice(0,200).forEach(p=>{
     const iso=dataStr(p.created_at), dia=diaBR(iso);
     if(dia!==diaAtual){ diaAtual=dia; html+=`<div class="dia-sep">📅 ${nomeSemana(dia)} ${rotuloDia(dia)}</div>`; }
