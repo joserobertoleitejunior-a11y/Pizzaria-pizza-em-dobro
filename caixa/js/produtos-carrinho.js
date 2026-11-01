@@ -535,7 +535,13 @@ function checarSomaMisto(){
 }
 
 // ---- FINALIZAR VENDA + IMPRIMIR ----
+let _finalizandoVenda=false; // trava de duplo toque no "Finalizar"
 async function finalizarVenda(){
+  if(_finalizandoVenda) return;
+  _finalizandoVenda=true;
+  try{ await _finalizarVenda(); } finally { _finalizandoVenda=false; }
+}
+async function _finalizarVenda(){
   if(cart.length===0){ alert('O caixa está vazio.'); return; }
   if(cart.some(i=>i.precisaRevisao)){
     alert('⚠️ Ainda há item(ns) marcados como "CONFERIR" no carrinho. Remova-os e adicione o item correto pela busca antes de finalizar.');
@@ -579,6 +585,28 @@ async function finalizarVenda(){
     whatsapp_sent:false,
     created_at:new Date().toISOString()
   };
+
+  // PEDIDO REPETIDO: mesmo cliente lançado de novo em até 20 min (ex.: refez o pedido só pra pôr uma bebida).
+  // Igualzinho → não grava de novo. Diferente → pergunta se é a ATUALIZAÇÃO do anterior (substitui, mesmo número).
+  if(!pedidoEmEdicaoId&&FS&&!balcao){
+    try{
+      const desde=new Date(Date.now()-20*60000).toISOString();
+      const snap=await FS.collection('orders').where('created_at','>=',desde).get();
+      const recentes=snap.docs.map(d=>({id:d.id,...d.data()}));
+      const anterior=acharPedidoRepetido(pedido,recentes,20);
+      if(anterior){
+        const hora=new Date(dataStr(anterior.created_at)).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'});
+        const num=anterior.numero_sequencial?'#'+anterior.numero_sequencial:'anterior';
+        if(pedidoIdentico(pedido,anterior)){
+          alert('⚠️ Este pedido já foi lançado: '+num+' de '+(anterior.client_name||'cliente')+' às '+hora+' ('+fmt(anterior.total)+').\n\nNão vou gravar de novo. Para mudar algo, use "Editar" no pedido '+num+'.');
+          return;
+        }
+        const itensAnt=(anterior.items_json||[]).map(i=>(Number(i.qty)>1?i.qty+'x ':'')+i.name).join(', ');
+        const substituir=confirm('⚠️ '+(anterior.client_name||'Este cliente')+' já tem o pedido '+num+' às '+hora+':\n'+itensAnt+' — '+fmt(anterior.total)+'\n\nEste é uma ATUALIZAÇÃO dele (ex.: o cliente acrescentou uma bebida)?\n\nOK = substituir o '+num+' por este (mesmo número, sem duplicar)\nCancelar = é um pedido NOVO, separado');
+        if(substituir) pedidoEmEdicaoId=anterior.id;
+      }
+    }catch(e){ console.warn('Não deu pra checar pedido repetido:',e); }
+  }
 
   // número sequencial do dia — se já existir (pedido editado que já tinha), mantém; senão gera um novo
   if(pedidoEmEdicaoId){

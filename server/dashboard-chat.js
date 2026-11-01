@@ -11,7 +11,7 @@ const { getSecrets } = require('./lib/secrets');
 const { chamarIA } = require('./lib/ia');
 const { reportError } = require('./lib/sentry');
 const { exigirEquipe } = require('./lib/equipe');
-const { decomporSaboresItem, ehClienteBalcao } = require('../shared/utils.js');
+const { decomporSaboresItem, ehClienteBalcao, acharPedidoRepetido } = require('../shared/utils.js');
 
 
 function categoriaPagamento(raw) {
@@ -161,6 +161,13 @@ async function montarContextoVendas() {
     return `${data} ${hora}:${minuto} | #${p.numero_sequencial || '—'} | Cliente: ${p.client_name || 'não informado'} | Tel: ${p.client_phone || '—'} | Itens(${qtdTotalItens}): ${itens} | Total: R$ ${Number(p.total || 0).toFixed(2)} | Pagamento: ${p.payment || '—'} | Tipo: ${p.delivery_type || '—'} | Origem: ${p.origem || '—'}${statusTag}`;
   }).join('\n');
 
+  // pedidos que parecem repetição (mesmo cliente em até 20 min) — a IA avisa, não some sozinha com eles
+  const repetidos = [];
+  pedidosValidos.forEach(p => { const a = acharPedidoRepetido(p, pedidosValidos, 20); if (a) repetidos.push({ p, a }); });
+  const repetidosTxt = repetidos.length
+    ? repetidos.map(({ p, a }) => `- #${p.numero_sequencial || '—'} ${p.client_name || ''} (${dataHoraBR(p.created_at).data} ${dataHoraBR(p.created_at).hora}:${dataHoraBR(p.created_at).minuto}, ${moeda(p.total)}) parece repetição do #${a.numero_sequencial || '—'} (${dataHoraBR(a.created_at).hora}:${dataHoraBR(a.created_at).minuto}, ${moeda(a.total)})`).join('\n')
+    : 'nenhum';
+
   // Números de hoje/ontem/7/30 dias somados AQUI (não pela IA): modelos básicos erram conta em lista grande.
   const periodosProntos = [['Hoje', 0, 0], ['Ontem', 1, 1], ['Últimos 7 dias (incluindo hoje)', 6, 0], ['Últimos 30 dias (incluindo hoje)', 29, 0]].map(([nome, ini, fim]) => {
     const dIni = limiteDia(ini), dFim = limiteDia(fim);
@@ -195,6 +202,10 @@ ${BORDAS_DEFAULT.map(b => `- ${b.name}${b.price > 0 ? ': +R$ ' + b.price.toFixed
 
 ═══ NÚMEROS JÁ CALCULADOS POR PERÍODO (o servidor somou; COPIE estes valores, NÃO recalcule) ═══
 ${periodosProntos}
+
+═══ POSSÍVEIS PEDIDOS REPETIDOS (mesmo cliente lançado de novo em até 20 min; AINDA ESTÃO SOMADOS nos números acima) ═══
+${repetidosTxt}
+Se perguntarem por duplicados: mostre esta lista e oriente cancelar o pedido ANTIGO no Dashboard (botão "Cancelar o #N" na lista de pedidos) ou no Caixa — cancelado sai do faturamento. Não tire do total por conta própria.
 
 ═══ RESUMO RÁPIDO DE VENDAS (não conta pedidos cancelados) ═══
 Faturamento total: R$ ${totalFaturamento.toFixed(2)}

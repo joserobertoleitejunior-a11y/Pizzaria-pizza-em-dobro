@@ -206,6 +206,33 @@ function bordaReal(b){
   return t;
 }
 
+// ── PEDIDO REPETIDO: mesmo cliente (telefone, ou nome quando não é genérico) lançado de novo poucos
+// minutos depois — ex.: o Caixa lançou o pedido e, 5 min depois, lançou outro igual + uma bebida em vez
+// de EDITAR o primeiro. Nunca apaga nada sozinho: o Caixa pergunta e o Dashboard avisa.
+const NOMES_GENERICOS=['','cliente','cliente whatsapp','cliente balcao','sem nome','balcao'];
+function _nomeCliente(n){ return String(n||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim(); }
+function _soDigitos(t){ const d=String(t||'').replace(/\D/g,''); return d.length>=8?d.slice(-8):''; }
+function mesmoCliente(a,b){
+  const ta=_soDigitos(a.client_phone), tb=_soDigitos(b.client_phone);
+  if(ta&&tb) return ta===tb;
+  const na=_nomeCliente(a.client_name), nb=_nomeCliente(b.client_name);
+  return !NOMES_GENERICOS.includes(na)&&na===nb;
+}
+function assinaturaItens(p){ return (p.items_json||[]).map(i=>_nomeCliente(i.name||i.n)+'×'+(Number(i.qty)||1)).sort().join('|'); }
+// devolve o pedido ANTERIOR (não cancelado) do mesmo cliente dentro da janela, ou null
+function acharPedidoRepetido(pedido,outros,janelaMin){
+  const janela=(janelaMin||20)*60000, t=new Date(dataStr(pedido.created_at)||Date.now()).getTime();
+  let achado=null;
+  (outros||[]).forEach(o=>{
+    if(o===pedido||(o.id&&o.id===pedido.id)||o.status==='cancelado') return;
+    const to=new Date(dataStr(o.created_at)).getTime();
+    if(!(to<=t&&t-to<=janela)||!mesmoCliente(pedido,o)) return;
+    if(!achado||to>new Date(dataStr(achado.created_at)).getTime()) achado=o;
+  });
+  return achado;
+}
+function pedidoIdentico(a,b){ return Math.abs(Number(a.total||0)-Number(b.total||0))<0.01&&assinaturaItens(a)===assinaturaItens(b); }
+
 if(typeof module!=='undefined' && module.exports){
-  module.exports={ fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PADRAO, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao, bordaReal, COMBOS_ENTREGA_GRATIS, PIZZAS_ENTREGA_GRATIS, combosDeEsfiha, esfDistribuirPadrao };
+  module.exports={ acharPedidoRepetido, pedidoIdentico, mesmoCliente, fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PADRAO, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao, bordaReal, COMBOS_ENTREGA_GRATIS, PIZZAS_ENTREGA_GRATIS, combosDeEsfiha, esfDistribuirPadrao };
 }

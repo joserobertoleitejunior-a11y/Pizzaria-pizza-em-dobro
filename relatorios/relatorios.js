@@ -151,10 +151,24 @@ async function carregarRelatorio(){
     return;
   }
   periodoRotulo=rotulo;
+  calcularRepetidos();
   window._dias={ini:diaIni,fim:diaFim};
   renderKpis(); renderFaturamento(); renderPagamento(); renderTipoVenda(); renderSabores(); renderSequencia();
 }
 
+// Pedido repetido: mesmo cliente lançado de novo em até 20 min (ex.: refeito só pra pôr uma bebida).
+// Não some sozinho da conta — o Dashboard avisa e o Marco decide cancelar o antigo.
+let repetidoDe={}; // id do pedido mais novo → pedido anterior
+function calcularRepetidos(){
+  repetidoDe={};
+  const validos=pedidosPeriodoTodos.filter(p=>p.status!=='cancelado');
+  validos.forEach(p=>{ const a=acharPedidoRepetido(p,validos,20); if(a) repetidoDe[p.id]=a; });
+}
+async function cancelarRepetido(id,num){
+  if(!confirm('Cancelar o pedido '+num+'? Ele sai do faturamento (fica marcado como CANCELADO, não é apagado).')) return;
+  try{ await FS.collection('orders').doc(id).update({status:'cancelado',cancelado_motivo:'pedido repetido (dashboard)'}); carregarRelatorio(); }
+  catch(e){ alert('Não foi possível cancelar agora. Tente pelo Caixa.'); }
+}
 function renderKpis(){
   const total=pedidosPeriodo.reduce((s,p)=>s+Number(p.total||0),0);
   const qtd=pedidosPeriodo.length, ticket=qtd?total/qtd:0;
@@ -165,7 +179,7 @@ function renderKpis(){
   const clientes=Object.keys(cli).length, voltaram=Object.values(cli).filter(q=>q>1).length;
   const cancelados=pedidosPeriodoTodos.length-qtd;
   document.getElementById('kpis').innerHTML=`
-    <div class="kpi-card kpi-destaque"><div class="kpi-lbl">Faturamento · ${esc(periodoRotulo)}</div><div class="kpi-num">${fmt(total)}</div><div class="kpi-sub">${qtd} pedido${qtd===1?'':'s'}${cancelados?` · ${cancelados} cancelado${cancelados>1?'s':''} (fora da conta)`:''}</div></div>
+    <div class="kpi-card kpi-destaque"><div class="kpi-lbl">Faturamento · ${esc(periodoRotulo)}</div><div class="kpi-num">${fmt(total)}</div><div class="kpi-sub">${qtd} pedido${qtd===1?'':'s'}${cancelados?` · ${cancelados} cancelado${cancelados>1?'s':''} (fora da conta)`:''}${Object.keys(repetidoDe).length?`<div class="kpi-alerta" onclick="if(!acordeaoSequenciaAberto)alternarAccordionSequencia();document.getElementById('lista-sequencia').scrollIntoView({behavior:'smooth'})">⚠️ ${Object.keys(repetidoDe).length} possível(is) pedido(s) repetido(s) somando aqui — toque pra conferir</div>`:''}</div></div>
     <div class="kpi-card"><div class="kpi-lbl">Ticket médio</div><div class="kpi-num">${fmt(ticket)}</div></div>
     <div class="kpi-card"><div class="kpi-lbl">Pizzas vendidas</div><div class="kpi-num">${pizzas}</div><div class="kpi-sub">${qtd?(pizzas/qtd).toFixed(1).replace('.',','):'0'} por pedido</div></div>
     <div class="kpi-card"><div class="kpi-lbl">Esfihas</div><div class="kpi-num">${esfihas}</div></div>
@@ -275,7 +289,7 @@ function renderSequencia(){
     const cancelado=p.status==='cancelado';
     html+=`<div class="seq-row" style="${cancelado?'opacity:.5;':''}">
       <div class="seq-badge" style="${cancelado?'background:#9CA3AF;':''}">${p.numero_sequencial?'#'+esc(p.numero_sequencial):'—'}</div>
-      <div class="seq-info"><b>${esc(p.client_name||'Cliente')}</b>${cancelado?' <span style="color:#B91C1C;">CANCELADO</span>':''}<div class="seq-sub">${horaBR(iso)} · ${esc(categoriaPagamento(p.payment))} · ${esc(p.delivery_type||'—')}</div></div>
+      <div class="seq-info"><b>${esc(p.client_name||'Cliente')}</b>${cancelado?' <span style="color:#B91C1C;">CANCELADO</span>':''}${(!cancelado&&repetidoDe[p.id])?(()=>{const a=repetidoDe[p.id], n=a.numero_sequencial?'#'+a.numero_sequencial:'anterior';return `<div class="seq-rep">⚠️ parece repetição do ${esc(n)} (${horaBR(dataStr(a.created_at))}, ${fmt(a.total)}) <button type="button" onclick="cancelarRepetido('${esc(a.id)}','${esc(n)}')">Cancelar o ${esc(n)}</button></div>`;})():''}<div class="seq-sub">${horaBR(iso)} · ${esc(categoriaPagamento(p.payment))} · ${esc(p.delivery_type||'—')}</div></div>
       <div class="seq-total">${fmt(p.total)}</div></div>`;
   });
   if(lista.length>200) html+=`<div class="empty">Mostrando os 200 mais recentes de ${lista.length}.</div>`;
