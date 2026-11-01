@@ -769,8 +769,8 @@ async function carregarVendasHoje(){
         <div class="order-itens">${(Array.isArray(p.items_json)?p.items_json:[]).map(i=>(i.qty>1?i.qty+'× ':'')+i.name).join(' · ')}</div>
         <div class="order-total">${fmt(p.total)}</div>
         <div class="order-actions">
+          <button class="btn-imprimir" onclick="reimprimir('${p.id}')">🖨️ Imprimir</button>
           <button class="btn-mini" onclick="editarPedidoExistente('${p.id}')">✏️ Editar</button>
-          <button class="btn-mini" onclick="reimprimir('${p.id}')">🖨️ Reimprimir</button>
           ${cancelado?'':`<button class="btn-mini danger" onclick="cancelarPedidoExistente('${p.id}')">✕ Cancelar</button>`}
         </div>
       </div>`;}).join('');
@@ -823,19 +823,13 @@ async function reimprimir(id){
     const doc=await FS.collection('orders').doc(id).get();
     if(!doc.exists){ alert('Pedido não encontrado.'); return; }
     const pedido={id:doc.id,...doc.data()};
-    if(impressoraPronta()){
-      await imprimirBluetooth(formatarCupom(pedido));
-      avisoRapido('🖨️ Enviado pra impressora');
-    }else if(typeof EH_CELULAR!=='undefined'&&EH_CELULAR){
-      // no celular a tela de impressão do sistema não acha a térmica — pede pra conectar pelo cabo
-      alert('🖨️ Impressora não conectada.\n\nCom o cabo USB ligado no celular, toque em "🔌 USB" no topo do Caixa e escolha a impressora. Depois disso ela reconecta sozinha.');
-    }else{
-      // sem impressora térmica conectada: abre a impressão do navegador (qualquer impressora do notebook)
-      if(typeof pedido.items_json==='string'){ try{ pedido.items_json=JSON.parse(pedido.items_json); }catch(e){ pedido.items_json=[]; } }
-      pedido.items_json=Array.isArray(pedido.items_json)?pedido.items_json:[];
-      imprimirRecibo(pedido);
-    }
-  }catch(e){ alert('Não foi possível reimprimir: '+e.message+'\n\nSe a impressora térmica estiver desligada, tente reconectar no topo (BT/USB).'); }
+    if(typeof pedido.items_json==='string'){ try{ pedido.items_json=JSON.parse(pedido.items_json); }catch(e){ pedido.items_json=[]; } }
+    const cupom=formatarCupom(pedido);
+    // impressora desconectada: guarda a comanda e abre o "conectar impressora" — ela sai sozinha ao conectar
+    if(!impressoraPronta()){ guardarCupomPendente(cupom); return; }
+    try{ await imprimirBluetooth(cupom); avisoRapido('🖨️ Enviado pra impressora'); }
+    catch(e){ guardarCupomPendente(cupom); }
+  }catch(e){ alert('Não foi possível imprimir: '+e.message); }
 }
 function avisoRapido(txt){
   const t=document.getElementById('toast'); if(!t) return;

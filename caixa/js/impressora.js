@@ -466,9 +466,12 @@ setTimeout(atualizarBotaoAuto,300);
 (function(){
   const reimpId=new URLSearchParams(window.location.search).get('reimprimir');
   if(!reimpId||!FS) return;
-  FS.collection('orders').doc(reimpId).get().then(doc=>{
-    if(!doc.exists) return;
-    imprimirBluetooth(formatarCupom({id:doc.id,...doc.data()}));
+  // (o Dashboard manda pra cá) — se a impressora ainda não reconectou, guarda e pede pra conectar
+  FS.collection('orders').doc(reimpId).get().then(async doc=>{
+    if(!doc.exists){ alert('Pedido não encontrado.'); return; }
+    const cupom=formatarCupom({id:doc.id,...doc.data()});
+    if(!impressoraPronta()){ guardarCupomPendente(cupom); return; }
+    try{ await imprimirBluetooth(cupom); avisoRapido('🖨️ Enviado pra impressora'); }catch(e){ guardarCupomPendente(cupom); }
   }).catch(e=>console.warn('Não foi possível reimprimir.',e));
 })();
 (function(){

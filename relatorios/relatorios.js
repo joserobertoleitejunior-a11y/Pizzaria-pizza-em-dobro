@@ -302,7 +302,7 @@ function renderSequencia(){
     html+=`<div class="seq-row" style="${cancelado?'opacity:.5;':''}">
       <div class="seq-badge" style="${cancelado?'background:#9CA3AF;':''}">${p.numero_sequencial?'#'+esc(p.numero_sequencial):'—'}</div>
       <div class="seq-info"><b>${esc(p.client_name||'Cliente')}</b>${cancelado?' <span style="color:#B91C1C;">CANCELADO</span>':''}${(!cancelado&&repetidoDe[p.id])?(()=>{const a=repetidoDe[p.id], n=a.numero_sequencial?'#'+a.numero_sequencial:'anterior';return `<div class="seq-rep">⚠️ parece repetição do ${esc(n)} (${horaBR(dataStr(a.created_at))}, ${fmt(a.total)}) <button type="button" onclick="cancelarRepetido('${esc(a.id)}','${esc(n)}')">Cancelar o ${esc(n)}</button></div>`;})():''}<div class="seq-sub">${horaBR(iso)} · ${esc(categoriaPagamento(p.payment))} · ${esc(p.delivery_type||'—')}</div></div>
-      <div class="seq-total">${fmt(p.total)}</div></div>`;
+      <div class="seq-total">${fmt(p.total)}<a class="seq-print" href="../caixa/index.html?reimprimir=${encodeURIComponent(p.id)}" title="Imprimir este pedido">🖨️</a></div></div>`;
   });
   if(lista.length>200) html+=`<div class="empty">Mostrando os 200 mais recentes de ${lista.length}.</div>`;
   box.innerHTML=html;
