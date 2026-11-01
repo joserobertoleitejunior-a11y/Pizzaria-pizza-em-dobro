@@ -172,6 +172,22 @@ Todo projeto com página voltada ao cliente final (não só ferramenta interna) 
 - ⏳ Pendente (só o José pode fazer, contas externas): Google Search Console, Google Meu Negócio, Google Analytics, domínio próprio
 - ⏳ Pendente (técnico, precisa de ambiente com ffmpeg pra comprimir sem perder qualidade): vídeo de fundo do fogo (2,7MB)
 
+## 10. Pedido/registro repetido (todo sistema que grava venda, pedido ou agendamento)
+
+Regra: **o sistema nunca apaga nem junta registros sozinho — ele pergunta na hora e avisa depois.** E isso não pode deixar o trabalho do operador mais difícil: no dia normal ele não vê nada de diferente.
+
+- [ ] **Trava de duplo toque** em todo botão que grava (finalizar, enviar, salvar): o segundo toque não faz nada enquanto o primeiro não terminou.
+- [ ] **Mesmo cliente em poucos minutos** (telefone; ou nome, quando não é genérico tipo "Cliente WhatsApp"/"Balcão"), na hora de gravar:
+  - igualzinho ao anterior → **não grava de novo** e avisa qual registro já existe;
+  - diferente → **uma pergunta só**: "é atualização do anterior?" — Sim substitui o anterior (mesmo número); Não grava como novo.
+- [ ] **Relatório/dashboard avisa** os possíveis repetidos já gravados, com botão de cancelar o antigo — cancelar marca como cancelado (sai da conta), **nunca apaga**.
+- [ ] **Assistente de IA** recebe a lista de possíveis repetidos para explicar, mas não tira valores do total por conta própria.
+- [ ] Testes com casos reais: repetição verdadeira, cliente diferente, fora da janela, mesmo nome com telefone diferente, pedido igual (duplo toque) x atualização.
+
+Por que perguntar em vez de resolver sozinho: o mesmo cliente às vezes faz **dois pedidos de verdade** em poucos minutos (ex.: um pra entrega e outro pra retirada). Juntar/apagar automático erraria nesses casos e sumiria com venda real.
+
+**Status neste projeto (Pizza em Dobro)** — 2026-11-01: ✅ implementado (Caixa, Dashboard e assistente; janela de 20 min; `acharPedidoRepetido` em `shared/utils.js`; testes em `tests/repetidos.test.js`). O site já barrava o duplo toque do cliente (90 s, no servidor).
+
 ---
 
 *Este arquivo é vivo — atualize conforme o VIBE CODING PROCESS evoluir. Toda mudança aqui deve refletir em todos os projetos ativos da agência, não só nos novos.*
