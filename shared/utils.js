@@ -98,9 +98,9 @@ function egProgresso(atual,meta){ const p=Math.max(0,Math.min(100,Math.round(atu
 
 // ── ENTREGA GRÁTIS: 3 ou mais combos no mesmo pedido (combo de pizza "2 por X", combo broto e
 // combos de esfiha — cada 10 esfihas = 1 combo). Muda aqui pra mudar na loja, no Caixa e no WhatsApp.
-const COMBOS_ENTREGA_GRATIS=1; // QUALQUER combo de pizza ou esfiha = entrega grátis (combo de BROTO paga a taxa)
-// Também vale: 2 ou mais PIZZAS no pedido. Só 1 pizza avulsa paga a taxa de R$ 8,00. Combo de pizza/broto = 2 pizzas.
-const PIZZAS_ENTREGA_GRATIS=2;
+const COMBOS_ENTREGA_GRATIS=1; // combo de ESFIHAS (a cada 10) = entrega grátis
+// Regra do Marco (01/11): entrega grátis a partir de 3 PIZZAS (grandes ou broto). Combo de pizza/broto = 2 pizzas. Esfihas seguem grátis.
+const PIZZAS_ENTREGA_GRATIS=3;
 function combosDeEsfiha(n){ return Math.floor((Number(n)||0)/10); }
 
 // Sabores padrão de um combo de esfihas sem sabor escolhido: divide igualmente na ordem do cardápio

@@ -287,24 +287,23 @@ function openModal(id){ document.getElementById(id).classList.add('open'); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 
 // ---- CARRINHO ----
-// QUALQUER combo de pizza ou de esfihas = entrega grátis (broto NÃO). Pedidos vindos do site (sem marca) contam pelo nome.
-// combo de BROTO não dá entrega grátis (nem como combo, nem como pizza): paga a taxa de R$ 8,00
-const _ehBroto=i=>/broto/i.test(i.name||'');
-function combosNoCaixa(){
-  return cart.reduce((t,i)=>t+(_ehBroto(i)?0:(i.combos!=null?i.combos:(/combo|2 por|esfiha/i.test(i.name||'')?1:0))*i.qty),0);
+// Regra do Marco (01/11): entrega grátis a partir de 3 PIZZAS (grandes ou broto) ou em combo de ESFIHAS (a cada 10).
+// Combo de pizza/broto conta como 2 pizzas. Pedidos vindos do site (sem marca) contam pelo nome.
+function combosNoCaixa(){ // só os combos de esfiha dão entrega grátis sozinhos
+  return cart.reduce((t,i)=>/^esfihas/i.test(i.name||'')?t+((i.combos!=null?i.combos:1)*(i.qty||1)):t,0);
 }
 // pizzas no pedido: pizza/meia = 1; combo de pizza ou broto = 2 (esfihas e bebidas não contam)
 function pizzasNoCaixa(){
   return cart.reduce((t,i)=>{
     const q=i.qty||1;
-    if(/^esfihas/i.test(i.name||'')||_ehBroto(i)) return t;
+    if(/^esfihas/i.test(i.name||'')) return t;
     if(i.isMeia) return t+q;
     if(i.combos!=null&&i.combos>0) return t+2*q;
+    if(/combo|2 por|2 broto/i.test(i.name||'')) return t+2*q;
     const m=i.id!=null?DEFAULT_MENU.find(x=>x.id===i.id):null;
     return t+((m&&(m.cat==='p'||m.cat==='s'))?q:0);
   },0);
 }
-// entrega grátis: qualquer combo OU 2+ pizzas (só 1 pizza paga a taxa) — mesma regra da loja
 function caixaEntregaGratis(){
   return !window._taxaManual&&(combosNoCaixa()>=COMBOS_ENTREGA_GRATIS||pizzasNoCaixa()>=PIZZAS_ENTREGA_GRATIS);
 }
