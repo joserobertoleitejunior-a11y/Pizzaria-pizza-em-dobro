@@ -184,6 +184,43 @@ const _acharItem=n=>_acharPorNome(n,DEFAULT_MENU,m=>m.n)||_refriPadrao(n,DEFAULT
 const _acharBorda=n=>_acharPorNome(n,BORDAS_DEFAULT,b=>b.name);
 const _acharAcrescimos=ls=>(Array.isArray(ls)?ls:[]).map(n=>_acharPorNome(n,ACRESCIMOS_DEFAULT,a=>a.name)).filter((a,i,arr)=>a&&arr.indexOf(a)===i);
 
+// ── PEDIDO PRONTO COM PREÇO (pedido do Marco): quando o cliente já manda o pedido com o valor de cada item,
+// o item que não bate com o cardápio NÃO vira "CONFERIR" — entra com o nome e o preço exatamente como vieram.
+// Formatos lidos: "1x Calabresa ..... R$ 45,00" · "Calabresa - 45,00" · e o do site: "• Calabresa" + "💰 R$ 45,00".
+const RE_PRECO=/R\$\s*(\d{1,4}(?:\.\d{3})*(?:,\d{1,2})?|\d{1,4}(?:\.\d{1,2})?)|(?:^|\s)(\d{1,4},\d{2})(?=\s*$)/i;
+const RE_NAO_ITEM=/\b(total|subtotal|sub-total|taxa|entrega|frete|troco|desconto|pagamento|pix|cart[aã]o|dinheiro|valor combinado)\b/i;
+function _numBR(v){ const t=String(v||''); return parseFloat(t.includes(',')?t.replace(/\./g,'').replace(',','.'):t); }
+function _limpaLinha(l){ return String(l||'').replace(/[*_~•▪◦·]|💰|🍕|🥤|🥖|➕|🚫/g,' ').replace(/\s+/g,' ').trim(); }
+function precosDoTexto(texto){
+  const linhas=String(texto||'').split(/\r?\n/), out=[]; let anterior='';
+  linhas.forEach(bruta=>{
+    const l=_limpaLinha(bruta); if(!l){ return; }
+    const m=l.match(RE_PRECO);
+    if(!m){ anterior=l; return; }
+    const preco=_numBR(m[1]||m[2]); if(!(preco>0)) return;
+    let nome=_limpaLinha(l.replace(m[0],' ').replace(/[-–—:.=]+\s*$/,'').replace(/\.{2,}/g,' '));
+    if(!/[a-zà-ú]{3,}/i.test(nome)){ nome=anterior; } // linha só com o preço ("💰 R$ 45,00"): o nome está na linha de cima
+    if(!nome||RE_NAO_ITEM.test(nome)) return;
+    const q=nome.match(/^(\d{1,2})\s*(?:x|un|und|unid)?\s+(.+)$/i);
+    out.push({nome:q?q[2]:nome, qtd:q?Number(q[1]):1, preco});
+    anterior='';
+  });
+  return out;
+}
+// acha a linha de preço do item pedido (pelo nome que a IA leu); devolve {nome, unit} ou null
+function precoDoItemNoTexto(texto,nomeItem){
+  const alvo=_normNome(nomeItem); if(!alvo) return null;
+  const pa=new Set(alvo.split(' ').filter(Boolean)); let melhor=null, ms=0;
+  precosDoTexto(texto).forEach(e=>{
+    const n=_normNome(e.nome); if(!n) return;
+    const pn=n.split(' ').filter(Boolean);
+    const sc=(n.includes(alvo)||alvo.includes(n))?1:pn.filter(w=>pa.has(w)).length/Math.max(pn.length,pa.size);
+    if(sc>ms){ ms=sc; melhor=e; }
+  });
+  if(!melhor||ms<0.5) return null;
+  return { nome:melhor.nome, unit:Math.round(melhor.preco/(melhor.qtd||1)*100)/100 };
+}
+
 // ── Rede de segurança do combo de esfihas: mesmo que a IA erre ou esqueça, o texto manda.
 // "combo com 20 esfilha", "quero esfirra", "combo de esfiha" (sem número = 10) → combo com os sabores padrão.
 const RE_ESFIHA=/\besf[iíy]r?l?h?[ao]s?\b|\besfirra|\besfira|\besfiha/i;
@@ -350,7 +387,7 @@ function montarCaixaComPedidoInterpretado(parsed){
   const combosJuntados=(parsed.itens&&parsed.itens.combosJuntados)||0; const avisosCombo=[];
   parsed.itens=consolidarBrotos(parsed.itens,n=>{ const m=DEFAULT_MENU.find(x=>x.n===n)||_acharItem(n); return !!m&&(m.cat==='p'||m.cat==='s'); });
   const brotoSobra=!!(parsed.itens&&parsed.itens.brotoSobra);
-  let naoIdentificados=0;
+  let naoIdentificados=0, itensComPrecoDaMensagem=0;
   let meiaAMeiaDetectada=false;
   let comboDetectado=false;
   (parsed.itens||[]).forEach(it=>{
@@ -428,6 +465,8 @@ function montarCaixaComPedidoInterpretado(parsed){
       const metadeA=DEFAULT_MENU.find(m=>m.n===it.nome_cardapio)||_acharItem(it.nome_cardapio);
       const metadeB=DEFAULT_MENU.find(m=>m.n===it.nome_cardapio_2)||_acharItem(it.nome_cardapio_2);
       if(!metadeA||!metadeB){
+        const pronto=precoDoItemNoTexto(parsed._texto,[it.nome_cardapio,it.nome_cardapio_2].filter(Boolean).join(' ')||it.observacao);
+        if(pronto){ cart.push({ _chave:'pronto|'+pronto.nome+'|'+pronto.unit, id:null, name:/meia|meio/i.test(pronto.nome)?pronto.nome:'Meio a Meio: '+pronto.nome, unitPrice:pronto.unit, qty:qtd, borda:null, removedIng:[], addedIng:[], obs:null, isMeia:true }); itensComPrecoDaMensagem++; return; }
         naoIdentificados++;
         cart.push({
           _chave:'manual-'+Date.now()+'-'+Math.random(),
@@ -445,6 +484,8 @@ function montarCaixaComPedidoInterpretado(parsed){
     // ---- ITEM NORMAL ----
     const menuItem=DEFAULT_MENU.find(m=>m.n===it.nome_cardapio)||_acharItem(it.nome_cardapio);
     if(!menuItem){
+      const pronto=precoDoItemNoTexto(parsed._texto,it.nome_cardapio||it.observacao);
+      if(pronto){ cart.push({ _chave:'pronto|'+pronto.nome+'|'+pronto.unit, id:null, name:pronto.nome, unitPrice:pronto.unit, qty:qtd, borda:null, removedIng:[], addedIng:[], obs:null, isMeia:false }); itensComPrecoDaMensagem++; return; }
       naoIdentificados++;
       cart.push({
         _chave:'manual-'+Date.now()+'-'+Math.random(),
@@ -462,8 +503,10 @@ function montarCaixaComPedidoInterpretado(parsed){
     const removidos=Array.isArray(it.remover)?it.remover:[];
     const obsTexto=it.observacao||null;
     // chave determinística (nunca Date.now()/Math.random()) — pizza igual pedida 2x vira "2x" numa linha só, não 2 linhas de "1x"
+    // pedido pronto: se a mensagem traz o preço deste item, vale o preço da mensagem (não altera o que o cliente viu)
+    const precoMsg=precoDoItemNoTexto(parsed._texto,it.nome_cardapio);
     const novoItem={
-      id:menuItem.id, name:menuItem.n, unitPrice:menuItem.p+precoBorda+precoAcr, qty:qtd,
+      id:menuItem.id, name:menuItem.n, unitPrice:precoMsg?precoMsg.unit:menuItem.p+precoBorda+precoAcr, qty:qtd,
       borda:bordaNome, removedIng:removidos, addedIng:acrNomes, obs:obsTexto, isMeia:false
     };
     novoItem._chave='colado|'+menuItem.id+'|'+(bordaNome||'')+'|'+removidos.slice().sort().join(',')+'|'+acrNomes.slice().sort().join(',')+'|'+(obsTexto||'');
@@ -547,6 +590,7 @@ function montarCaixaComPedidoInterpretado(parsed){
   const avisos=[];
   if(window._valorCombinadoPendente>0&&cart.length) avisos.push('💰 Valor combinado na conversa: '+fmt(window._valorCombinadoPendente)+' — o total do Caixa já ficou nesse valor (se mexer nos itens, volta a somar o cardápio).');
   window._valorCombinadoPendente=null;
+  if(itensComPrecoDaMensagem>0) avisos.push('ℹ️ '+itensComPrecoDaMensagem+' item(ns) entraram com o nome e o preço exatamente como vieram na mensagem (não estão no cardápio).');
   if(naoIdentificados>0) avisos.push('⚠️ '+naoIdentificados+' item(ns) não foram reconhecidos com certeza e aparecem marcados no carrinho como "CONFERIR" — remova e adicione o item correto pela busca antes de finalizar.');
   if(brotoSobra) avisos.push('🍕 Veio uma quantidade ímpar de pizzas broto: a última ficou num combo com o MESMO sabor nos dois lados — confira com o cliente.');
   if(combosJuntados) avisos.push('🍕🍕 O cliente pediu combo: juntei as pizzas em '+combosJuntados+' combo(s) — confira os sabores e a faixa.');

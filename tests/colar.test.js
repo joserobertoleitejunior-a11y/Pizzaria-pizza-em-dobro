@@ -121,3 +121,21 @@ test('refri: qualquer pedido de Coca/Fanta vira a garrafa de 1.5L (única do car
   assert.equal(acharItem('Kuat 2L')?.n, 'Kuat 2L');
   assert.equal(acharItem('Guaraná'), null);
 });
+
+test('pedido pronto com preço: lê o preço de cada item nos formatos mais comuns', () => {
+  const t = src.slice(src.indexOf('function _normNome'), src.indexOf('// ── Rede de segurança do combo de esfihas'));
+  const { precosDoTexto, precoDoItemNoTexto } = new Function('DEFAULT_MENU', 'BORDAS_DEFAULT', 'ACRESCIMOS_DEFAULT', t + '; return { precosDoTexto, precoDoItemNoTexto };')([], [], []);
+  // formato do site (WhatsApp)
+  const site = '🛎️ *NOVO PEDIDO - SITE OFICIAL*\n*• Pizza Especial da Casa*\n  💰 R$ 54,90\n\n*• Guaraná Antarctica 2L*\n  💰 R$ 14,00\n🚚 🛵 *ENTREGA:* R$ 8,00\n💰 *TOTAL: R$ 76,90*';
+  assert.deepEqual(precosDoTexto(site).map((e) => [e.nome, e.preco]), [['Pizza Especial da Casa', 54.9], ['Guaraná Antarctica 2L', 14]]);
+  assert.equal(precoDoItemNoTexto(site, 'Guarana Antarctica 2L').unit, 14);
+  // mesma linha, com quantidade (preço da linha é o total: divide pela quantidade)
+  const linha = '1x Calzone de Chocolate ..... R$ 39,90\n2x Coca 2L R$ 24,00\nTaxa de entrega R$ 8,00\nTotal R$ 71,90';
+  assert.equal(precoDoItemNoTexto(linha, 'Calzone de Chocolate').unit, 39.9);
+  assert.equal(precoDoItemNoTexto(linha, 'Coca 2L').unit, 12);
+  assert.equal(precoDoItemNoTexto(linha, 'Total'), null, 'total/taxa não viram item');
+  // "nome - 45,00" sem R$
+  assert.equal(precoDoItemNoTexto('Pizza de Strogonoff - 52,00', 'Strogonoff').unit, 52);
+  // item que não aparece com preço na mensagem continua sem preço (vai pro CONFERIR)
+  assert.equal(precoDoItemNoTexto(linha, 'Pizza de Atum'), null);
+});
