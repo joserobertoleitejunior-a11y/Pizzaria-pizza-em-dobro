@@ -272,6 +272,7 @@
     okEnd:function(){
       if(!$('u-end').value.trim()){ $('u-end').style.borderColor='#e71d36'; $('u-end').focus(); return; }
       if(!$('u-num').value.trim()){ $('u-num').style.borderColor='#e71d36'; $('u-num').focus(); return; }
+      if(typeof zonaEntregaSite==='function'&&!zonaEntregaSite().ok){ $('u-bairro').style.borderColor='#e71d36'; $('u-bairro').focus(); if(typeof mostrarAviso==='function') mostrarAviso('Escolha o seu bairro pra calcular a entrega'); return; }
       ir('pag');
     },
     okPag:function(){ if(!$('u-pay').value){ var b=$('pay-chips'); if(b) b.classList.add('erro'); return; } ir('confere'); },

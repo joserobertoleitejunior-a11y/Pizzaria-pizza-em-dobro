@@ -440,7 +440,7 @@ function alternarCampoEntregador(){
   document.getElementById('campo-entregador').style.display=tipo==='entrega'?'block':'none';
   document.getElementById('campo-endereco').style.display=tipo==='entrega'?'block':'none';
   document.getElementById('campo-taxa').style.display=tipo==='entrega'?'block':'none';
-  if(tipo==='entrega') document.getElementById('f-taxa-entrega').value=taxaEntregaPadrao;
+  if(tipo==='entrega'){ document.getElementById('f-taxa-entrega').value=taxaEntregaPadrao; if(typeof detectarBairroCaixa==='function') detectarBairroCaixa(); }
   atualizarBarraCarrinho();
 }
 async function carregarMotoboys(){
@@ -576,6 +576,8 @@ async function _finalizarVenda(){
     delivery_type: tipo,
     entregador: tipo==='entrega' ? (entregador||null) : null,
     taxa_entrega: (tipo==='entrega'&&!caixaEntregaGratis()) ? (Number(document.getElementById('f-taxa-entrega')?.value)||0) : 0,
+    bairro: tipo==='entrega' ? bairroDoPedidoCaixa().bairro : null,
+    zona: tipo==='entrega' ? bairroDoPedidoCaixa().zona : null,
     total: Math.round(total*100)/100,
     items_json: cart.map(i=>({id:i.id,name:i.name,price:i.unitPrice,qty:i.qty,borda:bordaReal(i.borda),removed:i.removedIng||[],added:i.addedIng||[],obs:i.obs||null,isMeia:!!i.isMeia})),
     status: 'finalizado',
@@ -648,6 +650,7 @@ async function _finalizarVenda(){
     document.getElementById('f-nome').value='';
     document.getElementById('f-tel').value='';
     document.getElementById('f-endereco-colado').value='';
+    { const fb=document.getElementById('f-bairro'); if(fb) fb.value=''; const bi=document.getElementById('bairro-info'); if(bi) bi.textContent=''; }
     mostrarToast();
   }catch(e){
     console.error('Erro ao gravar venda:',e);
@@ -806,6 +809,8 @@ function editarPedidoExistente(id){
   document.getElementById('f-tipo').value=p.delivery_type||'retirada';
   document.getElementById('f-endereco-colado').value=p.address||'';
   alternarCampoEntregador();
+  // edição: mantém a taxa e o bairro que o pedido já tinha (não volta pro padrão)
+  if(p.delivery_type==='entrega'){ const ct=document.getElementById('f-taxa-entrega'); if(ct&&p.taxa_entrega!=null) ct.value=Number(p.taxa_entrega)||0; const fb=document.getElementById('f-bairro'); if(fb) fb.value=p.bairro||''; }
   pedidoEmEdicaoId=id;
   atualizarBarraCarrinho();
   openCartModal();

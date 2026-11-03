@@ -26,6 +26,9 @@ async function finalizar(){
   if(!tel) faltando.push('u-tel');
   if(!isRet&&!end) faltando.push('u-end');
   if(!isRet&&!num) faltando.push('u-num');
+  // entrega: o bairro define a taxa — sem bairro reconhecido não dá pra fechar o valor
+  const zona=isRet?null:zonaEntregaSite();
+  if(!isRet&&!zona.ok) faltando.push('u-bairro');
   if(!pay) faltando.push('u-pay');
 
   if(faltando.length){
@@ -34,6 +37,7 @@ async function finalizar(){
       if(el)el.style.borderColor='#e71d36';
     });
     const box=document.getElementById('pay-chips'); if(box&&faltando.includes('u-pay')) box.classList.add('erro');
+    if(faltando.includes('u-bairro')&&typeof mostrarAviso==='function') mostrarAviso(zona&&zona.motivo==='fora'?'Bairro fora da tabela: chame no WhatsApp ou escolha Retirada':'Escolha o seu bairro pra calcular a entrega');
     const primeiro=faltando[0]==='u-pay'?box:document.getElementById(faltando[0]);
     if(primeiro){
       primeiro.scrollIntoView({behavior:'smooth',block:'center'});
@@ -58,14 +62,14 @@ async function finalizar(){
   const desc=calcDesconto(cart);
   total=Math.max(0,total-desc);
   const gratis=!isRet&&entregaGratis(cart);
-  const fee=(isRet||gratis)?0:8;
+  const fee=(isRet||gratis)?0:zona.taxa;
   const totalFinal=total+fee;
 
   trackOrder(cart,{name,address:end,num,pay,phone:tel,
     change:changeVal?parseFloat(changeVal):null,
-    type:isRet?'retirada':'entrega',total:totalFinal,taxa:fee});
+    type:isRet?'retirada':'entrega',total:totalFinal,taxa:fee,bairro:isRet?null:zona.bairro,zona:isRet?null:zona.zona});
 
-  const frete=isRet?'🏠 *RETIRADA NO LOCAL* (Grátis - 20min)':(gratis?`🛵 *ENTREGA GRÁTIS* 🎁 (3+ pizzas ou combo de esfihas)`:`🛵 *ENTREGA:* R$ 8,00`);
+  const frete=isRet?'🏠 *RETIRADA NO LOCAL* (Grátis - 20min)':(gratis?`🛵 *ENTREGA GRÁTIS* 🎁 (3+ pizzas ou combo de esfihas) — ${zona.bairro}`:`🛵 *ENTREGA:* R$ ${fmtPrice(fee)} (${zona.bairro} · Zona ${zona.zona})`);
 
   let troco='';
   if(pay==='Dinheiro')troco=changeVal?`%0A💵 *Troco para:* R$ ${fmtPrice(parseFloat(changeVal))}`:

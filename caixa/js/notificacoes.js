@@ -279,6 +279,7 @@ function confirmarPedidoNotificacao(){
   // pedido do site: vale a taxa que o cliente já viu (grátis ou R$ 8) — o Caixa não recalcula
   window._taxaManual=true;
   const campoTaxa=document.getElementById('f-taxa-entrega'); if(campoTaxa) campoTaxa.value=Number(p.taxa_entrega)||0;
+  { const fb=document.getElementById('f-bairro'); if(fb&&p.bairro) fb.value=p.bairro; }
 
   atualizarBarraCarrinho();
   dispensarNotifCaixa();

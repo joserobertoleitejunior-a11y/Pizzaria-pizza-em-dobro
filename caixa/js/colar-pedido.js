@@ -535,6 +535,7 @@ function montarCaixaComPedidoInterpretado(parsed){
     if(end.complemento) partes.push(end.complemento);
     if(end.bairro) partes.push(end.bairro);
     document.getElementById('f-endereco-colado').value=partes.join(', ');
+    if(typeof detectarBairroCaixa==='function') detectarBairroCaixa(); // bairro do endereço → zona e taxa
     // tem rua ou bairro mas NENHUM número — é o erro mais caro que existe aqui (entrega
     // errada/perdida), avisa antes de deixar ir pro motoboy sem ninguém notar
     if((end.rua||end.bairro)&&!end.numero) enderecoFaltandoNumero=true;

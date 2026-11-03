@@ -206,6 +206,25 @@ function bordaReal(b){
   return t;
 }
 
+// ── ZONAS DE ENTREGA (arte "Tabela de entrega — Pizza em Dobro Itapê"): cada bairro tem a taxa da sua zona.
+// Usado pelo site (carrinho), pelo Caixa/Conversor e pelo servidor (confere a taxa do pedido).
+const ZONAS_ENTREGA=[{"zona": 1, "taxa": 8, "bairros": ["Jd. Deise", "Vila Máximo", "Jd. Shangri-Lá", "Parque Atenas do Sul", "Vila Rio Branco", "Vila São José", "Labrunetti", "Vila Barth I", "Vila Barth II", "Vila Nastri I", "Vila Nastri II", "Vila Carolina", "Bairro 4L", "Jd. Bela Vista", "Cambuí", "Parque São Bento", "Vila Cubatão", "Vila Rosa", "Jd. Itália", "Vila Nova Itapetininga", "Vila Regina"]}, {"zona": 2, "taxa": 9, "bairros": ["Jd. Brasil", "Jd. Paulista", "Jd. Maricota", "Jd. Fogaça", "Vila Olho d'Água", "Vila São João", "Jd. Santa Inês", "Vila Santana", "Vila Piedade", "Vila Salém", "Vila Asem", "Vila Sônia", "Chapadinha", "Vila Apolo", "Estância Conceição"]}, {"zona": 3, "taxa": 10, "bairros": ["Belo Horizonte", "Jd. Casa Grande", "Vila Célia", "Região da Unimed", "Vila Arruda", "Vila Prado", "Taboãozinho", "Gramados 1", "Gramados 2", "Novo Aeroporto", "Vila Sotemo", "Vila Mazzei", "Residencial Nascentes", "Pacaembu 1", "Pacaembu 2", "Pacaembu 3"]}, {"zona": 4, "taxa": 15, "bairros": ["Monte Santo", "Chapada Grande", "Parque Itapê", "3M", "Duratex", "GDBR", "Fábrica de Costura", "Grupo RB", "Itacol", "Castrolanda"]}];
+const TAXAS_VALIDAS=[...new Set(ZONAS_ENTREGA.map(z=>z.taxa))];
+function normBairro(t){ return ' '+String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\bjardim\b/g,'jd').replace(/\bvl\b/g,'vila').replace(/[^a-z0-9]+/g,' ').trim()+' '; }
+// lista plana {bairro, zona, taxa, chave} + apelidos sem o numeral romano ("Vila Nastri" = "Vila Nastri I")
+const _BAIRROS_LISTA=(function(){
+  const l=[]; ZONAS_ENTREGA.forEach(z=>z.bairros.forEach(b=>{
+    l.push({bairro:b,zona:z.zona,taxa:z.taxa,chave:normBairro(b)});
+    const semNum=normBairro(b.replace(/\s+(I|II)$/,'')); if(semNum!==normBairro(b)&&!l.some(x=>x.chave===semNum)) l.push({bairro:b,zona:z.zona,taxa:z.taxa,chave:semNum});
+  })); return l.sort((a,b)=>b.chave.length-a.chave.length);
+})();
+// acha o bairro citado num texto de endereço ("Rua X, Vila Nastri, Itapetininga") — o nome mais longo vence
+function acharBairroNoTexto(texto){
+  const t=normBairro(texto); if(t.trim().length<2) return null;
+  return _BAIRROS_LISTA.find(b=>t.includes(b.chave))||null;
+}
+function taxaDoBairro(nome){ const k=normBairro(nome); const b=_BAIRROS_LISTA.find(x=>x.chave===k); return b?b.taxa:null; }
+
 // ── PEDIDO REPETIDO: mesmo cliente (telefone, ou nome quando não é genérico) lançado de novo poucos
 // minutos depois — ex.: o Caixa lançou o pedido e, 5 min depois, lançou outro igual + uma bebida em vez
 // de EDITAR o primeiro. Nunca apaga nada sozinho: o Caixa pergunta e o Dashboard avisa.
@@ -234,5 +253,5 @@ function acharPedidoRepetido(pedido,outros,janelaMin){
 function pedidoIdentico(a,b){ return Math.abs(Number(a.total||0)-Number(b.total||0))<0.01&&assinaturaItens(a)===assinaturaItens(b); }
 
 if(typeof module!=='undefined' && module.exports){
-  module.exports={ acharPedidoRepetido, pedidoIdentico, mesmoCliente, fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PADRAO, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao, bordaReal, COMBOS_ENTREGA_GRATIS, PIZZAS_ENTREGA_GRATIS, combosDeEsfiha, esfDistribuirPadrao };
+  module.exports={ ZONAS_ENTREGA, TAXAS_VALIDAS, acharBairroNoTexto, taxaDoBairro, acharPedidoRepetido, pedidoIdentico, mesmoCliente, fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PADRAO, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao, bordaReal, COMBOS_ENTREGA_GRATIS, PIZZAS_ENTREGA_GRATIS, combosDeEsfiha, esfDistribuirPadrao };
 }

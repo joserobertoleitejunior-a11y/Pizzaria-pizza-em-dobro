@@ -56,7 +56,7 @@
 <style>.sem-splash #ws{display:none!important}</style>
 <script src="shared/atualizar-versao.js"></script>
 <script src="js/dispositivo.js"></script>
-<link rel="stylesheet" href="assets/site.css?v=65">
+<link rel="stylesheet" href="assets/site.css?v=67">
 </head>
 <body>
 <!-- WELCOME — logo com reflexo de vidro, nome completo e a pizza inteira perdendo
@@ -489,10 +489,12 @@
     <div id="addr-fields">
       <button id="btn-usar-local" type="button" class="btn-local" onclick="usarLocalizacaoAtual(this)">📍 Usar minha localização atual</button>
       <div class="addr-wrap">
-        <input type="text" id="u-end" class="c-input" placeholder="Rua e bairro (digite e escolha na lista)" autocomplete="off" oninput="this.style.borderColor='';autoSaveClient();_buscarSugestoesEndereco(this.value)" onfocus="if(this.value.trim().length>=4)_buscarSugestoesEndereco(this.value)">
+        <input type="text" id="u-end" class="c-input" placeholder="Rua e bairro (digite e escolha na lista)" autocomplete="off" oninput="this.style.borderColor='';autoSaveClient();detectarBairroSite();_buscarSugestoesEndereco(this.value)" onfocus="if(this.value.trim().length>=4)_buscarSugestoesEndereco(this.value)">
         <div id="addr-suggestions" style="display:none;position:fixed;z-index:10000;background:#151515;border:1px solid rgba(255,159,28,.25);border-radius:10px;overflow:hidden;max-height:240px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5);"></div>
       </div>
       <input type="text" id="u-num" class="c-input" placeholder="Número da casa" inputmode="numeric" oninput="this.style.borderColor='';autoSaveClient()">
+      <select id="u-bairro" class="c-input" aria-label="Bairro (define a taxa de entrega)" onchange="escolherBairroManual()"><option value="">Selecione o seu bairro…</option></select>
+      <div id="bairro-aviso" class="bairro-aviso" hidden></div>
     </div>
 
     <div class="cart-sec-titulo">Pagamento</div>
@@ -867,6 +869,7 @@
 <script src="js/sabor-imagem.js"></script>
 <script src="js/ui-shell.js"></script>
 <script src="js/cardapio.js"></script>
+<script src="js/zona-entrega.js?v=2"></script>
 <script src="js/carrinho.js"></script>
 <script src="js/checkout.js"></script>
 <script src="js/admin-avaliacoes.js"></script>
@@ -880,7 +883,7 @@
 <script src="js/faixa-vermelha.js"></script>
 <script src="js/taxas-entrega.js"></script>
 <script src="js/promos.js"></script>
-<script src="js/passo-a-passo.js"></script>
+<script src="js/passo-a-passo.js?v=2"></script>
 <div id="pwa-banner">
   <div id="pwa-banner-icon"><img src="assets/logo.png" alt="Pizza em Dobro" width="26" height="26" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"></div>
   <div id="pwa-banner-txt">

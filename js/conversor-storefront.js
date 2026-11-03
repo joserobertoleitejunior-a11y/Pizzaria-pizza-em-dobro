@@ -989,6 +989,10 @@ async function _selecionarSugestaoEndereco(idx){
     if(dd){dd.style.display='none';dd.innerHTML='';}
     window._acSessionToken=new google.maps.places.AutocompleteSessionToken(); // novo token pra próxima busca
     if(typeof autoSaveClient==='function') autoSaveClient();
+    // bairro: pelo componente do Google (sublocality) e, se não vier, pelo texto do endereço
+    const comp=(place.addressComponents||[]).find(c=>(c.types||[]).some(t=>/sublocality|neighborhood/.test(t)));
+    const viaComp=comp&&acharBairroNoTexto(comp.longText||comp.long_name||'');
+    if(viaComp){ const s=document.getElementById('u-bairro'); if(s){ s.value=viaComp.bairro; s.dataset.manual=''; if(typeof updateUI==='function') updateUI(); } } else if(typeof detectarBairroSite==='function') detectarBairroSite();
   }catch(e){console.warn('Erro ao selecionar endereço:',e);}
 }
 
@@ -1032,6 +1036,7 @@ function usarLocalizacaoAtual(btn){
       const dd=document.getElementById('addr-suggestions');
       if(dd){dd.style.display='none';dd.innerHTML='';}
       if(typeof autoSaveClient==='function')autoSaveClient();
+      if(typeof detectarBairroSite==='function') detectarBairroSite();
       if(!end.numero){ const n=document.getElementById('u-num'); if(n) n.focus(); }   // falta só o número da casa
     }catch(e){
       alert('Não foi possível identificar seu endereço automaticamente. Digite manualmente.');

@@ -381,7 +381,7 @@ function formatarCupom(o){
   // endereço logo no começo: se a impressão cortar no meio, o que não pode faltar é pra onde vai
   if(entrega){
     const numCasa=o.house_number&&!new RegExp('(^|[^0-9])'+String(o.house_number).replace(/[^0-9A-Za-z]/g,'')+'([^0-9]|$)').test(String(o.address||''))?', nº '+o.house_number:'';
-    txt+=(o.address||'—')+numCasa+'\n'+sep+'\n';
+    txt+=(o.address||'—')+numCasa+'\n'+(o.bairro?'Bairro: '+o.bairro+(o.zona?' (Zona '+o.zona+')':'')+'\n':'')+sep+'\n';
   }
   (o.items_json||[]).forEach(it=>{
     const nome=it.name||(it.halves?it.halves.map(h=>h.n).join(' + '):it.n)||'—';

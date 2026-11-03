@@ -333,15 +333,26 @@ function updateUI(){
     document.getElementById('time-title').innerText='Prazo de Entrega:';
     document.getElementById('time-desc').innerText='Seu pedido pode levar até 50 minutos.';
     const nCombos=combosNoCarrinho(cart), nPizzas=pizzasNoCarrinho(cart), falta=Math.min(COMBOS_ENTREGA_GRATIS-nCombos,PIZZAS_ENTREGA_GRATIS-nPizzas);
+    { const zf=zonaEntregaSite(), av=document.getElementById('bairro-aviso');
+      if(av){ av.hidden=zf.motivo!=='fora'; av.innerHTML=zf.motivo==='fora'?`Esse bairro não está na nossa tabela de entrega. <a href="https://wa.me/${getWhatsApp()}" target="_blank" rel="noopener">Chame no WhatsApp</a> pra confirmar, ou escolha <b>Retirada</b>.`:''; } }
     if(entregaGratis(cart)){
       fee=0;
       sumHTML+=`<div class="sum-linha ok"><span>Taxa de entrega</span><span>GRÁTIS</span></div>`;
       document.getElementById('delivery-msg').innerHTML=`<span class="eg-cart ok">${EG_ICONES.moto}<span>Entrega grátis! ${nPizzas>=PIZZAS_ENTREGA_GRATIS?'Seu pedido tem '+nPizzas+' pizzas.':'Seu pedido tem combo de esfihas.'}</span></span>`;
     }else{
-      fee=8;
-      sumHTML+=`<div class="sum-linha"><span>Taxa de entrega</span><span>R$ 8,00</span></div>`;
+      // taxa pela ZONA do bairro (R$ 8 / 9 / 10 / 15)
+      const z=zonaEntregaSite();
       const faltaP=Math.max(1,PIZZAS_ENTREGA_GRATIS-nPizzas);
-      document.getElementById('delivery-msg').innerHTML=`Taxa de entrega R$ 8,00<span class="eg-cart">${EG_ICONES.presente}<span>${nPizzas>0?'Falta'+(faltaP>1?'m':'')+' '+faltaP+' pizza'+(faltaP>1?'s':'')+' para a entrega ser grátis':'Peça 3 pizzas (combo vale 2) e a entrega é grátis'}</span></span>${egProgresso(nPizzas,PIZZAS_ENTREGA_GRATIS)}`;
+      const dicaGratis=`<span class="eg-cart">${EG_ICONES.presente}<span>${nPizzas>0?'Falta'+(faltaP>1?'m':'')+' '+faltaP+' pizza'+(faltaP>1?'s':'')+' para a entrega ser grátis':'Peça 3 pizzas (combo vale 2) e a entrega é grátis'}</span></span>${egProgresso(nPizzas,PIZZAS_ENTREGA_GRATIS)}`;
+      if(z.ok){
+        fee=z.taxa;
+        sumHTML+=`<div class="sum-linha"><span>Taxa de entrega · ${z.bairro} (Zona ${z.zona})</span><span>R$ ${fmtPrice(z.taxa)}</span></div>`;
+        document.getElementById('delivery-msg').innerHTML=`Taxa de entrega R$ ${fmtPrice(z.taxa)} · ${z.bairro}${dicaGratis}`;
+      }else{
+        fee=0;
+        sumHTML+=`<div class="sum-linha"><span>Taxa de entrega</span><span>escolha o bairro</span></div>`;
+        document.getElementById('delivery-msg').innerHTML=`📍 <b>Escolha o seu bairro</b> pra calcular a taxa de entrega.${dicaGratis}`;
+      }
     }
   }
 
@@ -355,6 +366,7 @@ function updateUI(){
   if(cta) cta.style.display=(!clienteLogado()&&cart.length>0)?'block':'none';
 
   autofillClient();
+  if(!isRet) detectarBairroSite();
 }
 
 // ══════════════════════════════════

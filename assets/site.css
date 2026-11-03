@@ -1378,3 +1378,6 @@ body.pa-aberto .pa-flutuante{display:none}
 .taxas-zona ul{margin:0;padding:0 12px 12px;list-style:none;display:flex;flex-wrap:wrap;gap:6px}
 .taxas-zona li{padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.08);font-size:.84rem}
 .taxas-nota{margin:10px 2px 0;font-size:.8rem;opacity:.75}
+
+.bairro-aviso{margin:6px 0 0;padding:9px 12px;border-radius:10px;background:rgba(214,40,40,.12);border:1px solid rgba(214,40,40,.4);font-size:.84rem;line-height:1.35}.bairro-aviso a{color:var(--amarelo);font-weight:800}
+select#u-bairro{margin-top:8px}

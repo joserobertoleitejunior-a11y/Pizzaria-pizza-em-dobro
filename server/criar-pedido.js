@@ -9,6 +9,7 @@
 const { admin, db } = require('./lib/firebase');
 const { json, lerCorpo, texto, numero, hojeBrasilia } = require('./lib/http');
 const { usuarioDoToken } = require('./lib/equipe');
+const { taxaDoBairro, TAXAS_VALIDAS } = require('../shared/utils.js');
 const { reportError } = require('./lib/sentry');
 
 const TIPOS = ['entrega', 'retirada'];
@@ -31,6 +32,16 @@ function limparItens(lista) {
     });
   }
   return itens;
+}
+
+// Taxa de entrega pela ZONA do bairro (tabela em shared/utils.js). O pedido pode ter taxa 0 (entrega grátis)
+// ou a taxa do bairro; qualquer outro valor é trocado pela taxa do bairro (o navegador não decide o preço).
+function taxaConferida(b) {
+  if (b.type !== 'entrega') return 0;
+  const enviada = numero(b.taxa, 0, 100) || 0;
+  const doBairro = taxaDoBairro(texto(b.bairro, 80));
+  if (doBairro === null) return TAXAS_VALIDAS.includes(enviada) || enviada === 0 ? enviada : 0;
+  return enviada === 0 ? 0 : doBairro;
 }
 
 async function conferirPrecos(itens) {
@@ -71,7 +82,9 @@ exports.handler = async (event) => {
     change_for: texto(b.change, 40),
     delivery_type: TIPOS.includes(b.type) ? b.type : null,
     total: numero(b.total, 0, 5000),
-    taxa_entrega: b.type === 'entrega' ? (numero(b.taxa, 0, 100) || 0) : 0,
+    taxa_entrega: taxaConferida(b),
+    bairro: b.type === 'entrega' ? texto(b.bairro, 80) : null,
+    zona: b.type === 'entrega' ? (numero(b.zona, 1, 4) || null) : null,
     items_json: limparItens(b.items)
   };
   if (!pedido.client_name || !pedido.delivery_type || pedido.total === null || !pedido.items_json) {
