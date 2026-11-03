@@ -56,7 +56,7 @@
 <style>.sem-splash #ws{display:none!important}</style>
 <script src="shared/atualizar-versao.js"></script>
 <script src="js/dispositivo.js"></script>
-<link rel="stylesheet" href="assets/site.css?v=64">
+<link rel="stylesheet" href="assets/site.css?v=65">
 </head>
 <body>
 <!-- WELCOME — logo com reflexo de vidro, nome completo e a pizza inteira perdendo
@@ -398,6 +398,7 @@
   <div class="local-card">
     <div class="local-mapa"><iframe id="local-mapa-frame" title="Mapa da Pizza em Dobro" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="about:blank"></iframe></div>
     <div class="local-end" id="local-end-txt">Itapetininga, SP</div>
+    <details class="taxas-det" id="taxas-det"><summary>🛵 Taxa de entrega por bairro</summary><div id="taxas-box"></div></details>
     <div class="local-botoes">
       <a class="local-btn local-waze" id="btn-waze" href="#" target="_blank" rel="noopener"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C7 2 3.2 5.8 3.2 10.4c0 1.3.3 2.5.9 3.6-.3 1.1-.8 2.1-1.5 2.8 1.2.2 2.4-.1 3.4-.7 1.1.9 2.5 1.4 4 1.5a2.4 2.4 0 1 0 4.5 0c1.3 0 2.6-.4 3.7-1.2 1 .6 2.2.9 3.4.7-.7-.7-1.2-1.7-1.5-2.8.6-1.100.9-2.400.9-3.700C21.800 5.800 17 2 12 2zm-3.500 7.500a1.100 1.100 0 1 1 0 2.200 1.100 1.100 0 0 1 0-2.200zm7 0a1.100 1.100 0 1 1 0 2.200 1.100 1.100 0 0 1 0-2.200zM8.600 13.300c.9 1.300 2.100 1.900 3.400 1.900s2.500-.6 3.400-1.900"/></svg>Abrir no Waze</a>
       <a class="local-btn local-maps" id="btn-maps" href="#" target="_blank" rel="noopener"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.200 7 13 7 13s7-7.800 7-13a7 7 0 0 0-7-7zm0 9.500A2.500 2.500 0 1 1 12 6.500a2.500 2.500 0 0 1 0 5z"/></svg>Abrir no Google Maps</a>
@@ -877,6 +878,7 @@
 <script src="js/fab-equipe.js"></script>
 <script src="js/faixa-contatos.js"></script>
 <script src="js/faixa-vermelha.js"></script>
+<script src="js/taxas-entrega.js"></script>
 <script src="js/promos.js"></script>
 <script src="js/passo-a-passo.js"></script>
 <div id="pwa-banner">

@@ -1359,3 +1359,22 @@ body.pa-aberto .pa-flutuante{display:none}
 .bv-sub{margin:0 0 6px;text-align:center;font-size:.92rem;color:rgba(255,255,255,.85);text-shadow:0 1px 6px rgba(0,0,0,.7)}
 .bv-adm{opacity:.85}
 .bv-txt .bv-ico{font-size:1.25rem}
+
+.taxas-det{margin:12px 0 4px;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(255,255,255,.04)}
+.taxas-det>summary{cursor:pointer;padding:13px 14px;font-weight:800;list-style:none}
+.taxas-det>summary::-webkit-details-marker{display:none}
+.taxas-det>summary::after{content:"▾";float:right;opacity:.7}
+.taxas-det[open]>summary::after{content:"▴"}
+#taxas-box{padding:0 12px 12px}
+.taxas-busca{width:100%;box-sizing:border-box;padding:11px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.25);color:inherit;font:inherit}
+.taxas-res{display:grid;gap:6px;margin:8px 0}
+.taxa-achado{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:10px;background:rgba(245,197,24,.14);border:1px solid rgba(245,197,24,.4);font-weight:700}
+.taxa-achado small{opacity:.7;font-weight:600}.taxa-achado.nada{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15)}
+.taxas-zonas{display:grid;gap:8px;margin-top:8px}
+.taxas-zona{border-radius:12px;background:rgba(255,255,255,.05)}
+.taxas-zona>summary{cursor:pointer;display:flex;justify-content:space-between;padding:11px 12px;list-style:none}
+.taxas-zona>summary::-webkit-details-marker{display:none}
+.taxas-zona>summary span{color:var(--amarelo);font-weight:900}
+.taxas-zona ul{margin:0;padding:0 12px 12px;list-style:none;display:flex;flex-wrap:wrap;gap:6px}
+.taxas-zona li{padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.08);font-size:.84rem}
+.taxas-nota{margin:10px 2px 0;font-size:.8rem;opacity:.75}
