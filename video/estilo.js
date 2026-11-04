@@ -34,10 +34,16 @@ function blocos(f){
   if(cur)out.push(cur); return out;
 }
 var C,cenas,tempos,pal;
+var IG='<svg viewBox="0 0 48 48" '+ST+'><rect x="5" y="5" width="38" height="38" rx="11"/><circle cx="24" cy="24" r="9"/><circle cx="35" cy="13" r="1.6" fill="currentColor"/></svg>';
+function moldura(){
+  pal.insertAdjacentHTML('beforeend','<div id="moldura"><div class="mol-borda"></div>'+
+   '<div class="mol-perfil a desce" style="--d:.1s"><span class="mol-anel"><img src="../assets/logo.png" alt=""></span><div><b>pizza_dobro_itape</b><small>Pizza em Dobro · Itapetininga, SP</small></div><span id="seguir" class="mol-seguir"><i>Seguir</i><i>✓ Siga no Insta</i></span></div>'+
+   '<div class="mol-rodape a up" style="--d:.4s"><span class="mol-ig">'+IG+'</span><div><b>@pizza_dobro_itape</b><small>Siga a gente no Instagram · pedidos pelo site e WhatsApp</small></div></div></div>');
+}
 function montar(cfg){
   pal=$('palco'); var h='';
   cfg.cenas.forEach(function(c,i){
-    var leg=blocos(c.fala||'').map(function(b,j){return '<span class="a fade" data-j="'+j+'">'+b.replace(/R\$\s?[\d.,]+/g,function(m){return '<b>'+m+'</b>';})+'</span>';}).join('');
+    var leg=blocos(c.fala||'').map(function(b,j){return '<span class="bl" data-j="'+j+'">'+b.replace(/R\$\s?([\d.,]+)/g,'R$\u00a0$1').split(' ').map(function(w){return '<em class="w a pop'+(/^R\$/.test(w)?' pr':'')+'">'+w+'</em>';}).join(' ')+'</span>';}).join('');
     if(c.tipo==='mais') h+='<div class="cena" id="c-'+c.id+'"><div class="mais a fade">'+c.titulo+'</div><div class="legenda" style="top:1530px"><div style="position:relative;width:100%">'+leg+'</div></div></div>';
     else if(c.fim) h+='<div class="cena fimc" id="c-'+c.id+'"><div id="marca"><img src="../assets/logo.png" alt="">PIZZA EM <b>DOBRO</b></div><div class="tit"><i class="a up">'+c.t1+'</i><i class="a up" style="--d:.15s">'+c.t2+'</i></div><div class="sub a up" style="--d:.6s">'+c.sub+'</div><div class="url a up" style="--d:.9s">'+c.url+'</div><div class="legenda"><div style="position:relative;width:100%">'+leg+'</div></div><div class="credito a fade" style="--d:1.2s">FEITO POR VIBE CODING PROCESS</div></div>';
     else h+='<div class="cena" id="c-'+c.id+'"><div id="marca" class="a desce"><img src="../assets/logo.png" alt="">PIZZA EM <b>DOBRO</b></div><div class="tit"><i class="a up">'+c.t1+'</i><i class="a up" style="--d:.12s">'+c.t2+'</i></div><div class="quadro a fade"><div class="vis">'+c.vis+'</div>'+(c.card?'<div class="cartao a up" style="--d:.3s">'+IC[c.card.ic]+'<div><b>'+c.card.t+'</b><span>'+c.card.s+'</span></div></div>':'')+'</div><div class="legenda"><div style="position:relative;width:100%;height:100%;display:flex;align-items:center">'+leg+'</div></div></div>';
@@ -50,8 +56,11 @@ window.quadro=function(t){
   var s=tempos.cenas[atual.id], u=Math.max(0,t-s.t0), el=$('c-'+atual.id);
   el.style.setProperty('--u',u+'s'); el.querySelectorAll('.a').forEach(function(a){a.style.setProperty('--u',u+'s');});
   // legenda: blocos distribuídos pelo tempo da fala (começa .2s depois da cena)
-  var sp=el.querySelectorAll('.legenda span'), n=sp.length, ini=.2, fim=Math.max(ini+.5,(s.t1-s.t0)-(atual.fim?1.3:.45)), k=Math.min(n-1,Math.max(0,Math.floor((u-ini)/((fim-ini)/n))));
-  sp.forEach(function(x,j){var ts=ini+j*((fim-ini)/n); x.style.setProperty('--u',(u-ts)+'s'); x.style.setProperty('--d','0s'); x.style.display=(j===k&&u>=ini)?'block':'none';});
+  var sp=el.querySelectorAll('.legenda .bl'), n=sp.length, ini=.2, fim=Math.max(ini+.5,(s.t1-s.t0)-(atual.fim?1.3:.45)), bd=(fim-ini)/n, k=Math.min(n-1,Math.max(0,Math.floor((u-ini)/bd)));
+  sp.forEach(function(x,j){var ts=ini+j*bd; x.style.display=(j===k&&u>=ini)?'block':'none';
+    if(j!==k)return; var ws=x.querySelectorAll('.w'), nw=ws.length, wd=bd*.92/nw;
+    ws.forEach(function(w,i){var t0w=ts+i*wd; w.style.setProperty('--u',(u-t0w)+'s'); w.style.setProperty('--d','0s'); w.classList.toggle('ativa',u>=t0w&&u<t0w+wd*1.15);});});
+  var ml=$('moldura'); if(ml){ml.style.setProperty('--u',t+'s'); ml.querySelectorAll('.a').forEach(function(a){a.style.setProperty('--u',t+'s');}); ml.classList.toggle('fim',!!atual.fim); var sg=$('seguir'); if(sg)sg.classList.toggle('ok',(t%6)>3.2);}
   if(atual.fim){var cr=el.querySelector('.credito'); if(cr)cr.style.setProperty('--u',u+'s');}
 };
 function ajustar(){ if(document.body.classList.contains('gravando'))return; var k=Math.min(innerWidth/1080,innerHeight/1920); pal.style.transform='scale('+k+')'; pal.style.marginLeft=Math.max(0,(innerWidth-1080*k)/2)+'px'; }
@@ -59,7 +68,7 @@ window.Estilo={iniciar:function(cfg){
   var grav=new URLSearchParams(location.search).has('gravar'); if(grav)document.body.classList.add('gravando');
   cenas=cfg.cenas;
   window.__cfg={tempos:cfg.tempos,cenas:cfg.cenas.map(function(c){return {id:c.id,fala:c.fala,min:c.min||0,fim:!!c.fim};})};
-  montar(cfg); ajustar(); addEventListener('resize',ajustar);
+  montar(cfg); if(cfg.moldura!==false&&!/semmoldura/.test(location.search))moldura(); ajustar(); addEventListener('resize',ajustar);
   fetch(cfg.tempos).then(function(r){return r.json();}).then(function(tp){
     tempos=tp; window.quadro(0);
     var imgs=[].slice.call(document.images), n=imgs.length; var ok=function(){ if(--n<=0) document.fonts.ready.then(function(){window.__pronto=true;}); }; if(!n)ok(); imgs.forEach(function(im){ if(im.complete)ok(); else {im.onload=ok;im.onerror=ok;} });

@@ -1,44 +1,86 @@
-# Roteiros — 3 vídeos Pizza em Dobro (Stories 1080×1920)
+# Roteiros de voz — Pizza em Dobro (3 vídeos)
 
-Dados tirados do código do sistema (cardápio padrão, combos, esfihas, regras de entrega). **Confirmar no painel admin se algum preço mudou.**
+Cada vídeo tem **uma voz** e **uma coluna só pra colar no ElevenLabs**.
+A coluna "Texto da voz" já está **corrigida pra pronúncia** (acento na sílaba forte, nomes difíceis escritos do jeito que se fala). **Não troque as palavras.** A legenda do vídeo continua com a grafia certa (esfiha, bacon, catupiry, Pix).
 
-## Como gerar a voz no ElevenLabs
-- Gere **um áudio por vídeo**, com **uma pausa entre cada linha** (cole as linhas com `<break time="0.8s" />` entre elas, ou uma linha em branco). Tom: animado, rápido, de locutor.
-- Depois me mande o MP3 (hoje, quinta, sábado). Eu corto nas pausas, acerto cada cena na fala e crio as legendas.
-- Cada linha abaixo = uma cena. Não mude a ordem.
+## Antes de gerar
+- **Modelo:** Eleven Multilingual v2 (aceita pausa `<break>`). Idioma: Português (Brasil).
+- **Ajustes:** Stability 40 · Similarity 75 · Style 30 · Speaker Boost ligado. Velocidade 1.05 (locutor animado, sem correr).
+- **Sotaque da região (interior de SP, Itapetininga):** no *Voice Library* filtre Português + Brasil e escolha a voz que mais soa paulista do interior. Se não achar, use o *Voice Design* com o texto de cada vídeo (abaixo). **Teste primeiro com a frase de teste** e só gere o roteiro inteiro se o "r" e o "pizza" soarem certo.
+- **Frase de teste (todas as vozes):** `Pizza em Dobro: a pizza, a esfía e o Pics de hoje!` — ouça se disse *pítsa*, *esfía* e *Pics*.
+- Cole **uma linha por vez com a pausa** `<break time="0.8s" />` entre elas, como está abaixo, e gere **um áudio só por vídeo**.
+- Se alguma palavra sair errada, me diga qual: eu ajusto o texto, não a voz.
 
-## HOJE (quarta) — Combos 2 por X
+## Dicionário de pronúncia (já aplicado)
+| Na legenda | Texto da voz | Fala |
+|---|---|---|
+| esfiha | esfía | es-FÍ-a (o "h" não soa) |
+| bacon | bêicon | BÊI-con |
+| catupiry | catupiri | ca-tu-PI-ri |
+| peperone | peperôni | pe-pe-RÔ-ni |
+| calzone | calzône | cal-ZÔ-ne |
+| Pix | Pics | PICS |
+| WhatsApp | Uatsápi | ua-TSÁ-pi |
+| combo | cômbo | CÔM-bo |
+| Coca-Cola | Cóca-Cóla | CÓ-ca-CÓ-la |
+| broto | brôto | BRÔ-to |
+| brócolis | brócolis | BRÓ-co-lis |
+| marguerita | marguerita | mar-gue-RI-ta |
+| pizza | pizza | PÍT-sa (se vier "píza", troque por **pítsa** no texto) |
 
-1. `splash` — Bateu a fome? Hoje é dia de combo!
-2. `promos` — Duas pizzas a partir de sessenta e cinco reais.
-3. `c65` — Sessenta e cinco: mussarela e calabresa.
-4. `c75` — Setenta e cinco: marguerita, palmito, frango com catupiry e mais.
-5. `c80` — Oitenta: portuguesa, toscana, quatro queijos e bacon.
-6. `c85` — Oitenta e cinco: brócolis com bacon, peperone, atum e lombo.
-7. `broto` — Quer broto? Duas por cinquenta reais, qualquer sabor!
-8. `entrega` — E com três pizzas, a entrega é grátis!
-9. `fim` — Pizza em Dobro. Peça agora pelo nosso site!
+---
 
-## QUINTA — Esfihas e doces
+## 1) HOJE (quarta) — Combos 2 por X · **VOZ FEMININA**
+*Voice Design:* "Mulher brasileira, 28 a 35 anos, português do interior de São Paulo (região de Itapetininga), simpática, sorridente, voz de locutora de pizzaria, R caipira suave, energia alta, natural, sem sotaque de capital."
 
-1. `splash` — Quinta é dia de esfiha!
-2. `esf5` — Esfiha a cinco reais cada!
-3. `sab` — Carne, frango com catupiry, mussarela, calabresa, bacon e mista.
-4. `doce` — E duas doces: confete e brigadeiro.
-5. `pacotes` — Dez por cinquenta, vinte por noventa, trinta por cento e trinta.
-6. `entrega` — A cada dez esfihas, a entrega é grátis!
-7. `doces` — Fecha com doce: pizza doce a quarenta e noventa e nove, calzone doce a trinta e cinco e noventa e nove.
-8. `bebida` — E pra acompanhar, Coca-Cola de um litro e meio por treze e noventa e nove.
-9. `fim` — Pizza em Dobro. A esfiha de quinta está esperando você!
+| # | Texto da voz (colar) | Legenda no vídeo |
+|---|---|---|
+| 1 | Bateu a fome? Hoje é dia de cômbo! | Bateu a fome? Hoje é dia de combo! |
+| 2 | Duas pizzas a partir de sessenta e cinco reais. | igual |
+| 3 | Sessenta e cinco: mussarela e calabresa. | igual |
+| 4 | Setenta e cinco: marguerita, palmito, frango com catupiri e mais. | …catupiry e mais. |
+| 5 | Oitenta: portuguesa, toscana, quatro queijos e bêicon. | …bacon. |
+| 6 | Oitenta e cinco: brócolis com bêicon, peperôni, atum e lombo. | …bacon, peperone… |
+| 7 | Quer brôto? Duas por cinquenta reais, qualquer sabor! | Quer broto?… |
+| 8 | E com três pizzas, a entrega é grátis! | igual |
+| 9 | Pizza em Dobro. Peça agora pelo nosso site! | igual |
 
-## SÁBADO — Pedir fácil, pizza em família
+Pra colar: `Bateu a fome? Hoje é dia de cômbo! <break time="0.8s" /> Duas pizzas a partir de sessenta e cinco reais. <break time="0.8s" /> Sessenta e cinco: mussarela e calabresa. <break time="0.8s" /> Setenta e cinco: marguerita, palmito, frango com catupiri e mais. <break time="0.8s" /> Oitenta: portuguesa, toscana, quatro queijos e bêicon. <break time="0.8s" /> Oitenta e cinco: brócolis com bêicon, peperôni, atum e lombo. <break time="0.8s" /> Quer brôto? Duas por cinquenta reais, qualquer sabor! <break time="0.8s" /> E com três pizzas, a entrega é grátis! <break time="0.8s" /> Pizza em Dobro. Peça agora pelo nosso site!`
 
-1. `splash` — Sábado é dia de pizza em família!
-2. `promos` — Duas pizzas a partir de sessenta e cinco reais.
-3. `cardapio` — São vinte e sete sabores salgados e cinco doces.
-4. `mais` — Toque no mais...
-5. `carrinho` — E confira o seu pedido.
-6. `bairro` — Novidade: o site reconhece o seu bairro e já calcula a entrega.
-7. `pix` — Pague no Pix e envie pelo WhatsApp.
-8. `zap` — Pronto! Seu pedido chega direto no WhatsApp da pizzaria.
-9. `fim` — Pizza em Dobro. Sábado fica melhor com pizza!
+## 2) QUINTA — Esfihas e doces · **VOZ MASCULINA**
+*Voice Design:* "Homem brasileiro, 30 a 40 anos, português do interior de São Paulo (região de Itapetininga), voz calorosa e animada de anunciante de pizzaria, R caipira suave, natural e acolhedor."
+
+| # | Texto da voz (colar) | Legenda no vídeo |
+|---|---|---|
+| 1 | Quinta é dia de esfía! | Quinta é dia de esfiha! |
+| 2 | Esfía a cinco reais cada! | Esfiha a cinco reais cada! |
+| 3 | Carne, frango com catupiri, mussarela, calabresa, bêicon e mista. | …catupiry… bacon… |
+| 4 | E duas doces: confete e brigadeiro. | igual |
+| 5 | Dez por cinquenta, vinte por noventa, trinta por cento e trinta. | igual |
+| 6 | A cada dez esfías, a entrega é grátis! | …esfihas… |
+| 7 | Fecha com doce: pizza doce a quarenta reais e noventa e nove, calzône doce a trinta e cinco reais e noventa e nove. | …calzone… |
+| 8 | E pra acompanhar, Cóca-Cóla de um litro e meio por treze reais e noventa e nove. | Coca-Cola… |
+| 9 | Pizza em Dobro. A esfía de quinta está esperando você! | …esfiha… |
+
+Pra colar: `Quinta é dia de esfía! <break time="0.8s" /> Esfía a cinco reais cada! <break time="0.8s" /> Carne, frango com catupiri, mussarela, calabresa, bêicon e mista. <break time="0.8s" /> E duas doces: confete e brigadeiro. <break time="0.8s" /> Dez por cinquenta, vinte por noventa, trinta por cento e trinta. <break time="0.8s" /> A cada dez esfías, a entrega é grátis! <break time="0.8s" /> Fecha com doce: pizza doce a quarenta reais e noventa e nove, calzône doce a trinta e cinco reais e noventa e nove. <break time="0.8s" /> E pra acompanhar, Cóca-Cóla de um litro e meio por treze reais e noventa e nove. <break time="0.8s" /> Pizza em Dobro. A esfía de quinta está esperando você!`
+
+## 3) SÁBADO — Pedir fácil, pizza em família · **VOZ FEMININA** (outra voz, diferente da de hoje)
+*Voice Design:* "Mulher brasileira, 35 a 45 anos, português do interior de São Paulo (região de Itapetininga), voz acolhedora de mãe de família, simpática, R caipira suave, calma e animada, natural."
+
+| # | Texto da voz (colar) | Legenda no vídeo |
+|---|---|---|
+| 1 | Sábado é dia de pizza em família! | igual |
+| 2 | Duas pizzas a partir de sessenta e cinco reais. | igual |
+| 3 | São vinte e sete sabores salgados e cinco doces. | igual |
+| 4 | Escolha os sabores, toque no mais, e confira o pedido. | …toque no +, e confira… |
+| 5 | Novidade: o site reconhece o seu bairro e já calcula a entrega. | igual |
+| 6 | Pague no Pics, e o pedido chega direto no Uatsápi da pizzaria. | …Pix… WhatsApp… |
+| 7 | Pizza em Dobro. Sábado fica melhor com pizza! | igual |
+
+Pra colar: `Sábado é dia de pizza em família! <break time="0.8s" /> Duas pizzas a partir de sessenta e cinco reais. <break time="0.8s" /> São vinte e sete sabores salgados e cinco doces. <break time="0.8s" /> Escolha os sabores, toque no mais, e confira o pedido. <break time="0.8s" /> Novidade: o site reconhece o seu bairro e já calcula a entrega. <break time="0.8s" /> Pague no Pics, e o pedido chega direto no Uatsápi da pizzaria. <break time="0.8s" /> Pizza em Dobro. Sábado fica melhor com pizza!`
+
+---
+## Legenda do post no Instagram (@pizza_dobro_itape)
+- **Hoje:** `Bateu a fome? 🍕 Combo 2 por X: a partir de R$ 65 as duas pizzas! Entrega grátis a partir de 3 pizzas. Peça pelo site: pizzaria-pizza-em-dobro.com.br`
+- **Quinta:** `Quinta é dia de esfiha! R$ 5 cada, 10 por R$ 50, 20 por R$ 90 e 30 por R$ 130. A cada 10, entrega grátis. Peça pelo site: pizzaria-pizza-em-dobro.com.br`
+- **Sábado:** `Sábado é dia de pizza em família! 27 sabores salgados e 5 doces. Agora o site reconhece o seu bairro e calcula a entrega. Peça pelo site: pizzaria-pizza-em-dobro.com.br`

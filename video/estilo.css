@@ -30,8 +30,12 @@ body.gravando #capa{display:none!important}
 .cartao b{display:block;font:400 62px/1 'Archivo Black';text-transform:uppercase}
 .cartao span{display:block;font:500 36px/1.25 'Work Sans';margin-top:10px;color:#4a413a}
 .legenda{position:absolute;left:70px;right:70px;top:1530px;height:230px;display:flex;align-items:center;justify-content:center;text-align:center}
-.legenda span{position:absolute;left:0;right:0;font:700 66px/1.14 'Work Sans';letter-spacing:-.5px;text-wrap:balance}
-.legenda span b{font-weight:800;color:var(--cor)}
+.legenda .bl{position:absolute;left:0;right:0;font:700 66px/1.14 'Work Sans';letter-spacing:-.5px;text-wrap:balance}
+.legenda .w{display:inline-block;font-style:normal;animation-duration:.3s;transition:none}
+.legenda .w.pr{font-weight:800;color:var(--cor)}
+.legenda .w.ativa{color:var(--cor);text-shadow:0 0 0 currentColor}
+.fimc .legenda .w.ativa,.fimc .legenda .w.pr{color:var(--ouro)}
+.legenda .bl{padding:0 6px}
 .badge{position:absolute;background:var(--cor);color:#fff;font:400 150px/1 'Archivo Black';padding:26px 44px 30px;border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.35);transform-origin:center}
 .badge small{display:block;font:700 40px 'Work Sans';letter-spacing:2px;opacity:.92;margin-bottom:6px}
 .badge.ouro{background:var(--ouro);color:#1b1714}
@@ -61,7 +65,25 @@ body.gravando #capa{display:none!important}
 .fimc .tit{top:220px;font-size:112px}.fimc .tit i,.fimc .tit i+i{color:#fff}.fimc .tit i+i{color:var(--ouro)}
 .fimc .sub{position:absolute;left:54px;top:620px;font:700 50px/1.25 'Work Sans';right:54px}
 .fimc .url{position:absolute;left:54px;top:790px;font:400 49px/1.15 'Archivo Black';color:var(--ouro);right:54px;white-space:nowrap}
-.fimc .legenda span{color:#fff}.fimc .legenda{top:1530px}
+.fimc .legenda{top:1530px}
 .credito{position:absolute;left:0;right:0;bottom:46px;text-align:center;font:700 15px 'Work Sans';letter-spacing:3px;color:rgba(255,255,255,.7)}
 #capa{position:fixed;inset:0;background:rgba(0,0,0,.85);color:#fff;display:flex;flex-direction:column;gap:20px;align-items:center;justify-content:center;font:600 22px 'Work Sans';z-index:9;text-align:center}
 #capa button{font:700 22px 'Work Sans';padding:16px 30px;border-radius:40px;border:0;background:#c8281f;color:#fff}
+
+/* ── moldura de Instagram (perfil no topo + rodapé @) por cima de tudo ── */
+#moldura{position:absolute;inset:0;z-index:30;pointer-events:none}
+.mol-borda{position:absolute;inset:0;border:16px solid var(--cor);box-shadow:inset 0 0 0 4px var(--ouro)}
+.fim .mol-borda{border-color:var(--ouro);box-shadow:inset 0 0 0 4px var(--cor)}
+.mol-perfil{position:absolute;left:54px;right:54px;top:54px;display:flex;align-items:center;gap:18px;background:rgba(255,255,255,.96);border-radius:60px;padding:10px 16px 10px 12px;box-shadow:0 8px 26px rgba(0,0,0,.18);color:#1b1714}
+.mol-anel{width:76px;height:76px;border-radius:50%;padding:4px;background:conic-gradient(#f9ce34,#ee2a7b,#6228d7,#f9ce34);display:block;flex:none}
+.mol-anel img{width:100%;height:100%;border-radius:50%;border:3px solid #fff;display:block;object-fit:cover}
+.mol-perfil div{flex:1;min-width:0}.mol-perfil b{display:block;font:800 36px/1.1 'Work Sans'}.mol-perfil small{display:block;font:500 24px 'Work Sans';color:#6b625a}
+.mol-seguir{position:relative;width:250px;height:64px;border-radius:32px;background:#0095f6;color:#fff;font:700 28px/64px 'Work Sans';text-align:center;flex:none;overflow:hidden}
+.mol-seguir i{position:absolute;inset:0;font-style:normal;transition:none}.mol-seguir i+i{opacity:0}.mol-seguir.ok i{opacity:0}.mol-seguir.ok i+i{opacity:1}.mol-seguir.ok{background:#1b1714}
+.mol-rodape{position:absolute;left:54px;right:54px;bottom:70px;display:flex;align-items:center;gap:20px;background:rgba(27,23,20,.92);color:#fff;border-radius:50px;padding:14px 30px 14px 18px}
+.mol-rodape b{display:block;font:800 36px/1.1 'Work Sans'}.mol-rodape small{display:block;font:500 24px 'Work Sans';color:rgba(255,255,255,.75)}
+.mol-ig{width:70px;height:70px;border-radius:20px;background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7);display:flex;align-items:center;justify-content:center;flex:none}.mol-ig svg{width:44px;height:44px;color:#fff}
+#moldura~*{}
+.cena #marca{display:none}
+.fimc .credito{bottom:30px;font-size:14px;z-index:40}
+.tit{top:190px}
