@@ -55,7 +55,7 @@ REGRAS OBRIGATÓRIAS:
 1. CONTAGEM DE PIZZAS:
    - Pizza inteira = 1 pizza
    - Meia a meia = 1 pizza (NÃO são 2)
-   - Entrega = taxa única R$ 8,00, sempre, não importa a quantidade de pizzas
+   - Entrega = taxa por zona (R$ 8 a R$ 15), não importa a quantidade de pizzas
    - Retirada = sempre grátis
 
 2. PREÇO MEIA A MEIA = MAIOR valor entre os dois sabores (OBRIGATÓRIO)

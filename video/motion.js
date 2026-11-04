@@ -150,7 +150,7 @@ function fundoVivo(t){
 function quadro(t){
   if(!ifrOk)return;
   fundoVivo(t);
-  var cr=$('credito'); cr.style.opacity=clamp((t-.8)/.6); cr.style.transform='translateX('+(-40*(1-outCubic((t-.8)/.7)))+'px)'; desenharEspaco($('cuboMini'),t);
+  var cr=$('credito'); var tf=C.fim?(t-C.fim.t0-.9):-1; cr.style.opacity=clamp(tf/.8); cr.style.transform='none'; desenharEspaco($('cuboMini'),t);
   /* celular: entra deslizando e flutua levemente */
   var ent=outBack(t/1.1), sai=C.fim?inOutCubic((t-C.fim.t0)/.7):0;
   fone.style.opacity=clamp(t/.5)*(1-sai);

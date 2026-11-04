@@ -9,7 +9,7 @@ const FPS = 30;
 const FONTES = `@font-face{font-family:'Archivo Black';src:url(http://localhost:${porta}/video/fontes/ArchivoBlack-Regular.ttf)}
 @font-face{font-family:'Work Sans';src:url(http://localhost:${porta}/video/fontes/WorkSans.ttf);font-weight:100 900}`;
 (async () => {
-  const ffmpeg = execSync('python3 -c "import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())"').toString().trim();
+  const ffmpeg = process.env.FFMPEG || execSync('python3 -c "import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())"').toString().trim();
   const b = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
   const ctx = await b.newContext({ viewport: { width: 1080, height: 1920 } });
   // sem internet na máquina de render: fontes do Google vêm da pasta local e o Firebase é simulado
