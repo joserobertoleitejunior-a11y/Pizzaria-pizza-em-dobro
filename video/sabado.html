@@ -1,51 +1,21 @@
 <!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pizza em Dobro — Sábado · Pedir fácil em família</title>
-<meta name="description" content="Vídeo curto das promoções da Pizza em Dobro no formato de Stories.">
-<link rel="stylesheet" href="motion.css">
-<style>
-/* assinatura bem pequena e discreta, só no final */
-#credito{left:50%!important;transform:translateX(-50%);top:1800px!important;gap:8px!important}
-#credito canvas{width:30px!important;height:30px!important}
-#credito b{font-size:13px!important;letter-spacing:1.5px!important;opacity:.7}
-#credito span{display:none!important}
-</style>
-</head>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pizza em Dobro — Sábado · Pedir fácil, pizza em família</title>
+<link rel="stylesheet" href="estilo.css"></head>
 <body>
-<div id="palco">
-  <div id="fundo"><img src="../assets/fachada-fundo.jpg" alt=""></div><div id="tinta"></div><div id="escuro"></div>
-  <canvas id="part" width="1080" height="1920"></canvas>
-  <div id="fone"><div id="ilha"></div><div id="tela"><iframe id="site" title="Site da Pizza em Dobro" src="about:blank"></iframe><div id="zap"></div><div id="brilho"></div></div></div>
-  <div id="rail"><i></i></div>
-  <div id="parte"></div>
-  <div id="cap" aria-live="polite"></div>
-  <div id="fim"></div>
-  <div id="credito"><canvas id="cuboMini" width="200" height="200"></canvas><div><b>VIBE CODING PROCESS</b><span>(15) 99668-8070 · José Roberto</span></div></div>
-  <div id="vinheta"></div><canvas id="grao" width="270" height="480"></canvas>
-</div>
-<div id="capa"><img src="../assets/logo.png" alt=""><h1>Sábado · Pedir fácil em família</h1><p>Vídeo de 26 segundos no formato do Instagram (1080×1920), com música.</p>
-  <div><button id="btSom" type="button">▶ Assistir com música</button><button class="sec" id="btMudo" type="button">Sem som</button></div></div>
-<div id="ctl"><button id="btRe" type="button">↺ Recomeçar</button></div>
+<div id="palco"></div>
+<div id="capa"><div>Sábado · Pedir fácil, pizza em família · Stories 1080×1920</div><button id="btSom" type="button">▶ Assistir com áudio</button><button id="btMudo" type="button">Sem som</button></div>
 <audio id="som" src="audio-sabado.mp3" preload="auto"></audio>
-<script src="motion.js"></script>
+<script src="estilo.js"></script>
 <script>
-Video.iniciar({
-  tema:'instagram', tempos:'tempos-sabado.json',
-  cenas:[
-    {id:'splash',parte:'Abertura',html:'Sábado é dia de <b>pizza em família!</b>',fala:'Sábado é dia de pizza em família!',min:3.6,splash:true},
-    {id:'promos',parte:'Combos',html:'2 pizzas a partir de <b>R$&nbsp;65</b>',fala:'Duas pizzas a partir de sessenta e cinco reais.',rolar:{el:'promos',off:36}},
-    {id:'cardapio',parte:'Cardápio',html:'<b>27 sabores</b> salgados e <b>5 doces</b>',fala:'São vinte e sete sabores salgados e cinco doces.',min:3.4,rolar:{el:'cat-p',off:60}},
-    {id:'mais',parte:'Pedido',html:'Toque no <b>+</b>',fala:'Toque no mais...',min:2.8,rolar:{el:'@pizza',off:170},acoes:[{dt:-.7,fn:function(w){var m=w.eval('menu'),p=m.filter(function(x){return x.cat==='p'&&/frango catupiry/i.test(x.n);})[0]||m.filter(function(x){return x.cat==='p';})[0];w.addItem(p.id);}}]},
-    {id:'carrinho',parte:'Pedido',html:'Confira o <b>pedido</b>',fala:'E confira o seu pedido.',min:3.2,acoes:[{dt:.1,fn:function(w){w.toggleCart({stopPropagation:function(){},target:{}});}}],rolagens:[{dt0:1.0,dt1:-.2,inner:'cart-bar',y:260}]},
-    {id:'bairro',parte:'Entrega',html:'O site reconhece seu <b>bairro</b>',fala:'Novidade: o site reconhece o seu bairro e já calcula a entrega.',min:4.4,rolar:{el:'taxas-box',off:120}},
-    {id:'pix',parte:'Pagamento',html:'Pague no <b>Pix</b> e envie',fala:'Pague no Pix e envie pelo WhatsApp.',min:3.6,rolagens:[{dt0:.1,dt1:1.1,inner:'cart-bar',y:1100},{dt0:-1.3,dt1:-.2,inner:'cart-bar',y:5000}],acoes:[{dt:1.3,fn:function(w){w.escolherPagamento('Pix');}}]},
-    {id:'zap',parte:'WhatsApp',html:'Chegou no <b>WhatsApp</b>!',fala:'Pronto! Seu pedido chega direto no WhatsApp da pizzaria.',min:3.6,zap:true},
-    {id:'fim',fim:true,tag:'pizzaria-pizza-em-dobro.com.br',fala:'Pizza em Dobro. Sábado fica melhor com pizza!'}
-  ]
-});
-</script>
-</body>
-</html>
+var V=Estilo.V, A='../assets/';
+Estilo.iniciar({tempos:'tempos-sabado.json',cenas:[
+{id:'splash',t1:'SÁBADO É DIA',t2:'DE FAMÍLIA.',fala:'Sábado é dia de pizza em família!',min:3.6,vis:V.foto(A+'pizza-hero.jpg')+V.badge('PIZZA','EM FAMÍLIA',{y:'80px'}),card:{ic:'fatia',t:'Sábado',s:'pizza pra todo mundo'}},
+{id:'promos',t1:'2 PIZZAS',t2:'DESDE R$ 65.',fala:'Duas pizzas a partir de sessenta e cinco reais.',vis:V.foto(A+'promo/pizzas.jpg')+V.badge('R$ 65','A PARTIR DE',{y:'70px'}),card:{ic:'fatia',t:'Combo 2 por X',s:'R$ 65, 75, 80 ou 85'}},
+{id:'cardapio',t1:'MUITO SABOR',t2:'NO CARDÁPIO.',fala:'São vinte e sete sabores salgados e cinco doces.',min:3.4,vis:V.foto(A+'cardapio/frango-catupiry.jpg')+V.badge('27','SALGADOS',{y:'60px'})+V.badge('5','DOCES',{y:'360px',cls:'ouro',d:.8}),card:{ic:'estrela',t:'27 + 5',s:'salgadas e doces'}},
+{id:'passos',t1:'PEDIR É',t2:'FÁCIL.',fala:'Escolha os sabores, toque no mais e confira o pedido.',min:4.0,vis:V.passos([{ic:'fatia',t:'Escolha',s:'toque no + do sabor'},{ic:'carrinho',t:'Confira',s:'veja o seu pedido'},{ic:'pix',t:'Pague',s:'Pix ou na entrega'}]),card:{ic:'carrinho',t:'3 passos',s:'sem complicação'}},
+{id:'bairro',t1:'NOVIDADE:',t2:'SEU BAIRRO.',fala:'Novidade: o site reconhece o seu bairro e já calcula a entrega.',min:4.6,vis:V.aneis(),card:{ic:'pin',t:'Entrega por bairro',s:'o site calcula pra você'}},
+{id:'pix',t1:'PAGOU,',t2:'CHEGOU.',fala:'Pague no Pix e o pedido chega direto no WhatsApp da pizzaria.',min:4.0,vis:V.passos([{ic:'pix',t:'Pix',s:'pagamento rápido'},{ic:'zap',t:'WhatsApp',s:'pedido direto na pizzaria'}]),card:{ic:'zap',t:'Pronto!',s:'vai direto pro WhatsApp'}},
+{id:'fim',fim:true,t1:'QUER',t2:'PEDIR AGORA?',sub:'Faça seu pedido pelo site. Rápido e sem fila.',url:'pizzaria-pizza-em-dobro.com.br',fala:'Pizza em Dobro. Sábado fica melhor com pizza!'}
+]});
+</script></body></html>

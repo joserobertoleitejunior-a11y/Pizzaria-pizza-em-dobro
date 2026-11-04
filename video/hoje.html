@@ -1,51 +1,23 @@
 <!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Pizza em Dobro — Hoje · Combos 2 por X</title>
-<meta name="description" content="Vídeo curto das promoções da Pizza em Dobro no formato de Stories.">
-<link rel="stylesheet" href="motion.css">
-<style>
-/* assinatura bem pequena e discreta, só no final */
-#credito{left:50%!important;transform:translateX(-50%);top:1800px!important;gap:8px!important}
-#credito canvas{width:30px!important;height:30px!important}
-#credito b{font-size:13px!important;letter-spacing:1.5px!important;opacity:.7}
-#credito span{display:none!important}
-</style>
-</head>
+<link rel="stylesheet" href="estilo.css"></head>
 <body>
-<div id="palco">
-  <div id="fundo"><img src="../assets/fachada-fundo.jpg" alt=""></div><div id="tinta"></div><div id="escuro"></div>
-  <canvas id="part" width="1080" height="1920"></canvas>
-  <div id="fone"><div id="ilha"></div><div id="tela"><iframe id="site" title="Site da Pizza em Dobro" src="about:blank"></iframe><div id="zap"></div><div id="brilho"></div></div></div>
-  <div id="rail"><i></i></div>
-  <div id="parte"></div>
-  <div id="cap" aria-live="polite"></div>
-  <div id="fim"></div>
-  <div id="credito"><canvas id="cuboMini" width="200" height="200"></canvas><div><b>VIBE CODING PROCESS</b><span>(15) 99668-8070 · José Roberto</span></div></div>
-  <div id="vinheta"></div><canvas id="grao" width="270" height="480"></canvas>
-</div>
-<div id="capa"><img src="../assets/logo.png" alt=""><h1>Hoje · Combos 2 por X</h1><p>Vídeo de 26 segundos no formato do Instagram (1080×1920), com música.</p>
-  <div><button id="btSom" type="button">▶ Assistir com música</button><button class="sec" id="btMudo" type="button">Sem som</button></div></div>
-<div id="ctl"><button id="btRe" type="button">↺ Recomeçar</button></div>
+<div id="palco"></div>
+<div id="capa"><div>Hoje · Combos 2 por X · Stories 1080×1920</div><button id="btSom" type="button">▶ Assistir com áudio</button><button id="btMudo" type="button">Sem som</button></div>
 <audio id="som" src="audio-hoje.mp3" preload="auto"></audio>
-<script src="motion.js"></script>
+<script src="estilo.js"></script>
 <script>
-Video.iniciar({
-  tema:'instagram', tempos:'tempos-hoje.json',
-  cenas:[
-    {id:'splash',parte:'Abertura',html:'Bateu a <b>fome?</b> Hoje é dia de <b>combo!</b>',fala:'Bateu a fome? Hoje é dia de combo!',min:3.6,splash:true},
-    {id:'promos',parte:'Combos',html:'2 pizzas a partir de <b>R$&nbsp;65</b>',fala:'Duas pizzas a partir de sessenta e cinco reais.',rolar:{el:'promos',off:36}},
-    {id:'c65',parte:'Combos',html:'<b>R$&nbsp;65</b> · Mussarela e Calabresa',fala:'Sessenta e cinco: mussarela e calabresa.',min:3.2,rolar:{el:'combo-card-combo65',off:130}},
-    {id:'c75',parte:'Combos',html:'<b>R$&nbsp;75</b> · 6 sabores',fala:'Setenta e cinco: marguerita, palmito, frango com catupiry e mais.',min:3.6,rolar:{el:'combo-card-combo75',off:130}},
-    {id:'c80',parte:'Combos',html:'<b>R$&nbsp;80</b> · Portuguesa, Toscana…',fala:'Oitenta: portuguesa, toscana, quatro queijos e bacon.',min:3.6,rolar:{el:'combo-card-combo80',off:130}},
-    {id:'c85',parte:'Combos',html:'<b>R$&nbsp;85</b> · Peperone, Atum, Lombo…',fala:'Oitenta e cinco: brócolis com bacon, peperone, atum e lombo.',min:3.8,rolar:{el:'combo-card-combo85',off:130}},
-    {id:'broto',parte:'Combos',html:'Combo broto: 2 por <b>R$&nbsp;50</b>',fala:'Quer broto? Duas por cinquenta reais, qualquer sabor!',min:3.6,rolar:{el:'combo-card-broto50',off:130}},
-    {id:'entrega',parte:'Entrega',html:'<b>Entrega grátis</b> com 3 pizzas',fala:'E com três pizzas, a entrega é grátis!',rolar:{el:'entrega-gratis-card',off:150}},
-    {id:'fim',fim:true,tag:'pizzaria-pizza-em-dobro.com.br',fala:'Pizza em Dobro. Peça agora pelo nosso site!'}
-  ]
-});
-</script>
-</body>
-</html>
+var V=Estilo.V, A='../assets/';
+Estilo.iniciar({tempos:'tempos-hoje.json',cenas:[
+{id:'splash',t1:'BATEU A',t2:'FOME?',fala:'Bateu a fome? Hoje é dia de combo!',min:3.6,vis:V.foto(A+'pizza-hero.jpg')+V.badge('COMBO','HOJE É DIA DE',{y:'80px'}),card:{ic:'fatia',t:'2 pizzas',s:'por um preço só'}},
+{id:'promos',t1:'2 PIZZAS',t2:'DESDE R$ 65.',fala:'Duas pizzas a partir de sessenta e cinco reais.',vis:V.foto(A+'promo/pizzas.jpg')+V.badge('R$ 65','A PARTIR DE',{y:'70px'}),card:{ic:'fatia',t:'Combo 2 por X',s:'sabores diferentes'}},
+{id:'c65',t1:'R$ 65',t2:'AS DUAS.',fala:'Sessenta e cinco: mussarela e calabresa.',min:3.2,vis:V.foto(A+'cardapio/queijo.jpg')+V.badge('R$ 65',null,{y:'60px'})+V.chips(['Mussarela','Calabresa'],{pos:'top:340px'}),card:{ic:'fatia',t:'R$ 65',s:'Mussarela + Calabresa'}},
+{id:'c75',t1:'R$ 75',t2:'AS DUAS.',fala:'Setenta e cinco: marguerita, palmito, frango com catupiry e mais.',min:3.8,vis:V.foto(A+'cardapio/margherita.jpg')+V.badge('R$ 75',null,{y:'60px'})+V.chips(['Marguerita','Palmito','Frango Catupiry','Milho','Alho Frito','Calabresa Piry'],{pos:'top:340px'}),card:{ic:'fatia',t:'R$ 75',s:'6 sabores para escolher'}},
+{id:'c80',t1:'R$ 80',t2:'AS DUAS.',fala:'Oitenta: portuguesa, toscana, quatro queijos e bacon.',min:3.8,vis:V.foto(A+'cardapio/quatro-queijos.jpg')+V.badge('R$ 80',null,{y:'60px'})+V.chips(['Portuguesa','Toscana','Quatro Queijos','Franqueijo','Bauru','Bacon'],{pos:'top:340px'}),card:{ic:'fatia',t:'R$ 80',s:'Os especiais'}},
+{id:'c85',t1:'R$ 85',t2:'AS DUAS.',fala:'Oitenta e cinco: brócolis com bacon, peperone, atum e lombo.',min:4.0,vis:V.foto(A+'cardapio/bacon.jpg')+V.badge('R$ 85',null,{y:'60px'})+V.chips(['Brócolis com Bacon','Peperone','Franqueijo Piry','Toscana Piry','Bacon','Atum','Lombo','Peito de Peru'],{pos:'top:340px'}),card:{ic:'estrela',t:'R$ 85',s:'Os mais recheados'}},
+{id:'broto',t1:'2 BROTOS',t2:'R$ 50.',fala:'Quer broto? Duas por cinquenta reais, qualquer sabor!',min:3.6,vis:V.foto(A+'promo/broto.jpg')+V.badge('R$ 50','2 BROTOS',{y:'70px'}),card:{ic:'fatia',t:'Combo broto',s:'qualquer sabor'}},
+{id:'entrega',t1:'ENTREGA',t2:'GRÁTIS.',fala:'E com três pizzas, a entrega é grátis!',min:3.4,vis:V.entrega(3,'3 PIZZAS'),card:{ic:'moto',t:'3 pizzas',s:'entrega grátis'}},
+{id:'fim',fim:true,t1:'QUER',t2:'PEDIR HOJE?',sub:'Escolha seu combo no site e peça em poucos toques.',url:'pizzaria-pizza-em-dobro.com.br',fala:'Pizza em Dobro. Peça agora pelo nosso site!'}
+]});
+</script></body></html>

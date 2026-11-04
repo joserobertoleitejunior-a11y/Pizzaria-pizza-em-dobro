@@ -1,0 +1,67 @@
+/* Estilo editorial (igual ao reel de referência): fundo liso, título em 2 linhas, quadro com borda, cartão branco, legenda embaixo, cartão final de cor. */
+@font-face{font-family:'Archivo Black';src:url(fontes/ArchivoBlack-Regular.ttf)}
+@font-face{font-family:'Work Sans';src:url(fontes/WorkSans.ttf);font-weight:100 900}
+:root{--bg:#f3e9da;--tinta:#1b1714;--cor:#c8281f;--ouro:#e9a400;--papel:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#111;height:100%;overflow:hidden}
+#palco{position:relative;width:1080px;height:1920px;background:var(--bg);overflow:hidden;transform-origin:0 0;font-family:'Work Sans',system-ui,sans-serif;color:var(--tinta)}
+body.gravando #palco{transform:none!important}
+body.gravando #capa{display:none!important}
+.a{animation-duration:.6s;animation-fill-mode:both;animation-timing-function:cubic-bezier(.2,.8,.2,1);animation-play-state:paused;animation-delay:calc(var(--d,0s) - var(--u,0s))}
+.up{animation-name:up}.pop{animation-name:pop}.fade{animation-name:fade}.grow{animation-name:grow}.zoom{animation-name:zoom;animation-duration:9s;animation-timing-function:linear}.desce{animation-name:desce}
+@keyframes up{from{opacity:0;transform:translateY(46px)}to{opacity:1;transform:none}}
+@keyframes desce{from{opacity:0;transform:translateY(-46px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(.5)}70%{opacity:1;transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes grow{from{width:0}to{width:var(--w)}}
+@keyframes zoom{from{transform:scale(1.02)}to{transform:scale(1.2)}}
+.cena{position:absolute;inset:0;display:none}.cena.on{display:block}
+#marca{position:absolute;left:54px;top:64px;display:flex;align-items:center;gap:14px;font:400 30px 'Archivo Black';letter-spacing:1px}
+#marca img{width:62px;height:62px;border-radius:50%}
+#marca b{color:var(--cor);font-weight:400}
+.tit{position:absolute;left:54px;top:170px;right:54px;font:400 98px/1.0 'Archivo Black';text-transform:uppercase;letter-spacing:-1px}
+.tit i{display:block;font-style:normal}.tit i+i{color:var(--cor)}
+.quadro{position:absolute;left:54px;top:470px;width:972px;height:980px;border:7px solid var(--cor);background:#e8dccb;overflow:hidden;border-radius:6px}
+.quadro .vis{position:absolute;inset:0}
+.vis img.foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cartao{position:absolute;left:0;right:0;bottom:0;height:230px;background:rgba(255,255,255,.97);display:flex;align-items:center;gap:36px;padding:0 44px;border-radius:0}
+.cartao svg{width:130px;height:130px;flex:none;color:var(--cor)}
+.cartao div{margin-left:auto;text-align:right}
+.cartao b{display:block;font:400 62px/1 'Archivo Black';text-transform:uppercase}
+.cartao span{display:block;font:500 36px/1.25 'Work Sans';margin-top:10px;color:#4a413a}
+.legenda{position:absolute;left:70px;right:70px;top:1530px;height:230px;display:flex;align-items:center;justify-content:center;text-align:center}
+.legenda span{position:absolute;left:0;right:0;font:700 66px/1.14 'Work Sans';letter-spacing:-.5px;text-wrap:balance}
+.legenda span b{font-weight:800;color:var(--cor)}
+.badge{position:absolute;background:var(--cor);color:#fff;font:400 150px/1 'Archivo Black';padding:26px 44px 30px;border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.35);transform-origin:center}
+.badge small{display:block;font:700 40px 'Work Sans';letter-spacing:2px;opacity:.92;margin-bottom:6px}
+.badge.ouro{background:var(--ouro);color:#1b1714}
+.chips{position:absolute;left:36px;right:36px;display:flex;flex-wrap:wrap;gap:16px}
+.chip{background:rgba(255,255,255,.96);border:4px solid var(--cor);border-radius:60px;padding:12px 30px;font:800 40px 'Work Sans'}
+.chip.doce{border-color:var(--ouro)}
+.sombra{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 30%,rgba(0,0,0,.55))}
+.tiers{position:absolute;left:40px;right:40px;top:60px;display:grid;gap:26px}
+.tier{background:#fff;border-radius:18px;padding:26px 34px;display:grid;grid-template-columns:150px 1fr;gap:26px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.tier .q{font:400 92px/1 'Archivo Black';color:var(--cor)}.tier .q small{font:700 30px 'Work Sans';display:block;color:#4a413a}
+.tier .p{font:400 70px 'Archivo Black'}.tier .u{font:600 32px 'Work Sans';color:#4a413a}
+.barra{height:20px;background:#eadfce;border-radius:10px;margin-top:12px;overflow:hidden}.barra i{display:block;height:100%;background:var(--cor);border-radius:10px;width:0}
+.aneis{position:absolute;left:50%;top:380px;width:0;height:0}
+.anel{position:absolute;border-radius:50%;border:6px solid var(--cor);background:rgba(200,40,31,.08);transform:translate(-50%,-50%)}
+.anel b{position:absolute;left:50%;transform:translateX(-50%);width:max-content;background:var(--cor);color:#fff;font:400 34px 'Archivo Black';padding:6px 20px;border-radius:30px;white-space:nowrap}
+.passos{position:absolute;left:40px;right:40px;top:50px;display:grid;gap:26px}
+.passo{background:#fff;border-radius:20px;padding:28px 34px;display:flex;align-items:center;gap:30px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.passo .n{font:400 84px 'Archivo Black';color:var(--cor);width:80px}.passo svg{width:92px;height:92px;color:var(--cor);flex:none}
+.passo b{font:400 50px 'Archivo Black';text-transform:uppercase;display:block}.passo span{font:500 34px 'Work Sans';color:#4a413a}
+.meter{position:absolute;left:60px;right:60px;top:180px}
+.meter .trilho{height:34px;background:#fff;border-radius:20px;overflow:hidden;border:4px solid var(--cor)}.meter .trilho i{display:block;height:100%;background:var(--cor)}
+.pizzas3{display:flex;justify-content:space-between;margin-bottom:40px}.pizzas3 svg{width:230px;height:230px;color:var(--cor)}
+.motoSai{position:absolute;left:0;top:120px;width:250px;color:var(--ouro)}
+.mais{position:absolute;inset:0;background:var(--cor);color:#fff;display:flex;align-items:center;justify-content:center;font:400 130px/1.05 'Archivo Black';text-align:center;text-transform:uppercase}
+.fimc{position:absolute;inset:0;background:var(--cor);color:#fff}
+.fimc #marca{color:#fff}.fimc #marca b{color:var(--ouro)}
+.fimc .tit{top:220px;font-size:112px}.fimc .tit i,.fimc .tit i+i{color:#fff}.fimc .tit i+i{color:var(--ouro)}
+.fimc .sub{position:absolute;left:54px;top:620px;font:700 50px/1.25 'Work Sans';right:54px}
+.fimc .url{position:absolute;left:54px;top:790px;font:400 49px/1.15 'Archivo Black';color:var(--ouro);right:54px;white-space:nowrap}
+.fimc .legenda span{color:#fff}.fimc .legenda{top:1530px}
+.credito{position:absolute;left:0;right:0;bottom:46px;text-align:center;font:700 15px 'Work Sans';letter-spacing:3px;color:rgba(255,255,255,.7)}
+#capa{position:fixed;inset:0;background:rgba(0,0,0,.85);color:#fff;display:flex;flex-direction:column;gap:20px;align-items:center;justify-content:center;font:600 22px 'Work Sans';z-index:9;text-align:center}
+#capa button{font:700 22px 'Work Sans';padding:16px 30px;border-radius:40px;border:0;background:#c8281f;color:#fff}

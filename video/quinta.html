@@ -1,51 +1,23 @@
 <!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Pizza em Dobro — Quinta · Esfihas e doces</title>
-<meta name="description" content="Vídeo curto das promoções da Pizza em Dobro no formato de Stories.">
-<link rel="stylesheet" href="motion.css">
-<style>
-/* assinatura bem pequena e discreta, só no final */
-#credito{left:50%!important;transform:translateX(-50%);top:1800px!important;gap:8px!important}
-#credito canvas{width:30px!important;height:30px!important}
-#credito b{font-size:13px!important;letter-spacing:1.5px!important;opacity:.7}
-#credito span{display:none!important}
-</style>
-</head>
+<link rel="stylesheet" href="estilo.css"></head>
 <body>
-<div id="palco">
-  <div id="fundo"><img src="../assets/fachada-fundo.jpg" alt=""></div><div id="tinta"></div><div id="escuro"></div>
-  <canvas id="part" width="1080" height="1920"></canvas>
-  <div id="fone"><div id="ilha"></div><div id="tela"><iframe id="site" title="Site da Pizza em Dobro" src="about:blank"></iframe><div id="zap"></div><div id="brilho"></div></div></div>
-  <div id="rail"><i></i></div>
-  <div id="parte"></div>
-  <div id="cap" aria-live="polite"></div>
-  <div id="fim"></div>
-  <div id="credito"><canvas id="cuboMini" width="200" height="200"></canvas><div><b>VIBE CODING PROCESS</b><span>(15) 99668-8070 · José Roberto</span></div></div>
-  <div id="vinheta"></div><canvas id="grao" width="270" height="480"></canvas>
-</div>
-<div id="capa"><img src="../assets/logo.png" alt=""><h1>Quinta · Esfihas e doces</h1><p>Vídeo de 26 segundos no formato do Instagram (1080×1920), com música.</p>
-  <div><button id="btSom" type="button">▶ Assistir com música</button><button class="sec" id="btMudo" type="button">Sem som</button></div></div>
-<div id="ctl"><button id="btRe" type="button">↺ Recomeçar</button></div>
+<div id="palco"></div>
+<div id="capa"><div>Quinta · Esfihas e doces · Stories 1080×1920</div><button id="btSom" type="button">▶ Assistir com áudio</button><button id="btMudo" type="button">Sem som</button></div>
 <audio id="som" src="audio-quinta.mp3" preload="auto"></audio>
-<script src="motion.js"></script>
+<script src="estilo.js"></script>
 <script>
-Video.iniciar({
-  tema:'instagram', tempos:'tempos-quinta.json',
-  cenas:[
-    {id:'splash',parte:'Abertura',html:'Quinta é dia de <b>esfiha!</b>',fala:'Quinta é dia de esfiha!',min:3.2,splash:true},
-    {id:'esf5',parte:'Esfihas',html:'Esfiha a <b>R$&nbsp;5</b> cada',fala:'Esfiha a cinco reais cada!',rolar:{el:'anc-es',off:70}},
-    {id:'sab',parte:'Esfihas',html:'<b>6 salgadas</b> pra escolher',fala:'Carne, frango com catupiry, mussarela, calabresa, bacon e mista.',min:4.2,rolar:{el:'anc-es',off:70}},
-    {id:'doce',parte:'Esfihas',html:'E <b>2 doces</b>: Confete e Brigadeiro',fala:'E duas doces: confete e brigadeiro.',min:3.2,rolar:{el:'anc-es',off:70}},
-    {id:'pacotes',parte:'Esfihas',html:'10 por <b>R$&nbsp;50</b> · 20 por <b>R$&nbsp;90</b>',fala:'Dez por cinquenta, vinte por noventa, trinta por cento e trinta.',min:4.6,rolar:{el:'anc-es',off:-200}},
-    {id:'entrega',parte:'Entrega',html:'A cada 10: <b>entrega grátis</b>',fala:'A cada dez esfihas, a entrega é grátis!',rolar:{el:'entrega-gratis-card',off:150}},
-    {id:'doces',parte:'Sobremesa',html:'Pizza doce <b>R$&nbsp;40,99</b> · Calzone <b>R$&nbsp;35,99</b>',fala:'Fecha com doce: pizza doce a quarenta e noventa e nove, calzone doce a trinta e cinco e noventa e nove.',min:5.4,rolar:{el:'cat-dw',off:60}},
-    {id:'bebida',parte:'Bebidas',html:'Coca-Cola 1,5 L por <b>R$&nbsp;13,99</b>',fala:'E pra acompanhar, Coca-Cola de um litro e meio por treze e noventa e nove.',min:4.2,rolar:{el:'cat-d',off:60}},
-    {id:'fim',fim:true,tag:'pizzaria-pizza-em-dobro.com.br',fala:'Pizza em Dobro. A esfiha de quinta está esperando você!'}
-  ]
-});
-</script>
-</body>
-</html>
+var V=Estilo.V, A='../assets/';
+Estilo.iniciar({tempos:'tempos-quinta.json',cenas:[
+{id:'splash',t1:'QUINTA É DIA',t2:'DE ESFIHA.',fala:'Quinta é dia de esfiha!',min:3.2,vis:V.foto(A+'promo/esfihas.jpg')+V.badge('R$ 5','CADA',{y:'80px'}),card:{ic:'fatia',t:'Esfihas',s:'assadas na hora'}},
+{id:'esf5',t1:'ESFIHA A',t2:'R$ 5 CADA.',fala:'Esfiha a cinco reais cada!',vis:V.foto(A+'promo/esfihas.jpg')+V.badge('R$ 5','CADA',{y:'70px'}),card:{ic:'fatia',t:'R$ 5,00',s:'cada esfiha'}},
+{id:'sab',t1:'6 SABORES',t2:'SALGADOS.',fala:'Carne, frango com catupiry, mussarela, calabresa, bacon e mista.',min:4.2,vis:V.foto(A+'promo/esfihas.jpg')+V.chips(['Carne','Frango Catupiry','Mussarela','Calabresa','Bacon','Mista'],{pos:'top:80px',d:.4}),card:{ic:'fatia',t:'Salgadas',s:'escolha as suas'}},
+{id:'doce',t1:'E 2 DOCES.',t2:'CHOCOLATE!',fala:'E duas doces: confete e brigadeiro.',min:3.2,vis:V.foto(A+'cardapio/doce-chocolate.jpg')+V.chips(['Confete','Brigadeiro'],{pos:'top:80px',d:.4}),card:{ic:'estrela',t:'Doces',s:'confete e brigadeiro'}},
+{id:'pacotes',t1:'QUANTO MAIS,',t2:'MENOS PAGA.',fala:'Dez por cinquenta, vinte por noventa, trinta por cento e trinta.',min:5.0,vis:V.tiers([{q:10,p:'R$ 50',u:'R$ 5,00 cada',w:34},{q:20,p:'R$ 90',u:'R$ 4,50 cada',w:62},{q:30,p:'R$ 130',u:'R$ 4,33 cada',w:100}]),card:{ic:'estrela',t:'10 · 20 · 30',s:'combos de esfiha'}},
+{id:'entrega',t1:'ENTREGA',t2:'GRÁTIS.',fala:'A cada dez esfihas, a entrega é grátis!',min:3.4,vis:V.entrega(1,'10 ESFIHAS'),card:{ic:'moto',t:'10 esfihas',s:'entrega grátis'}},
+{id:'doces',t1:'FECHA COM',t2:'DOCE.',fala:'Fecha com doce: pizza doce a quarenta e noventa e nove, calzone doce a trinta e cinco e noventa e nove.',min:5.6,vis:V.foto(A+'cardapio/calzone.jpg')+V.badge('R$ 40,99','PIZZA DOCE',{y:'60px'})+V.badge('R$ 35,99','CALZONE DOCE',{y:'360px',cls:'ouro',d:.9}),card:{ic:'estrela',t:'Doces',s:'pizza e calzone'}},
+{id:'bebida',t1:'BEM',t2:'GELADA.',fala:'E pra acompanhar, Coca-Cola de um litro e meio por treze e noventa e nove.',min:4.4,vis:V.grande('R$ 13,99','Coca-Cola 1,5 L gelada'),card:{ic:'gota',t:'Bebidas',s:'Coca, Fanta, Kuat e mais'}},
+{id:'fim',fim:true,t1:'QUER',t2:'ESFIHA HOJE?',sub:'Monte seu combo de esfihas no site e peça agora.',url:'pizzaria-pizza-em-dobro.com.br',fala:'Pizza em Dobro. A esfiha de quinta está esperando você!'}
+]});
+</script></body></html>
