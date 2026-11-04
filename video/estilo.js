@@ -37,8 +37,8 @@ var C,cenas,tempos,pal;
 var IG='<svg viewBox="0 0 48 48" '+ST+'><rect x="5" y="5" width="38" height="38" rx="11"/><circle cx="24" cy="24" r="9"/><circle cx="35" cy="13" r="1.6" fill="currentColor"/></svg>';
 function moldura(){
   pal.insertAdjacentHTML('beforeend','<div id="moldura"><div class="mol-borda"></div>'+
-   '<div class="mol-perfil a desce" style="--d:.1s"><span class="mol-anel"><img src="../assets/logo.png" alt=""></span><div><b>pizza_dobro_itape</b><small>Pizza em Dobro · Itapetininga, SP</small></div><span id="seguir" class="mol-seguir"><i>Seguir</i><i>✓ Siga no Insta</i></span></div>'+
-   '<div class="mol-rodape a up" style="--d:.4s"><span class="mol-ig">'+IG+'</span><div><b>@pizza_dobro_itape</b><small>Siga a gente no Instagram · pedidos pelo site e WhatsApp</small></div></div></div>');
+   '<div class="mol-perfil a desce" style="--d:.1s"><span class="mol-anel"><img src="../assets/logo.png" alt=""></span><div><b>pizza_dobro_itape <svg class="ver" viewBox="0 0 24 24"><path fill="#0095f6" d="M12 1l2.6 2 3.2-.3 1.2 3 2.9 1.5-.6 3.2 1.6 2.8-2 2.5.2 3.2-3.1 1-1.8 2.7L12 21l-2.6 1.6-1.8-2.7-3.1-1 .2-3.2-2-2.5 1.6-2.8-.6-3.2L5 5.7l1.2-3L9.4 3z"/><path fill="none" stroke="#fff" stroke-width="2" d="M7.5 12.3l3 3 6-6.3"/></svg></b><small>Pizzaria · Todos os dias, 18h às 00h</small></div><span id="seguir" class="mol-seguir"><i>Seguir</i><i>✓ Siga no Insta</i></span></div>'+
+   '<div class="mol-rodape a up" style="--d:.4s"><span class="mol-ig">'+IG+'</span><div><b>@pizza_dobro_itape</b><small>Delivery ON · 18h às 00h · WhatsApp (15) 99705-8390</small></div></div></div>');
 }
 function montar(cfg){
   pal=$('palco'); var h='';
