@@ -14,23 +14,30 @@ PLANOS = {
           ('pix',16.64,20.37),('fim',20.37,23.95)]),
 }
 CAUDA = 1.6   # respiro no cartão final depois da última palavra
+import wave, tempfile
+def ff(*a): subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', *a], check=True)
 for nome, (voz, cenas) in PLANOS.items():
-    ent = ['-i', os.path.join(V, voz), '-stream_loop', '-1', '-i', MUSICA]
-    f, t, tempos, lista = [], 0.0, {}, []
+    tmp = tempfile.mkdtemp(); partes, t, tempos = [], 0.0, {}
     for i, c in enumerate(cenas):
-        id_ = c[0]
-        if c[1] == 'm' or isinstance(c[1], tuple):
-            d = c[1][1]; f.append(f'anullsrc=r=44100:cl=mono,atrim=0:{d}[s{i}]')
+        id_, trecho = c[0], c[1:]
+        w = os.path.join(tmp, f'{i}.wav')
+        if isinstance(trecho[0], tuple):                    # cena muda: silêncio
+            d = trecho[0][1]; ff('-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=mono', '-t', str(d), w)
         else:
-            a0, a1 = c[1], c[2]; d = a1 - a0
-            if id_ == 'fim': d += CAUDA
-            f.append(f'[0:a]atrim={a0}:{a1},asetpts=PTS-STARTPTS,aresample=44100,apad=pad_dur={CAUDA if id_=="fim" else 0}[s{i}]')
-        tempos[id_] = {'t0': round(t, 3), 't1': round(t + d, 3)}; lista.append(f'[s{i}]'); t += d
-    dur = round(t, 3)
-    f.append(''.join(lista) + f'concat=n={len(lista)}:v=0:a=1,loudnorm=I=-16:TP=-1.5:LRA=9[voz]')
-    f.append(f'[1:a]atrim=0:{dur},asetpts=PTS-STARTPTS,volume=0.22,afade=t=in:d=1,afade=t=out:st={dur-1.8}:d=1.8[mus]')
-    f.append('[voz][mus]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[out]')
+            a0, a1 = trecho; d = a1 - a0
+            ff('-i', os.path.join(V, voz), '-ss', str(a0), '-t', str(d), '-ac', '1', '-ar', '44100', w)
+            if id_ == 'fim':                       # respiro no cartão final
+                w2 = os.path.join(tmp, f'{i}p.wav'); ff('-i', w, '-af', f'apad=pad_dur={CAUDA}', '-t', str(d + CAUDA), w2); w = w2; d += CAUDA
+        tempos[id_] = {'t0': round(t, 3), 't1': round(t + d, 3)}; partes.append(w); t += d
+    dur = round(t, 3); voz_wav = os.path.join(tmp, 'voz.wav')
+    with wave.open(voz_wav, 'wb') as out:
+        for k, w in enumerate(partes):
+            with wave.open(w) as r:
+                if k == 0: out.setparams(r.getparams())
+                out.writeframes(r.readframes(r.getnframes()))
     saida = os.path.join(V, f'audio-{nome}.mp3')
-    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', *ent, '-filter_complex', ';\n'.join(f), '-map', '[out]', '-t', str(dur), '-ar', '44100', '-b:a', '192k', saida], check=True)
+    ff('-i', voz_wav, '-stream_loop', '-1', '-i', MUSICA, '-filter_complex',
+       f'[0:a]loudnorm=I=-16:TP=-1.5:LRA=9,apad=whole_dur={dur}[voz];[1:a]atrim=0:{dur},asetpts=PTS-STARTPTS,volume=0.22,afade=t=in:d=1,afade=t=out:st={dur-1.8}:d=1.8[mus];'
+       f'[voz][mus]amix=inputs=2:duration=longest:normalize=0,alimiter=limit=0.95[out]', '-map', '[out]', '-t', str(dur), '-ar', '44100', '-b:a', '192k', saida)
     json.dump({'dur': dur, 'cenas': tempos}, open(os.path.join(V, f'tempos-{nome}.json'), 'w'), indent=1)
-    print(nome, dur, 's →', saida)
+    print(nome, dur, 's, mp3 =', subprocess.run(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',saida],capture_output=True,text=True).stdout.strip())
