@@ -101,11 +101,14 @@ body.gravando #capa{display:none!important}
 .lb+.lb{left:20px}
 
 /* ── cartão final: fundo do site + logo como carimbo ── */
-.fimc{background:#8e1710}
+.fimc{background:#222}
 .fbg{position:absolute;inset:0;background:url(../assets/fachada-fundo.jpg) center/cover}
-.fveu{position:absolute;inset:0;background:linear-gradient(180deg,rgba(200,40,31,.8) 0%,rgba(160,24,18,.66) 55%,rgba(110,14,10,.86) 100%)}
+.fveu{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,.12) 38%,rgba(0,0,0,.12) 62%,rgba(0,0,0,.55) 100%)}
 .fimc .tit,.fimc .sub,.fimc .url,.fimc .legenda,.fimc #marca{position:absolute;z-index:3}
 .carimbo{position:absolute;left:50%;top:905px;width:560px;height:560px;margin-left:-280px;z-index:2;filter:drop-shadow(0 18px 30px rgba(0,0,0,.55));transform-origin:center;animation-name:carimbo;animation-duration:.55s;animation-timing-function:cubic-bezier(.2,.9,.25,1.2)}
 @keyframes carimbo{0%{opacity:0;transform:scale(2.8) rotate(-22deg)}55%{opacity:1;transform:scale(.9) rotate(-6deg)}78%{transform:scale(1.04) rotate(-9deg)}100%{opacity:1;transform:scale(1) rotate(-8deg)}}
 .onda{position:absolute;left:50%;top:1185px;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;border:8px solid rgba(255,255,255,.7);z-index:1;animation-name:onda;animation-duration:.9s;animation-timing-function:ease-out}
 @keyframes onda{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(1.9)}}
+
+.fimc .tit,.fimc .sub,.fimc .url,.fimc .legenda,.fimc #marca b{text-shadow:0 3px 14px rgba(0,0,0,.85),0 0 3px rgba(0,0,0,.6)}
+.fimc .legenda .bl{text-shadow:0 3px 14px rgba(0,0,0,.9),0 0 3px rgba(0,0,0,.7)}
