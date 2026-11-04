@@ -10,3 +10,4 @@ dist/
 .dev.vars
 video/*.mp4
 !video/como-pedir-site.mp4
+video/render/

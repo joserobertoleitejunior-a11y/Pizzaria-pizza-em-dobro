@@ -30,7 +30,7 @@ var V={
    var tp=frames.map(function(f,i){if(!f.tap||i===n-1)return '';var nx=frames[i+1],fr=(nx.f!==undefined?nx.f:(.08+((i+1)/n)*.86));return '<span class="tap a" data-f="'+fr+'" data-o="-.7" style="left:'+(f.tap[0]*K)+'px;top:'+(f.tap[1]*K)+'px"></span>';}).join('');
    var lb=frames.map(function(f,i){if(!f.lb)return '';var fr=(f.f!==undefined?f.f:(i===0?0:.08+(i/n)*.86));return '<div class="lb a pop" data-f="'+fr+'" data-o=".15" style="top:'+(f.y||150)+'px"><i>'+(i+1)+'</i>'+f.lb+'</div>';}).join('');
    return '<div class="fone a up" style="--d:.1s"><div class="ilha"></div><div class="tela">'+im+tp+'</div></div>'+lb;},
- grande:function(txt,sub,o){o=o||{};return '<div class="a pop" style="--d:.25s;position:absolute;left:0;right:0;top:'+(o.top||'170px')+';text-align:center;font:400 250px/1 \'Archivo Black\';color:var(--cor)">'+txt+'</div><div class="a up" style="--d:.6s;position:absolute;left:40px;right:40px;top:'+(o.top2||'470px')+';text-align:center;font:700 56px/1.2 \'Work Sans\'">'+sub+'</div>';}
+ grande:function(txt,sub,o){o=o||{};return '<div class="a pop" style="--d:.25s;position:absolute;left:0;right:0;top:'+(o.top||'200px')+';text-align:center;font:400 190px/1 \'Archivo Black\';white-space:nowrap;color:var(--cor)">'+txt+'</div><div class="a up" style="--d:.6s;position:absolute;left:40px;right:40px;top:'+(o.top2||'400px')+';text-align:center;font:700 56px/1.2 \'Work Sans\'">'+sub+'</div>';}
 };
 /* ── legenda: divide a fala em blocos curtos e mostra um de cada vez ── */
 function blocos(f){
