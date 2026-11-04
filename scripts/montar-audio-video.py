@@ -6,12 +6,12 @@ V = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'video')
 MUSICA = os.path.join(V, 'trilha-pizzaria.mp3')
 M = lambda dur: ('m', dur)                      # cena muda
 PLANOS = {
- 'hoje': ('voz-hoje.mp3', [('splash',0,2.29),('promos',2.29,5.06),('c65',5.06,7.48),('c75',7.48,11.67),('c80',11.67,15.31),('c85',15.31,19.15),
-          ('broto',19.15,22.41),('entrega',22.41,24.68),('rapido',M(6.5)),('site',M(6.5)),('fim',24.68,27.40)]),
- 'quinta': ('voz-quinta.mp3', [('splash',0,1.51),('esf5',1.51,3.43),('sab',3.43,7.82),('doce',7.82,10.12),('pacotes',10.12,13.86),('entrega',13.86,16.30),
-          ('doces',16.30,22.61),('bebida',22.61,26.72),('rapido',M(6.5)),('site',M(6.5)),('fim',26.72,30.04)]),
- 'sabado': ('voz-sabado.mp3', [('splash',0,2.41),('promos',2.41,5.49),('cardapio',5.49,8.84),('rapido',M(6.5)),('site',8.84,12.41),('bairro',12.41,16.64),
-          ('pix',16.64,20.37),('fim',20.37,23.95)]),
+ 'hoje': ('voz-hoje.mp3', [('splash',0,2.675),('promos',2.675,5.785),('c65',5.785,8.735),('c75',8.735,13.66),('c80',13.66,17.765),('c85',17.765,22.385),
+          ('broto',22.385,26.075),('entrega',26.075,28.79),('rapido',28.79,34.475),('site',34.475,39.055),('fim',39.055,42.27)]),
+ 'quinta': ('voz-quinta.mp3', [('splash',0,1.54),('esf5',1.54,3.46),('sab',3.46,7.65),('doce',7.65,9.97),('pacotes',9.97,13.63),('entrega',13.63,15.92),
+          ('doces',15.92,22.015),('bebida',22.015,26.025),('rapido',26.025,30.765),('site',30.765,34.51),('fim',34.51,37.80)]),
+ 'sabado': ('voz-sabado.mp3', [('splash',0,2.40),('promos',2.40,5.505),('cardapio',5.505,8.93),('rapido',8.93,13.905),('site',13.905,19.39),('bairro',19.39,23.905),
+          ('pix',23.905,27.83),('fim',27.83,31.47)]),
 }
 CAUDA = 1.6   # respiro no cartão final depois da última palavra
 import wave, tempfile
