@@ -43,9 +43,10 @@ A coluna "Texto da voz" já está **corrigida pra pronúncia** (acento na sílab
 | 6 | Oitenta e cinco: brócolis com bêicon, peperôni, atum e lombo. | …bacon, peperone… |
 | 7 | Quer brôto? Duas por cinquenta reais, qualquer sabor! | Quer broto?… |
 | 8 | E com três pizzas, a entrega é grátis! | igual |
-| 9 | Pizza em Dobro. Peça agora pelo nosso site! | igual |
+| 9 | Pedir é fácil: toque em pedido rápido e responda uma pergunta de cada vez! | igual |
+| 10 | Pizza em Dobro. Peça agora pelo nosso site! | igual |
 
-Pra colar: `Bateu a fome? Hoje é dia de cômbo! <break time="0.8s" /> Duas pizzas a partir de sessenta e cinco reais. <break time="0.8s" /> Sessenta e cinco: mussarela e calabresa. <break time="0.8s" /> Setenta e cinco: marguerita, palmito, frango com catupiri e mais. <break time="0.8s" /> Oitenta: portuguesa, toscana, quatro queijos e bêicon. <break time="0.8s" /> Oitenta e cinco: brócolis com bêicon, peperôni, atum e lombo. <break time="0.8s" /> Quer brôto? Duas por cinquenta reais, qualquer sabor! <break time="0.8s" /> E com três pizzas, a entrega é grátis! <break time="0.8s" /> Pizza em Dobro. Peça agora pelo nosso site!`
+Pra colar: `Bateu a fome? Hoje é dia de cômbo! <break time="0.8s" /> Duas pizzas a partir de sessenta e cinco reais. <break time="0.8s" /> Sessenta e cinco: mussarela e calabresa. <break time="0.8s" /> Setenta e cinco: marguerita, palmito, frango com catupiri e mais. <break time="0.8s" /> Oitenta: portuguesa, toscana, quatro queijos e bêicon. <break time="0.8s" /> Oitenta e cinco: brócolis com bêicon, peperôni, atum e lombo. <break time="0.8s" /> Quer brôto? Duas por cinquenta reais, qualquer sabor! <break time="0.8s" /> E com três pizzas, a entrega é grátis! <break time="0.8s" /> Pedir é fácil: toque em pedido rápido e responda uma pergunta de cada vez! <break time="0.8s" /> Pizza em Dobro. Peça agora pelo nosso site!`
 
 ## 2) QUINTA — Esfihas e doces · **VOZ MASCULINA**
 *Voice Design:* "Homem brasileiro, 30 a 40 anos, português do interior de São Paulo (região de Itapetininga), voz calorosa e animada de anunciante de pizzaria, R caipira suave, natural e acolhedor."
@@ -60,9 +61,10 @@ Pra colar: `Bateu a fome? Hoje é dia de cômbo! <break time="0.8s" /> Duas pizz
 | 6 | A cada dez esfías, a entrega é grátis! | …esfihas… |
 | 7 | Fecha com doce: pizza doce a quarenta reais e noventa e nove, calzône doce a trinta e cinco reais e noventa e nove. | …calzone… |
 | 8 | E pra acompanhar, Cóca-Cóla de um litro e meio por treze reais e noventa e nove. | Coca-Cola… |
-| 9 | Pizza em Dobro. A esfía de quinta está esperando você! | …esfiha… |
+| 9 | Pra pedir, é só tocar em pedido rápido e escolher o que você quer! | igual |
+| 10 | Pizza em Dobro. A esfía de quinta está esperando você! | …esfiha… |
 
-Pra colar: `Quinta é dia de esfía! <break time="0.8s" /> Esfía a cinco reais cada! <break time="0.8s" /> Carne, frango com catupiri, mussarela, calabresa, bêicon e mista. <break time="0.8s" /> E duas doces: confete e brigadeiro. <break time="0.8s" /> Dez por cinquenta, vinte por noventa, trinta por cento e trinta. <break time="0.8s" /> A cada dez esfías, a entrega é grátis! <break time="0.8s" /> Fecha com doce: pizza doce a quarenta reais e noventa e nove, calzône doce a trinta e cinco reais e noventa e nove. <break time="0.8s" /> E pra acompanhar, Cóca-Cóla de um litro e meio por treze reais e noventa e nove. <break time="0.8s" /> Pizza em Dobro. A esfía de quinta está esperando você!`
+Pra colar: `Quinta é dia de esfía! <break time="0.8s" /> Esfía a cinco reais cada! <break time="0.8s" /> Carne, frango com catupiri, mussarela, calabresa, bêicon e mista. <break time="0.8s" /> E duas doces: confete e brigadeiro. <break time="0.8s" /> Dez por cinquenta, vinte por noventa, trinta por cento e trinta. <break time="0.8s" /> A cada dez esfías, a entrega é grátis! <break time="0.8s" /> Fecha com doce: pizza doce a quarenta reais e noventa e nove, calzône doce a trinta e cinco reais e noventa e nove. <break time="0.8s" /> E pra acompanhar, Cóca-Cóla de um litro e meio por treze reais e noventa e nove. <break time="0.8s" /> Pra pedir, é só tocar em pedido rápido e escolher o que você quer! <break time="0.8s" /> Pizza em Dobro. A esfía de quinta está esperando você!`
 
 ## 3) SÁBADO — Pedir fácil, pizza em família · **VOZ FEMININA** (outra voz, diferente da de hoje)
 *Voice Design:* "Mulher brasileira, 35 a 45 anos, português do interior de São Paulo (região de Itapetininga), voz acolhedora de mãe de família, simpática, R caipira suave, calma e animada, natural."
@@ -72,12 +74,13 @@ Pra colar: `Quinta é dia de esfía! <break time="0.8s" /> Esfía a cinco reais 
 | 1 | Sábado é dia de pizza em família! | igual |
 | 2 | Duas pizzas a partir de sessenta e cinco reais. | igual |
 | 3 | São vinte e sete sabores salgados e cinco doces. | igual |
-| 4 | Escolha os sabores, toque no mais, e confira o pedido. | …toque no +, e confira… |
-| 5 | Novidade: o site reconhece o seu bairro e já calcula a entrega. | igual |
-| 6 | Pague no Pics, e o pedido chega direto no Uatsápi da pizzaria. | …Pix… WhatsApp… |
-| 7 | Pizza em Dobro. Sábado fica melhor com pizza! | igual |
+| 4 | Toque em pedido rápido: é uma pergunta de cada vez. | igual |
+| 5 | Ou veja o cardápio no site, toque no mais e confira o pedido. | …toque no +… |
+| 6 | Novidade: o site reconhece o seu bairro e já calcula a entrega. | igual |
+| 7 | Pague no Pics, e o pedido chega direto no Uatsápi da pizzaria. | …Pix… WhatsApp… |
+| 8 | Pizza em Dobro. Sábado fica melhor com pizza! | igual |
 
-Pra colar: `Sábado é dia de pizza em família! <break time="0.8s" /> Duas pizzas a partir de sessenta e cinco reais. <break time="0.8s" /> São vinte e sete sabores salgados e cinco doces. <break time="0.8s" /> Escolha os sabores, toque no mais, e confira o pedido. <break time="0.8s" /> Novidade: o site reconhece o seu bairro e já calcula a entrega. <break time="0.8s" /> Pague no Pics, e o pedido chega direto no Uatsápi da pizzaria. <break time="0.8s" /> Pizza em Dobro. Sábado fica melhor com pizza!`
+Pra colar: `Sábado é dia de pizza em família! <break time="0.8s" /> Duas pizzas a partir de sessenta e cinco reais. <break time="0.8s" /> São vinte e sete sabores salgados e cinco doces. <break time="0.8s" /> Toque em pedido rápido: é uma pergunta de cada vez. <break time="0.8s" /> Ou veja o cardápio no site, toque no mais e confira o pedido. <break time="0.8s" /> Novidade: o site reconhece o seu bairro e já calcula a entrega. <break time="0.8s" /> Pague no Pics, e o pedido chega direto no Uatsápi da pizzaria. <break time="0.8s" /> Pizza em Dobro. Sábado fica melhor com pizza!`
 
 ---
 ## Legenda do post no Instagram (@pizza_dobro_itape)

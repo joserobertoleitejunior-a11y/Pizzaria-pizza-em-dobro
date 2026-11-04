@@ -1,0 +1,32 @@
+// Tira prints reais do site (celular 390×844 @2x) pra usar nos vídeos: pedido rápido e pedido pelo site. Uso: node scripts/capturar-telas-site.js [porta]
+const { chromium } = require('playwright');
+const porta = process.argv[2] || '8765', OUT = __dirname + '/../video/telas/';
+const FONTES = `@font-face{font-family:'Archivo Black';src:url(http://localhost:${porta}/video/fontes/ArchivoBlack-Regular.ttf)}@font-face{font-family:'Work Sans';src:url(http://localhost:${porta}/video/fontes/WorkSans.ttf);font-weight:100 900}`;
+(async () => {
+  const b = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+  await ctx.route(/fonts\.googleapis\.com/, r => r.fulfill({ status: 200, contentType: 'text/css', body: FONTES }));
+  await ctx.route(/fonts\.gstatic\.com/, r => r.abort());
+  await ctx.route(/gstatic\.com\/firebasejs|jsdelivr|sentry/, r => r.fulfill({ status: 200, contentType: 'text/javascript', body: 'window.firebase=window.firebase||{initializeApp(){return {}},apps:[],firestore:()=>({}),auth:()=>({onAuthStateChanged(){}})};' }));
+  const nova = async () => { const p = await ctx.newPage(); p.on('pageerror', () => {}); await p.goto(`http://localhost:${porta}/index.html`); await p.waitForTimeout(5500);
+    await p.evaluate(() => { document.querySelectorAll('#ws,#boas-vindas').forEach(e => e.remove()); document.body.style.overflow = ''; }); await p.waitForTimeout(400); return p; };
+  const shot = (p, n) => p.screenshot({ path: OUT + n + '.png' });
+  let p = await nova();
+  await p.evaluate(() => mostrarBoasVindas()); await p.waitForTimeout(700); await shot(p, 'bv');
+  await p.evaluate(() => PA.bvRapido()); await p.waitForTimeout(700); await shot(p, 'rapido-tipo');
+  await p.evaluate(() => PA.tipo('combo')); await p.waitForTimeout(400); await shot(p, 'rapido-faixa');
+  await p.evaluate(() => PA.faixa('combo65')); await p.waitForTimeout(400); await shot(p, 'rapido-c1');
+  await p.evaluate(() => PA.c1('Mussarela')); await p.waitForTimeout(400); await shot(p, 'rapido-c2');
+  await p.evaluate(() => { PA.c2('Calabresa'); PA.b1(0); PA.b2(0); }); await p.waitForTimeout(500); await shot(p, 'rapido-mais');
+  await p.evaluate(() => PA.ir('modo')); await p.waitForTimeout(400); await shot(p, 'rapido-modo');
+  await p.evaluate(() => { PA.modo(true); document.getElementById('u-name').value = 'Marcos'; document.getElementById('u-tel').value = '(15) 99999-1234'; PA.okDados(); }); await p.waitForTimeout(400); await shot(p, 'rapido-pag');
+  await p.evaluate(() => { document.getElementById('u-pay').value = 'Pix'; PA.ir('confere'); }); await p.waitForTimeout(500); await shot(p, 'rapido-confere');
+  await p.close();
+  p = await nova();
+  await p.evaluate(() => { window.scrollTo(0, 0); }); await p.waitForTimeout(500); await shot(p, 'site-topo');
+  await p.evaluate(() => document.getElementById('promos').scrollIntoView()); await p.waitForTimeout(600); await shot(p, 'site-promos');
+  await p.evaluate(() => { const e = document.getElementById('cat-p'); window.scrollTo(0, e.getBoundingClientRect().top + scrollY - 70); }); await p.waitForTimeout(600); await shot(p, 'site-cardapio');
+  await p.evaluate(() => { const m = menu.filter(x => x.cat === 'p')[3]; addItem(m.id); }); await p.waitForTimeout(500); await shot(p, 'site-mais');
+  await p.evaluate(() => toggleCart({ stopPropagation() {}, target: {} })); await p.waitForTimeout(800); await shot(p, 'site-carrinho');
+  await b.close(); console.log('ok');
+})();

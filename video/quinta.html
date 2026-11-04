@@ -18,6 +18,7 @@ Estilo.iniciar({tempos:'tempos-quinta.json',cenas:[
 {id:'entrega',t1:'ENTREGA',t2:'GRÁTIS.',fala:'A cada dez esfihas, a entrega é grátis!',min:3.4,vis:V.entrega(1,'10 ESFIHAS'),card:{ic:'moto',t:'10 esfihas',s:'entrega grátis'}},
 {id:'doces',t1:'FECHA COM',t2:'DOCE.',fala:'Fecha com doce: pizza doce a quarenta reais e noventa e nove, calzone doce a trinta e cinco reais e noventa e nove.',min:5.6,vis:V.foto(A+'cardapio/calzone.jpg')+V.badge('R$ 40,99','PIZZA DOCE',{y:'60px'})+V.badge('R$ 35,99','CALZONE DOCE',{y:'360px',cls:'ouro',d:.9}),card:{ic:'estrela',t:'Doces',s:'pizza e calzone'}},
 {id:'bebida',t1:'BEM',t2:'GELADA.',fala:'E pra acompanhar, Coca-Cola de um litro e meio por treze reais e noventa e nove.',min:4.4,vis:V.grande('R$ 13,99','Coca-Cola 1,5 L gelada'),card:{ic:'gota',t:'Bebidas',s:'Coca, Fanta, Kuat e mais'}},
+{id:'rapido',t1:'PEDIDO',t2:'RÁPIDO.',fala:'Pra pedir, é só tocar em pedido rápido e escolher o que você quer!',min:7,vis:V.celular([{img:'bv',tap:[195,460],lb:'Toque em Pedido rápido'},{img:'rapido-tipo',tap:[105,370],lb:'Escolha o que quer'},{img:'rapido-faixa',tap:[195,200],lb:'Escolha o combo'},{img:'rapido-c1',tap:[195,236],lb:'Escolha o sabor'},{img:'rapido-confere',lb:'Pronto: é só enviar!'}])},
 {id:'fim',fim:true,t1:'QUER',t2:'ESFIHA HOJE?',sub:'Monte seu combo de esfihas no site e peça agora.',url:'pizzaria-pizza-em-dobro.com.br',fala:'Pizza em Dobro. A esfiha de quinta está esperando você!'}
 ]});
 </script></body></html>

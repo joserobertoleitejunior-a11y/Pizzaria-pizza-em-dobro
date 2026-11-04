@@ -25,6 +25,11 @@ var V={
    return '<div class="aneis">'+z.map(function(a,i){return '<div class="anel a pop" style="--d:'+(.3+i*.55)+'s;width:'+a.r*2+'px;height:'+a.r*2+'px;margin:-'+a.r+'px 0 0 -'+a.r+'px"><b style="top:'+'-22px'+'">'+a.t+'</b></div>';}).join('')+'<div class="a pop" style="--d:.1s;position:absolute;left:-45px;top:-40px;width:90px;height:90px;color:#1b1714">'+IC.pin+'</div></div>';},
  entrega:function(n,txt){var fatias='';for(var i=0;i<n;i++)fatias+='<span class="a pop" '+d(.3+i*.5)+'>'+IC.fatia+'</span>';
    return '<div class="meter"><div class="pizzas3" style="justify-content:space-around">'+fatias+'</div><div class="trilho"><i class="a grow" style="--w:100%;--d:.3s;animation-duration:'+(n*.5+.4)+'s"></i></div></div><div class="a pop" style="--d:'+(n*.5+.6)+'s;position:absolute;left:60px;top:150px;width:220px;color:var(--ouro);display:none">'+IC.moto+'</div><div class="badge ouro a pop" style="--d:'+(n*.5+.7)+'s;left:50%;top:500px;margin-left:-400px;width:800px;font-size:100px;white-space:nowrap;text-align:center">'+txt+'</div>';},
+ celular:function(frames,rot){var n=frames.length,K=426/390;
+   var im=frames.map(function(f,i){var fr=(f.f!==undefined?f.f:(i===0?0:.08+(i/n)*.86));return '<img class="fr a fade" data-f="'+fr+'" style="--d:0s;animation-duration:.25s" src="telas/'+f.img+'.jpg" alt="">';}).join('');
+   var tp=frames.map(function(f,i){if(!f.tap||i===n-1)return '';var nx=frames[i+1],fr=(nx.f!==undefined?nx.f:(.08+((i+1)/n)*.86));return '<span class="tap a" data-f="'+fr+'" data-o="-.7" style="left:'+(f.tap[0]*K)+'px;top:'+(f.tap[1]*K)+'px"></span>';}).join('');
+   var lb=frames.map(function(f,i){if(!f.lb)return '';var fr=(f.f!==undefined?f.f:(i===0?0:.08+(i/n)*.86));return '<div class="lb a pop" data-f="'+fr+'" data-o=".15" style="top:'+(f.y||150)+'px"><i>'+(i+1)+'</i>'+f.lb+'</div>';}).join('');
+   return '<div class="fone a up" style="--d:.1s"><div class="ilha"></div><div class="tela">'+im+tp+'</div></div>'+lb;},
  grande:function(txt,sub,o){o=o||{};return '<div class="a pop" style="--d:.25s;position:absolute;left:0;right:0;top:'+(o.top||'170px')+';text-align:center;font:400 250px/1 \'Archivo Black\';color:var(--cor)">'+txt+'</div><div class="a up" style="--d:.6s;position:absolute;left:40px;right:40px;top:'+(o.top2||'470px')+';text-align:center;font:700 56px/1.2 \'Work Sans\'">'+sub+'</div>';}
 };
 /* ── legenda: divide a fala em blocos curtos e mostra um de cada vez ── */
@@ -53,7 +58,8 @@ function montar(cfg){
 window.quadro=function(t){
   var atual=null; cenas.forEach(function(c){var s=tempos.cenas[c.id]; if(s&&t>=s.t0&&t<s.t1+.0001)atual=c;}); if(!atual)atual=cenas[cenas.length-1];
   cenas.forEach(function(c){var el=$('c-'+c.id); el.classList.toggle('on',c===atual);});
-  var s=tempos.cenas[atual.id], u=Math.max(0,t-s.t0), el=$('c-'+atual.id);
+  var s=tempos.cenas[atual.id], u=Math.max(0,t-s.t0), el=$('c-'+atual.id); var dur=s.t1-s.t0-(atual.fim?0:.45);
+  el.querySelectorAll('[data-f]').forEach(function(x){x.style.setProperty('--d',(parseFloat(x.dataset.f)*dur+parseFloat(x.dataset.o||0))+'s');});
   el.style.setProperty('--u',u+'s'); el.querySelectorAll('.a').forEach(function(a){a.style.setProperty('--u',u+'s');});
   // legenda: blocos distribuídos pelo tempo da fala (começa .2s depois da cena)
   var sp=el.querySelectorAll('.legenda .bl'), n=sp.length, ini=.2, fim=Math.max(ini+.5,(s.t1-s.t0)-(atual.fim?1.3:.45)), bd=(fim-ini)/n, k=Math.min(n-1,Math.max(0,Math.floor((u-ini)/bd)));
