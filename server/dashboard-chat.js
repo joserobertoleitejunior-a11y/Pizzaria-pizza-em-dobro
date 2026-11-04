@@ -11,7 +11,7 @@ const { getSecrets } = require('./lib/secrets');
 const { chamarIA } = require('./lib/ia');
 const { reportError } = require('./lib/sentry');
 const { exigirEquipe } = require('./lib/equipe');
-const { decomporSaboresItem, ehClienteBalcao, acharPedidoRepetido } = require('../shared/utils.js');
+const { decomporSaboresItem, ehClienteBalcao, acharPedidoRepetido, infoEntrega } = require('../shared/utils.js');
 
 
 function categoriaPagamento(raw) {
@@ -141,12 +141,20 @@ async function montarContextoVendas() {
   // continuam cobrindo os 30 dias.
   const limiteDia = (n) => dataHoraBR(new Date(Date.now() - n * 24 * 60 * 60 * 1000).toISOString()).data;
   const corte7 = limiteDia(6), corte14 = limiteDia(13);
+  // Entrega: taxa REGISTRADA no pedido (R$ 8/9/10/15 pela zona do bairro; 0 = entrega grátis), bairro, zona e endereço.
+  // Total do pedido = produtos + taxa. Nunca supor taxa fixa: se não estiver registrada, o texto diz isso.
+  const textoEntrega = (p, comEndereco) => {
+    const e = infoEntrega(p); if (!e) return '';
+    const taxa = e.taxa === null ? 'taxa NÃO registrada' : (e.taxa === 0 ? 'entrega GRÁTIS (taxa R$ 0,00)' : 'taxa de entrega ' + moeda(e.taxa));
+    const prod = e.taxa === null ? '' : ` — produtos ${moeda(Number(p.total || 0) - e.taxa)}`;
+    return ` — ${taxa}${prod}` + (e.bairro ? ` — bairro ${e.bairro}${e.zona ? ' (Zona ' + e.zona + ')' : ''}` : ' — bairro não identificado') + (comEndereco && e.endereco ? ` — endereço: ${e.endereco}` : '');
+  };
   const blocosPorDia = Object.keys(dias).filter(dia => dia >= corte7).sort().reverse().map(dia => {
     const lista = dias[dia].sort((a, b) => (Number(a.p.numero_sequencial) || 0) - (Number(b.p.numero_sequencial) || 0));
     const totalDia = lista.reduce((t, x) => t + Number(x.p.total || 0), 0);
     const pedidosTxt = lista.map(({ p, h }) => {
       const itens = (p.items_json || []).map(it => `${Number(it.qty) > 1 ? Number(it.qty) + 'x ' : ''}${it.name || 'item'}`).join(', ') || 'sem itens registrados';
-      return `#${p.numero_sequencial || '—'}  ${p.client_name || 'sem nome'}  (${h.hora}:${h.minuto})\n${itens}\n${moeda(p.total)} — ${categoriaPagamento(p.payment)} — ${p.delivery_type || '—'}`;
+      return `#${p.numero_sequencial || '—'}  ${p.client_name || 'sem nome'}  (${h.hora}:${h.minuto})\n${itens}\n${moeda(p.total)} — ${categoriaPagamento(p.payment)} — ${p.delivery_type || '—'}${textoEntrega(p)}`;
     }).join('\n\n');
     return `### ${dd(dia)} (${dia}): ${lista.length} venda(s) válida(s), total ${moeda(totalDia)}, ticket médio ${moeda(totalDia / lista.length)}\n\n${pedidosTxt}`;
   }).join('\n\n');
@@ -158,7 +166,7 @@ async function montarContextoVendas() {
     const itens = (p.items_json || []).map(it => `${Number(it.qty) || 1}x ${it.name || 'item'}`).join(', ') || 'sem itens registrados';
     const qtdTotalItens = (p.items_json || []).reduce((s, it) => s + (Number(it.qty) || 1), 0);
     const statusTag = p.status === 'cancelado' ? ' [CANCELADO]' : '';
-    return `${data} ${hora}:${minuto} | #${p.numero_sequencial || '—'} | Cliente: ${p.client_name || 'não informado'} | Tel: ${p.client_phone || '—'} | Itens(${qtdTotalItens}): ${itens} | Total: R$ ${Number(p.total || 0).toFixed(2)} | Pagamento: ${p.payment || '—'} | Tipo: ${p.delivery_type || '—'} | Origem: ${p.origem || '—'}${statusTag}`;
+    return `${data} ${hora}:${minuto} | #${p.numero_sequencial || '—'} | Cliente: ${p.client_name || 'não informado'} | Tel: ${p.client_phone || '—'} | Itens(${qtdTotalItens}): ${itens} | Total: R$ ${Number(p.total || 0).toFixed(2)} | Pagamento: ${p.payment || '—'} | Tipo: ${p.delivery_type || '—'}${textoEntrega(p, true)} | Origem: ${p.origem || '—'}${statusTag}`;
   }).join('\n');
 
   // pedidos que parecem repetição (mesmo cliente em até 20 min) — a IA avisa, não some sozinha com eles
@@ -175,14 +183,18 @@ async function montarContextoVendas() {
     const v = pedidosValidos.filter(dentro);
     const cancel = todosPedidos.filter(p => p.status === 'cancelado' && dentro(p)).length;
     const tot = v.reduce((t, p) => t + Number(p.total || 0), 0);
-    return `- ${nome} (${dIni === dFim ? dIni : dIni + ' a ' + dFim}): faturamento ${moeda(tot)} · ${v.length} pedido(s) válido(s) · ticket médio ${moeda(v.length ? tot / v.length : 0)} · ${cancel} cancelado(s)`;
+    // taxas de entrega registradas x produtos
+    let taxas = 0, entregas = 0, semTaxa = 0; const porZona = {};
+    v.forEach(p => { const e = infoEntrega(p); if (!e) return; entregas++; if (e.taxa === null) { semTaxa++; return; } taxas += e.taxa; const k = e.zona ? 'Zona ' + e.zona : 'bairro não identificado'; (porZona[k] = porZona[k] || { n: 0, t: 0 }); porZona[k].n++; porZona[k].t += e.taxa; });
+    const zonasTxt = Object.entries(porZona).sort().map(([k, x]) => `${k}: ${x.n} entrega(s), ${moeda(x.t)}`).join('; ');
+    return `- ${nome} (${dIni === dFim ? dIni : dIni + ' a ' + dFim}): faturamento ${moeda(tot)} (produtos ${moeda(tot - taxas)} + taxas de entrega ${moeda(taxas)}) · ${v.length} pedido(s) válido(s) · ticket médio ${moeda(v.length ? tot / v.length : 0)} · ${cancel} cancelado(s) · ${entregas} entrega(s)${semTaxa ? ` (${semTaxa} sem taxa registrada)` : ''}${zonasTxt ? ' · taxas por zona → ' + zonasTxt : ''}`;
   }).join('\n');
 
   return `DADOS DE VENDAS DOS ÚLTIMOS 30 DIAS (ou até 600 pedidos mais recentes) — PIZZARIA "PIZZA EM DOBRO" (Itapetininga-SP, Brasil):
 
 ═══ SOBRE A LOJA (config real do sistema) ═══
 Endereço: ${cfg.enderecoLoja || 'não cadastrado no painel'}
-Taxa de entrega: ${cfg.taxaEntrega ? 'R$ ' + cfg.taxaEntrega : 'não cadastrada no painel'}
+Taxa de entrega: POR BAIRRO/ZONA — Zona 1 R$ 8,00 · Zona 2 R$ 9,00 · Zona 3 R$ 10,00 · Zona 4 R$ 15,00 (o bairro do endereço define a zona). Entrega GRÁTIS a partir de 3 pizzas (combo vale 2) ou combo de esfihas: nesse caso a taxa registrada é R$ 0,00. NÃO existe taxa fixa de R$ 8,00 para todos.
 Tempo médio de entrega: ${cfg.tempoEntrega || 'não cadastrado'}
 Formas de pagamento aceitas: ${cfg.formasPagamento || 'não cadastrado'}
 Horário de funcionamento do atendimento (bot WhatsApp): ${cfg.horarioInicio != null ? cfg.horarioInicio + 'h às ' + cfg.horarioFim + 'h' : 'não cadastrado'}
@@ -448,6 +460,8 @@ COMO ESCREVER AS RESPOSTAS (muito importante — o Marco lê no celular):
 - "Vendas válidas" = pedidos que NÃO estão cancelados. Pra um dia específico (ex: "ontem"), use SÓ os blocos daquele dia e confira a data.
 - No fim, um resumo curto, cada coisa numa linha própria: **Total do dia**, **Pedidos**, **Ticket médio**.
 - Títulos curtos com "## ", listas com "- " (um item por linha), valores sempre "R$ 99,90". Frases curtas, nada de parágrafo longo. Não repita a pergunta nem explique o que vai fazer: responda direto.
+
+REGRA DAS TAXAS DE ENTREGA (obrigatória): cada pedido de entrega traz a taxa REGISTRADA, o bairro e a zona. Para separar "valor da pizza" e "valor da entrega", use SEMPRE a taxa registrada do pedido (produtos = total − taxa). NUNCA suponha R$ 8,00 nem outro valor fixo. Se a taxa não estiver registrada, escreva "taxa não registrada" e não invente. Os totais de taxas por período e por zona já estão calculados em "NÚMEROS JÁ CALCULADOS POR PERÍODO". O endereço de cada pedido está na lista de pedidos individuais (últimos 14 dias).
 
 REGRA DE PRECISÃO (obrigatória): para faturamento/quantidade de "hoje", "ontem", "esta semana/7 dias" e "mês/30 dias", responda com os valores EXATOS da seção "NÚMEROS JÁ CALCULADOS POR PERÍODO", sem somar nem arredondar por conta própria. Se o período tiver 0 pedidos, diga claramente "R$ 0,00 — nenhum pedido". Quando precisar somar algo que não está pronto, some devagar, confira o resultado uma segunda vez e mostre a conta. Se não tiver certeza de um número, diga que não tem certeza em vez de chutar. Responda sempre em português do Brasil, direto e organizado, com os valores em R$ e o período escrito.
 

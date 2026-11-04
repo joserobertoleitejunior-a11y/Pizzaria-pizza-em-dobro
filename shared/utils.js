@@ -223,6 +223,16 @@ function acharBairroNoTexto(texto){
   const t=normBairro(texto); if(t.trim().length<2) return null;
   return _BAIRROS_LISTA.find(b=>t.includes(b.chave))||null;
 }
+// Entrega de um pedido já gravado: taxa REGISTRADA (nunca suposta), bairro/zona (gravados ou lidos do endereço).
+// taxa = null quando o pedido de entrega não guardou a taxa (pedidos antigos) — não vale chutar R$ 8.
+function infoEntrega(p){
+  if(!p||String(p.delivery_type||'').toLowerCase()!=='entrega') return null;
+  const t=p.taxa_entrega, taxa=(t===null||t===undefined||t===''||isNaN(Number(t)))?null:Number(t);
+  let bairro=p.bairro||null, zona=p.zona||null;
+  if(!bairro){ const a=acharBairroNoTexto(p.address); if(a){ bairro=a.bairro; zona=a.zona; } }
+  else if(!zona){ const a=acharBairroNoTexto(bairro); if(a) zona=a.zona; }
+  return {taxa,bairro,zona,endereco:[p.address,p.house_number?('nº '+p.house_number):''].filter(Boolean).join(', ')||null};
+}
 function taxaDoBairro(nome){ const k=normBairro(nome); const b=_BAIRROS_LISTA.find(x=>x.chave===k); return b?b.taxa:null; }
 
 // ── PEDIDO REPETIDO: mesmo cliente (telefone, ou nome quando não é genérico) lançado de novo poucos
@@ -253,5 +263,5 @@ function acharPedidoRepetido(pedido,outros,janelaMin){
 function pedidoIdentico(a,b){ return Math.abs(Number(a.total||0)-Number(b.total||0))<0.01&&assinaturaItens(a)===assinaturaItens(b); }
 
 if(typeof module!=='undefined' && module.exports){
-  module.exports={ ZONAS_ENTREGA, TAXAS_VALIDAS, acharBairroNoTexto, taxaDoBairro, acharPedidoRepetido, pedidoIdentico, mesmoCliente, fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PADRAO, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao, bordaReal, COMBOS_ENTREGA_GRATIS, PIZZAS_ENTREGA_GRATIS, combosDeEsfiha, esfDistribuirPadrao };
+  module.exports={ infoEntrega, ZONAS_ENTREGA, TAXAS_VALIDAS, acharBairroNoTexto, taxaDoBairro, acharPedidoRepetido, pedidoIdentico, mesmoCliente, fmt, toMillis, dataStr, categoriaPagamento, CATEGORIAS_CARDAPIO, _normalizarCategoriaCardapio, COMBOS_DEFAULT, COMBO_BROTO, ESFIHA_SABORES, ESFIHA_PADRAO, ESFIHA_PRECO_UN, ESFIHA_PACOTES, precoEsfihas, nomeEsfihas, resolverFaixaCombo, decomporSaboresItem, pizzasFisicasPorItem, limiteDiaBrasilia, ehClienteBalcao, bordaReal, COMBOS_ENTREGA_GRATIS, PIZZAS_ENTREGA_GRATIS, combosDeEsfiha, esfDistribuirPadrao };
 }

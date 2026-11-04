@@ -23,3 +23,13 @@ test('bairro fora da tabela não é reconhecido (nada de chute)', () => {
   assert.equal(taxaDoBairro('Centro'), null);
   assert.equal(taxaDoBairro('Itacol'), 15);
 });
+
+test('infoEntrega usa a taxa registrada e deriva bairro/zona do endereço', () => {
+  const { infoEntrega } = require('../shared/utils.js');
+  assert.equal(infoEntrega({ delivery_type: 'retirada' }), null);
+  const a = infoEntrega({ delivery_type: 'entrega', taxa_entrega: 15, bairro: 'Centro', address: 'Rua X' });
+  assert.equal(a.taxa, 15);
+  const b = infoEntrega({ delivery_type: 'entrega', address: 'Rua X' });
+  assert.equal(b.taxa, null);
+  assert.equal(infoEntrega({ delivery_type: 'entrega', taxa_entrega: 0 }).taxa, 0);
+});

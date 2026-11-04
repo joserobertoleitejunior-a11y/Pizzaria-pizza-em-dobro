@@ -27,8 +27,8 @@ test('contexto da IA traz hoje/ontem/7/30 dias JÁ SOMADOS pelo servidor (cancel
     texto = await require('../server/dashboard-chat.js').montarContextoVendas();
   } finally { Module._load = original; }
   assert.match(texto, /NÚMEROS JÁ CALCULADOS POR PERÍODO/);
-  assert.match(texto, /Hoje \([^)]*\): faturamento R\$ 155,50 · 2 pedido\(s\) válido\(s\) · ticket médio R\$ 77,75 · 1 cancelado\(s\)/);
-  assert.match(texto, /Ontem \([^)]*\): faturamento R\$ 80,00 · 1 pedido/);
-  assert.match(texto, /7 dias[^:]*: faturamento R\$ 305,50 · 4 pedido/);
-  assert.match(texto, /30 dias[^:]*: faturamento R\$ 335,50 · 5 pedido/);
+  assert.match(texto, /Hoje \([^)]*\): faturamento R\$ 155,50[^\n]*· 2 pedido\(s\) válido\(s\) · ticket médio R\$ 77,75 · 1 cancelado\(s\)/);
+  assert.match(texto, /Ontem \([^)]*\): faturamento R\$ 80,00[^\n]*· 1 pedido/);
+  assert.match(texto, /7 dias[^:]*: faturamento R\$ 305,50[^\n]*· 4 pedido/);
+  assert.match(texto, /30 dias[^:]*: faturamento R\$ 335,50[^\n]*· 5 pedido/);
 });

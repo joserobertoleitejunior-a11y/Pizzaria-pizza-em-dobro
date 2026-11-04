@@ -259,6 +259,28 @@ function renderTipoVenda(){
     const pct=total?Math.round(x.n/total*100):0;
     return `<div class="linha-barra"><span class="lb-topo"><b>${esc(k)}</b><span>${x.n} pedido${x.n>1?'s':''}</span></span><span class="lb-barra"><i style="width:${pct}%"></i></span><span class="lb-sub">${esc(fmt(x.v))} · ${pct}%</span></div>`;
   }).join('')||'<div class="empty">Sem vendas no período.</div>';
+  renderTaxasEntrega();
+}
+
+// Taxas de entrega REAIS (registradas em cada pedido, por zona) — não existe taxa fixa
+function renderTaxasEntrega(){
+  const el=document.getElementById('lista-taxas'); if(!el) return;
+  const ent=pedidosPeriodo.map(p=>({p,i:infoEntrega(p)})).filter(x=>x.i);
+  if(!ent.length){ el.innerHTML='<div class="empty">Sem entregas no período.</div>'; return; }
+  const zonas={}; let somaTaxas=0, semTaxa=0, gratis=0;
+  ent.forEach(({p,i})=>{
+    if(i.taxa===null){ semTaxa++; return; }
+    somaTaxas+=i.taxa;
+    if(i.taxa===0){ gratis++; return; }
+    const k=i.zona?('Zona '+i.zona+' · '+fmt(i.taxa)):('Taxa '+fmt(i.taxa));
+    (zonas[k]=zonas[k]||{n:0,v:0}); zonas[k].n++; zonas[k].v+=i.taxa;
+  });
+  const totalEnt=ent.reduce((a,x)=>a+Number(x.p.total||0),0);
+  let h=`<div class="linha-barra"><span class="lb-topo"><b>Taxas cobradas</b><span>${esc(fmt(somaTaxas))}</span></span><span class="lb-sub">Produtos das entregas: ${esc(fmt(totalEnt-somaTaxas))} · já somadas no faturamento</span></div>`;
+  Object.entries(zonas).sort().forEach(([k,x])=>{ h+=`<div class="linha-barra"><span class="lb-topo"><b>${esc(k)}</b><span>${x.n} entrega${x.n>1?'s':''}</span></span><span class="lb-sub">${esc(fmt(x.v))}</span></div>`; });
+  if(gratis) h+=`<div class="linha-barra"><span class="lb-topo"><b>Entrega grátis</b><span>${gratis}</span></span></div>`;
+  if(semTaxa) h+=`<div class="linha-barra"><span class="lb-topo"><b>Taxa não registrada</b><span>${semTaxa}</span></span><span class="lb-sub">Pedidos antigos, antes das zonas — o total já inclui o que foi cobrado</span></div>`;
+  el.innerHTML=h;
 }
 
 function renderSabores(){
