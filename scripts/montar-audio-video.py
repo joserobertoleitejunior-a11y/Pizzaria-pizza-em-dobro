@@ -7,9 +7,9 @@ MUSICA = os.path.join(V, 'trilha-pizzaria.mp3')
 M = lambda dur: ('m', dur)                      # cena muda
 PLANOS = {
  'hoje': ('voz-hoje.mp3', [('splash',0,2.29),('promos',2.29,5.06),('c65',5.06,7.48),('c75',7.48,11.67),('c80',11.67,15.31),('c85',15.31,19.15),
-          ('broto',19.15,22.41),('entrega',22.41,24.68),('rapido',M(6.5)),('fim',24.68,27.40)]),
+          ('broto',19.15,22.41),('entrega',22.41,24.68),('rapido',M(6.5)),('site',M(6.5)),('fim',24.68,27.40)]),
  'quinta': ('voz-quinta.mp3', [('splash',0,1.51),('esf5',1.51,3.43),('sab',3.43,7.82),('doce',7.82,10.12),('pacotes',10.12,13.86),('entrega',13.86,16.30),
-          ('doces',16.30,22.61),('bebida',22.61,26.72),('rapido',M(6.5)),('fim',26.72,30.04)]),
+          ('doces',16.30,22.61),('bebida',22.61,26.72),('rapido',M(6.5)),('site',M(6.5)),('fim',26.72,30.04)]),
  'sabado': ('voz-sabado.mp3', [('splash',0,2.41),('promos',2.41,5.49),('cardapio',5.49,8.84),('rapido',M(6.5)),('site',8.84,12.41),('bairro',12.41,16.64),
           ('pix',16.64,20.37),('fim',20.37,23.95)]),
 }

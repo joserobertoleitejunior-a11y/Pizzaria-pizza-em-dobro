@@ -19,6 +19,7 @@ Estilo.iniciar({tempos:'tempos-hoje.json',cenas:[
 {id:'broto',t1:'2 BROTOS',t2:'R$ 50.',fala:'Quer broto? Duas por cinquenta reais, qualquer sabor!',vis:V.foto(A+'promo/broto.jpg')+V.badge('R$ 50','2 BROTOS',{y:'70px'}),card:{ic:'fatia',t:'Combo broto',s:'qualquer sabor'}},
 {id:'entrega',t1:'ENTREGA',t2:'GRÁTIS.',fala:'E com três pizzas, a entrega é grátis!',vis:V.entrega(3,'3 PIZZAS'),card:{ic:'moto',t:'3 pizzas',s:'entrega grátis'}},
 {id:'rapido',t1:'PEDIDO',t2:'RÁPIDO.',fala:'Pedir é fácil: toque em Pedido rápido!',vis:V.celular([{img:'bv',tap:[195,460],lb:'Toque em Pedido rápido'},{img:'rapido-tipo',tap:[105,370],lb:'Escolha o que quer'},{img:'rapido-faixa',tap:[195,200],lb:'Escolha o combo'},{img:'rapido-c1',tap:[195,236],lb:'Escolha o sabor'},{img:'rapido-confere',lb:'Pronto: é só enviar!'}])},
+{id:'site',t1:'PELO SITE',t2:'É FÁCIL.',fala:'Ou pelo site: veja as promoções, toque no mais e confira o seu pedido.',vis:V.celular([{img:'site-topo',tap:[156,625],lb:'Abra o site'},{img:'site-promos',tap:[195,260],lb:'Veja as promoções'},{img:'site-cardapio',tap:[263,698],lb:'Toque no +'},{img:'site-carrinho',lb:'Confira e envie'}])},
 {id:'fim',fim:true,t1:'QUER',t2:'PEDIR HOJE?',sub:'Escolha seu combo no site e peça em poucos toques.',url:'pizzaria-pizza-em-dobro.com.br',fala:'Pizza em Dobro. Peça agora pelo nosso site!'}
 ]});
 </script></body></html>
