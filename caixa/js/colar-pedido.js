@@ -421,9 +421,39 @@ function combosDeAvulsas(itens,texto){
   const r=out.concat(resto); r.combosJuntados=out.length; return r;
 }
 
+// Duas pizzas grandes de sabores DIFERENTES da mesma faixa do "2 por X" (ex.: Franqueijo Piry + Toscana Piry = faixa R$ 85) saem
+// mais baratas como combo: o Conversor junta sozinho, mesmo sem o cliente falar "combo" (pedido do Marco). Não mexe se o item
+// veio com preço diferente do cardápio (preço combinado) nem em quem já pediu combo.
+function combosPorFaixa(itens,texto){
+  const lista=Array.isArray(itens)?itens:[]; if(lista.some(i=>i&&(i.tipo==='combo'||i.tipo==='broto'))||lista.combosJuntados) return lista;
+  const todos=[...new Set(COMBOS_DEFAULT.flatMap(c=>c.sabores))], unid=[], resto=[];
+  lista.forEach(i=>{
+    const sab=i&&i.tipo==='normal'&&i.nome_cardapio?_acharPorNome(i.nome_cardapio,todos,x=>x):null;
+    const m=sab&&DEFAULT_MENU.find(x=>_normNome(x.n)===_normNome(sab));
+    const pt=m?precoDoItemNoTexto(texto,i.nome_cardapio):null;
+    if(sab&&m&&!(pt&&Math.abs(pt.unit-m.p)>0.01)){ for(let k=0;k<Math.max(1,parseInt(i.qtd)||1);k++) unid.push({sab,i}); } else resto.push(i);
+  });
+  const usado=new Set(), combos=[];
+  unid.forEach((a,x)=>{
+    if(usado.has(x)) return;
+    for(let y=x+1;y<unid.length;y++){
+      if(usado.has(y)||unid[y].sab===a.sab) continue;
+      const t=COMBOS_DEFAULT.find(c=>c.sabores.includes(a.sab)&&c.sabores.includes(unid[y].sab)); if(!t) continue;
+      usado.add(x); usado.add(y); const b=unid[y];
+      combos.push({tipo:'combo',nome_cardapio:a.sab,nome_cardapio_2:b.sab,combo_faixa:t.preco,qtd:1,borda:a.i.borda||b.i.borda||null,
+        remover:[...(a.i.remover||[]),...(b.i.remover||[])],observacao:[a.i.observacao,b.i.observacao].filter(Boolean).join(' · ')||null,_juntado:true}); break;
+    }
+  });
+  if(!combos.length) return lista;
+  unid.forEach((u,x)=>{ if(!usado.has(x)) resto.push(Object.assign({},u.i,{qtd:1})); });
+  const r=combos.concat(resto); r.combosJuntados=combos.length; r.combosAuto=true; return r;
+}
+
 function montarCaixaComPedidoInterpretado(parsed){
   const itensOrig=parsed.itens;
   parsed.itens=combosDeAvulsas(parsed.itens,parsed._texto);
+  parsed.itens=combosPorFaixa(parsed.itens,parsed._texto);
+  const combosAuto=!!(parsed.itens&&parsed.itens.combosAuto);
   const combosJuntados=(parsed.itens&&parsed.itens.combosJuntados)||0; const avisosCombo=[];
   parsed.itens=consolidarBrotos(parsed.itens,n=>{ const m=DEFAULT_MENU.find(x=>x.n===n)||_acharItem(n); return !!m&&(m.cat==='p'||m.cat==='s'); });
   const brotoSobra=!!(parsed.itens&&parsed.itens.brotoSobra);
@@ -634,7 +664,7 @@ function montarCaixaComPedidoInterpretado(parsed){
   if(itensComPrecoDaMensagem>0) avisos.push('ℹ️ '+itensComPrecoDaMensagem+' item(ns) entraram com o nome e o preço exatamente como vieram na mensagem (não estão no cardápio).');
   if(naoIdentificados>0) avisos.push('⚠️ '+naoIdentificados+' item(ns) não foram reconhecidos com certeza e aparecem marcados no carrinho como "CONFERIR" — remova e adicione o item correto pela busca antes de finalizar.');
   if(brotoSobra) avisos.push('🍕 Veio uma quantidade ímpar de pizzas broto: a última ficou num combo com o MESMO sabor nos dois lados — confira com o cliente.');
-  if(combosJuntados) avisos.push('🍕🍕 O cliente pediu combo: juntei as pizzas em '+combosJuntados+' combo(s) — confira os sabores e a faixa.');
+  if(combosJuntados) avisos.push(combosAuto?'🍕🍕 Essas pizzas fecham o combo 2 por X (mais barato pro cliente): juntei em '+combosJuntados+' combo(s) — confira os sabores.':'🍕🍕 O cliente pediu combo: juntei as pizzas em '+combosJuntados+' combo(s) — confira os sabores e a faixa.');
   avisosCombo.forEach(a=>avisos.push(a));
   if(comboDetectado) avisos.push('🍕🍕 Combo/esfihas identificados e adicionados ao carrinho — confira os sabores, quantidades e o preço antes de finalizar.');
   if(enderecoFaltandoNumero) avisos.push('📍 Não encontrei o NÚMERO da casa/apartamento no texto colado — confira com o cliente antes de despachar a entrega.');

@@ -178,3 +178,14 @@ test('coca de 2L (ou lata, ou só coca) vira a Coca-Cola 1.5L', () => {
   for (const t of ['Coca 2L', 'coca de 2 litros', 'coca lata', 'Coca-Cola 2L', 'coca']) assert.equal(_acharItem(t).n, 'Coca-Cola 1.5L', t);
   assert.equal(_acharItem('Kuat 2L').n, 'Kuat 2L');
 });
+
+test('2 pizzas de sabores diferentes da mesma faixa viram combo sozinhas (Franqueijo Piry + Toscana Piry = 2 por R$ 85)', () => {
+  const { combosPorFaixa } = new Function('DEFAULT_MENU', 'BORDAS_DEFAULT', 'ACRESCIMOS_DEFAULT', 'COMBOS_DEFAULT', _ajuda + src.slice(src.indexOf('function precosDoTexto'), src.indexOf('// ── COMANDA DA CASA')) + src.slice(src.indexOf('function combosPorFaixa'), src.indexOf('function montarCaixaComPedidoInterpretado')) + '; return { combosPorFaixa };')(DEFAULT_MENU, [], [], require('../shared/utils.js').COMBOS_DEFAULT);
+  const n = (x) => ({ tipo: 'normal', nome_cardapio: x, qtd: 1 });
+  const r = combosPorFaixa([n('Franqueijo Piry'), n('Toscana Piry')], '');
+  assert.equal(r.length, 1); assert.equal(r[0].tipo, 'combo'); assert.equal(r[0].combo_faixa, 85);
+  assert.equal(combosPorFaixa([n('Mussarela'), n('Toscana Piry')], '').length, 2);           // faixas diferentes: continuam avulsas
+  assert.equal(combosPorFaixa([n('Calabresa'), n('Calabresa')], '').length, 2);               // mesmo sabor: não é combo
+  assert.equal(combosPorFaixa([n('Franqueijo Piry'), n('Toscana Piry')], '1x Franqueijo Piry R$ 40,00\n1x Toscana Piry R$ 40,00').length, 2); // preço combinado: não mexe
+  assert.equal(combosPorFaixa([n('Franqueijo Piry'), n('Toscana Piry'), n('Atum')], '').length, 2);        // sobra 1 avulsa
+});
