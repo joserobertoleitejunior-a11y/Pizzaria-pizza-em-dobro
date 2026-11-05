@@ -16,25 +16,38 @@ async function init(){
   const st=document.getElementById('status-loja');
   st.innerText=isOpen?'ABERTO':'FECHADO';st.className='status-badge '+(isOpen?'open':'closed');
 
-  let loaded=false;
-  try{
-    const rows=await sg('menu_items',{where:[['active','==',true]],orderBy:'slug_id',orderDir:'asc'});
-    if(rows&&rows.length){
-      menu=rows.map(r=>({id:r.slug_id||r.id,n:r.name,d:r.description||'',p:parseFloat(r.price),cat:_normalizarCategoriaCardapio(r.category),img:r.img_url||null}));
-      DB.set('menu_custom',menu);loaded=true;
-    }
-  }catch(e){console.warn('menu:',e);}
-  if(!loaded){const cm=DB.get('menu_custom');menu=cm&&cm.length?cm:[...DEFAULT_MENU];}
-  // imagem gerada por código pros itens sem foto real cadastrada — nunca duas
-  // iguais, porque nasce dos ingredientes de cada item (ver js/sabor-imagem.js)
-  preencherImagensGeradas(menu);
+  // O cardápio NUNCA pode ficar vazio esperando o banco: pinta já com o que o aparelho guardou
+  // (ou o cardápio padrão) e, quando o Firestore responder, troca pelo atual. Se o banco
+  // demorar (celular com sinal fraco) ou falhar, o cliente continua vendo e pedindo normalmente.
+  const pintarCardapio=()=>{
+    try{
+      preencherImagensGeradas(menu); // imagem gerada por código pros itens sem foto real (ver js/sabor-imagem.js)
+      renderMenu();
+      // cardápio/combos nascem depois de um await — sem isso os cards nunca ganhavam a entrada animada
+      if(typeof window._observarReveal==='function') window._observarReveal();
+      if(typeof window._iniciarAnimacoesScroll==='function') window._iniciarAnimacoesScroll();
+      return true;
+    }catch(e){ console.warn('renderMenu:',e); return false; }
+  };
+  const cm=DB.get('menu_custom');
+  menu=cm&&cm.length?cm:[...DEFAULT_MENU];
+  if(!pintarCardapio()){ menu=[...DEFAULT_MENU]; pintarCardapio(); }
 
-  renderMenu();
-  // cardápio/combos nascem depois de um await (Firestore) — o script de scroll lá
-  // embaixo do index.html já tinha rodado e escaneado o DOM antes disso, então sem
-  // essa chamada de novo os cards do cardápio nunca ganhavam a entrada animada
-  if(typeof window._observarReveal==='function') window._observarReveal();
-  if(typeof window._iniciarAnimacoesScroll==='function') window._iniciarAnimacoesScroll();
+  const aplicarDoBanco=(rows)=>{
+    if(!rows||!rows.length) return false;
+    const novo=rows.map(r=>({id:r.slug_id||r.id,n:r.name,d:r.description||'',p:parseFloat(r.price),cat:_normalizarCategoriaCardapio(r.category),img:r.img_url||null}))
+      .filter(m=>m.n&&isFinite(m.p));
+    if(!novo.length) return false;
+    const antes=menu; menu=novo;
+    if(pintarCardapio()){ DB.set('menu_custom',novo); return true; }
+    menu=antes; pintarCardapio(); return false; // cardápio do banco veio com defeito: mantém o que já estava na tela
+  };
+  try{
+    const busca=sg('menu_items',{where:[['active','==',true]],orderBy:'slug_id',orderDir:'asc'});
+    const rows=await Promise.race([busca,new Promise(r=>setTimeout(()=>r(undefined),6000))]);
+    if(rows===undefined) busca.then(aplicarDoBanco).catch(()=>{}); // demorou: atualiza quando chegar
+    else aplicarDoBanco(rows);
+  }catch(e){console.warn('menu:',e);}
   // restaura sessão admin se válida (mesmo login único da equipe, sem bloquear
   // a loja pro cliente comum — só reativa os controles se já tiver sessão)
   await restaurarSessaoAdminSilenciosa();
