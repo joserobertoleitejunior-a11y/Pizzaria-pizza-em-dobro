@@ -116,7 +116,8 @@ JSON esperado:
   try{
     // 1ª tentativa; se a IA devolver algo que não é JSON (acontece com mensagem muito bagunçada), tenta de novo uma vez
     const sitEsf=extrairEsfihasDoSite(texto), textoIA=sitEsf.itens.length?sitEsf.texto:texto;
-    let parsed=null, ultimoErro=null;
+    const casa=lerComandaDaCasa(texto); // cupom nosso colado de volta: lido direto, sem IA
+    let parsed=casa, ultimoErro=null;
     for(let tentativa=0;tentativa<2&&!parsed;tentativa++){
       try{
         const r=await fetch('/api/parse-order',{
@@ -140,7 +141,7 @@ JSON esperado:
       const tel=cs.telefone||cw.telefone; if(tel&&!parsed.cliente.telefone) parsed.cliente.telefone=tel; }
     sitEsf.itens.forEach(i=>parsed.itens.push(i));
     completarEsfihas(parsed,texto);
-    window._origemConversor=true; window._valorCombinadoPendente=extrairValorCombinado(texto); parsed._texto=texto;
+    window._origemConversor=true; window._valorCombinadoPendente=extrairValorCombinado(texto); parsed._texto=parsed._textoLimpo||texto;
     montarCaixaComPedidoInterpretado(parsed);
     closeModal('modal-colar');
   }catch(e){
@@ -180,7 +181,7 @@ function _refriPadrao(nome,lista,getNome){
   for(const [re,pref] of REFRI_UNICO){ if(re.test(String(nome||''))){ const op=lista.filter(x=>pref.test(getNome(x))); if(op.length===1) return op[0]; } }
   return null;
 }
-const _acharItem=n=>_acharPorNome(n,DEFAULT_MENU,m=>m.n)||_refriPadrao(n,DEFAULT_MENU,m=>m.n);
+const _acharItem=n=>_refriPadrao(n,DEFAULT_MENU,m=>m.n)||_acharPorNome(n,DEFAULT_MENU,m=>m.n); // coca/fanta (2L, lata, 600ml...) sempre viram a 1.5L
 const _acharBorda=n=>_acharPorNome(n,BORDAS_DEFAULT,b=>b.name);
 const _acharAcrescimos=ls=>(Array.isArray(ls)?ls:[]).map(n=>_acharPorNome(n,ACRESCIMOS_DEFAULT,a=>a.name)).filter((a,i,arr)=>a&&arr.indexOf(a)===i);
 
@@ -219,6 +220,45 @@ function precoDoItemNoTexto(texto,nomeItem){
   });
   if(!melhor||ms<0.5) return null;
   return { nome:melhor.nome, unit:Math.round(melhor.preco/(melhor.qtd||1)*100)/100 };
+}
+
+// ── COMANDA DA CASA colada de volta (foto/cópia do cupom impresso): "PEDIDO 1 ENTREGA", data, nome, TOTAL, pagamento,
+// endereço, itens "1x Nome" (o nome pode quebrar em 2 linhas e o preço vem na linha de baixo), "Entrega R$ 8,00", "Pagto:".
+// É o NOSSO formato, então é lido aqui, sem IA e sem alterar nada (a IA se perdia: nome solto no topo, preço em outra linha).
+function lerComandaDaCasa(texto){
+  const L=String(texto||'').split(/\r?\n/).map(l=>l.replace(/[*_~]/g,'').trim()).filter(Boolean);
+  const h=L.findIndex(l=>/^PEDIDO\s*#?\s*\d+\b/i.test(l)); if(h<0) return null;
+  const sn=t=>_normNome(t);
+  const tipo=/retirada|balc/i.test(L[h])?'retirada':(/entrega/i.test(L[h])?'entrega':null);
+  const PARA=/^(total|subtotal|entrega|taxa|frete|troco|desconto|pagto|pagamento)\b/i;
+  let i=h+1; if(/^\d{2}\/\d{2}\b/.test(L[i]||'')) i++;
+  const nome=(L[i]&&!PARA.test(L[i])&&!/^\d+\s*x\s/i.test(L[i]))?L[i]:null;
+  const pg=txt=>{ const n=String(txt||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+    return /d[e]?b[i]?to?|dbito|debit/.test(n)?'Cartão de Débito':/cr[e]?d[i]?to?|crdito|credit/.test(n)?'Cartão de Crédito':/pix/.test(n)?'Pix':/dinh/.test(n)?'Dinheiro':null; };
+  const lp=L.find(l=>/^pagto\s*:/i.test(l)); const forma=pg(lp?lp.replace(/^pagto\s*:/i,''):(L.find(l=>pg(l)&&!/\d/.test(l))||''));
+  const iItem=L.findIndex((l,k)=>k>h&&/^\d{1,2}\s*x\s+\S/i.test(l));
+  let end=null; for(let k=i+1;k<(iItem<0?L.length:iItem);k++){ const l=L[k]; if(PARA.test(l)||pg(l)&&!/\d/.test(l)) continue; if(/[,\d]/.test(l)){ end=l; break; } }
+  let rua=null,numero=null,compl=null;
+  if(end){ const ps=end.split(',').map(x=>x.trim()).filter(Boolean); rua=ps[0]||null;
+    const rest=ps.slice(1).filter(x=>{ const m=x.match(/^n?[º°o.]*\s*(\d+\s*[A-Za-z]?)$/i); if(m&&!numero){ numero=m[1].replace(/\s+/g,''); return false; } return true; });
+    compl=rest.join(', ')||null; }
+  const itens=[], linhas=[]; let atual=null;
+  const fecha=()=>{ if(atual&&atual.preco>0){ itens.push(atual); linhas.push(atual.qtd+'x '+atual.nome+' R$ '+String(atual.preco.toFixed(2)).replace('.',',')); } atual=null; };
+  for(let k=Math.max(iItem,0);iItem>=0&&k<L.length;k++){
+    const l=L[k]; if(PARA.test(l)){ fecha(); continue; }
+    const m=l.match(/^(\d{1,2})\s*x\s+(.+)$/i);
+    if(m){ fecha(); atual={qtd:Number(m[1]),nome:m[2].trim(),preco:0}; }
+    else if(atual) atual.nome+=' '+l; else continue;
+    const pm=atual&&atual.nome.match(RE_PRECO);
+    if(pm){ atual.preco=_numBR(pm[1]||pm[2]); atual.nome=atual.nome.replace(pm[0],' ').replace(/[\s.:=-]+$/,'').replace(/\s+/g,' ').trim(); fecha(); }
+  }
+  fecha();
+  if(!itens.length) return null;
+  const taxaL=L.find(l=>/^entrega\s*R?\$/i.test(l)), totL=[...L].reverse().find(l=>/^total\b/i.test(l));
+  return { cliente:{nome,telefone:null,endereco:{rua,numero,complemento:compl,bairro:null}}, pagamento:{forma_principal:forma,misto:null},
+    entrega:tipo, troco_para:null, observacao_geral:null,
+    itens:itens.map(it=>{ const m=_acharItem(it.nome); return {tipo:'normal',nome_cardapio:m?m.n:it.nome,nome_cardapio_2:null,qtd:it.qtd,borda:null,remover:[],acrescimos:[],observacao:null}; }),
+    _textoLimpo:linhas.join('\n')+(taxaL?'\n'+taxaL:'')+(totL?'\n'+totL:'') };
 }
 
 // ── Rede de segurança do combo de esfihas: mesmo que a IA erre ou esqueça, o texto manda.
@@ -281,7 +321,7 @@ function extrairClienteDoWhatsapp(texto){
 // nome que o Conversor vai usar: o digitado no campo, o "Cliente:" da mensagem do site ou o remetente da conversa copiada
 function nomeDoClienteNoConversor(texto){
   const manual=(document.getElementById('colar-nome')?.value||'').trim();
-  return manual||extrairClienteDoSite(texto).nome||extrairClienteDoWhatsapp(texto).nome||null;
+  return manual||extrairClienteDoSite(texto).nome||extrairClienteDoWhatsapp(texto).nome||((lerComandaDaCasa(texto)||{cliente:{}}).cliente.nome)||null;
 }
 function completarEsfihas(parsed,texto){
   const t=String(texto||'');

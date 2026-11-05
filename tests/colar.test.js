@@ -139,3 +139,42 @@ test('pedido pronto com preço: lê o preço de cada item nos formatos mais comu
   // item que não aparece com preço na mensagem continua sem preço (vai pro CONFERIR)
   assert.equal(precoDoItemNoTexto(linha, 'Pizza de Atum'), null);
 });
+
+// ── comanda da casa colada de volta + coca 2L → 1.5L ──
+const _menuSrc = fs.readFileSync(__dirname + '/../js/core-data.js', 'utf8');
+const DEFAULT_MENU = new Function(_menuSrc.slice(_menuSrc.indexOf('const DEFAULT_MENU=['), _menuSrc.indexOf('];', _menuSrc.indexOf('const DEFAULT_MENU=[')) + 2) + '; return DEFAULT_MENU;')();
+const _ajuda = src.slice(src.indexOf('function _normNome'), src.indexOf('function precosDoTexto'));
+const _comanda = src.slice(src.indexOf('function lerComandaDaCasa'), src.indexOf('// ── Rede de segurança do combo de esfihas'));
+const { lerComandaDaCasa, _acharItem } = new Function('DEFAULT_MENU', 'BORDAS_DEFAULT', 'ACRESCIMOS_DEFAULT', _ajuda + _comanda + '; return { lerComandaDaCasa, _acharItem };')(DEFAULT_MENU, [], []);
+
+test('cupom da casa colado de volta (nome solto, item em 2 linhas, preço embaixo) é lido sem IA', () => {
+  const r = lerComandaDaCasa(`PEDIDO 1 ENTREGA
+05/11 18:28 PIZZA EM DOBRO
+Ney
+TOTAL R$ 99,98
+Cartão de Débito
+José Maria Cerdeira Filho, nº 73, Entrar na Mazzei
+1x Franqueijo
+Piry
+R$ 45,99
+1x Toscana Piry
+R$ 45,99
+Entrega R$ 8,00
+TOTAL R$ 99,98
+Pagto: Cartão de Débito`);
+  assert.equal(r.cliente.nome, 'Ney');
+  assert.equal(r.entrega, 'entrega');
+  assert.equal(r.pagamento.forma_principal, 'Cartão de Débito');
+  assert.deepEqual([r.cliente.endereco.rua, r.cliente.endereco.numero, r.cliente.endereco.complemento], ['José Maria Cerdeira Filho', '73', 'Entrar na Mazzei']);
+  assert.deepEqual(r.itens.map((i) => i.nome_cardapio + '|' + i.qtd), ['Franqueijo Piry|1', 'Toscana Piry|1']);
+  assert.match(r._textoLimpo, /1x Franqueijo Piry R\$ 45,99/);
+});
+test('cupom com acento perdido na impressão ("Cartu de Dbito") ainda é entendido; texto comum não é comanda', () => {
+  const r = lerComandaDaCasa('PEDIDO 7 RETIRADA\n05/11 19:00 PIZZA EM DOBRO\nAna\nTOTAL R$ 33,99\nPagto: Cartu de Dbito\n1x Calabresa R$ 33,99');
+  assert.equal(r.pagamento.forma_principal, 'Cartão de Débito'); assert.equal(r.entrega, 'retirada');
+  assert.equal(lerComandaDaCasa('oi quero uma calabresa'), null);
+});
+test('coca de 2L (ou lata, ou só coca) vira a Coca-Cola 1.5L', () => {
+  for (const t of ['Coca 2L', 'coca de 2 litros', 'coca lata', 'Coca-Cola 2L', 'coca']) assert.equal(_acharItem(t).n, 'Coca-Cola 1.5L', t);
+  assert.equal(_acharItem('Kuat 2L').n, 'Kuat 2L');
+});
