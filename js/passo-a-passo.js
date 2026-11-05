@@ -166,8 +166,16 @@
         rod=vol; break;
       case 'mais':
         t='Mais alguma coisa?'; d='Seu pedido até agora está aqui embaixo.';
-        corpo='<div class="pa-tipos pa-tipos-2">'+
-          '<button type="button" class="pa-tipo" onclick="PA.ir(\'tipo\')"><span>➕</span><b>Adicionar mais</b><small>pizza, combo, esfiha…</small></button>'+
+        var ehCombo=(P.tipo==='combo'||P.tipo==='broto'), npz=ehCombo?pizzasNoCarrinho(cart):0, falta=Math.max(0,PIZZAS_ENTREGA_GRATIS-npz);
+        if(ehCombo){
+          t='Mais uma pizza? Vai ser ótimo! 🍕';
+          d=(falta>0?'Falta só '+falta+' pizza pra entrega ser grátis. ':'Entrega grátis garantida! ')+'Combo bom pede companhia: mais uma pizza vai ser ótimo pra mesa.';
+        }
+        corpo=(ehCombo?'<div class="pa-tipos pa-tipos-2">'+
+          '<button type="button" class="pa-tipo" onclick="PA.tipo(\'pizza\')"><span>🍕</span><b>Mais uma pizza</b><small>bora, vai ser ótimo!</small></button>'+
+          '<button type="button" class="pa-tipo" onclick="PA.tipo(\''+P.tipo+'\')"><span>🍕🍕</span><b>Outro combo</b><small>mais duas pra mesa</small></button></div>':'')+
+        '<div class="pa-tipos pa-tipos-2">'+
+          '<button type="button" class="pa-tipo" onclick="PA.ir(\'tipo\')"><span>➕</span><b>'+(ehCombo?'Outra coisa':'Adicionar mais')+'</b><small>pizza, combo, esfiha…</small></button>'+
           '<button type="button" class="pa-tipo" onclick="PA.tipoDireto(\'beb\')"><span>🥤</span><b>Uma bebida?</b><small>refri e suco gelado</small></button></div>';
         rod='<button type="button" class="pa-prim pa-cheio" onclick="PA.ir(\'modo\')">Não, finalizar pedido →</button>'; break;
       case 'modo':

@@ -78,9 +78,11 @@ function ppRender(){
     corpo=`<p class="pp-dica">Cada pizza do combo pode ter a sua borda. Se não tiver borda, é só continuar.</p>`+combos.map(x=>`<div class="pp-cborda"><b>${x.i.name}</b>${seletorBordaCx(x.i,x.idx)}</div>`).join('');
     rodape=PP_ATALHOS()+`<button type="button" class="pp-prim" onclick="ppIr('mais')">Continuar →</button>`;
   }else if(_pp.passo==='mais'){
+    const ehCombo=(_pp.tipo==='combo'||_pp.tipo==='broto'), falta=Math.max(0,PIZZAS_ENTREGA_GRATIS-pizzasNoCaixa());
     titulo='Adicionado! ✅';
-    corpo=`<div class="pp-lista">${cart.map(i=>`<div><span>${i.qty}× ${i.name}</span><b>${fmt(i.unitPrice*i.qty)}</b></div>`).join('')||'<p>Carrinho vazio.</p>'}</div><div class="pp-pergunta">Mais alguma pizza, combo ou esfiha?</div>
-      <div class="pp-duas"><button type="button" class="pp-grande sim" onclick="ppIr('tipo')">➕ Sim, adicionar mais</button><button type="button" class="pp-grande" onclick="ppIr('bebida')">Não, é só isso →</button></div>`;
+    const dicaCombo=ehCombo?`<div class="pp-dica">🍕 <b>Mais uma pizza vai ser ótimo!</b> ${falta>0?'Falta só '+falta+' pizza pra entrega grátis.':'Entrega grátis garantida!'} Combo bom pede companhia 😄 — ofereça ao cliente.</div><div class="pp-duas"><button type="button" class="pp-grande sim" onclick="ppIr('item',{tipo:'pizza',meiaA:null})">🍕 Mais uma pizza</button><button type="button" class="pp-grande sim" onclick="ppIr('item',{tipo:_pp.tipo,meiaA:null})">🍕🍕 Outro combo</button></div>`:'';
+    corpo=dicaCombo+`<div class="pp-lista">${cart.map(i=>`<div><span>${i.qty}× ${i.name}</span><b>${fmt(i.unitPrice*i.qty)}</b></div>`).join('')||'<p>Carrinho vazio.</p>'}</div><div class="pp-pergunta">Mais alguma pizza, combo ou esfiha?</div>
+      <div class="pp-duas"><button type="button" class="pp-grande sim" onclick="ppIr('tipo')">➕ ${ehCombo?'Outra coisa':'Sim, adicionar mais'}</button><button type="button" class="pp-grande" onclick="ppIr('bebida')">Não, é só isso →</button></div>`;
     rodape='';
   }else if(_pp.passo==='bebida'){
     titulo='Bebida';
