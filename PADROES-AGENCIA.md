@@ -191,3 +191,20 @@ Por que perguntar em vez de resolver sozinho: o mesmo cliente às vezes faz **do
 ---
 
 *Este arquivo é vivo — atualize conforme o VIBE CODING PROCESS evoluir. Toda mudança aqui deve refletir em todos os projetos ativos da agência, não só nos novos.*
+
+---
+
+## 11. Revisão semanal de saúde (todo sistema em produção)
+
+Rotina curta, **sem mudar comportamento**: só entra ajuste que não altera função nem layout, e tudo passa por teste antes de subir.
+
+Checklist (nesta ordem):
+1. **Testes** (`npm test`) verdes e **auditoria de dependências** (`npm audit --omit=dev`) sem falhas.
+2. **Peso e requisições da página pública**: imagens com `loading="lazy"` abaixo da dobra, nada novo pesado no carregamento inicial, fontes sem bloquear.
+3. **Consultas ao banco**: toda leitura de lista tem `limit` ou filtro de data (nada que cresce sozinho com o tempo).
+4. **O que vai pro ar**: `dist/` só com o que o público precisa (sem material interno, vídeos de trabalho, roteiros).
+5. **Erros reais**: olhar Sentry/observabilidade da semana e corrigir o que se repete.
+6. **Registrar** o que foi visto e o que ficou pendente, abaixo.
+
+### Registro
+**05/11/2026 — primeira revisão.** Testes: 75 ok. Dependências: 0 vulnerabilidades. Consultas: todas com limite ou filtro de data (a lista de comentários de avaliações é código sem uso na loja). Página inicial: imagens abaixo da dobra já são lazy; ~35 scripts e 3 do Firebase carregam em sequência. **Feito:** (a) conexão antecipada ao `gstatic.com` e pré-carga dos 2 scripts do Firebase que bloqueiam o início; (b) pasta `video/` (43 MB de material interno) saiu do que é publicado (deploy de 12 MB para 3,4 MB). **Pendente (precisa de teste em aparelho real):** (1) o service worker revalida todo JS/CSS a cada abertura (`cache: no-cache`) — trocar por "mostrar do cache e atualizar por trás" deixa as aberturas seguintes bem mais rápidas, mas exige validar com a atualização de versão do Caixa; (2) juntar e minificar os ~25 scripts da loja num pacote só; (3) lint (Biome) ainda não trava o deploy.

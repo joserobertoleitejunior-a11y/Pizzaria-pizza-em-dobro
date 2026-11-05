@@ -8,7 +8,7 @@ const RAIZ = path.join(__dirname, '..');
 const DIST = path.join(RAIZ, 'dist');
 
 const INCLUIR = ['index.html', 'painel.html', 'sw.js', 'manifest.json', 'manifest-painel.json', 'robots.txt', 'sitemap.xml', 'llms.txt', 'favicon.ico',
-  'assets', 'js', 'shared', 'caixa', 'relatorios', 'clientes', 'cupom', 'dashboard', 'admin', 'video'];
+  'assets', 'js', 'shared', 'caixa', 'relatorios', 'clientes', 'cupom', 'dashboard', 'admin'];   // 'video' (roteiros, áudios e fotos dos Stories) é material interno: não vai pro ar
 // existem no repositório mas o site não usa mais (fotos licenciadas de antes das artes geradas em código)
 const NAO_PUBLICAR = new Set(['assets/fogo-fundo.mp4', 'assets/pizza-hero.jpg', 'assets/cardapio']);
 
