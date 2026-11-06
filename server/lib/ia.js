@@ -124,25 +124,24 @@ async function chamarGemini(chave, { system, messages, ferramentas, busca, max_t
 
 // system: texto. ferramentas: ferramentas de função (formato Anthropic). busca: pesquisa na internet.
 async function chamarIA(secrets, { system, messages, ferramentas, busca, max_tokens, cache, json }) {
-  let erroGemini = null;
-  if (secrets.geminiKey) {
-    const r = await chamarGemini(secrets.geminiKey, { system, messages, ferramentas, busca, max_tokens, json });
-    if (r.type !== 'error') return r;
-    erroGemini = r;
-    if (!secrets.anthropicKey) return r;
-    console.warn('Gemini falhou, usando a Anthropic como reserva:', JSON.stringify(r.error));
+  // Anthropic (Claude) é o principal; o Gemini só entra de reserva se a Anthropic falhar (crédito, limite, fora do ar).
+  let erroClaude = null;
+  if (secrets.anthropicKey) {
+    const tools = [...(busca ? [{ type: 'web_search_20250305', name: 'web_search' }] : []), ...(ferramentas || [])];
+    const r = await chamarClaude(secrets.anthropicKey, {
+      max_tokens: max_tokens || 4000,
+      system: cache ? [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }] : system,
+      messages, tools
+    });
+    if (r && r.type !== 'error') { r._provedor = 'anthropic'; return r; }
+    erroClaude = r;
+    if (!secrets.geminiKey) return r;
+    console.warn('Anthropic falhou, usando o Gemini como reserva:', JSON.stringify(r && r.error));
   }
-  if (!secrets.anthropicKey) return { type: 'error', error: { type: 'authentication_error', message: 'Nenhuma chave de IA configurada.' } };
-  const tools = [...(busca ? [{ type: 'web_search_20250305', name: 'web_search' }] : []), ...(ferramentas || [])];
-  const r = await chamarClaude(secrets.anthropicKey, {
-    max_tokens: max_tokens || 4000,
-    system: cache ? [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }] : system,
-    messages, tools
-  });
-  if (r && r.type !== 'error') r._provedor = 'anthropic';
-  // as duas falharam: devolve o erro da reserva, mas leva junto o motivo do Gemini pra aparecer na tela
-  if (r && r.type === 'error' && erroGemini) r.error = { ...r.error, gemini: erroGemini.error };
-  return r;
+  if (!secrets.geminiKey) return { type: 'error', error: { type: 'authentication_error', message: 'Nenhuma chave de IA configurada.' } };
+  const g = await chamarGemini(secrets.geminiKey, { system, messages, ferramentas, busca, max_tokens, json });
+  if (g && g.type === 'error' && erroClaude) g.error = { ...g.error, anthropic: erroClaude.error };
+  return g;
 }
 
 module.exports = { chamarIA, chamarGemini, conteudoGemini, esquemaGemini };

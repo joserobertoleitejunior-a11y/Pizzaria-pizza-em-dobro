@@ -1,5 +1,5 @@
 // ══════════════════════════════════════════════════════════
-//  CONVERSOR DE PEDIDO — via IA (Gemini; Anthropic de reserva)
+//  CONVERSOR DE PEDIDO — via IA (Anthropic; Gemini de reserva)
 //  Recebe o texto colado do WhatsApp e devolve o pedido formatado.
 //  A chave fica só aqui no servidor — nunca exposta no navegador
 //  (antes ficava direto no código do site; corrigido).
@@ -35,7 +35,7 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ error: 'Faltou texto do pedido ou instrução.' }) };
     }
 
-    // Gemini primeiro (chave do painel admin); Anthropic de reserva. 4000 tokens: os modelos 3.x
+    // Anthropic primeiro (chave do painel admin); Gemini de reserva. 4000 tokens: os modelos 3.x
     // "pensam" antes de responder e isso conta no limite — com 800 a resposta (JSON) podia sair cortada.
     const data = await chamarIA(secrets, {
       max_tokens: 8000, system: systemPrompt, json: true,
@@ -44,7 +44,7 @@ exports.handler = async (event) => {
     if (data?.type === 'error') {
       const e = data.error || {};
       console.error('Erro da IA no conversor:', JSON.stringify(e));
-      const motivo = e.gemini ? 'Gemini: ' + (e.gemini.message || e.gemini.type) + ' | reserva: ' + (e.message || e.type) : (e.message || e.type);
+      const motivo = e.anthropic ? 'Anthropic: ' + (e.anthropic.message || e.anthropic.type) + ' | reserva Gemini: ' + (e.message || e.type) : (e.message || e.type);
       return { statusCode: 500, body: JSON.stringify({ error: 'A IA não respondeu: ' + String(motivo || '').slice(0, 300) }) };
     }
     const texto = (data?.content || []).filter(b => b.type === 'text').map(b => b.text || '').join('');

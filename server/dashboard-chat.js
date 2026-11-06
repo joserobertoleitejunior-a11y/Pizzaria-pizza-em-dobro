@@ -506,6 +506,7 @@ ${contextoVendas}`;
     // sem crédito / chave inválida / IA sobrecarregada. Modelo descontinuado → tenta o substituto.
     let esperouSobrecarga = false;
     const erroAmigavel = function erroAmigavel(e) {
+      if (e?.anthropic) return 'A Anthropic falhou: ' + erroAmigavel({ ...e, anthropic: null, gemini: null, type: e.anthropic.type, message: e.anthropic.message }) + ' — e a reserva (Gemini) também: ' + String(e.message || e.type).slice(0, 160);
       if (e?.gemini) return 'O Gemini falhou: ' + String(e.gemini.message || e.gemini.type).slice(0, 200) + ' — e a reserva também: ' + erroAmigavel({ ...e, gemini: null });
       const tipo = e?.type || '', msg = String(e?.message || '');
       if (tipo === 'rate_limit_error' && /gemini|quota|RESOURCE_EXHAUSTED/i.test(msg)) return 'O limite de uso da IA acabou por agora. Espere 1 minuto (ou até amanhã, se foi o limite do dia) e tente de novo.';

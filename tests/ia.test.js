@@ -40,17 +40,23 @@ test('histórico com tool_use/tool_result vira contents do Gemini (nome da funç
   assert.equal(c[2].parts[0].functionResponse.response.resultado, 'feito');
 });
 
-test('limite do Gemini grátis: tenta os outros modelos e depois cai na Anthropic se houver chave', async () => {
+test('Anthropic é a principal: com chave, o Gemini nem é chamado', async () => {
   const antes = global.fetch; const chamadas = [];
-  global.fetch = async (url) => {
-    chamadas.push(String(url));
-    if (String(url).includes('generativelanguage')) return erroHttp(429, 'RESOURCE_EXHAUSTED', 'quota');
-    return { ok: true, status: 200, json: async () => ({ content: [{ type: 'text', text: 'da anthropic' }], stop_reason: 'end_turn' }) };
-  };
+  global.fetch = async (url) => { chamadas.push(String(url)); return { ok: true, status: 200, json: async () => ({ content: [{ type: 'text', text: 'da anthropic' }], stop_reason: 'end_turn' }) }; };
   const r = await chamarIA({ geminiKey: 'g', anthropicKey: 'a' }, { system: 'S', messages: [{ role: 'user', content: 'x' }] });
   global.fetch = antes;
   assert.equal(r.content[0].text, 'da anthropic');
-  assert.equal(chamadas.filter(u => u.includes("generativelanguage")).length, 4);
+  assert.equal(chamadas.filter(u => u.includes('generativelanguage')).length, 0);
+});
+
+test('se a Anthropic falhar (ex.: sem crédito), cai no Gemini de reserva', async () => {
+  const antes = global.fetch;
+  global.fetch = async (url) => String(url).includes('generativelanguage')
+    ? respostaGemini([{ text: 'do gemini' }])
+    : { ok: false, status: 400, json: async () => ({ type: 'error', error: { type: 'invalid_request_error', message: 'credit balance is too low' } }) };
+  const r = await chamarIA({ geminiKey: 'g', anthropicKey: 'a' }, { system: 'S', messages: [{ role: 'user', content: 'x' }] });
+  global.fetch = antes;
+  assert.equal(r.content[0].text, 'do gemini');
 });
 
 test('sem chave da Anthropic, o erro do Gemini volta pro chamador mostrar', async () => {
@@ -89,7 +95,7 @@ test('chave inválida de verdade (sem "AQ.") não tenta Vertex nem outros modelo
   assert.equal(n, 1);
 });
 
-test('se Gemini e Anthropic falham, o erro leva o motivo do Gemini junto', async () => {
+test('se Anthropic e Gemini falham, o erro leva o motivo da Anthropic junto', async () => {
   const antes = global.fetch;
   global.fetch = async (url) => String(url).includes('generativelanguage')
     ? erroHttp(403, 'PERMISSION_DENIED', 'chave sem permissão')
@@ -97,8 +103,8 @@ test('se Gemini e Anthropic falham, o erro leva o motivo do Gemini junto', async
   const r = await chamarIA({ geminiKey: 'AIzaX', anthropicKey: 'a' }, { system: 'S', messages: [{ role: 'user', content: 'x' }] });
   global.fetch = antes;
   assert.equal(r.type, 'error');
-  assert.match(r.error.message, /credit balance/);
-  assert.match(r.error.gemini.message, /chave sem permissão/);
+  assert.match(r.error.message, /chave sem permissão/);
+  assert.match(r.error.anthropic.message, /credit balance/);
 });
 
 test('modo JSON: pede ao Gemini resposta só em JSON', async () => {
