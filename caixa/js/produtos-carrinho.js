@@ -342,10 +342,8 @@ function cancelarVendaAtual(){
 
 function openCartModal(){
   if(cart.length===0) return;
-  renderCartItems();
-  carregarMotoboys();
-  carregarTaxaEntregaPadrao();
-  resetPagamento();
+  // o carrinho SEMPRE abre com os itens; se algum carregamento auxiliar falhar (banco lento, motoboys, taxa), o resto segue
+  [renderCartItems,carregarMotoboys,carregarTaxaEntregaPadrao,resetPagamento].forEach(f=>{ try{ const r=f(); if(r&&r.catch) r.catch(e=>console.warn('carrinho:',e)); }catch(e){ console.warn('carrinho:',e); } });
   openModal('modal-cart');
 }
 // ── BORDA direto no carrinho: um toque em cada pizza (avulsa, meia a meia, broto e combos — no combo, uma por pizza) ──

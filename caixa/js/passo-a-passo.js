@@ -123,7 +123,10 @@ function ppMeia(id){
   ppIr('borda',{alvo:'meia',meiaB:m,borda:0,rem:[]});
 }
 function ppFechar(tipoVenda){
-  const sel=document.getElementById('f-tipo'); if(sel){ sel.value=tipoVenda; alternarCampoEntregador(); }
-  fecharPasso();
+  // fecha o passo a passo e MOSTRA o pedido no carrinho — cada etapa protegida: um erro numa delas não pode impedir de abrir o carrinho
+  try{ const sel=document.getElementById('f-tipo'); if(sel){ sel.value=tipoVenda; alternarCampoEntregador(); } }catch(e){ console.warn('ppFechar tipo:',e); }
+  window._ppAtivo=false; try{ document.getElementById('pp-ov').classList.remove('open'); }catch(e){}
+  try{ renderProdutos(); }catch(e){ console.warn('ppFechar produtos:',e); }
+  try{ atualizarBarraCarrinho(); }catch(e){ console.warn('ppFechar barra:',e); }
   if(cart.length) openCartModal(); else avisoRapido('Carrinho vazio');
 }
