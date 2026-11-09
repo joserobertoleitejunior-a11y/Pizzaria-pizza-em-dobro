@@ -14,11 +14,12 @@ const PP_TIPOS=[
   {id:'calz',ico:'🥙',nome:'Calzones',sub:'doces'}
 ];
 function abrirPasso(){
-  window._ppAtivo=true; _pp={passo:cart.length?'mais':'tipo',tipo:null,meiaA:null};
+  window._ppAtivo=true; window._ppBackup=cart.length?JSON.parse(JSON.stringify(cart)):null; _pp={passo:cart.length?'mais':'tipo',tipo:null,meiaA:null};
   document.getElementById('pp-ov').classList.add('open'); ppRender();
 }
 function fecharPasso(){ window._ppAtivo=false; document.getElementById('pp-ov').classList.remove('open'); renderProdutos(); }
-function ppIr(passo,extra){ Object.assign(_pp,{passo},extra||{}); ppRender(); }
+function _ppGuardar(){ try{ if(cart.length) window._ppBackup=JSON.parse(JSON.stringify(cart)); }catch(e){} } // cópia do pedido em andamento: se algo esvaziar o carrinho no meio, o fim do passo a passo recupera
+function ppIr(passo,extra){ _ppGuardar(); Object.assign(_pp,{passo},extra||{}); ppRender(); }
 function ppAposAdicionar(){ if(!window._ppAtivo) return; if(_pp.destino){ const d=_pp.destino; _pp.destino=null; ppIr(d); return; } if(_pp.passo==='item'&&(_pp.tipo==='combo'||_pp.tipo==='broto')){ ppIr('cborda'); return; } if(_pp.passo==='item'&&(_pp.tipo==='pizza'||_pp.tipo==='combo'||_pp.tipo==='broto'||_pp.tipo==='meia'||_pp.tipo==='esf')) ppIr('mais'); else ppRender(); }
 
 function _ppResumo(){
@@ -125,6 +126,8 @@ function ppMeia(id){
 function ppFechar(tipoVenda){
   // fecha o passo a passo e MOSTRA o pedido no carrinho — cada etapa protegida: um erro numa delas não pode impedir de abrir o carrinho
   try{ const sel=document.getElementById('f-tipo'); if(sel){ sel.value=tipoVenda; alternarCampoEntregador(); } }catch(e){ console.warn('ppFechar tipo:',e); }
+  _ppGuardar();
+  if(!cart.length&&window._ppBackup&&window._ppBackup.length){ console.warn('ppFechar: carrinho veio vazio, recuperando o pedido do passo a passo'); cart=window._ppBackup; }
   window._ppAtivo=false; try{ document.getElementById('pp-ov').classList.remove('open'); }catch(e){}
   try{ renderProdutos(); }catch(e){ console.warn('ppFechar produtos:',e); }
   try{ atualizarBarraCarrinho(); }catch(e){ console.warn('ppFechar barra:',e); }

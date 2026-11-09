@@ -336,7 +336,7 @@ function atualizarBarraCarrinho(){
 function cancelarVendaAtual(){
   if(cart.length===0) return;
   if(!confirm('Cancelar a venda em andamento e limpar o caixa?')) return;
-  cart=[];
+  cart=[]; window._ppBackup=null;
   atualizarBarraCarrinho();
 }
 
@@ -642,7 +642,7 @@ async function _finalizarVenda(){
     // impressora desconectada: a venda já está salva — guarda a comanda e oferece conectar na hora
     if(!impressoraPronta()) guardarCupomPendente(formatarCupom(pedido));
     else try{ await imprimirBluetooth(formatarCupom(pedido)); }catch(e){ guardarCupomPendente(formatarCupom(pedido)); }
-    cart=[];
+    cart=[]; window._ppBackup=null;
     atualizarBarraCarrinho();
     closeModal('modal-cart');
     document.getElementById('f-nome').value='';
