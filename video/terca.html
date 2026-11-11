@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pizza em Dobro — Terça das esfihas</title><link rel="stylesheet" href="corte.css"></head>
+<body><div id="palco"></div>
+<div id="capa"><div>Terça das esfihas · 1080×1920</div><button id="btSom" type="button">▶ Assistir com áudio</button><button id="btMudo" type="button">Sem som</button></div>
+<audio id="som" src="audio-terca.mp3" preload="auto"></audio>
+<script src="corte.js"></script>
+<script>Corte.iniciar({dia:'Terça das esfihas',cor:'#e8541e',ouro:'#ffc933',tempos:'tempos-terca.json',cenas:[
+{id:'s1',foto:'fotos/esfihas.jpg',pos:'50% 60%',anim:'zin',fala:"Terça é dia de esfiha!",dest:["esfiha"]},
+{id:'s2',foto:'fotos/esfihas.jpg',pos:'25% 75%',anim:'pl',fala:"Carne, frango com catupiry, calabresa, bacon e duas doces.",dest:["carne", "frango", "calabresa", "bacon", "doces"]},
+{id:'s3',foto:'fotos/esfihas.jpg',pos:'75% 70%',anim:'pr',fala:"Cada uma por R$ 5!",dest:["cada"],selo:"R$ 5",seloTopo:"CADA"},
+{id:'s4',foto:'fotos/esfihas.jpg',pos:'50% 40%',anim:'zout',fala:"10 por R$ 50 e a entrega é grátis!",dest:["grátis"],selo:"R$ 50",seloTopo:"10 POR"},
+{id:'fim',fim:true,fala:"Pizza em Dobro. Bora de esfiha?",dest:['pizza','dobro']}
+]});</script></body></html>

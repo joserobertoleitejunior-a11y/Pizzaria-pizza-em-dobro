@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pizza em Dobro — Segunda de combo</title><link rel="stylesheet" href="corte.css"></head>
+<body><div id="palco"></div>
+<div id="capa"><div>Segunda de combo · 1080×1920</div><button id="btSom" type="button">▶ Assistir com áudio</button><button id="btMudo" type="button">Sem som</button></div>
+<audio id="som" src="audio-segunda.mp3" preload="auto"></audio>
+<script src="corte.js"></script>
+<script>Corte.iniciar({dia:'Segunda de combo',cor:'#c8281f',ouro:'#e9a400',tempos:'tempos-segunda.json',cenas:[
+{id:'s1',foto:'fotos/dobro-led.jpg',pos:'50% 8%',anim:'zin',fala:"Segunda pesada? A pizza chega pra salvar!",dest:["pizza", "salvar"]},
+{id:'s2',foto:'fotos/portuguesa.jpg',pos:'50% 50%',anim:'zout',fala:"Duas pizzas grandes a partir de R$ 65.",dest:["grandes"],selo:"R$ 65",seloTopo:"A PARTIR DE"},
+{id:'s3',foto:'fotos/frango-bacon.jpg',pos:'50% 50%',anim:'pl',fala:"Escolha: mussarela, calabresa, frango com catupiry.",dest:["mussarela", "calabresa", "frango"]},
+{id:'s4',foto:'fotos/peperone.jpg',pos:'50% 55%',anim:'pr',fala:"Com 3 pizzas, a entrega é grátis!",dest:["grátis"],selo:"GRÁTIS",seloTopo:"ENTREGA"},
+{id:'fim',fim:true,fala:"Pizza em Dobro. Peça agora!",dest:['pizza','dobro']}
+]});</script></body></html>

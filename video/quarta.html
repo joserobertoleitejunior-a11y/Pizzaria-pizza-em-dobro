@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pizza em Dobro — Quarta do broto</title><link rel="stylesheet" href="corte.css"></head>
+<body><div id="palco"></div>
+<div id="capa"><div>Quarta do broto · 1080×1920</div><button id="btSom" type="button">▶ Assistir com áudio</button><button id="btMudo" type="button">Sem som</button></div>
+<audio id="som" src="audio-quarta.mp3" preload="auto"></audio>
+<script src="corte.js"></script>
+<script>Corte.iniciar({dia:'Quarta do broto',cor:'#1e7a3c',ouro:'#ffd23f',tempos:'tempos-quarta.json',cenas:[
+{id:'s1',foto:'fotos/calabresa.jpg',pos:'50% 45%',anim:'zin',fala:"Quarta pede uma pizza só pra você!",dest:["você"]},
+{id:'s2',foto:'fotos/brocolis-bacon.jpg',pos:'50% 45%',anim:'zout',fala:"Combo broto: 2 pizzas broto por R$ 50.",dest:["broto"],selo:"R$ 50",seloTopo:"2 BROTOS"},
+{id:'s3',foto:'fotos/portuguesa.jpg',pos:'50% 50%',anim:'pl',fala:"Qualquer sabor do cardápio, pode repetir!",dest:["qualquer", "repetir"]},
+{id:'s4',foto:'fotos/frango-bacon.jpg',pos:'50% 50%',anim:'pr',fala:"Tradicional ou especial: você escolhe.",dest:["você"]},
+{id:'fim',fim:true,fala:"Pizza em Dobro. Pede a sua!",dest:['pizza','dobro']}
+]});</script></body></html>

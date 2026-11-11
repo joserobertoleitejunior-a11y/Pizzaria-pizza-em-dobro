@@ -1,0 +1,40 @@
+/* Estilo "corte rápido": foto em tela cheia, cortes secos no ritmo da voz, legenda grande palavra por palavra, selo de preço e final com carimbo. */
+@font-face{font-family:'Archivo Black';src:url(fontes/ArchivoBlack-Regular.ttf)}
+@font-face{font-family:'Work Sans';src:url(fontes/WorkSans.ttf);font-weight:100 900}
+:root{--cor:#c8281f;--ouro:#e9a400;--tinta:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#111;height:100%;overflow:hidden}
+#palco{position:relative;width:1080px;height:1920px;background:#000;overflow:hidden;transform-origin:0 0;font-family:'Work Sans',sans-serif;color:#fff}
+body.gravando #palco{transform:none!important}body.gravando #capa{display:none!important}
+.a{animation-duration:.5s;animation-fill-mode:both;animation-timing-function:cubic-bezier(.2,.8,.2,1);animation-play-state:paused;animation-delay:calc(var(--d,0s) - var(--u,0s))}
+@keyframes pop{0%{opacity:0;transform:scale(.4) rotate(-12deg)}70%{opacity:1;transform:scale(1.12) rotate(-6deg)}100%{opacity:1;transform:scale(1) rotate(-6deg)}}
+@keyframes wpop{0%{opacity:0;transform:scale(.5) translateY(20px)}70%{opacity:1;transform:scale(1.1)}100%{opacity:1;transform:none}}
+@keyframes up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes zIn{from{transform:scale(1.04)}to{transform:scale(1.22)}}
+@keyframes zOut{from{transform:scale(1.24)}to{transform:scale(1.04)}}
+@keyframes pL{from{transform:scale(1.2) translateX(4%)}to{transform:scale(1.2) translateX(-4%)}}
+@keyframes pR{from{transform:scale(1.2) translateX(-4%)}to{transform:scale(1.2) translateX(4%)}}
+@keyframes carimbo{0%{opacity:0;transform:scale(2.8) rotate(-22deg)}55%{opacity:1;transform:scale(.9) rotate(-6deg)}78%{transform:scale(1.04) rotate(-9deg)}100%{opacity:1;transform:scale(1) rotate(-8deg)}}
+@keyframes onda{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(1.9)}}
+.cena{position:absolute;inset:0;display:none;overflow:hidden}.cena.on{display:block}
+.foto{position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;animation-duration:12s;animation-timing-function:linear;animation-fill-mode:both;animation-play-state:paused;animation-delay:calc(0s - var(--u,0s))}
+.veu{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,0) 28%,rgba(0,0,0,0) 52%,rgba(0,0,0,.78) 100%)}
+.dia{position:absolute;left:54px;top:70px;background:var(--cor);color:#fff;font:400 40px 'Archivo Black';padding:14px 30px;border-radius:50px;letter-spacing:1px;text-transform:uppercase;z-index:5;box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.barra{position:absolute;left:54px;right:54px;top:34px;height:8px;border-radius:4px;background:rgba(255,255,255,.3);z-index:6;overflow:hidden}.barra i{display:block;height:100%;background:var(--ouro);width:0}
+.selo{position:absolute;right:50px;top:300px;width:330px;height:330px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#1b1714;background:var(--ouro);font:400 74px/1 'Archivo Black';z-index:4;clip-path:polygon(50% 0%,61% 12%,76% 6%,80% 21%,95% 25%,89% 40%,100% 50%,89% 60%,95% 75%,80% 79%,76% 94%,61% 88%,50% 100%,39% 88%,24% 94%,20% 79%,5% 75%,11% 60%,0% 50%,11% 40%,5% 25%,20% 21%,24% 6%,39% 12%);animation-name:pop}
+.selo small{display:block;font:800 34px 'Work Sans';letter-spacing:1px}
+.leg{position:absolute;left:50px;right:50px;top:1250px;height:360px;display:flex;align-items:center;justify-content:center;text-align:center;z-index:5}
+.bl{position:absolute;left:0;right:0;font:400 104px/1.04 'Archivo Black';text-transform:uppercase;letter-spacing:-1px;text-shadow:0 5px 0 rgba(0,0,0,.55),0 0 24px rgba(0,0,0,.65)}
+.w{display:inline-block;font-style:normal;animation-name:wpop;animation-duration:.28s;margin:0 7px}
+.w.d{color:var(--ouro)}
+.fim .fbg{position:absolute;inset:0;background:url(../assets/fachada-fundo.jpg) center/cover}
+.fim .fveu{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,.1) 40%,rgba(0,0,0,.6))}
+.carimbo{position:absolute;left:50%;top:430px;width:640px;height:640px;margin-left:-320px;z-index:2;filter:drop-shadow(0 18px 30px rgba(0,0,0,.6));animation-name:carimbo;animation-duration:.55s;animation-timing-function:cubic-bezier(.2,.9,.25,1.2)}
+.onda{position:absolute;left:50%;top:750px;width:560px;height:560px;margin:-280px 0 0 -280px;border-radius:50%;border:8px solid rgba(255,255,255,.7);animation-name:onda;animation-duration:.9s}
+.fim .url{position:absolute;left:0;right:0;top:1130px;text-align:center;font:400 52px 'Archivo Black';color:var(--ouro);text-shadow:0 3px 14px #000;z-index:3}
+.fim .ig{position:absolute;left:0;right:0;top:1215px;text-align:center;font:800 42px 'Work Sans';text-shadow:0 3px 14px #000;z-index:3}
+.fim .leg{top:1330px;height:240px}.fim .bl{font-size:84px}
+.credito{position:absolute;left:0;right:0;bottom:46px;text-align:center;font:700 15px 'Work Sans';letter-spacing:3px;color:rgba(255,255,255,.75);z-index:6}
+#capa{position:fixed;inset:0;background:rgba(0,0,0,.85);color:#fff;display:flex;flex-direction:column;gap:20px;align-items:center;justify-content:center;font:600 22px 'Work Sans';z-index:9}
+#capa button{font:700 22px 'Work Sans';padding:16px 30px;border-radius:40px;border:0;background:#c8281f;color:#fff}
