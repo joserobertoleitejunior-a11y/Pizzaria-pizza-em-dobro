@@ -38,3 +38,47 @@ body.gravando #palco{transform:none!important}body.gravando #capa{display:none!i
 .credito{position:absolute;left:0;right:0;bottom:46px;text-align:center;font:700 15px 'Work Sans';letter-spacing:3px;color:rgba(255,255,255,.75);z-index:6}
 #capa{position:fixed;inset:0;background:rgba(0,0,0,.85);color:#fff;display:flex;flex-direction:column;gap:20px;align-items:center;justify-content:center;font:600 22px 'Work Sans';z-index:9}
 #capa button{font:700 22px 'Work Sans';padding:16px 30px;border-radius:40px;border:0;background:#c8281f;color:#fff}
+
+/* ═══ TEMAS (cada dia um visual): margem/moldura, cores, legenda e clima ═══ */
+#palco::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:20}
+.cena .clip{position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;background:#000}
+/* 1 neon: noite, brilho vermelho */
+body[data-tema=neon] #palco{background:#0b0610}
+body[data-tema=neon] #palco::after{inset:26px;border:7px solid #ff2d55;border-radius:34px;box-shadow:0 0 36px #ff2d55,inset 0 0 36px rgba(255,45,85,.7)}
+body[data-tema=neon] .dia{background:#0b0610;color:#ffe45e;border:4px solid #ffe45e;box-shadow:0 0 18px #ffe45e;top:84px;left:70px}
+body[data-tema=neon] .bl{text-shadow:0 0 14px #ff2d55,0 0 38px #ff2d55,0 4px 0 #000}
+body[data-tema=neon] .veu{background:linear-gradient(180deg,rgba(11,6,16,.7),rgba(0,0,0,0) 30%,rgba(0,0,0,0) 50%,rgba(11,6,16,.85))}
+/* 2 xadrez: toalha vermelha e branca */
+body[data-tema=xadrez] #palco::after{padding:52px;background:repeating-conic-gradient(#c8281f 0 25%,#fff 0 50%) 0 0/104px 104px;-webkit-mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+body[data-tema=xadrez] .cena{inset:52px}
+body[data-tema=xadrez] .dia{background:#fff7e6;color:#c8281f;top:96px;left:86px;box-shadow:0 6px 0 #c8281f}
+body[data-tema=xadrez] .leg{left:90px;right:90px;top:1220px}
+body[data-tema=xadrez] .bl{background:#fff7e6;color:#c8281f;text-shadow:none;border-radius:26px;padding:16px 22px;font-size:84px;box-shadow:0 8px 0 rgba(0,0,0,.25);height:auto;top:50%;transform:translateY(-50%)}
+body[data-tema=xadrez] .w.d{color:#1e7a3c}
+/* 3 quadrinhos (HQ) */
+body[data-tema=hq] #palco::after{inset:0;border:20px solid #111;box-shadow:inset 0 0 0 10px #fff;background:radial-gradient(rgba(0,0,0,.28) 22%,transparent 24%) 0 0/16px 16px;mix-blend-mode:multiply;opacity:.55}
+body[data-tema=hq] .dia{background:#ffe34d;color:#111;border:5px solid #111;border-radius:6px;transform:rotate(-3deg);box-shadow:8px 8px 0 #111}
+body[data-tema=hq] .bl{background:#fff;color:#111;text-shadow:none;border:6px solid #111;border-radius:42px;padding:18px 26px;font-size:78px;box-shadow:10px 10px 0 #111;height:auto;top:50%;transform:translateY(-50%) rotate(-2deg)}
+body[data-tema=hq] .w.d{color:#e63946}
+/* 4 cinema (food porn): tarja preta, letras finas douradas */
+body[data-tema=cinema] #palco::after{background:linear-gradient(#000 0 230px,transparent 230px calc(100% - 330px),#000 calc(100% - 330px))}
+body[data-tema=cinema] .dia{background:none;box-shadow:none;color:#e8c26a;font:600 30px 'Work Sans';letter-spacing:10px;top:96px;left:0;right:0;text-align:center;z-index:25;padding:0}
+body[data-tema=cinema] .barra{top:200px}
+body[data-tema=cinema] .leg{top:1630px;height:200px;z-index:30}
+body[data-tema=cinema] .bl{font:600 52px/1.2 'Work Sans';letter-spacing:8px;text-transform:lowercase;color:#f4e3b5;text-shadow:none}
+body[data-tema=cinema] .w.d{color:#e8c26a;font-weight:800}
+body[data-tema=cinema] .selo{top:330px;z-index:25}
+/* 5 clean: margem branca arredondada, estilo Instagram */
+body[data-tema=clean] #palco{background:#fdf1e3}
+body[data-tema=clean] .cena{inset:54px 54px 330px;border-radius:64px}
+body[data-tema=clean] .dia{top:96px;left:90px;background:#fff;color:#c8281f}
+body[data-tema=clean] .leg{top:1620px;height:230px;z-index:30}
+body[data-tema=clean] .bl{color:#1b1714;text-shadow:none;font-size:80px}
+body[data-tema=clean] .w.d{color:var(--cor)}
+body[data-tema=clean] .barra{top:24px}
+body[data-tema=clean] .selo{top:330px}
+/* 6 retrô anos 80: grade, magenta e ciano */
+body[data-tema=retro] #palco::after{inset:0;border:22px solid transparent;border-image:linear-gradient(135deg,#ff2bd6,#25e8ff) 1;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 6px)}
+body[data-tema=retro] .dia{background:linear-gradient(90deg,#ff2bd6,#25e8ff);color:#fff;border-radius:6px;transform:skewX(-10deg)}
+body[data-tema=retro] .bl{color:#fff;-webkit-text-stroke:3px #2a0a4a;text-shadow:7px 7px 0 #ff2bd6,-3px -3px 0 #25e8ff}
+body[data-tema=retro] .w.d{color:#25e8ff}
