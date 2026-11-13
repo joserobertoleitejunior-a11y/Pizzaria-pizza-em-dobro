@@ -45,23 +45,23 @@ Historia.iniciar({
     {id:'lu',look:{uniforme:true,bone:true}}
   ],
   cenas:[
-   {id:'s1',cartela:'Domingo, 18h42',fala:'O Zé só queria uma pizza.',dest:['pizza'],cam:[[700,960,1],[1250,960,1]],
+   {id:'s1',cartela:'Domingo, 18h42',fala:'Domingo, 18h42. O Zé só queria uma pizza.',dest:['pizza'],cam:[[700,960,1],[1250,960,1]],
     ator:{ze:function(u,d,k){var p=andar(TAU*F*u);p.x=380+1000*k;p.boca='sorriso';return p;},lu:function(){return {alfa:0};}},
-    baloes:[{quem:'ze',t0:.5,t1:2.9,txt:'Só uma pizzinha!'}]},
-   {id:'s2',cartela:'Na pizzaria…',fala:'Entrou na Pizza em Dobro e foi ver o cardápio.',dest:['pizza','dobro'],cam:[[1450,1050,1.1],[1500,1130,1.55]],
-    ator:{ze:function(u,d,k){var p=andar(TAU*F*u,k<.8?1:.0);p.x=1380+120*Math.min(1,k/.8);if(k>.75){p.alfa=Math.max(0,1-(k-.75)/.2);p.esc=1-.12*((k-.75)/.25);}p.boca='sorriso';return p;},lu:function(){return {alfa:0};}},
     baloes:[]},
-   {id:'s3',corte:true,fala:'Duas por R$ 65, e com 3 pizzas a entrega é grátis!',dest:['r$','grátis','3'],cam:[[2300,1000,1.0],[2330,880,1.5]],
+   {id:'s2',cartela:'Na pizzaria…',fala:'',dest:[],cam:[[1450,1050,1.1],[1500,1130,1.55]],
+    ator:{ze:function(u,d,k){var p=andar(TAU*F*u,k<.8?1:.0);p.x=1380+120*Math.min(1,k/.8);if(k>.75){p.alfa=Math.max(0,1-(k-.75)/.2);p.esc=1-.12*((k-.75)/.25);}p.boca='sorriso';return p;},lu:function(){return {alfa:0};}},
+    baloes:[{quem:'ze',t0:.2,t1:2.1,txt:'Só uma pizzinha, e já volto!'}]},
+   {id:'s3',corte:true,fala:'',dest:[],cam:[[2300,1000,1.0],[2330,880,1.5]],
     ator:{ze:function(u,d,k){return {x:2170,cab:-14,olhar:3,sobr:-8,boca:u<2.6?'surpreso':'aberta',sobe:Math.sin(u*3)*4,oD:10,eD:12,oE:u>1?-30:5,eE:u>1?90:12};},lu:function(){return {alfa:0};}},
-    baloes:[{quem:'ze',t0:.5,t1:2.6,txt:'2 por R$ 65?!'},{quem:'ze',t0:2.7,t1:4.9,txt:'3 pizzas, entrega grátis?'}]},
-   {id:'s4',cartela:'O atendente',fala:'O atendente sorriu: mais uma pizza vai ser ótimo, né?',dest:['mais','ótimo'],cam:[[2420,1000,1.2],[2640,930,1.95]],
+    baloes:[{quem:'ze',t0:.3,t1:1.9,txt:'Duas por R$ 65?!'},{quem:'ze',t0:2.0,t1:3.7,txt:'Com 3, entrega grátis?'}]},
+   {id:'s4',cartela:'O atendente',fala:'',dest:[],cam:[[2420,1000,1.2],[2640,930,1.95]],
     ator:{ze:function(u,d,k){return {x:2310,sobr:-10,boca:'surpreso',olhar:4,oD:8,eD:10,oE:8,eE:12};},
           lu:function(u,d,k){var w=Math.sin(u*9);return {x:2620,dir:-1,boca:'sorriso',oD:10,eD:12,oE:150+12*w,eE:30+20*w,cab:4*Math.sin(u*3),sobe:Math.sin(u*3)*4};}},
-    baloes:[{quem:'lu',t0:.5,t1:3.4,txt:'Mais uma pizza vai ser ótimo!'}]},
-   {id:'s5',corte:true,cartela:'Hora de ir…',fala:'O Zé veio comprar uma. Saiu com três!',dest:['três'],cam:[[2500,1000,1.1],[2250,1000,1.0]],
+    baloes:[{quem:'lu',t0:.3,t1:3.0,txt:'E aí, vai levar mais uma? Vai ser ótimo!'},{quem:'ze',t0:3.2,t1:5.3,txt:'Ah… então põe mais uma.'}]},
+   {id:'s5',corte:true,cartela:'Hora de ir…',fala:'O Zé veio comprar uma. Saiu com três.',dest:['três'],cam:[[2500,1000,1.1],[2250,1000,1.0]],
     ator:{ze:function(u,d,k){var p=andar(TAU*F*u,.55);p.x=2480-420*k;p.dir=-1;p.caixas=3;p.oD=70;p.eD=60;p.oE=70;p.eE=60;p.boca=k<.5?'preocupado':'sorriso';p.sobr=k<.5?-10:0;return p;},
           lu:function(u){var w=Math.sin(u*8);return {x:2660,dir:-1,boca:'aberta',oD:10,eD:12,oE:140+14*w,eE:20,sobe:Math.sin(u*4)*3};}},
-    baloes:[{quem:'ze',t0:.4,t1:2.2,txt:'Eu vim buscar UMA…'},{quem:'ze',t0:2.4,t1:4.4,txt:'Valeu cada fatia!'}]},
-   {id:'fim',fim:true,f1:'DOMINGO ESPECIAL',f2:'Quem entra, não sai com uma só!',fala:'Pizza em Dobro. Quem entra, não sai com uma só!',dest:[],cam:[[1440,960,1],[1440,960,1]],ator:{},baloes:[]}
+    baloes:[{quem:'ze',t0:2.9,t1:4.5,txt:'Eu vim buscar UMA!'}]},
+   {id:'fim',fim:true,f1:'DOMINGO ESPECIAL',f2:'Quem entra, não sai com uma só!',fala:'Pizza em Dobro. Quem entra, não sai com uma só.',dest:[],cam:[[1440,960,1],[1440,960,1]],ator:{},baloes:[]}
   ]});
 </script></body></html>

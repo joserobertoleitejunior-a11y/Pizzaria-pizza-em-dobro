@@ -1,38 +1,60 @@
-# Domingo especial — "O Zé só queria uma pizza" (micro história, 25 s)
+# Domingo especial — "O Zé só queria uma pizza" (micro história, ~25 s)
 
-Idéia: o Zé entra pra comprar UMA pizza e sai com TRÊS. Mostra combo (2 por R$ 65) + entrega grátis com 3 pizzas + o atendente da casa ("mais uma pizza vai ser ótimo!"). Só aos domingos, como especial.
+O Zé entra pra comprar UMA pizza e sai com TRÊS. Mostra combo (2 por R$ 65), entrega grátis com 3 pizzas e o atendente da casa. Só aos domingos, como especial.
 
-## 1) PROMPT PARA O CHATGPT (gere a imagem do cenário)
-Anexe a **foto da fachada** (a mesma do site) e cole:
+## 1) PROMPT PARA O CHATGPT — a HISTÓRIA INTEIRA em UMA página de quadrinhos
+Anexe a **foto da fachada** e cole (formato retrato 2:3, 1024×1536):
 
-> Crie UMA ilustração de cenário em formato paisagem 3:2 (1536×1024), estilo desenho animado simples, "doodle" com contorno preto grosso e cores chapadas (sem degradês nem sombras realistas), combinando com bonecos de palito. Use a foto anexa como referência da fachada. **Sem nenhuma pessoa e nenhum personagem** na imagem. É um cenário contínuo que se lê da esquerda para a direita, ao entardecer (céu azul-escuro virando laranja):
->
-> **0–35% da largura (esquerda): a rua.** Calçada larga e vazia, um poste de luz aceso, uma árvore pequena, meio-fio e rua cinza com faixa tracejada.
-> **35–69% (centro): a fachada da pizzaria**, igual à foto: parede preta, letras vermelhas "PIZZA EM DOBRO" no alto, "DELIVERY" em amarelo com o telefone "15 99705-8390", janelinha quadrada, número 824, base com faixa amarela e vermelha, e o mascote (fatia de pizza amarela com boné vermelho, luvas brancas e tênis vermelhos) pintado na parede, à direita da porta. A **porta de enrolar está aberta**, no centro da fachada, mostrando o interior; capacho preto na entrada.
-> **69–100% (direita): o interior** (continua depois da porta, como se a câmera tivesse entrado): parede creme, **três quadros de cardápio na parede com ilustrações de pizza e SEM texto**, balcão preto com luminoso vermelho "PIZZA EM DOBRO", vaso de planta, piso de cerâmica bege.
-> **REGRAS DE ENQUADRAMENTO (importante):** o **chão** (calçada, soleira da porta e piso interno) fica numa **única linha horizontal em 81% da altura da imagem** (a partir do topo). A porta aberta fica centrada em 52% da largura. Nada cobrindo o chão. Deixe espaço livre em frente à fachada e em frente ao balcão para os bonecos andarem. Não escreva nenhum outro texto. Sem moldura, sem marca d'água.
+> Crie UMA página de história em quadrinhos, vertical 2:3 (1024×1536), no **estilo dos quadrinhos americanos de super-herói** (arte-final em nanquim forte e dramática, contornos pretos grossos com variação de espessura, cores vibrantes e saturadas, pontilhado de impressão "halftone/Ben-Day" nas sombras, iluminação de cinema, perspectiva dinâmica, linhas de ação) — **mas é uma cena do dia a dia: sem super-heróis, sem capas, sem poderes, sem personagens famosos e sem nenhum logotipo de editora**. Usando a foto anexa como referência da fachada.
+> **NENHUMA PESSOA E NENHUM PERSONAGEM nos quadros** (os bonecos entram depois). **Sem balões de fala e sem legendas de texto** (só a placa da loja pode ter texto: "PIZZA EM DOBRO").
+> A página tem **5 quadros** com moldura preta grossa e calha branca de 2,5% entre eles, posicionados assim (medidas em % da página, a partir do canto superior esquerdo):
+> **Quadro A** (x 3–62%, y 3–31%): a rua e a calçada ao entardecer, poste de luz aceso, árvore, e a **fachada da pizzaria igual à foto** chegando pela direita.
+> **Quadro B** (x 64,5–97%, y 3–31%): close na **porta de enrolar aberta** da pizzaria, capacho preto, luz quente saindo de dentro.
+> **Quadro C** (x 3–97%, y 33,5–62%): o **interior**, largo: parede creme, **3 quadros de cardápio na parede com ilustração de pizza e SEM texto**, balcão preto com luminoso vermelho "PIZZA EM DOBRO", planta, piso bege.
+> **Quadro D** (x 3–50%, y 64,5–97%): o **balcão visto de frente**, com espaço livre atrás dele para uma pessoa em pé, parede ao fundo, luz quente.
+> **Quadro E** (x 52,5–97%, y 64,5–97%): a **saída da pizzaria vista de dentro**, porta aberta para a rua de noite chegando, calçada.
+> **REGRAS:** em cada quadro, o **chão** (piso ou calçada) é uma **linha horizontal reta a 85% da altura daquele quadro**, com espaço livre à frente para bonecos andarem. Os quadros precisam seguir **exatamente** as medidas acima. Paleta: preto, vermelho #C8281F, amarelo #F5B800, creme. Sem marca d'água.
 
-**Se a placa "PIZZA EM DOBRO" sair com letra errada**, peça: "Refaça deixando a placa e os quadros em branco" — eu escrevo o texto certo por código em cima.
-Mande a imagem aqui. Eu encaixo (linha do chão, porta, balcão) e ligo a câmera.
+Dica de qualidade: a página será ampliada (zoom nos quadros). Se o ChatGPT mandar 1024×1536, passe por um ampliador gratuito (Upscayl) em 2× antes de me mandar. Se algum quadro sair fora do lugar, peça "refaça mantendo os quadros nas posições exatas" ou me mande assim mesmo que eu meço e ajusto a câmera.
 
-## 2) PERSONAGENS (em HTML, já prontos)
-- **Zé** (cliente): camiseta azul, anda, surpreende, carrega as 3 caixas.
-- **Atendente da casa**: **uniforme preto com ombros vermelhos, gola polo, faixa amarela, logotipo da pizzaria no peito (círculo) + crachá "EQUIPE" + boné vermelho com o logo**. Acena e sorri.
-- Anda de verdade (passos, braços), balança no lugar, faz cara de surpresa/preocupado/feliz e fala em balões.
-Imagens do andamento: `historia-andamento.jpg` e `historia-uniforme.jpg`.
+## 2) PERSONAGENS (HTML, já prontos)
+- **Zé:** camiseta azul; anda, se espanta, fica preocupado, carrega as 3 caixas.
+- **Atendente (Lu):** uniforme preto + ombros vermelhos + gola polo + faixa amarela + **logo da pizzaria no peito** + crachá "EQUIPE" + boné vermelho com o logo.
+(Imagens de andamento: `historia-andamento.jpg`, `historia-uniforme.jpg`. O cenário que aparece ali é provisório; entra a sua página quando chegar.)
 
-## 3) ROTEIRO (voz A — feminina, narradora) — cole no ElevenLabs
-Pausa curta (0.5 s) pra caber em 25 s. Mesmas regras do passo a passo (`ROTEIROS-2.md`): modelo Multilingual v2, Stability 40, Similarity 75, Style 30, não corrigir a escrita.
+## 3) ROTEIRO COM VOZES DIFERENTES (ElevenLabs)
+**3 vozes, 3 áudios.** Cada voz grava SÓ as falas dela, na ordem, com pausa de 1,2 s entre elas (eu corto nas pausas e encaixo no vídeo). Regras de sempre: Multilingual v2, português do Brasil, Stability 35 (mais emoção) · Similarity 75 · Style 40, não corrigir a escrita, não adicionar nada. Teste antes: `Pizza em Dobro: a pizza, a esfía e o Pics de hoje!`
+
+### 🎙 NARRADORA — voz A (feminina, 30–40, voz de contadora de histórias, calorosa, com um sorriso na voz)
 ```
-O Zé só queria uma pizza. <break time="0.5s" /> Entrou na Pizza em Dobro e foi ver o cardápio. <break time="0.5s" /> Duas por sessenta e cinco reais, e com três pizzas a entrega é grátis! <break time="0.5s" /> O atendente sorriu: mais uma pizza vai ser ótimo, né? <break time="0.5s" /> O Zé veio comprar uma. Saiu com três! <break time="0.5s" /> Pizza em Dobro. Quem entra, não sai com uma só!
+Domingo, seis e quarenta e dois da tarde. O Zé só queria uma pizza. <break time="1.2s" /> O Zé veio comprar uma. Saiu com três. <break time="1.2s" /> Pizza em Dobro. Quem entra, não sai com uma só.
 ```
-## 4) STORYBOARD (cena × câmera × balão)
-| # | Tempo | O que acontece | Câmera | Balão (texto na tela) |
-|---|---|---|---|---|
-| 1 | 0–3,5 s | Zé caminha pela calçada até a fachada | pan largo da rua pra fachada | "Só uma pizzinha!" |
-| 2 | –7 s | chega na porta e entra | zoom na porta | — |
-| 3 | –12 s | dentro, olha o cardápio, cara de espanto | zoom no quadro | "2 por R$ 65?!" · "3 pizzas, entrega grátis?" |
-| 4 | –16 s | atendente (uniforme com logo) acena | zoom no peito/logo e rosto | "Mais uma pizza vai ser ótimo!" |
-| 5 | –21 s | Zé sai com 3 caixas | recua | "Eu vim buscar UMA…" · "Valeu cada fatia!" |
-| 6 | –25 s | carimbo do logo + fachada | — | "Quem entra, não sai com uma só!" |
-Duração real = a do áudio (a gente ajusta cena a cena pela fala).
+Direção: 1ª frase leve e curiosa; 2ª com ironia, "uma" e "três" bem marcadas; 3ª firme e sorrindo, final descendo.
+
+### 🎙 ZÉ — voz masculina jovem (25–35, animada, meio atrapalhada, interior de SP)
+```
+Só uma pizzinha, e já volto! <break time="1.2s" /> Duas por sessenta e cinco reais?! <break time="0.6s" /> Com três, entrega grátis? <break time="1.2s" /> Ah... então põe mais uma. <break time="1.2s" /> Eu vim buscar UMA!
+```
+(Entre "reais?!" e "Com três" pausa só de 0,6 s: são dois balões da mesma cena.)
+Direção: 1ª despreocupado; 2ª e 3ª espantado, subindo o tom; 4ª rendido, rindo; 5ª incrédulo e engraçado, a palavra UMA em destaque.
+
+### 🎙 ATENDENTE LU — voz feminina jovem (22–30, simpática, rápida, sorridente), diferente da narradora
+```
+E aí, vai levar mais uma? Vai ser ótimo!
+```
+Direção: sorrindo, tom de quem sabe que o cliente vai ceder.
+
+### Ordem em que eu encaixo (pra você conferir)
+1. Narradora (frase 1) → 2. Zé "Só uma pizzinha…" → 3. Zé "Duas por 65…" + "Com três…" → 4. Lu → 5. Zé "Ah… então põe mais uma" → 6. Narradora (frase 2) → 7. Zé "Eu vim buscar UMA!" → 8. Narradora (frase 3).
+Total de fala ≈ 20 s; com as pausas fica em até 25 s.
+
+## 4) STORYBOARD (câmera dando zoom de quadro em quadro)
+| Cena | Quadro | Câmera | Quem fala |
+|---|---|---|---|
+| 1 | A (rua + fachada) | começa aberta e se aproxima do Zé andando | Narradora |
+| 2 | B (porta) | zoom na porta, o Zé entra | Zé |
+| 3 | C (interior) | pan pelos quadros de cardápio | Zé (2 falas) |
+| 4 | D (balcão) | zoom no peito/logo e no rosto da atendente | Lu, Zé |
+| 5 | E (saída) | recua e o Zé sai com 3 caixas | Narradora, Zé |
+| 6 | cartão final | logo em carimbo + fachada | Narradora |
+Efeito extra: o fora-do-quadro escurece (como quem lê um HQ) enquanto a câmera passa de um quadro pro outro.
