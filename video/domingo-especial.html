@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pizza em Dobro — Domingo especial (historinha)</title>
+<style>
+@font-face{font-family:'Archivo Black';src:url(fontes/ArchivoBlack-Regular.ttf)}
+@font-face{font-family:'Work Sans';src:url(fontes/WorkSans.ttf);font-weight:100 900}
+:root{--ouro:#f5b800;--cor:#c8281f}*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#111;height:100%;overflow:hidden}
+#palco{position:relative;width:1080px;height:1920px;background:#000;overflow:hidden;transform-origin:0 0;font-family:'Work Sans',sans-serif;color:#fff}
+body.gravando #palco{transform:none!important}body.gravando #capa{display:none!important}
+#baloes{position:absolute;inset:0;pointer-events:none;z-index:8}
+.bal{position:absolute;max-width:640px;background:#fff;color:#141414;border:7px solid #141414;border-radius:44px;padding:20px 30px;font:800 54px/1.1 'Work Sans';text-align:center;box-shadow:8px 8px 0 rgba(0,0,0,.35)}
+.bal i{position:absolute;bottom:-34px;width:0;height:0;border-left:22px solid transparent;border-right:22px solid transparent;border-top:34px solid #141414;margin-left:-22px}
+.bal i::after{content:"";position:absolute;left:-14px;top:-40px;border-left:14px solid transparent;border-right:14px solid transparent;border-top:24px solid #fff}
+#veu{position:absolute;left:0;right:0;bottom:0;height:640px;background:linear-gradient(transparent,rgba(0,0,0,.72));z-index:6}
+#leg{position:absolute;left:50px;right:50px;top:1560px;height:300px;display:flex;flex-wrap:wrap;gap:6px 28px;justify-content:center;align-content:center;text-align:center;font:400 84px/1.05 'Archivo Black';text-transform:uppercase;text-shadow:0 5px 0 #000,0 0 22px #000;-webkit-text-stroke:2px #000;z-index:7}
+#leg span{display:inline-block}
+#tit{position:absolute;left:44px;top:60px;z-index:9}.cart{background:var(--ouro);color:#141414;border:6px solid #141414;padding:14px 24px;font:400 38px 'Archivo Black';text-transform:uppercase;box-shadow:7px 7px 0 #141414;transform:rotate(-2deg)}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:10;pointer-events:none}
+#fim{position:absolute;inset:0;display:none;z-index:6}
+#fim .fbg{position:absolute;inset:0;background:url(../assets/fachada-fundo.jpg) center/cover}
+#fim .fbg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.1) 40%,rgba(0,0,0,.7))}
+#fim .carimbo{position:absolute;left:50%;top:560px;width:640px;height:640px;margin-left:-320px;filter:drop-shadow(0 18px 30px rgba(0,0,0,.6))}
+#fim .onda{position:absolute;left:50%;top:880px;width:560px;height:560px;margin:-280px 0 0 -280px;border-radius:50%;border:8px solid rgba(255,255,255,.7)}
+#fim .f1{position:absolute;left:0;right:0;top:230px;text-align:center;font:400 96px 'Archivo Black';color:var(--ouro);text-shadow:0 5px 0 #000,0 0 24px #000}
+#fim .f2{position:absolute;left:60px;right:60px;top:360px;text-align:center;font:800 56px/1.15 'Work Sans';text-shadow:0 3px 14px #000}
+#fim .url{position:absolute;left:0;right:0;top:1300px;text-align:center;font:400 50px 'Archivo Black';color:var(--ouro);text-shadow:0 3px 14px #000}
+#fim .credito{position:absolute;left:0;right:0;bottom:46px;text-align:center;font:700 15px 'Work Sans';letter-spacing:3px;color:rgba(255,255,255,.75)}
+#capa{position:fixed;inset:0;background:rgba(0,0,0,.85);color:#fff;display:flex;flex-direction:column;gap:20px;align-items:center;justify-content:center;font:600 22px 'Work Sans';z-index:99}
+#capa button{font:700 22px 'Work Sans';padding:16px 30px;border-radius:40px;border:0;background:#c8281f;color:#fff}
+</style></head>
+<body><div id="palco"></div>
+<div id="capa"><div>Domingo especial · historinha</div><button id="btSom" type="button">▶ Assistir com áudio</button><button id="btMudo" type="button">Sem som</button></div>
+<audio id="som" src="audio-domingo-especial.mp3" preload="auto"></audio>
+<script src="stick.js"></script><script src="cenario-placeholder.js"></script><script src="historia.js"></script>
+<script>
+var andar=Stick.andar, F=2.3, TAU=Math.PI*2;
+var cam=function(a,b){return [a,b];};
+Historia.iniciar({
+  escala:1.35,
+  tempos:'tempos-domingo-especial.json',
+  /* cenario:'cenarios/domingo.png',   ← quando o cenário do ChatGPT chegar, é só descomentar esta linha */
+  personagens:[
+    {id:'ze',look:{camisa:'#2e7be6'}},
+    {id:'lu',look:{uniforme:true,bone:true}}
+  ],
+  cenas:[
+   {id:'s1',cartela:'Domingo, 18h42',fala:'O Zé só queria uma pizza.',dest:['pizza'],cam:[[700,960,1],[1250,960,1]],
+    ator:{ze:function(u,d,k){var p=andar(TAU*F*u);p.x=380+1000*k;p.boca='sorriso';return p;},lu:function(){return {alfa:0};}},
+    baloes:[{quem:'ze',t0:.5,t1:2.9,txt:'Só uma pizzinha!'}]},
+   {id:'s2',cartela:'Na pizzaria…',fala:'Entrou na Pizza em Dobro e foi ver o cardápio.',dest:['pizza','dobro'],cam:[[1450,1050,1.1],[1500,1130,1.55]],
+    ator:{ze:function(u,d,k){var p=andar(TAU*F*u,k<.8?1:.0);p.x=1380+120*Math.min(1,k/.8);if(k>.75){p.alfa=Math.max(0,1-(k-.75)/.2);p.esc=1-.12*((k-.75)/.25);}p.boca='sorriso';return p;},lu:function(){return {alfa:0};}},
+    baloes:[]},
+   {id:'s3',corte:true,fala:'Duas por R$ 65, e com 3 pizzas a entrega é grátis!',dest:['r$','grátis','3'],cam:[[2300,1000,1.0],[2330,880,1.5]],
+    ator:{ze:function(u,d,k){return {x:2170,cab:-14,olhar:3,sobr:-8,boca:u<2.6?'surpreso':'aberta',sobe:Math.sin(u*3)*4,oD:10,eD:12,oE:u>1?-30:5,eE:u>1?90:12};},lu:function(){return {alfa:0};}},
+    baloes:[{quem:'ze',t0:.5,t1:2.6,txt:'2 por R$ 65?!'},{quem:'ze',t0:2.7,t1:4.9,txt:'3 pizzas, entrega grátis?'}]},
+   {id:'s4',cartela:'O atendente',fala:'O atendente sorriu: mais uma pizza vai ser ótimo, né?',dest:['mais','ótimo'],cam:[[2420,1000,1.2],[2640,930,1.95]],
+    ator:{ze:function(u,d,k){return {x:2310,sobr:-10,boca:'surpreso',olhar:4,oD:8,eD:10,oE:8,eE:12};},
+          lu:function(u,d,k){var w=Math.sin(u*9);return {x:2620,dir:-1,boca:'sorriso',oD:10,eD:12,oE:150+12*w,eE:30+20*w,cab:4*Math.sin(u*3),sobe:Math.sin(u*3)*4};}},
+    baloes:[{quem:'lu',t0:.5,t1:3.4,txt:'Mais uma pizza vai ser ótimo!'}]},
+   {id:'s5',corte:true,cartela:'Hora de ir…',fala:'O Zé veio comprar uma. Saiu com três!',dest:['três'],cam:[[2500,1000,1.1],[2250,1000,1.0]],
+    ator:{ze:function(u,d,k){var p=andar(TAU*F*u,.55);p.x=2480-420*k;p.dir=-1;p.caixas=3;p.oD=70;p.eD=60;p.oE=70;p.eE=60;p.boca=k<.5?'preocupado':'sorriso';p.sobr=k<.5?-10:0;return p;},
+          lu:function(u){var w=Math.sin(u*8);return {x:2660,dir:-1,boca:'aberta',oD:10,eD:12,oE:140+14*w,eE:20,sobe:Math.sin(u*4)*3};}},
+    baloes:[{quem:'ze',t0:.4,t1:2.2,txt:'Eu vim buscar UMA…'},{quem:'ze',t0:2.4,t1:4.4,txt:'Valeu cada fatia!'}]},
+   {id:'fim',fim:true,f1:'DOMINGO ESPECIAL',f2:'Quem entra, não sai com uma só!',fala:'Pizza em Dobro. Quem entra, não sai com uma só!',dest:[],cam:[[1440,960,1],[1440,960,1]],ator:{},baloes:[]}
+  ]});
+</script></body></html>
