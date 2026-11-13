@@ -1,0 +1,15 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:'Archivo Black';src:url(fontes/ArchivoBlack-Regular.ttf)}
+body{margin:0;background:#f4ead8}svg{display:block}
+</style></head><body>
+<svg id="s" viewBox="0 0 1800 1000" width="1800" height="1000"><rect width="1800" height="1000" fill="#f4ead8"/><rect y="860" width="1800" height="140" fill="#e2d2b4"/>
+<text x="900" y="80" font-family="Archivo Black" font-size="44" text-anchor="middle" fill="#141414">PERSONAGENS — PIZZA EM DOBRO</text></svg>
+<script src="stick.js"></script><script>
+var s=document.getElementById('s'), poses=[
+ ['ze1',{},260,{boca:'sorriso',oE:20,eE:40}],
+ ['ze2',{},640,Object.assign(Stick.andar(1.2),{boca:'surpreso',sobr:-10})],
+ ['lu1',{uniforme:true,bone:true},1060,{boca:'sorriso',oE:150,eE:30,cab:4}],
+ ['ze3',{},1480,{caixas:3,oD:70,eD:60,oE:70,eE:60,boca:'risada'}]];
+poses.forEach(function(p){ s.insertAdjacentHTML('beforeend','<g transform="translate('+p[2]+',860) scale(1.2)">'+Stick.svg(p[0],p[1])+'</g>'); Stick.pose(p[0],p[3]); });
+window.__pronto=true;
+</script></body></html>

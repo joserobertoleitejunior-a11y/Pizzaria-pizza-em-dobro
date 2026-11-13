@@ -2,25 +2,39 @@
 
 O Zé entra pra comprar UMA pizza e sai com TRÊS. Mostra combo (2 por R$ 65), entrega grátis com 3 pizzas e o atendente da casa. Só aos domingos, como especial.
 
-## 1) PROMPT PARA O CHATGPT — a HISTÓRIA INTEIRA em UMA página de quadrinhos
-Anexe a **foto da fachada** e cole (formato retrato 2:3, 1024×1536):
+## 1) PROMPT PARA O CHATGPT — página única em estilo HQ (versão "marca grande")
+Como as grandes marcas fazem no Instagram: **um visual só, forte e consistente** (paleta da marca, luz de cinema, nada de poluição), **leitura em 1 segundo** e **espaço reservado** pra personagem e texto. Por isso o cenário vem **sem pessoas e sem texto**: os bonecos, balões e preços entram por código, sempre certos e na cor da marca.
 
-> Crie UMA página de história em quadrinhos, vertical 2:3 (1024×1536), no **estilo dos quadrinhos americanos de super-herói** (arte-final em nanquim forte e dramática, contornos pretos grossos com variação de espessura, cores vibrantes e saturadas, pontilhado de impressão "halftone/Ben-Day" nas sombras, iluminação de cinema, perspectiva dinâmica, linhas de ação) — **mas é uma cena do dia a dia: sem super-heróis, sem capas, sem poderes, sem personagens famosos e sem nenhum logotipo de editora**. Usando a foto anexa como referência da fachada.
-> **NENHUMA PESSOA E NENHUM PERSONAGEM nos quadros** (os bonecos entram depois). **Sem balões de fala e sem legendas de texto** (só a placa da loja pode ter texto: "PIZZA EM DOBRO").
-> A página tem **5 quadros** com moldura preta grossa e calha branca de 2,5% entre eles, posicionados assim (medidas em % da página, a partir do canto superior esquerdo):
-> **Quadro A** (x 3–62%, y 3–31%): a rua e a calçada ao entardecer, poste de luz aceso, árvore, e a **fachada da pizzaria igual à foto** chegando pela direita.
-> **Quadro B** (x 64,5–97%, y 3–31%): close na **porta de enrolar aberta** da pizzaria, capacho preto, luz quente saindo de dentro.
-> **Quadro C** (x 3–97%, y 33,5–62%): o **interior**, largo: parede creme, **3 quadros de cardápio na parede com ilustração de pizza e SEM texto**, balcão preto com luminoso vermelho "PIZZA EM DOBRO", planta, piso bege.
-> **Quadro D** (x 3–50%, y 64,5–97%): o **balcão visto de frente**, com espaço livre atrás dele para uma pessoa em pé, parede ao fundo, luz quente.
-> **Quadro E** (x 52,5–97%, y 64,5–97%): a **saída da pizzaria vista de dentro**, porta aberta para a rua de noite chegando, calçada.
-> **REGRAS:** em cada quadro, o **chão** (piso ou calçada) é uma **linha horizontal reta a 85% da altura daquele quadro**, com espaço livre à frente para bonecos andarem. Os quadros precisam seguir **exatamente** as medidas acima. Paleta: preto, vermelho #C8281F, amarelo #F5B800, creme. Sem marca d'água.
+**Anexe a foto da fachada** e cole este prompt (em inglês o gerador obedece melhor às regras de composição):
 
-Dica de qualidade: a página será ampliada (zoom nos quadros). Se o ChatGPT mandar 1024×1536, passe por um ampliador gratuito (Upscayl) em 2× antes de me mandar. Se algum quadro sair fora do lugar, peça "refaça mantendo os quadros nas posições exatas" ou me mande assim mesmo que eu meço e ajusto a câmera.
+```
+Create ONE vertical comic book page, 2:3 aspect ratio, highest resolution available.
+ART STYLE: premium American superhero comic book art (bold confident ink lines with varied weight, dramatic cinematic lighting, saturated colors, Ben-Day halftone dots in the shadows, dynamic perspective) BUT it is an everyday scene: NO superheroes, NO capes, NO powers, NO famous characters, NO publisher logos.
+BRAND PALETTE: black, warm red (#C8281F), golden yellow (#F5B800), cream (#F3E3C1); warm, appetizing evening light.
+REFERENCE: use the attached photo as the exact reference for the storefront (black facade, red "PIZZA EM DOBRO" letters, yellow "DELIVERY", phone "15 99705-8390", number 824, yellow and red stripe at the base, the cartoon pizza-slice mascot painted on the wall right of the door, roll-up door open).
+ABSOLUTELY NO PEOPLE AND NO CHARACTERS in any panel. NO speech balloons, NO captions, NO sound effects text. The only text allowed is the storefront sign "PIZZA EM DOBRO".
+LAYOUT: exactly 5 panels with thick black borders and a 2.5% white gutter, positions as % of the page from the top-left corner:
+- Panel A (x 3–62%, y 3–31%): wide establishing shot at dusk: empty sidewalk, glowing street lamp, small tree, and the pizzeria storefront on the right half.
+- Panel B (x 64.5–97%, y 3–31%): close-up of the open roll-up door, black doormat, warm light spilling out onto the sidewalk.
+- Panel C (x 3–97%, y 33.5–62%): wide interior: cream wall with THREE framed menu posters showing only pizza illustrations (NO text), black counter with a red neon "PIZZA EM DOBRO" sign, a potted plant, beige tiled floor.
+- Panel D (x 3–50%, y 64.5–97%): the counter seen from the front, empty space behind it for a person to stand, warm light, a stack of pizza boxes on the side.
+- Panel E (x 52.5–97%, y 64.5–97%): the exit seen from inside: open door to the night street, sidewalk outside.
+COMPOSITION RULES: in every panel the floor/sidewalk is a straight horizontal line at 85% of that panel's height, with clear empty floor in the center for characters to walk. Keep the important details in the center of each panel (the video will crop each panel to a vertical 9:16 frame). Clean backgrounds, no clutter, sharp details, no watermark, no border text, no signature.
+```
+
+**Checklist antes de me mandar** (refaça pedindo só o que errou):
+1. Placa escrita certo: "PIZZA EM DOBRO" (se errar: "same image, but leave the storefront sign blank").
+2. Nenhuma pessoa/personagem e nenhum balão nos quadros.
+3. Os 5 quadros nas posições pedidas e o chão reto em cada um.
+4. Cores da marca (preto, vermelho, amarelo, creme).
+Depois passe no **Upscayl (grátis) em 2×** e me mande.
+
+**Plano B (qualidade máxima):** se a página sair borrada no zoom, gere **cada quadro separado**, vertical 9:16, com o mesmo prompt de estilo e a descrição do quadro (ex.: "Panel A only, 9:16 vertical"). Eu monto como se fosse uma página e a câmera passa entre eles do mesmo jeito.
 
 ## 2) PERSONAGENS (HTML, já prontos)
-- **Zé:** camiseta azul; anda, se espanta, fica preocupado, carrega as 3 caixas.
+- **Zé:** camiseta azul **com o logo da pizzaria no peito**, calça jeans e tênis; anda, se espanta, fica preocupado, carrega as 3 caixas.
 - **Atendente (Lu):** uniforme preto + ombros vermelhos + gola polo + faixa amarela + **logo da pizzaria no peito** + crachá "EQUIPE" + boné vermelho com o logo.
-(Imagens de andamento: `historia-andamento.jpg`, `historia-uniforme.jpg`. O cenário que aparece ali é provisório; entra a sua página quando chegar.)
+Visual novo: traço grosso uniforme, olhos com brilho e piscando sozinhos, bochecha, respiração, cabelo/boné, sombra, logo grande e nítido no peito. (Imagens: `personagens.jpg`, `historia-andamento.jpg`, `historia-uniforme.jpg`. O cenário que aparece ali é provisório; entra a sua página quando chegar.)
 
 ## 3) ROTEIRO COM VOZES DIFERENTES (ElevenLabs)
 **3 vozes, 3 áudios.** Cada voz grava SÓ as falas dela, na ordem, com pausa de 1,2 s entre elas (eu corto nas pausas e encaixo no vídeo). Regras de sempre: Multilingual v2, português do Brasil, Stability 35 (mais emoção) · Similarity 75 · Style 40, não corrigir a escrita, não adicionar nada. Teste antes: `Pizza em Dobro: a pizza, a esfía e o Pics de hoje!`

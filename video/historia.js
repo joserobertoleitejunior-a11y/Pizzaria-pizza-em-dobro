@@ -21,7 +21,7 @@ window.quadro=function(t){
   var tx=W/2-cx*z, ty=H/2-cy*z; $('cam').style.transform='translate('+tx+'px,'+ty+'px) scale('+z+')';
   // atores
   var estado={}; cfg.personagens.forEach(function(p){ var r=(at.ator&&at.ator[p.id])?at.ator[p.id](u,dur,k):{alfa:0};
-    var g=$(p.id); if(r.x===undefined) r.x=0; var esc=(r.esc||1)*(cfg.escala||1), face=r.dir===-1?-1:1; g.setAttribute('transform','translate('+r.x+','+GY+') scale('+(esc*face)+','+esc+')'); if(r.alfa!==0) Stick.pose(p.id,r); else g.style.opacity=0; g.querySelectorAll('.cf').forEach(function(e){e.style.transformBox='fill-box';e.style.transformOrigin='center';e.style.transform=face<0?'scaleX(-1)':'none';}); estado[p.id]=r; });
+    var g=$(p.id); if(r.x===undefined) r.x=0; var esc=(r.esc||1)*(cfg.escala||1), face=r.dir===-1?-1:1; g.setAttribute('transform','translate('+r.x+','+GY+') scale('+(esc*face)+','+esc+')'); if(r.pisca===undefined) r.pisca=Stick.pisca(t,p.id.length*.7); if(r.respira===undefined) r.respira=Math.sin(t*2.4+p.id.length)*3; if(r.alfa!==0) Stick.pose(p.id,r); else g.style.opacity=0; g.querySelectorAll('.cf').forEach(function(e){e.style.transformBox='fill-box';e.style.transformOrigin='center';e.style.transform=face<0?'scaleX(-1)':'none';}); estado[p.id]=r; });
   // balões
   var hb=''; (at.baloes||[]).forEach(function(bl){ var r=estado[bl.quem]; if(!r||r.alfa===0)return; var d=u-bl.t0, du=bl.t1-bl.t0; if(d<0||d>du)return;
     var sx=(r.x-0*0)*z+tx, sy=(GY-640*(r.esc||1)*(cfg.escala||1))*z+ty; var p=clamp(d/.18,0,1), q=clamp((du-d)/.15,0,1), sc=ease(Math.min(p,q));
