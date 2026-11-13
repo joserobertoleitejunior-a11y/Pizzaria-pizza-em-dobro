@@ -32,9 +32,9 @@ Depois passe no **Upscayl (grátis) em 2×** e me mande.
 **Plano B (qualidade máxima):** se a página sair borrada no zoom, gere **cada quadro separado**, vertical 9:16, com o mesmo prompt de estilo e a descrição do quadro (ex.: "Panel A only, 9:16 vertical"). Eu monto como se fosse uma página e a câmera passa entre eles do mesmo jeito.
 
 ## 2) PERSONAGENS (HTML, já prontos)
-- **Zé:** camiseta azul **com o logo da pizzaria no peito**, calça jeans e tênis; anda, se espanta, fica preocupado, carrega as 3 caixas.
-- **Atendente (Lu):** uniforme preto + ombros vermelhos + gola polo + faixa amarela + **logo da pizzaria no peito** + crachá "EQUIPE" + boné vermelho com o logo.
-Visual novo: traço grosso uniforme, olhos com brilho e piscando sozinhos, bochecha, respiração, cabelo/boné, sombra, logo grande e nítido no peito. (Imagens: `personagens.jpg`, `historia-andamento.jpg`, `historia-uniforme.jpg`. O cenário que aparece ali é provisório; entra a sua página quando chegar.)
+- **Zé (cliente):** camiseta azul **sem logo**, calça jeans e tênis; anda, se espanta, fica preocupado, carrega as 3 caixas.
+- **Atendente (Lu):** polo preta com ombros vermelhos e friso amarelo, gola branca, botões, faixa amarela + **logo pequeno no peito (lado do coração), como bordado** + crachá "EQUIPE" + boné vermelho com o logo.
+Visual "quase 3D": volume com luz e sombra em braços, pernas, camisa e cabeça (esfera com brilho), oclusão sob o queixo, olhos com íris e reflexo piscando sozinhos, respiração, tênis com brilho e sombra suave no chão. (Imagens: `personagens.jpg`, `historia-andamento.jpg`, `historia-uniforme.jpg`. O cenário que aparece ali é provisório; entra a sua página quando chegar.)
 
 ## 3) ROTEIRO COM VOZES DIFERENTES (ElevenLabs)
 **3 vozes, 3 áudios.** Cada voz grava SÓ as falas dela, na ordem, com pausa de 1,2 s entre elas (eu corto nas pausas e encaixo no vídeo). Regras de sempre: Multilingual v2, português do Brasil, Stability 35 (mais emoção) · Similarity 75 · Style 40, não corrigir a escrita, não adicionar nada. Teste antes: `Pizza em Dobro: a pizza, a esfía e o Pics de hoje!`
