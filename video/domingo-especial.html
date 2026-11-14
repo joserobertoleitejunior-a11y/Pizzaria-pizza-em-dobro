@@ -16,6 +16,7 @@ body.gravando #palco{transform:none!important}body.gravando #capa{display:none!i
 #leg{position:absolute;left:50px;right:50px;top:1560px;height:300px;display:flex;flex-wrap:wrap;gap:6px 28px;justify-content:center;align-content:center;text-align:center;font:400 84px/1.05 'Archivo Black';text-transform:uppercase;text-shadow:0 5px 0 #000,0 0 22px #000;-webkit-text-stroke:2px #000;z-index:7}
 #leg span{display:inline-block}
 #tit{position:absolute;left:44px;top:60px;z-index:9}.cart{background:var(--ouro);color:#141414;border:6px solid #141414;padding:14px 24px;font:400 38px 'Archivo Black';text-transform:uppercase;box-shadow:7px 7px 0 #141414;transform:rotate(-2deg)}
+#vhs{position:absolute;inset:0;z-index:9;pointer-events:none;opacity:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.10) 0 3px,transparent 3px 9px),linear-gradient(rgba(40,60,120,.25),rgba(40,60,120,.25))}
 #flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:10;pointer-events:none}
 #fim{position:absolute;inset:0;display:none;z-index:6}
 #fim .fbg{position:absolute;inset:0;background:url(../assets/fachada-fundo.jpg) center/cover}
@@ -35,33 +36,49 @@ body.gravando #palco{transform:none!important}body.gravando #capa{display:none!i
 <script src="stick.js"></script><script src="cenario-placeholder.js"></script><script src="historia.js"></script>
 <script>
 var andar=Stick.andar, F=2.3, TAU=Math.PI*2;
-var cam=function(a,b){return [a,b];};
+/* Página do ChatGPT (1024×1536, ampliada 2×). Quadros medidos em pixels da página 2048×3072. */
+var Q={1:[52,54,1998,870],2:[52,914,922,1590],3:[966,914,1998,1590],4:[52,1636,1998,2380],5:[52,2430,988,3020],6:[1034,2430,1998,3020]};
+var nada=function(){return {alfa:0};};
+/* cavalete com a promoção (desenhado por código, preços do sistema) — fica no quadro 4 */
+var cavalete='<g transform="translate(600,2342)"><path d="M-62 0 L-40 -210 L40 -210 L62 0" fill="none" stroke="#6b4a2b" stroke-width="12"/><rect x="-52" y="-200" width="104" height="150" rx="6" fill="#1d1f1c" stroke="#8a6238" stroke-width="8"/>'+
+ '<text x="0" y="-162" text-anchor="middle" font-family="Archivo Black" font-size="27" fill="#f5b800">2 POR</text><text x="0" y="-122" text-anchor="middle" font-family="Archivo Black" font-size="34" fill="#fff">R$65</text>'+
+ '<text x="0" y="-92" text-anchor="middle" font-family="Work Sans" font-weight="800" font-size="15" fill="#f5b800">3 PIZZAS =</text><text x="0" y="-72" text-anchor="middle" font-family="Work Sans" font-weight="800" font-size="15" fill="#fff">ENTREGA GRÁTIS</text></g>';
 Historia.iniciar({
-  escala:1.35,
+  pagina:{src:'cenarios/domingo-pagina.jpg',w:2048,h:3072},
+  extras:cavalete,
   tempos:'tempos-domingo-especial.json',
-  /* cenario:'cenarios/domingo.png',   ← quando o cenário do ChatGPT chegar, é só descomentar esta linha */
   personagens:[
     {id:'ze',look:{camisa:'#2e7be6'}},
     {id:'lu',look:{uniforme:true,bone:true}}
   ],
   cenas:[
-   {id:'s1',cartela:'Domingo, 18h42',fala:'Domingo, 18h42. O Zé só queria uma pizza.',dest:['pizza'],cam:[[700,960,1],[1250,960,1]],
-    ator:{ze:function(u,d,k){var p=andar(TAU*F*u);p.x=380+1000*k;p.boca='sorriso';return p;},lu:function(){return {alfa:0};}},
-    baloes:[]},
-   {id:'s2',cartela:'Na pizzaria…',fala:'',dest:[],cam:[[1450,1050,1.1],[1500,1130,1.55]],
-    ator:{ze:function(u,d,k){var p=andar(TAU*F*u,k<.8?1:.0);p.x=1380+120*Math.min(1,k/.8);if(k>.75){p.alfa=Math.max(0,1-(k-.75)/.2);p.esc=1-.12*((k-.75)/.25);}p.boca='sorriso';return p;},lu:function(){return {alfa:0};}},
-    baloes:[{quem:'ze',t0:.2,t1:2.1,txt:'Só uma pizzinha, e já volto!'}]},
-   {id:'s3',corte:true,fala:'',dest:[],cam:[[2300,1000,1.0],[2330,880,1.5]],
-    ator:{ze:function(u,d,k){return {x:2170,cab:-14,olhar:3,sobr:-8,boca:u<2.6?'surpreso':'aberta',sobe:Math.sin(u*3)*4,oD:10,eD:12,oE:u>1?-30:5,eE:u>1?90:12};},lu:function(){return {alfa:0};}},
-    baloes:[{quem:'ze',t0:.3,t1:1.9,txt:'Duas por R$ 65?!'},{quem:'ze',t0:2.0,t1:3.7,txt:'Com 3, entrega grátis?'}]},
-   {id:'s4',cartela:'O atendente',fala:'',dest:[],cam:[[2420,1000,1.2],[2640,930,1.95]],
-    ator:{ze:function(u,d,k){return {x:2310,sobr:-10,boca:'surpreso',olhar:4,oD:8,eD:10,oE:8,eE:12};},
-          lu:function(u,d,k){var w=Math.sin(u*9);return {x:2620,dir:-1,boca:'sorriso',oD:10,eD:12,oE:150+12*w,eE:30+20*w,cab:4*Math.sin(u*3),sobe:Math.sin(u*3)*4};}},
-    baloes:[{quem:'lu',t0:.3,t1:3.0,txt:'E aí, vai levar mais uma? Vai ser ótimo!'},{quem:'ze',t0:3.2,t1:5.3,txt:'Ah… então põe mais uma.'}]},
-   {id:'s5',corte:true,cartela:'Hora de ir…',fala:'O Zé veio comprar uma. Saiu com três.',dest:['três'],cam:[[2500,1000,1.1],[2250,1000,1.0]],
-    ator:{ze:function(u,d,k){var p=andar(TAU*F*u,.55);p.x=2480-420*k;p.dir=-1;p.caixas=3;p.oD=70;p.eD=60;p.oE=70;p.eE=60;p.boca=k<.5?'preocupado':'sorriso';p.sobr=k<.5?-10:0;return p;},
-          lu:function(u){var w=Math.sin(u*8);return {x:2660,dir:-1,boca:'aberta',oD:10,eD:12,oE:140+14*w,eE:20,sobe:Math.sin(u*4)*3};}},
-    baloes:[{quem:'ze',t0:2.9,t1:4.5,txt:'Eu vim buscar UMA!'}]},
-   {id:'fim',fim:true,f1:'DOMINGO ESPECIAL',f2:'Quem entra, não sai com uma só!',fala:'Pizza em Dobro. Quem entra, não sai com uma só.',dest:[],cam:[[1440,960,1],[1440,960,1]],ator:{},baloes:[]}
+   /* GANCHO: começa pelo fim — Zé na avenida à noite com 3 caixas */
+   {id:'h',painel:Q[6],gy:3000,esc:.44,congela:2.1,fala:'Como é que o Zé foi comprar UMA pizza… e voltou com TRÊS?',dest:['uma','três'],cam:[[1420,2740,1.25],[1360,2760,1.45]],
+    ator:{ze:function(u,d,k){var p=andar(TAU*F*u,.6);p.x=1450-230*k;p.dir=-1;p.caixas=3;p.oD=70;p.eD=60;p.oE=70;p.eE=60;p.boca='preocupado';p.incl=Math.sin(u*5)*4;return p;},lu:nada},baloes:[]},
+   /* rebobina a página até o 1º quadro */
+   {id:'rw',rebobina:true,cartela:'⏪ 15 MINUTOS ANTES',fala:'',cam:[[1500,2760,1.2],[620,470,1.15]],escurece:0,ator:{ze:nada,lu:nada},baloes:[]},
+   /* 1: a avenida real — barriga ronca, sente o cheiro */
+   {id:'s1',painel:Q[1],gy:862,esc:.5,cartela:'Domingo, 18h',fala:'',cam:[[560,480,1.15],[700,500,1.3]],
+    ator:{ze:function(u,d,k){var para=k>.45&&k<.7, p=andar(TAU*F*u,para?0:1);p.x=150+430*k;p.boca=para?'surpreso':'sorriso';if(para){p.cab=-10;p.olhar=4;}return p;},lu:nada},
+    baloes:[{quem:'ze',t0:1.2,t1:3.2,txt:'Que cheiro é esse?!'}]},
+   /* 3: chega na fachada (encaixe real na rua) */
+   {id:'s2',painel:Q[3],gy:1468,esc:.3,fala:'',cam:[[1300,1250,1.35],[1540,1260,1.7]],
+    ator:{ze:function(u,d,k){var p=andar(TAU*F*u,k<.85?1:0);p.x=1030+520*Math.min(1,k/.85);p.boca='sorriso';return p;},lu:nada},baloes:[]},
+   /* 4: fachada de perto + cavalete com a promoção */
+   {id:'s3',painel:Q[4],gy:2338,esc:.36,fala:'',cam:[[640,2050,1.3],[730,2080,1.65]],
+    ator:{ze:function(u,d,k){var ch=Math.min(1,u/1.0), p=ch<1?andar(TAU*F*u):{};p.x=330+420*ch;if(ch>=1){p.cab=-8;p.olhar=-4;p.sobr=-8;p.boca=u<2.4?'surpreso':'aberta';p.oD=10;p.eD=12;p.oE=u>2.3?-30:5;p.eE=u>2.3?90:12;p.sobe=Math.sin(u*3)*4;p.dir=-1;}return p;},lu:nada},
+    baloes:[{quem:'ze',t0:1.0,t1:2.4,txt:'Duas por R$ 65?!'},{quem:'ze',t0:2.5,t1:3.9,txt:'Com 3, entrega grátis?'}]},
+   /* 5: na porta — a atendente Lu */
+   {id:'s4',painel:Q[5],gy:2900,esc:.46,fala:'',cam:[[560,2720,1.45],[600,2740,1.75]],
+    ator:{ze:function(u,d,k){return {x:820,y:2990,esc:1.1,dir:-1,sobr:-10,boca:u<2.6?'surpreso':'risada',olhar:-3,oD:8,eD:10,oE:8,eE:12};},
+          lu:function(u,d,k){var w=Math.sin(u*9);return {x:430,boca:'sorriso',oD:10,eD:12,oE:150+12*w,eE:30+20*w,cab:4*Math.sin(u*3),sobe:Math.sin(u*3)*4};}},
+    baloes:[{quem:'lu',t0:.3,t1:2.6,txt:'E aí, vai levar mais uma? Vai ser ótimo!'},{quem:'ze',t0:2.8,t1:4.6,txt:'Ah… então põe mais uma.'}]},
+   /* 6: volta pra rua à noite com 3 caixas (fecha o gancho) */
+   {id:'s5',painel:Q[6],gy:3000,esc:.44,corte:true,fala:'',cam:[[1420,2740,1.3],[1340,2760,1.4]],
+    ator:{ze:function(u,d,k){var p=andar(TAU*F*u,.6);p.x=1470-280*k;p.dir=-1;p.caixas=3;p.oD=70;p.eD=60;p.oE=70;p.eE=60;p.boca=k<.5?'preocupado':'risada';p.incl=Math.sin(u*5)*4;return p;},lu:nada},
+    baloes:[{quem:'ze',t0:.4,t1:2.2,txt:'Eu vim buscar UMA!'}]},
+   /* a página inteira aparece (o “gibi” completo) */
+   {id:'pg',fala:'',escurece:0,cam:[[1440,2760,1.1],[1024,1536,.527]],ator:{ze:nada,lu:nada},baloes:[]},
+   {id:'fim',fim:true,f1:'DOMINGO ESPECIAL',f2:'Quem entra, não sai com uma só!',fala:'Pizza em Dobro. Quem entra, não sai com uma só.',dest:[],cam:[[1024,1536,.527],[1024,1536,.527]],ator:{},baloes:[]}
   ]});
-</script></body></html>
+</script></script></body></html>
