@@ -62,3 +62,17 @@ E aí, vai levar mais uma? Vai ser ótimo!
 
 ## 4) PERSONAGENS (HTML, prontos)
 Zé (camiseta azul lisa, jeans, tênis) e atendente Lu (polo preta com ombros vermelhos, logo pequeno bordado no peito, crachá "EQUIPE", boné com logo), com volume "quase 3D", olhos piscando e respiração. Para o final eu acrescento a família (2 bonecos) comemorando na mesa.
+
+## 5) PRA VIRALIZAR (checklist aplicado neste vídeo)
+1. **Gancho em 1 segundo, com TEXTO na tela** (muita gente vê sem som): primeiro quadro já com a frase grande **"Fui comprar UMA pizza…"** e as 3 caixas balançando.
+2. **Situação que todo mundo já viveu** (ir comprar uma e voltar com mais) → gera identificação e **marcação de amigo**.
+3. **Loop perfeito:** o último quadro emenda no primeiro (o Zé na porta de casa), então o Reels recomeça sem corte e conta como "assistido de novo" — é o que mais empurra o vídeo.
+4. **Curto:** alvo **18–22 s**. Cada cena com movimento novo a cada 1,5–2 s (zoom, balão, efeito).
+5. **Pergunta que puxa comentário** na legenda do post e na tela final: **"Você leva uma ou já pede três? 🍕"**.
+6. **Série com personagem fixo:** "As aventuras do Zé — ep. 1". Personagem que volta toda semana cria público que espera o próximo.
+7. **Na hora de postar:** sexta a domingo, 18h–19h30 · localização "Itapetininga" · 3 a 5 hashtags locais (#itapetininga #pizzaitapetininga #pizzaemdobro #deliveryitapetininga) · comentário fixado com o link do site · responder os primeiros comentários na primeira hora.
+8. **Áudio:** voz + efeitos no vídeo; se quiser música, use uma do próprio Instagram (biblioteca do Reels) em volume baixo — áudio em alta ajuda na distribuição.
+9. **Collab:** postar como colaboração com um perfil local (influenciador ou página da cidade) dobra o alcance de graça.
+
+**Legenda pronta do post:**
+`Fui comprar UMA pizza… 🍕😅 Quem nunca? Você leva uma ou já pede três? Marca aquele amigo que faz isso! 👇 Combo 2 por R$ 65 e entrega grátis com 3 pizzas. Peça pelo site (link no perfil). #itapetininga #pizzaitapetininga #pizzaemdobro #deliveryitapetininga`
